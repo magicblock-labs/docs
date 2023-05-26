@@ -45,7 +45,7 @@
     },
     {
       "group": "API Documentation",
-      "pages": ["api-reference/authentication"]
+      "pages": ["api-reference/Getting started", "api-reference/Core concepts"]
     },
     {
       "group": "Endpoint Examples",
