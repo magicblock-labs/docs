@@ -41,7 +41,7 @@
   "navigation": [
     {
       "group": "Home",
-      "pages": ["Ecosystem", "Forever Games", "introduction", "features"]
+      "pages": ["introduction","Ecosystem", "features"]
     },
     {
       "group": "API Documentation",
