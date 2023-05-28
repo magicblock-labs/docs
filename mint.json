@@ -24,7 +24,7 @@
   "anchors": [
     {
       "name": "Solana Unity SDK",
-      "icon": "rectangle-terminal",
+      "icon": "screwdriver-wrench",
       "url": "api-reference"
     },
     {
