@@ -45,7 +45,7 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/Overview", "SolanaUnitySDK/authentication"]
+      "pages": ["Overview", "authentication"]
     },
     {
       "group": "API Documentation",
