@@ -45,7 +45,7 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/Overview", "SolanaUnitySDK/authentication"]
+      "pages": ["SolanaUnitySDK/Overview", "SolanaUnitySDK/authentication", "SolanaUnitySDK/endpoint"]
     },
     {
       "group": "API Documentation",
@@ -62,8 +62,8 @@
     }
   ],
   "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "twitter": "https://twitter.com/magicblock",
+    "github": "https://github.com/magicblock-labs",
+    "linkedin": "https://www.linkedin.com/company/magicblock"
   }
 }
