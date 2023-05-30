@@ -45,20 +45,7 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/Overview", "SolanaUnitySDK/authentication", "SolanaUnitySDK/endpoint"]
-    },
-    {
-      "group": "API Documentation",
-      "pages": ["api-reference/Getting started", "api-reference/Core concepts"]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/update",
-        "api-reference/endpoint/delete"
-      ]
+      "pages": ["SolanaUnitySDK/overview", "SolanaUnitySDK/authentication", "SolanaUnitySDK/endpoint"]
     }
   ],
   "footerSocials": {
