@@ -47,6 +47,10 @@
       "group": "Solana Unity SDK",
       "pages": [
         "SolanaUnitySDK/overview",
+        {
+        "group" : "Introduction",
+        "pages" : ["introduction"]
+        },
         "SolanaUnitySDK/authentication"
       ]
     },
