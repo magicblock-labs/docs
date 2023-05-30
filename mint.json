@@ -46,7 +46,11 @@
     {
       "group": "Solana Unity SDK",
       "pages": ["SolanaUnitySDK/overview", "SolanaUnitySDK/authentication", "SolanaUnitySDK/endpoint"]
-    }
+    },
+    {
+      "group": "On-chain chess",
+      "pages": ["On-chain chess/Introduction", " On-chain chess/On-chain logic"]
+    }    
   ],
   "footerSocials": {
     "twitter": "https://twitter.com/magicblock",
