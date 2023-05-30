@@ -1,31 +1,30 @@
 ---
-title: "Overview"
-description: "Open-source Solana integration for Unity"
+title: "Module #2"
+description: "open-source chess implementation"
 ---
 
-Solana Unity SDK a comprehensive set of open-source tools to simplify the creating of fully on-chain / asset-on-chain games on Solana with Unity.
-You can install it from our GitHub or the Unity Asset Store.   
+The focus of this course is not on how to build the chess logic, but if you are interested this is a video tutorial made by [@Vicyyn](https://twitter.com/vicyyn) that goes into it. We will be referencing his [open-source chess implementation](https://github.com/vicyyn/sol-chess) in our client. 
 
 <img height="200" src="/images/SolanaUnitySDK_diagram.png" />
 
 ## Features
 
-- Full JSON RPC API coverage
-- Wallet and accounts: Set up of a non-custodial Solana wallet in Unity (sollet and solana-keygen compatible)
-- Phantom and Web3auth support (non-custodial signup/login through social accounts)
-- Transaction decoding from base64 and wire format and encoding back into wire format
-- Message decoding from base64 and wire format and encoding back into wire format
-- Instruction decompilation
-- TokenWallet object to send and receive SPL tokens and JIT provisioning of Associated Token Accounts
-- Basic UI examples
-- NFTs
-- Compile games to xNFTs (Backpack)
-- Native DEX operations (Orca, Jupiter coming soon...)
-- Websockets to register/trigger custom events (account change, signature status, programs, ...)
-- Solana Mobile Stack support
-- Soalna Wallet Adapter
+**Logic overview**
+[board.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/models/board.rs) - handles the logic for interacting with the board
+[color.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/models/color.rs) - provides basing functionalities to manage the two armies 
+[pieces.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/models/piece.rs) - basic pieces functionalities
+[castling_rights](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/models/castling_right.rs) - castling logic
+[draw_state.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/models/draw_state.rs) -  drawing logic
+[square.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/models/square.rs) - ranks and files
+[game_state.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/models/game_state.rs) - turn and state logic
 
-### Upcoming
+**State overview**
+[game.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/states/game.rs) - game state, manage owner/id/bump
+[user.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/states/user.rs) - manage current game/elo/# of game played.
 
-- Seed Vault
-- Raindrops integration, see the DAO proposal
+**Instruction overview**
+[initialize_users.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/contexts/initialize_user.rs) - initialize users 
+[inizialize_game.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/contexts/initialize_game.rs) - initialize the game
+[join_game.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/contexts/join_game.rs) - join game
+[leave_game.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/contexts/leave_game.rs) - leave game
+[resign.rs](https://github.com/vicyyn/sol-chess/blob/main/programs/sol-chess/src/contexts/resign.rs) - resign
