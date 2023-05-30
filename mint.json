@@ -49,7 +49,7 @@
     },
     {
       "group": "On-chain chess",
-      "pages": ["onchain_chess/introduction"]
+      "pages": ["onchain_chess/introduction/overview"]
     }    
   ],
   "footerSocials": {
