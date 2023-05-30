@@ -49,7 +49,12 @@
     },
     {
       "group": "On-chain chess",
-      "pages": ["onchain_chess/introduction"]
+      "pages": ["onchain_chess/introduction",
+        {
+        "group" : "Module #1",
+        "pages" : ["onchain_chess/module_1/setup", "onchain_chess/module_1/sample_scene"]
+        }, 
+        "onchain_chess/module_2/onchain_logic"]
     }    
   ],
   "footerSocials": {
