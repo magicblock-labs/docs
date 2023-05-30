@@ -45,7 +45,10 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/overview", "SolanaUnitySDK/authentication", "SolanaUnitySDK/endpoint"]
+      "pages": [
+        "SolanaUnitySDK/overview",
+        "SolanaUnitySDK/authentication"
+      ]
     },
     {
       "group": "On-chain chess",
