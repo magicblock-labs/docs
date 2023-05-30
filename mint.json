@@ -41,7 +41,7 @@
   "navigation": [
     {
       "group": "Home",
-      "pages": ["introduction","Forever Games", "features"]
+      "pages": ["introduction","Forever Games"]
     },
     {
       "group": "Solana Unity SDK",
