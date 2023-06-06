@@ -1,0 +1,84 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "MagicBlock",
+  "logo": {
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
+  },
+  "modeToggle": {
+    "default": "dark"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#818CF8",
+    "light": "#9EA7FF",
+    "dark": "#818CF8",
+    "anchors": {
+      "from": "#818CF8",
+      "via": "#53a8c8",
+      "to": "#2ae3a8"
+    }
+  },
+  "topbarCtaButton": {
+    "name": "View Demo",
+    "url": "https://magicblock-labs.github.io/Solana.Unity-SDK/"
+  },
+  "topbarLinks": [
+    {
+      "name": "View on GitHub",
+      "url": "https://github.com/magicblock-labs/Solana.Unity-SDK"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/magicblock-labs/Solana.Unity-SDK"
+    },
+    {
+      "name": "Discord",
+      "icon": "discord",
+      "url": "https://discord.gg/MBkdC3gxcv"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Prologue",
+      "pages": ["prologue/contribution-guide"]
+    },
+    {
+      "group": "Getting Started",
+      "pages": [
+        "getting-started/introduction",
+        "getting-started/installation",
+        "getting-started/sample-scene",
+        "getting-started/configuration"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "core-concepts/associated-token-account",
+        "core-concepts/transfer-token",
+        "core-concepts/transaction-builder",
+        "core-concepts/staking",
+        "core-concepts/add-signature"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/mint-an-nft",
+        "guides/host-your-game",
+        "guides/publishing-a-game",
+        "guides/dex-integration",
+        "guides/additional-examples"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/garblesfun",
+    "github": "https://github.com/garbles-labs/Solana.Unity-SDK",
+    "discord": "https://discord.gg/MBkdC3gxcv"
+  }
+}
