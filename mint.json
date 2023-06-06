@@ -45,7 +45,7 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/getting-started", 
+      "pages": ["SolanaUnitySDK/contribution-guide", "SolanaUnitySDK/overview",
     {
       "group": "Getting Started",
       "pages": ["SolanaUnitySDK/getting-started/introduction",
