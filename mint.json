@@ -56,11 +56,11 @@
     },
     {
       "group": "Core Concepts", 
-      "pages": ["core-concepts/associated-token-account",
-                 "core-concepts/transfer-token",
-                 "core-concepts/transaction-builder",
-                 "core-concepts/staking",
-                 "core-concepts/add-signature"]
+      "pages": ["SolanaUnitySDK/core-concepts/associated-token-account",
+                 "SolanaUnitySDK/core-concepts/transfer-token",
+                 "SolanaUnitySDK/core-concepts/transaction-builder",
+                 "SolanaUnitySDK/core-concepts/staking",
+                 "SolanaUnitySDK/core-concepts/add-signature"]
     },
     ]
     },
