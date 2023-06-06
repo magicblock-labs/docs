@@ -60,10 +60,10 @@
                  "core-concepts/transfer-token",
                  "core-concepts/transaction-builder",
                  "core-concepts/staking",
-                 "core-concepts/add-signature"
-      ]
-    }
-    ],
+                 "core-concepts/add-signature"]
+    },
+    ]
+    },
     {
       "group": "On-chain chess",
       "pages": ["onchain_chess/introduction",
