@@ -62,7 +62,8 @@
                  "core-concepts/staking",
                  "core-concepts/add-signature"
       ]
-    },
+    }
+    ],
     {
       "group": "On-chain chess",
       "pages": ["onchain_chess/introduction",
