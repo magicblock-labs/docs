@@ -45,7 +45,15 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/overview", "SolanaUnitySDK/authentication"]
+      "pages": ["SolanaUnitySDK/getting-started", 
+    {"group": "Getting Started". 
+     "pages": ["SolanaUnitySDK/getting-started/introduction",
+      "SolanaUnitySDK/getting-started/installation",
+      "SolanaUnitySDK/getting-started/configuration",
+      "SolanaUnitySDK/getting-started/sample-scene"
+     ]
+    },
+      "SolanaUnitySDK/authentication"]
     },
     {
       "group": "On-chain chess",
