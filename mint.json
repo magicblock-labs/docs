@@ -73,8 +73,8 @@
     ]
     },
     {
-      "group": "On-chain chess",
-      "pages": ["onchain_chess/introduction",
+      "group": "Game examples & tutorials",
+      "pages": ["onchain_chess/on-chain chess",
         {
         "group" : "Module #1",
         "pages" : ["onchain_chess/module_1/setup", "onchain_chess/module_1/sample_scene"]
