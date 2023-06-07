@@ -61,6 +61,14 @@
                  "SolanaUnitySDK/core-concepts/transaction-builder",
                  "SolanaUnitySDK/core-concepts/staking",
                  "SolanaUnitySDK/core-concepts/add-signature"]
+      }, 
+      {
+      "group": "Guides", 
+      "pages": ["SolanaUnitySDK/guides/mint-an-nft",
+                 "SolanaUnitySDK/guides/host-your-game",
+                 "SolanaUnitySDK/guides/publishing-a-game",
+                 "SolanaUnitySDK/guides/dex-integration",
+                 "SolanaUnitySDK/guides/additional-examples"]
       }
     ]
     },
