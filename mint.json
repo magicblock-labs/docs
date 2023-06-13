@@ -48,8 +48,7 @@
       "pages": ["SolanaUnitySDK/contribution-guide", "SolanaUnitySDK/overview",
     {
       "group": "Getting Started",
-      "pages": ["SolanaUnitySDK/getting-started/introduction",
-      "SolanaUnitySDK/getting-started/installation",
+      "pages": ["SolanaUnitySDK/getting-started/installation",
       "SolanaUnitySDK/getting-started/configuration",
       "SolanaUnitySDK/getting-started/sample-scene"
      ]
