@@ -71,6 +71,10 @@
       }
     ]
     },
+      {
+      "group": "Compose",
+      "pages": ["Compose/SOAR"]
+    },
     {
       "group": "Game examples & tutorials",
       "pages": ["onchain_chess/on-chain chess",
