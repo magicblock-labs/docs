@@ -72,8 +72,8 @@
     ]
     },
       {
-      "group": "Compose",
-      "pages": ["Compose/SOAR"]
+      "group": "Frameworks",
+      "pages": ["Frameworks/SOAR"]
     },
     {
       "group": "Game examples & tutorials",
