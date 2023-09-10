@@ -1,0 +1,55 @@
+
+---
+title: "Use session key manager"
+description: "A custom React hook that manages the creation and revocation of session
+  tokens, and provides essential methods for signing and sending transactions in
+  a secure and user-friendly way."
+---
+
+# 🔒 useSessionKeyManager
+
+`useSessionKeyManager` is a custom hook that takes an `AnchorWallet`, `Connection`, and `Cluster` as arguments and returns a `SessionWalletInterface`. This hook manages the session keys, tokens, and provides methods for signing and sending transactions.
+
+The `SessionWalletInterface` consists of the following properties and methods:
+
+```typescript
+interface SessionWalletInterface {
+  publicKey: PublicKey | null; // Public key associated with the session wallet
+  isLoading: boolean; // Indicates whether the session wallet is loading
+  error: string | null; // An error message, if any
+  sessionToken: string | null; // Session token for the current session
+  signTransaction: (<T extends Transaction>(transaction: T) => Promise<T>) | undefined; // Sign a single transaction
+  signAllTransactions: (<T extends Transaction >(transactions: T[]) => Promise<T[]>) | undefined; // Sign multiple transactions
+  signMessage: ((message: Uint8Array) => Promise<Uint8Array>) | undefined; // Sign a message
+  sendTransaction: (<T extends Transaction>(transaction: T) => Promise<string>) | undefined; // Send a signed transaction
+  signAndSendTransaction: (<T extends Transaction>(transactions: T | T[]) => Promise<string[]>) | undefined; // Sign and send transactions
+  createSession: (targetProgram: PublicKey, topUp: boolean, validUntil?: number) => Promise<{ sessionToken: string; publicKey: string; } | undefined>; // Create a new session
+  revokeSession: () => Promise<void>; // Revoke the current session
+  getSessionToken: () => Promise<string | null>; // Retrieve the current session token
+}
+```
+
+Here's an example of how to use the `useSessionKeyManager`:
+
+```typescript
+import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useSessionKeyManager } from '@gumhq/react-sdk';
+
+function YourComponent() {
+  const wallet = useAnchorWallet();
+  const connection = useConnection();
+  const cluster = "devnet"; // or "mainnet-beta", "testnet", "localnet"
+
+  const sessionWallet = useSessionKeyManager(wallet, connection, cluster);
+
+  // Access session wallet properties and methods here
+  // Example: sessionWallet.publicKey
+  // Example: sessionWallet.createSession
+
+  return (
+    // Your component JSX
+  );
+}
+```
+
+To use the Session Key Manager across multiple components, you can set up the Provider Component and Context in your application in the following section.
