@@ -1,0 +1,107 @@
+---
+description: >-
+  Understand the usage of the SessionWalletProvider and the context it provides,
+  enabling easy access to the session wallet functionalities across your
+  application components
+---
+
+# 🔌 Session Provider & Context
+
+`SessionWalletProvider` is a higher-order component that wraps around your app components to provide the `sessionWallet` context throughout the application.
+
+Here's an example of how to use the `SessionWalletProvider`:
+
+1. Create a new file named `components/SessionProvider.tsx`
+
+```typescript
+// components/SessionProvider.tsx
+// The SessionProvider component initializes the SessionKeyManager and provides it to its children via context.
+// Wrap any component that needs access to the SessionKeyManager with this provider.
+
+import { SessionWalletProvider, useSessionKeyManager } from '@gumhq/react-sdk';
+import { AnchorWallet, useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
+
+interface SessionProviderProps {
+  children: React.ReactNode;
+}
+
+const SessionProvider: React.FC<SessionProviderProps> = ({ children }) => {
+  const { connection } = useConnection();
+  const anchorWallet = useAnchorWallet() as AnchorWallet;
+  const cluster = "devnet"; // or "mainnet-beta", "testnet", "localnet"
+  const sessionWallet = useSessionKeyManager(anchorWallet, connection, cluster);
+
+  return (
+    <SessionWalletProvider sessionWallet={sessionWallet}>
+      {children}
+    </SessionWalletProvider>
+  );
+};
+
+export default SessionProvider;
+```
+
+2. In your `_app.tsx` file, wrap the SessionProvider around the entire app to ensure it's accessible within every component:
+
+```typescript
+// pages/_app.tsx
+import SessionProvider from '@/components/SessionProvider';
+import { WalletContextProvider } from '@/contexts/WalletContextProvider';
+import '@/styles/globals.css'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { PhantomWalletAdapter, SolflareWalletAdapter} from '@solana/wallet-adapter-wallets';
+import { clusterApiUrl } from '@solana/web3.js';
+import type { AppProps } from 'next/app';
+import React, { useMemo } from 'react';
+import dotenv from 'dotenv';
+
+// Use require instead of import since order matters
+require('@solana/wallet-adapter-react-ui/styles.css');
+
+dotenv.config();
+
+export default function App({ Component, pageProps }: AppProps) {
+    const network = WalletAdapterNetwork.Devnet;
+    const endpoint = process.env.NEXT_PUBLIC_SOLANA_ENDPOINT || clusterApiUrl(network);
+    const wallets = useMemo(
+        () => [
+            new PhantomWalletAdapter({ network }),
+            new SolflareWalletAdapter({ network }),
+        ],
+        [network]
+    );
+
+    return (
+        <WalletContextProvider endpoint={endpoint} network={network} wallets={wallets} >
+            <SessionProvider>
+                <Component {...pageProps} />
+            </SessionProvider>
+        </WalletContextProvider>
+    );
+}
+```
+
+_**Note: Ensure that all your Solana wallet adapter contexts are the parent of the SessionProvider.**_
+
+3. With the SessionWalletProvider set up, you can now use the `useSessionWallet` hook in your components:
+
+### Using `useSessionWallet` in components
+
+`useSessionWallet` is a custom hook that provides access to the session wallet context value. Use this hook in any component wrapped by the SessionWalletProvider.
+
+```typescript
+import { useSessionWallet } from '@gumhq/react-sdk';
+
+function YourComponent() {
+  const sessionWallet = useSessionWallet();
+
+  // Access session wallet properties and methods here
+  // Example: sessionWallet.publicKey
+  // Example: sessionWallet.sessionToken
+  // Example: sessionWallet.createSession
+
+  return (
+    // Your component JSX
+  );
+}
+```
