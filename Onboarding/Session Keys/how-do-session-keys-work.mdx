@@ -1,5 +1,6 @@
 ---
 title: "How do Session Keys work?"
+description: "What are Session Keys?"
 ---
 
 Session Keys are meant to be used as secondary signers in your program, especially for frequent interactions like liking a post or moving a piece in a game of chess where constant popups can get in the way of smooth user experience. **They are not burner wallets**.&#x20;
@@ -12,8 +13,6 @@ Session Keys work in tandem with our on chain program to validate the token and 
 2. A **Session Token**, a PDA containing information about **expiry and scope** of the keypair.
 
 ## **How do they work?**
-
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
 * Ephemeral Keys are stored on the client side, to invoke transactions.
 * The transactions invoked by these ephemeral keys are validated in the target program for their validity, expiry and scope.
