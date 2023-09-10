@@ -72,7 +72,7 @@
     ]
     },
     {
-      "group": "Session Keys",
+      "group": "Onboarding",
       "pages": [
     {
       "group": "Session Keys",
@@ -83,8 +83,7 @@
       "Onboarding/Session Keys/installation",
       "Onboarding/Session Keys/session-provider-and-context",
       "Onboarding/Session Keys/usage-examples",
-       "Onboarding/Session Keys/use-sessionkey-manager"
-     ]
+       "Onboarding/Session Keys/use-sessionkey-manager"]
      }
      ]
      },
