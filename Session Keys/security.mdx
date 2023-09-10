@@ -1,6 +1,7 @@
-# 🛡 Security
-
-
+---
+title: "Security"
+description: "Key management and security model"
+---
 
 ## **Key Management**&#x20;
 
@@ -34,9 +35,7 @@ Web Browser is an extremely adverserial environment, no amount of security is en
 
 Attackers could always inject arbitrary code via XSS or malicious extension. This is why users are discouraged from storing serious funds in a browser wallet, they are only for day to day expenses and it is really important to establish the distinction that **Session Keys are not burner wallets.**
 
-However, majority of web3 today is on web browsers and that's how users primarily interact with other dApps. Given the constraints of today, we have to **design around them** and **harden** them via other means.
-
-**Here's we approach it**
+However, majority of web3 today is on web browsers and that's how users primarily interact with other dApps. Given the constraints of today, we have to **design around them** and **harden** them via other means. 
 
 1. Drastically reduce the scope of what's possible with an ephemeral signer, they are highly context and use case specific.
 2. This is similar to the approach to JWT in a typical client server architecture in web2.
