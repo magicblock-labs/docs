@@ -71,6 +71,23 @@
       }
     ]
     },
+    {
+      "group": "Onboarding",
+      "pages": [
+    {
+      "group": "Session Keys",
+      "pages": ["Onboarding/Session Keys/introduction",
+      "Onboarding/Session Keys/how-do-session-keys-work",
+      "Onboarding/Session Keys/security",
+      "Onboarding/Session Keys/integrating-sessions-in-your-program",
+      "Onboarding/Session Keys/installation",
+      "Onboarding/Session Keys/session-provider-and-context",
+      "Onboarding/Session Keys/usage-examples",
+       "Onboarding/Session Keys/use-sessionkey-manager"
+     ]
+     }
+     ]
+     },
       {
       "group": "Open-source programs",
       "pages": ["Open-source programs/SOAR"]
