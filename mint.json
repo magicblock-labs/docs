@@ -72,7 +72,7 @@
     ]
     },
     {
-      "group": "Onboarding",
+      "group": "Sessions and Account abstraction",
       "pages": [
     {
       "group": "Session Keys",
@@ -88,7 +88,7 @@
      ]
      },
       {
-      "group": "Open-source programs",
+      "group": "On-chain identity",
       "pages": ["Open-source programs/SOAR"]
     },
     {
