@@ -93,6 +93,10 @@
      ]
      },
       {
+      "group": "Gasless API",
+      "pages": ["Open-source programs/Gasless API"]
+    },
+    {
       "group": "On-chain identity",
       "pages": ["Open-source programs/SOAR"]
     },
