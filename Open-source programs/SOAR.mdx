@@ -5,11 +5,22 @@ description: 'Solana On-Chain Achievement & Ranking'
 
 SOAR is a program that provides a seamless solution for managing leaderboards, achievements, players' profiles and automatic rewards distribution on the Solana blockchain. Currently supporting invocation from a TypeScript client, the integration in Solana.Unity-SDK will be coming soon.
 
+## Contents
+
+- [SOAR SDK](#soar-sdk)
+  - [Contents](#contents)
+  - [Getting started](#getting-started)
+  - [Classes](#classes)
+    - [SoarProgram](#soarprogram)
+    - [GameClient](#gameclient)
+    - [InstructionBuilder](#instructionbuilder)
+  - [Contributing](#contributing)
+    - [Tests](#tests)
 
 ## Quick start 
 
 ```typescript
-import { SoarProgram, GameType, Genre } from "@soar/sdk";
+import { SoarProgram, GameType, Genre } from "@magicblock-labs/soar-sdk";
 
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
@@ -107,3 +118,7 @@ const transaction = await this.builder
       .and(/*some other transaction*/)
       .then((builder) => builder.build());
 ```
+
+### Tests.
+
+Test files are located in `client/tests/*`. To run the tests, enter `anchor test` from the repository's root directory.
