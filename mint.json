@@ -108,5 +108,8 @@
     "twitter": "https://twitter.com/magicblock",
     "github": "https://github.com/magicblock-labs",
     "linkedin": "https://www.linkedin.com/company/magicblock"
+  },
+  "feedback": {
+  "thumbsRating": true
   }
 }
