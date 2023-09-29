@@ -110,6 +110,8 @@
     "linkedin": "https://www.linkedin.com/company/magicblock"
   },
   "feedback": {
-  "thumbsRating": true
+  "thumbsRating": true,
+  "suggestEdit": true,
+  "raiseIssue": true,
   }
 }
