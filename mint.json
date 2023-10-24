@@ -57,6 +57,7 @@
       "SolanaUnitySDK/getting-started/configuration",
       "SolanaUnitySDK/getting-started/sample-scene"
      ]
+    }
     },
     {
       "group": "Core Concepts", 
@@ -73,9 +74,7 @@
                  "SolanaUnitySDK/guides/publishing-a-game",
                  "SolanaUnitySDK/guides/dex-integration",
                  "SolanaUnitySDK/guides/additional-examples"]
-      }
-    ]
-    },
+      },
     {
       "group": "Sessions",
       "pages": [
