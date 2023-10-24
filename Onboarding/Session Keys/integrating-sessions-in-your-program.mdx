@@ -8,17 +8,15 @@ This is a guide on how you can integrate Session Keys into your Solana Anchor pr
 ## Installation
 
 ```rust
-cargo add gpl-session --features no-entrypoint
+cargo add session-keys --features no-entrypoint
 ```
 
 ## Usage
 
-Once added, here's how you can use the `gpl_session` to manage session keys in your program.
-
 1. Import the dependencies.
 
 ```rust
-use gpl_session::{SessionError, SessionToken, session_auth_or, Session};
+use session_keys::{SessionError, SessionToken, session_auth_or, Session};
 ```
 
 2. Derive the `Session` trait on your instruction struct.
