@@ -23,12 +23,8 @@
   },
 "tabs": [
     {
-        "name": "Content",
-        "url": "content"
-    },
-    {
-        "name": "Blog",
-        "url": "https://your-website.com/blog"
+        "name": "Documentation",
+        "url": "https://docs.magicblock.gg/introduction"
     }
 ],
   "anchors": [
