@@ -23,11 +23,6 @@
   },
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://docs.magicblock.gg/introduction"
-    },
-    {
       "name": "Solana Unity SDK",
       "icon": "screwdriver-wrench",
       "url": "https://assetstore.unity.com/packages/decentralization/infrastructure/solana-sdk-for-unity-246931"
