@@ -21,11 +21,10 @@
     "name": "Build your game",
     "url": "https://assetstore.unity.com/packages/decentralization/infrastructure/solana-sdk-for-unity-246931"
   },
+  "primaryTab": {
+    "name": "Home"
+},
   "tabs": [
-  {
-    "name": "Documentation",
-    "url": "Open-source programs"
-  },
   {
     "name": "Solana Unity SDK",
     "url": "SolanaUnitySDK"
