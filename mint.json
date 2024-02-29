@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Magicblock Documentation",
+  "name": "MagicBlock Documentation",
   "logo": {
     "dark": "/logo/dark.png",
     "light": "/logo/light.png"
@@ -21,6 +21,16 @@
     "name": "Build your game",
     "url": "https://assetstore.unity.com/packages/decentralization/infrastructure/solana-sdk-for-unity-246931"
   },
+  "tabs": [
+  {
+    "name": "Documentation",
+    "url": "Open-source programs"
+  },
+  {
+    "name": "Solana Unity SDK",
+    "url": "SolanaUnitySDK"
+  }
+],
   "anchors": [
     {
       "name": "Solana Unity SDK",
