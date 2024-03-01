@@ -1,0 +1,30 @@
+---
+title: "Setup/installation"
+description: "Setup your environment and install BOLT"
+---
+
+## Rust
+[Install](https://www.rust-lang.org/tools/install) Rust.
+
+## Solana
+[Install](https://docs.solanalabs.com/cli/install) Solana and then run ```bash solana-keygen``` new to create a keypair at the default location. Anchor uses this keypair to run your program tests.
+
+## Yarn
+[Install](https://yarnpkg.com/getting-started/install) Yarn.
+
+## Bolt
+Bolt is built on top of Anchor, therefore having a general knowledge of Anchor will give you the necessary tool to build the game logic. We recommend reading chapters 1-4 of the Anchor book
+
+Install Bolt using Cargo.
+
+```bash
+cargo install --git https://github.com/magicblock-labs/bolt  --locked --force
+```
+On Linux systems you may need to install additional dependencies if cargo install fails. E.g. on Ubuntu:
+```bash
+sudo apt-get update && sudo apt-get upgrade && sudo apt-get install -y pkg-config build-essential libudev-dev
+```
+Verify the installation
+```bash
+bolt -h
+```
