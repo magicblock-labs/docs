@@ -113,25 +113,20 @@
         "onchain_chess/module_3/import_project"]
     },
     {
-      "group": "Home",
-      "pages": ["introduction","Forever Games"]
-    },
-    {
       "group": "BOLT",
       "pages": [
+         {
+      "group": "Introduction",
+      "pages": ["BOLT/introduction/introduction",
+      "BOLT/introduction/ecs",
+      "BOLT/introduction/ephemeral_rollups", "BOLT/introduction/mapping"
+     ]
+    }, 
     {
       "group": "Installation",
-      "pages": ["BOLT/Getting Started/installation", "BOLT/Getting Started/hello_bolt", "BOLT/Getting Started/create_component", "BOLT/Getting Started/create_system", "BOLT/Getting Started/world_program"
+      "pages": ["BOLT/getting_started/installation", "BOLT/getting_started/hello_bolt", "BOLT/getting_started/create_component", "BOLT/getting_started/create_system", "BOLT/getting_started/world_program"
       ]
     },
-    
-    {
-      "group": "Getting Started",
-      "pages": ["SolanaUnitySDK/getting-started/installation",
-      "SolanaUnitySDK/getting-started/configuration",
-      "SolanaUnitySDK/getting-started/sample-scene"
-     ]
-    }
     ]
     }    
   ],
