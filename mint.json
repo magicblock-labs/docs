@@ -26,7 +26,7 @@
 },
   "tabs": [
   {
-    "name": "Bolt",
+    "name": "BOLT engine",
     "url": "BOLT"
   },
   {
@@ -119,17 +119,18 @@
     {
       "group": "BOLT",
       "pages": [
-         {
-      "group": "BOLT/Introduction",
-      "pages": ["BOLT/Introduction/introduction",
-      "BOLT/Introduction/ecs",
-      "BOLT/Introduction/introduction/ephemeral_rollups", "BOLT/Introduction/introduction/mapping"
-     ]
-    },
     {
-      "group": "BOLT/Getting Started",
+      "group": "Installation",
       "pages": ["BOLT/Getting Started/installation", "BOLT/Getting Started/hello_bolt", "BOLT/Getting Started/create_component", "BOLT/Getting Started/create_system", "BOLT/Getting Started/world_program"
       ]
+    },
+    
+    {
+      "group": "Getting Started",
+      "pages": ["SolanaUnitySDK/getting-started/installation",
+      "SolanaUnitySDK/getting-started/configuration",
+      "SolanaUnitySDK/getting-started/sample-scene"
+     ]
     }
     ]
     }    
