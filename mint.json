@@ -126,7 +126,7 @@
       "group": "Installation",
       "pages": ["BOLT/getting_started/installation", "BOLT/getting_started/hello_bolt", "BOLT/getting_started/create_component", "BOLT/getting_started/create_system", "BOLT/getting_started/world_program"
       ]
-    },
+    }
     ]
     }    
   ],
