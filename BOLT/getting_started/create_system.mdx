@@ -45,3 +45,19 @@ pub mod system_movement {
 }
 
 ```
+
+```rust
+#[system]
+pub mod system_apply_velocity {
+
+    pub fn execute(ctx: Context<Components>, _args: Vec<u8>) -> Result<Components> {
+        ctx.accounts.position.x += ctx.accounts.velocity.x;
+        Ok(ctx.accounts)
+    }
+
+    #[system_input]
+    pub struct Components {
+        pub position: Position,
+        pub velocity: Velocity,	
+    }
+}```
