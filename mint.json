@@ -36,12 +36,7 @@
 ],
   "anchors": [
     {
-      "name": "Solana Unity SDK",
-      "icon": "screwdriver-wrench",
-      "url": "https://assetstore.unity.com/packages/decentralization/infrastructure/solana-sdk-for-unity-246931"
-    },
-    {
-      "name": "Tutorial",
+      "name": "Tutorials",
       "icon": "youtube",
       "url": "https://www.youtube.com/channel/UCfrywSloxmssxBgY6ajklkw"
     },
