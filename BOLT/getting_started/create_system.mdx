@@ -15,8 +15,6 @@ bolt system system-movement
 which will add a new component to your workspace:
 
 ```rust
-#![allow(unused)]
-fn main() {
 use bolt_lang::*;
 use component_position::Position;
 
@@ -41,7 +39,6 @@ pub mod system_movement {
     pub struct Components {
         pub position: Position,
     }
-}
 }
 
 ```
