@@ -1,31 +1,23 @@
 ---
 title: Introduction
-description: 'The Framework for on-chain games on Solana/SVM'
+description: 'The Engine for onchain games on Solana/SVM'
 ---
 
-<img height="200" src="/images/Magicblock_framework.png" />
-
-Magicblock is a powerful and versatile open-source framework designed for building on-chain games on Solana/SVM. 
-Whether you're developing a fully on-chain game or looking to integrate Solana into your existing game, Magicblock gives you the tools to abstract away a lot of complexity and focus on creating the best experience for your users. 
-Magicblock is MIT-licenced and maintained by Magicblock Labs. 
+MagicBlock is a powerful and versatile open-source engine designed for building onchain games on Solana/SVM. 
+Whether you're developing fully onchain or integrating Solana into your existing game, MagicBlock gives you the tools to abstract away the complexity and focus on creating the best experience for your users. 
+MagicBlock is MIT-licenced and maintained by MagicBlock Labs. 
 
 
-### Features
-- [Solana.Unity.SDK](https://docs.magicblock.gg/SolanaUnitySDK/overview) - entry point
-  - [Solana.Unity.Core](https://github.com/magicblock-labs/Solana.Unity-Core) (utilities to build and sign transactions in Unity)
-  - [Solana.Unity.Metaplex](https://github.com/magicblock-labs/Solana.Unity.Metaplex) (Metaplex Program Library)
-  - [Solana.Unity.Gum](https://github.com/magicblock-labs/Solana.Unity.Metaplex) (Session Keys)
-- [IDL-> C# generator](https://github.com/magicblock-labs/Solana.Unity.Anchor) (C# client code generator from Anchor programs) 
-- [Native WebSockets](https://github.com/magicblock-labs/NativeWebSocket) (cross-platform WebSockets library)
-- [SOAR](https://docs.magicblock.gg/Frameworks/SOAR) (Solana On-chain Achievements and Rankings)
-- [Solana Mobile Stack integration](https://docs.magicblock.gg/SolanaUnitySDK/getting-started/configuration) (Build your game for Saga)
+### The Framework
 
-### In development
-- BOLT
-- gas abstraction
-- zk library for Unity
+Our tools are modular and can be used independently from each other. We are working towards a comprehensive framework, but here's the list of the available products you can use for your game
 
-### Why on-chain games? 
+- [BOLT](https://docs.magicblock.gg/BOLT/Introduction/ecs) - onchain Entity Component System built on top of Anchor
+- [Solana Unity SDK](https://docs.magicblock.gg/SolanaUnitySDK/contribution-guide) - Verified Unity SDK for Solana
+- [Session Keys](https://docs.magicblock.gg/Onboarding/Session%20Keys/introduction) - ephemeral keys for autosign tx
+- [SOAR](https://docs.magicblock.gg/Frameworks/SOAR) Solana Onchain Achievements and Rankings
+
+### Why onchain games? 
 Check out the [next section](https://docs.magicblock.gg/Forever%20Games)
 
 ## Quick start 
@@ -43,20 +35,21 @@ Check out the [next section](https://docs.magicblock.gg/Forever%20Games)
     icon="youtube"
     href="https://www.youtube.com/@Magicblock-Labs"
   >
-    Check out our series of video tutorials.
+    Check out our series of video tutorials
   </Card>
   <Card
-    title="Add Components"
+    title="ECS"
     icon="code"
-    href=""
+    href="https://docs.magicblock.gg/BOLT/getting_started/installation"
   >
-    Add reusable components to your game (under development).
+    Reusable components for your game (under development)
   </Card>
   <Card
     title="Game tutorials"
     icon="stars"
     href="https://docs.magicblock.gg/onchain_chess/on-chain%20chess"
   >
-    An open-source on-chain chess implementation to familiarize with the stack. 
+    An open-source on-chain chess implementation to familiarize with the stack
   </Card>
 </CardGroup>
+
