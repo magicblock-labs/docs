@@ -53,7 +53,7 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/contribution-guide", "SolanaUnitySDK/overview",
+      "pages": ["SolanaUnitySDK/overview", "SolanaUnitySDK/contribution-guide", 
     {
       "group": "Getting Started",
       "pages": ["SolanaUnitySDK/getting-started/installation",
