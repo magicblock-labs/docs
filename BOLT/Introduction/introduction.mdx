@@ -1,6 +1,6 @@
 ---
-title: "Introduction"
-description: "An engine for performant, composable games"
+title: "BOLT Framework"
+description: "Building your game logic onchain"
 ---
 
 <CardGroup cols={2}>
@@ -12,12 +12,18 @@ description: "An engine for performant, composable games"
   </Card>
 </CardGroup>
 
-## BOLT Engine
+## Game state & logic
 
-BOLT is a high-performance, composable SVM-based framework designed for Fully Onchain Games (FOC) and Autonomous Worlds (AW)
+To build a game onchain, you'll need to familiarize with Solana programs (smart contracts). You might be already familiar with [Anchor](https://www.anchor-lang.com/), one of the most used toolkit for writing smart contract on Solana. 
 
-With BOLT, you can create games that live forever on the blockchain. These games are platform-centric by default, empowering users to extend and modify both game content and logic. BOLT facilitates multiplayer gaming experiences with performances on par with traditional multiplayer servers ([whitepaper](https://arxiv.org/abs/2311.02650))
+BOLT is a framework that **extends Anchor functionalities** to include a standardized way to model your game's logic using an Entity Components Systems (ECS) pattern.
 
-The framework incorporates an Entity Component System (ECS) architecture, streamlining the game structuring and assembly process and providing ready-to-use onchain components. Developers can reuse and contribute with modules and logic deployed on the blockchain.
+The ECS is a modular pattern that decouples logic from state and facilitates code reusability, extensibility and performance improvement for large-scale projects. The Solana Virtual Machine (SVM) also makes use of a paradigm similar to an ECS given that state (accounts) and the logic (programs) are natively separated.
 
-BOLT reduces the complexity of building fully onchain games, allowing developers to focus on the core gameplay rather than underlying blochchain layer.
+In the Entity Component System:
+
+- **Entities** are general-purpose object represented by a unique identifier. They don't contain any data or behaviour but serves as an identifier for a bundle of components. 
+- **Components** are raw data structures. For instance, a Position Component might contain some x, y, and z coordinates. This is concept is essentially equivalent to accounts on Solana.
+- **Systems** perform the game logic by acting upon entities that have specific components. Systems are essentialy programs on Solana, which only specify the logic and the accounts they operate on.
+
+While BOLT supports all the functionalities of Anchor, adopting the ECS pattern is helpful if you want to reuse existing components/system or enable simpler mods and extension for your game. 
