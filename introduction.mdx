@@ -3,32 +3,42 @@ title: Introduction
 description: 'The Engine for onchain games on Solana/SVM'
 ---
 
-MagicBlock is a powerful and versatile open-source engine designed for building onchain games on Solana/SVM. 
-Whether you're developing fully onchain or integrating Solana into your existing game, MagicBlock gives you the tools to abstract away the complexity and focus on creating the best experience for your users. 
-MagicBlock is MIT-licenced and maintained by MagicBlock Labs. 
+MagicBlock is an open-source engine designed for building a new type of games and applications that are **open**, **decentralized** and **unstoppable**. 
 
+### What can I build with MagicBlock?
 
-### The Framework
+With MagicBlock you can build 
+- Games that are **persistent** and can't be stopped, because they don't rely on any server or centralized infrastructure (they run entirely on the  blockchain)
+- Games that are **permissionlessly composable**. Because all the game data and logic is open, everyone can extend your game with new content, new logic, or interoperate across games without limits.
+- **Autonomous Worlds** or any application that leverage decentralization to provide an always-on, global and unstoppable experience. 
 
-Our tools are modular and can be used independently from each other. While we are working towards a comprehensive framework, here's the list of the  products you can already use for your game
+### Can a truly decentralized games be performant?
 
-- [BOLT](https://docs.magicblock.gg/BOLT/Introduction/ecs) - onchain Entity Component System built on top of Anchor
-- [Solana Unity SDK](https://docs.magicblock.gg/SolanaUnitySDK/contribution-guide) - Verified Unity SDK for Solana
-- [Session Keys](https://docs.magicblock.gg/Onboarding/Session%20Keys/introduction) - ephemeral keys for autosign tx
-- [SOAR](https://docs.magicblock.gg/Frameworks/SOAR) Solana Onchain Achievements and Rankings
+Yes! MagicBlock engine is optimized for performance and composability. Our ultimate goal is to bring down the latency of decentralized games to 50ms, without server and full interoperabilty with payments, marketplaces, identies, assets and all the cool stuff you can find on Solana. 
 
-### Why onchain games? 
-Check out the [next section](https://docs.magicblock.gg/Forever%20Games)
+### Can I use MagicBlock to integrate my game with Solana?
+Yes you can. While we are optimizing for fully onchain games, we provide some of the best out-of-the-box tooling to integrate your existing game with Solana. 
+
+### Where do I start?
+You can start building the logic of your game with our BOLT framework. 
+
 
 ## Quick start 
 
 <CardGroup cols={2}>
+   <Card
+    title="BOLT"
+    icon="code"
+    href="https://docs.magicblock.gg/BOLT/getting_started/installation"
+  >
+    A modular ECS framework for your onchain games
+  </Card>
   <Card
     title="Solana Unity SDK"
     icon="screwdriver-wrench"
     href="https://assetstore.unity.com/packages/decentralization/infrastructure/solana-sdk-for-unity-246931"
   >
-    Official documentation of Solana Unity SDK
+    Official Unity SDK for Solana
   </Card>
   <Card
     title="Video tutorials"
@@ -38,13 +48,6 @@ Check out the [next section](https://docs.magicblock.gg/Forever%20Games)
     Check out our series of video tutorials
   </Card>
   <Card
-    title="ECS"
-    icon="code"
-    href="https://docs.magicblock.gg/BOLT/getting_started/installation"
-  >
-    Reusable components for your game (under development)
-  </Card>
-  <Card
     title="Game tutorials"
     icon="stars"
     href="https://docs.magicblock.gg/onchain_chess/on-chain%20chess"
@@ -52,4 +55,3 @@ Check out the [next section](https://docs.magicblock.gg/Forever%20Games)
     An open-source on-chain chess implementation to familiarize with the stack
   </Card>
 </CardGroup>
-
