@@ -52,6 +52,10 @@
       "pages": ["introduction","Forever Games"]
     },
     {
+      "group": "Ephemeral Rollups",
+      "pages": ["EphemeralRollups/ephemeral_rollups"]
+    },
+    {
       "group": "Solana Unity SDK",
       "pages": ["SolanaUnitySDK/overview", "SolanaUnitySDK/contribution-guide", 
     {
