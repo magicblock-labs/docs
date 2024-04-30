@@ -32,6 +32,10 @@
   {
     "name": "Ephemeral Rollups",
     "url": "EphemeralRollups"
+  },
+  {
+    "name": "Solana Unity SDK",
+    "url": "SolanaUnitySDK"
   }
 ],
   "anchors": [
