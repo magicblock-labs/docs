@@ -120,7 +120,7 @@
     {
       "group": "Game examples & tutorials",
       "pages": [
-        "onchain_chess/on-chain chess",
+        "onchain_chess/on-chain-chess",
         "onchain_chess/module_1/setup",
         "onchain_chess/module_2/onchain_logic",
         "onchain_chess/module_3/import_project"
