@@ -13,7 +13,7 @@ Orca is the easiest place to trade cryptocurrency on the Solana blockchain. For 
 
 ```csharp
 IDex dex = new OrcaDex(
-    WalletH.Account, 
+    WalletH.Account,
     WalletH.Rpc
 )
 ```
@@ -35,7 +35,7 @@ Pool whirlpool = await dex.FindWhirlpoolAddress(tokenA.MintAddress, tokenB.MintA
 
 ```csharp
 SwapQuote swapQuote = await dex.GetSwapQuoteFromWhirlpool(
-    whirlpool.Address, 
+    whirlpool.Address,
     DecimalUtil.ToUlong(1, tokenA.Decimals),
     tokenA.MintAddress,
     slippageTolerance: 0.1,
@@ -64,11 +64,11 @@ await WalletH.Base.SignAndSendTransaction(tx);
 
 ## Open a position and increase the liquidity of the ORCA/USDC whirlpool
 
-An example of adding 5 ORCA and 5 USDC to the liquidity of the pool, minting a metaplex NFT representing the position 
+An example of adding 5 ORCA and 5 USDC to the liquidity of the pool, minting a metaplex NFT representing the position
 
 ```csharp
 OrcaDex dex = new OrcaDex(
-    WalletH.Account, 
+    WalletH.Account,
     WalletH.Rpc
 );
 
@@ -76,7 +76,7 @@ var orcaToken = await dex.GetTokenBySymbol("ORCA");
 var usdcToken = await dex.GetTokenBySymbol("USDC");
 
 var whirlpool = await dex.FindWhirlpoolAddress(
-  usdcToken.MintAddress, 
+  usdcToken.MintAddress,
   orcaToken.MintAddress
 );
 
@@ -93,7 +93,7 @@ Transaction tx = await dex.OpenPositionWithLiquidity(
 );
 
 var txSer = tx.Build(new List<Account>() {
-  WalletH.Account, 
+  WalletH.Account,
   mint
 });
 

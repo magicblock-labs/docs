@@ -44,7 +44,7 @@ pub struct Instruction<'info> {
 
 3. Add the `session_auth_or` macro to your instruction handler with fallback logic on who the instruction should validate the signer when sessions are not present and an appropriate ErrorCode.\
    \
-   If you've used `require*!` macros in anchor\_lang, you already know how this works.
+   If you've used `require*!` macros in anchor_lang, you already know how this works.
 
 ```rust
 #[session_auth_or(

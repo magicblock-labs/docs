@@ -1,6 +1,6 @@
 ---
 title: SOAR
-description: 'Solana On-Chain Achievement & Ranking'
+description: "Solana On-Chain Achievement & Ranking"
 ---
 
 SOAR is a program that provides a seamless solution for managing leaderboards, achievements, players' profiles and automatic rewards distribution on the Solana blockchain. Currently supporting invocation from a TypeScript client, the integration in Solana.Unity-SDK will be coming soon.
@@ -15,8 +15,7 @@ SOAR is a program that provides a seamless solution for managing leaderboards, a
     - [InstructionBuilder](#instructionbuilder)
   - [Tests](#tests)
 
-## Quick start 
-
+## Quick start
 
 ### Create a new game
 
@@ -24,19 +23,27 @@ SOAR is a program that provides a seamless solution for managing leaderboards, a
 import { SoarProgram, GameType, Genre } from "@magicblock-labs/soar-sdk";
 
 // Create a Soar client using the '@solana/web3.js' active Connection and a defaultPayer
-const client = SoarProgram.getFromConnection(connection, defaultPayer); 
+const client = SoarProgram.getFromConnection(connection, defaultPayer);
 
 let game = Keypair.generate();
 let title = "Game1";
 let description = "Description";
 let genre = Genre.Action;
-let gameType = GameType.Web; 
+let gameType = GameType.Web;
 let nftMeta = Keypair.generate().publicKey;
 let _auths = auths.map((keypair) => keypair.publicKey);
 
 // Retrieve the bundled transaction.
-let { newGame, transaction } = await client.initializeNewGame(game.publicKey, title, description, genre, gameType, nftMeta, _auths);
-// Send and confirm the transaction with the game keypair as signer. 
+let { newGame, transaction } = await client.initializeNewGame(
+  game.publicKey,
+  title,
+  description,
+  genre,
+  gameType,
+  nftMeta,
+  _auths
+);
+// Send and confirm the transaction with the game keypair as signer.
 await web3.sendAndConfirmTransaction(connection, transaction);
 ```
 
@@ -44,15 +51,17 @@ await web3.sendAndConfirmTransaction(connection, transaction);
 
 ```typescript
 const transactionIx = await client.addNewGameLeaderBoard(
-    newGame,
-    authWallet.publicKey,
-    "my leaderboard", // description
-    leaderboardNft, // nft associated with the leaderboard
-    100,
-    true // isAscending
+  newGame,
+  authWallet.publicKey,
+  "my leaderboard", // description
+  leaderboardNft, // nft associated with the leaderboard
+  100,
+  true // isAscending
 );
 
-await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [authWallet]);
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [
+  authWallet,
+]);
 ```
 
 ### Submit a score
@@ -64,13 +73,15 @@ const authWallet = web3.Keypair.fromSecretKey(bs58.decode("")); // AUTH_WALLET_P
 const leaderboardPda = new web3.PublicKey(""); // LEADERBOARD_PDA
 
 const transactionIx = await client.submitScoreToLeaderBoard(
-    playerAddress,
-    authWallet.publicKey,
-    leaderboardPda,
-    new BN(score)
+  playerAddress,
+  authWallet.publicKey,
+  leaderboardPda,
+  new BN(score)
 );
 
-await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [authWallet]);
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [
+  authWallet,
+]);
 ```
 
 ## Classes
@@ -83,7 +94,7 @@ It also gives utility functions for deriving PDAs:
 
 ```typescript
 const user = Keypair.generate().publicKey;
-const playerAddress = client.utils.derivePlayerAddress(user)[0],
+const playerAddress = client.utils.derivePlayerAddress(user)[0];
 ```
 
 fetching an account:
@@ -137,16 +148,16 @@ const achievement = game.recentAchievementAddress();
 ## InstructionBuilder
 
 ```typescript
-import { InstructionBuilder } from "@magicblock-labs/soar-sdk"
+import { InstructionBuilder } from "@magicblock-labs/soar-sdk";
 ```
 
 The InstructionBuilder provides a set of methods for conveniently bundling transactions.
 
 ```typescript
 const transaction = await this.builder
-      .andInitializePlayer({username, nftMeta}, user)
-      .andRegisterPlayerEntry(/*...*/)
-      .andSubmitScoreToLeaderboard(/*...*/)
-      .and(/*some other transaction*/)
-      .then((builder) => builder.build());
+  .andInitializePlayer({ username, nftMeta }, user)
+  .andRegisterPlayerEntry(/*...*/)
+  .andSubmitScoreToLeaderboard(/*...*/)
+  .and(/*some other transaction*/)
+  .then((builder) => builder.build());
 ```

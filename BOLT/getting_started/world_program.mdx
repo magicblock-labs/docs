@@ -6,19 +6,24 @@ description: " "
 The World Program is the entrypoint for creating world instances, entities, attaching components, and executing systems within a unified framework.
 
 ## Client Development
+
 Ongoing development efforts are focused on delivering multiple client SDKs and integrations. The [World Program](https://explorer.solana.com/address/WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n/anchor-program?cluster=devnet), a standard Anchor program, expose its Interface Definition Language (IDL) published on-chain for seamless interaction.
 
 ## TypeScript SDK Installation
+
 To install the Bolt SDK, execute the following command:
+
 ```bash
 npm install @magicblock-labs/bolt-sdk
 
 ```
+
 Initiating a project with bolt init automatically generates a simple usage example of the bolt-sdk.
 
-
 ## Creating a New World Instance
+
 Create a new world instance as demonstrated below:
+
 ```rust
 const registry = await Registry.fromAccountAddress(provider.connection, registryPda);
 worldId = new anchor.BN(registry.worlds);
@@ -35,7 +40,9 @@ const txSign = await provider.sendAndConfirm(tx);
 ```
 
 ## Adding a New Entity
+
 To add a new entity:
+
 ```rust
 const world = await World.fromAccountAddress(provider.connection, worldPda);
 const entityId = new anchor.BN(world.entities);
@@ -51,7 +58,9 @@ await provider.sendAndConfirm(tx);
 ```
 
 ## Attaching Components to an Entity
+
 For attaching components:
+
 ```rust
 const positionComponentPda = FindComponentPda(positionComponent.programId, entityPda, "");
 let initComponentIx = createInitializeComponentInstruction({
@@ -65,7 +74,9 @@ await provider.sendAndConfirm(tx);
 ```
 
 ## Applying Systems
+
 To apply a system:
+
 ```rust
 let applySystemIx = createApplyInstruction({
     componentProgram: positionComponent.programId,
