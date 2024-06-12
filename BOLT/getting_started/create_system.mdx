@@ -24,12 +24,9 @@ declare_id!("FSa6qoJXFBR3a7ThQkTAMrC15p6NkchPEjBdd4n6dXxA");
 pub mod system_movement {
 
     pub fn execute(ctx: Context<Components>, args_p: Vec<u8>) -> Result<Components> {
-
         let position = &mut ctx.accounts.position;
-
         position.x += 1;
         position.y += 1;
-
         Ok(ctx.accounts)
     }
 
