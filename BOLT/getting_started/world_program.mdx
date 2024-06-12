@@ -7,7 +7,9 @@ The World Program is the entrypoint for creating world instances, entities, atta
 
 ## Client Development
 
-Ongoing development efforts are focused on delivering multiple client SDKs and integrations. The [World Program](https://explorer.solana.com/address/WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n/anchor-program?cluster=devnet), a standard Anchor program, expose its Interface Definition Language (IDL) published on-chain for seamless interaction.
+Ongoing development efforts are focused on delivering multiple client SDKs and integrations.
+
+The [World Program](https://explorer.solana.com/address/WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n/anchor-program?cluster=devnet), a standard Anchor program, expose its Interface Definition Language (IDL) published on-chain for seamless interaction.
 
 ## TypeScript SDK Installation
 
@@ -15,7 +17,6 @@ To install the Bolt SDK, execute the following command:
 
 ```bash
 npm install @magicblock-labs/bolt-sdk
-
 ```
 
 Initiating a project with bolt init automatically generates a simple usage example of the bolt-sdk.
@@ -24,16 +25,18 @@ Initiating a project with bolt init automatically generates a simple usage examp
 
 Create a new world instance as demonstrated below:
 
-```rust
-const registry = await Registry.fromAccountAddress(provider.connection, registryPda);
-worldId = new anchor.BN(registry.worlds);
-worldPda = FindWorldPda(new anchor.BN(worldId))
-const initializeWorldIx = createInitializeNewWorldInstruction(
-    {
-        world: worldPda,
-        registry: registryPda,
-        payer: provider.wallet.publicKey,
-    });
+```typescript
+const registry = await Registry.fromAccountAddress(
+  provider.connection,
+  registryPda
+);
+const worldId = new anchor.BN(registry.worlds);
+const worldPda = FindWorldPda(new anchor.BN(worldId));
+const initializeWorldIx = createInitializeNewWorldInstruction({
+  world: worldPda,
+  registry: registryPda,
+  payer: provider.wallet.publicKey,
+});
 
 const tx = new anchor.web3.Transaction().add(initializeWorldIx);
 const txSign = await provider.sendAndConfirm(tx);
@@ -43,15 +46,15 @@ const txSign = await provider.sendAndConfirm(tx);
 
 To add a new entity:
 
-```rust
+```typescript
 const world = await World.fromAccountAddress(provider.connection, worldPda);
 const entityId = new anchor.BN(world.entities);
 entityPda = FindEntityPda(worldId, entityId);
 
 let createEntityIx = createAddEntityInstruction({
-    world: worldPda,
-    payer: provider.wallet.publicKey,
-    entity: entityPda,
+  world: worldPda,
+  payer: provider.wallet.publicKey,
+  entity: entityPda,
 });
 const tx = new anchor.web3.Transaction().add(createEntityIx);
 await provider.sendAndConfirm(tx);
@@ -61,13 +64,17 @@ await provider.sendAndConfirm(tx);
 
 For attaching components:
 
-```rust
-const positionComponentPda = FindComponentPda(positionComponent.programId, entityPda, "");
+```typescript
+const positionComponentPda = FindComponentPda(
+  positionComponent.programId,
+  entityPda,
+  ""
+);
 let initComponentIx = createInitializeComponentInstruction({
-    payer: provider.wallet.publicKey,
-    entity: entityPda,
-    data: positionComponentPda,
-    componentProgram: positionComponent.programId,
+  payer: provider.wallet.publicKey,
+  entity: entityPda,
+  data: positionComponentPda,
+  componentProgram: positionComponent.programId,
 });
 const tx = new anchor.web3.Transaction().add(initComponentIx);
 await provider.sendAndConfirm(tx);
@@ -77,11 +84,11 @@ await provider.sendAndConfirm(tx);
 
 To apply a system:
 
-```rust
+```typescript
 let applySystemIx = createApplyInstruction({
-    componentProgram: positionComponent.programId,
-    boltSystem: systemMovement.programId,
-    boltComponent: positionComponentPda,
+  componentProgram: positionComponent.programId,
+  boltSystem: systemMovement.programId,
+  boltComponent: positionComponentPda,
 });
 const tx = new anchor.web3.Transaction().add(applySystemIx);
 await provider.sendAndConfirm(tx);
