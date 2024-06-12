@@ -23,21 +23,21 @@
   },
   "primaryTab": {
     "name": "Home"
-},
+  },
   "tabs": [
-  {
-    "name": "BOLT",
-    "url": "BOLT"
-  },
-  {
-    "name": "Ephemeral Rollups",
-    "url": "EphemeralRollups"
-  },
-  {
-    "name": "Solana Unity SDK",
-    "url": "SolanaUnitySDK"
-  }
-],
+    {
+      "name": "BOLT",
+      "url": "BOLT"
+    },
+    {
+      "name": "Ephemeral Rollups",
+      "url": "EphemeralRollups"
+    },
+    {
+      "name": "Solana Unity SDK",
+      "url": "SolanaUnitySDK"
+    }
+  ],
   "anchors": [
     {
       "name": "Tutorials",
@@ -53,7 +53,7 @@
   "navigation": [
     {
       "group": "Home",
-      "pages": ["introduction","Forever Games"]
+      "pages": ["Introduction", "Forever Games"]
     },
     {
       "group": "Ephemeral Rollups",
@@ -61,77 +61,93 @@
     },
     {
       "group": "Solana Unity SDK",
-      "pages": ["SolanaUnitySDK/overview", "SolanaUnitySDK/contribution-guide", 
-    {
-      "group": "Getting Started",
-      "pages": ["SolanaUnitySDK/getting-started/installation",
-      "SolanaUnitySDK/getting-started/configuration",
-      "SolanaUnitySDK/getting-started/sample-scene"
-     ]
-    }
-    ]
+      "pages": [
+        "SolanaUnitySDK/overview",
+        "SolanaUnitySDK/contribution-guide",
+        {
+          "group": "Getting Started",
+          "pages": [
+            "SolanaUnitySDK/getting-started/installation",
+            "SolanaUnitySDK/getting-started/configuration",
+            "SolanaUnitySDK/getting-started/sample-scene"
+          ]
+        }
+      ]
     },
     {
-      "group": "Core Concepts", 
-      "pages": ["SolanaUnitySDK/core-concepts/associated-token-account",
-                 "SolanaUnitySDK/core-concepts/transfer-token",
-                 "SolanaUnitySDK/core-concepts/transaction-builder",
-                 "SolanaUnitySDK/core-concepts/staking",
-                 "SolanaUnitySDK/core-concepts/add-signature"]
-      }, 
-      {
-      "group": "Guides", 
-      "pages": ["SolanaUnitySDK/guides/mint-an-nft",
-                 "SolanaUnitySDK/guides/host-your-game",
-                 "SolanaUnitySDK/guides/publishing-a-game",
-                 "SolanaUnitySDK/guides/dex-integration",
-                 "SolanaUnitySDK/guides/jupiter",
-                 "SolanaUnitySDK/guides/additional-examples"]
-      },
+      "group": "Core Concepts",
+      "pages": [
+        "SolanaUnitySDK/core-concepts/associated-token-account",
+        "SolanaUnitySDK/core-concepts/transfer-token",
+        "SolanaUnitySDK/core-concepts/transaction-builder",
+        "SolanaUnitySDK/core-concepts/staking",
+        "SolanaUnitySDK/core-concepts/add-signature"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "SolanaUnitySDK/guides/mint-an-nft",
+        "SolanaUnitySDK/guides/host-your-game",
+        "SolanaUnitySDK/guides/publishing-a-game",
+        "SolanaUnitySDK/guides/dex-integration",
+        "SolanaUnitySDK/guides/jupiter",
+        "SolanaUnitySDK/guides/additional-examples"
+      ]
+    },
     {
       "group": "Sessions",
       "pages": [
-    {
-      "group": "Session Keys",
-      "pages": ["Onboarding/Session Keys/introduction",
-      "Onboarding/Session Keys/how-do-session-keys-work",
-      "Onboarding/Session Keys/security",
-      "Onboarding/Session Keys/integrating-sessions-in-your-program",
-      "Onboarding/Session Keys/installation",
-      "Onboarding/Session Keys/session-provider-and-context",
-      "Onboarding/Session Keys/usage-examples",
-       "Onboarding/Session Keys/use-sessionkey-manager"]
-     }
-     ]
-     },
+        {
+          "group": "Session Keys",
+          "pages": [
+            "Onboarding/Session Keys/introduction",
+            "Onboarding/Session Keys/how-do-session-keys-work",
+            "Onboarding/Session Keys/security",
+            "Onboarding/Session Keys/integrating-sessions-in-your-program",
+            "Onboarding/Session Keys/installation",
+            "Onboarding/Session Keys/session-provider-and-context",
+            "Onboarding/Session Keys/usage-examples",
+            "Onboarding/Session Keys/use-sessionkey-manager"
+          ]
+        }
+      ]
+    },
     {
       "group": "On-chain identity",
       "pages": ["Open-source programs/SOAR"]
     },
     {
       "group": "Game examples & tutorials",
-      "pages": ["onchain_chess/on-chain chess",
+      "pages": [
+        "onchain_chess/on-chain chess",
         "onchain_chess/module_1/setup",
         "onchain_chess/module_2/onchain_logic",
-        "onchain_chess/module_3/import_project"]
+        "onchain_chess/module_3/import_project"
+      ]
     },
     {
       "group": "BOLT",
       "pages": [
-         {
-      "group": "Introduction",
-      "pages": ["BOLT/Introduction/introduction",
-      "BOLT/Introduction/ecs",
-      "BOLT/Introduction/ephemeral_rollups", "BOLT/Introduction/mapping"
-     ]
-    }, 
-    {
-      "group": "Installation",
-      "pages": ["BOLT/getting_started/installation", "BOLT/getting_started/hello_bolt", "BOLT/getting_started/create_component", "BOLT/getting_started/create_system", "BOLT/getting_started/world_program"
+        {
+          "group": "Introduction",
+          "pages": [
+            "BOLT/Introduction/introduction",
+            "BOLT/Introduction/mapping"
+          ]
+        },
+        {
+          "group": "Installation",
+          "pages": [
+            "BOLT/getting_started/installation",
+            "BOLT/getting_started/hello_bolt",
+            "BOLT/getting_started/create_component",
+            "BOLT/getting_started/create_system",
+            "BOLT/getting_started/world_program"
+          ]
+        }
       ]
     }
-    ]
-    }    
   ],
   "footerSocials": {
     "twitter": "https://twitter.com/magicblock",
@@ -139,8 +155,8 @@
     "linkedin": "https://www.linkedin.com/company/magicblock"
   },
   "feedback": {
-  "thumbsRating": true,
-  "suggestEdit": true,
-  "raiseIssue": true
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
   }
 }
