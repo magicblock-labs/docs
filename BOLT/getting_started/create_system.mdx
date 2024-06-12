@@ -7,7 +7,6 @@ Systems contain the logic that processes and manipulates entities based on their
 
 Create a movement system with with
 
-
 ```rust
 bolt system system-movement
 ```
@@ -42,7 +41,8 @@ pub mod system_movement {
 }
 
 ```
-In this simple example we have created an entity Player that holds a Position component with x,y,z coordinates. We can execute the movement system to change its state. 
+
+In this simple example we have created an entity Player that holds a Position component with x,y,z coordinates. We can execute the movement system to change its state.
 
 For a more sophisticated movement dynamic, let's define a Velocity component:
 
@@ -72,7 +72,7 @@ pub mod system_apply_velocity {
     #[system_input]
     pub struct Components {
         pub position: Position,
-        pub velocity: Velocity,	
+        pub velocity: Velocity,
     }
 }
 ```

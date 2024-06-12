@@ -1,6 +1,7 @@
 ---
 title: "Usage Example"
-description: "Learn how to interact with your dApp using the useSessionKeyManager and
+description:
+  "Learn how to interact with your dApp using the useSessionKeyManager and
   SessionWalletProvider through various practical examples"
 ---
 
@@ -16,11 +17,17 @@ To create a session, call the `createSession` method from the `sessionWallet`. T
 
 ```typescript
 const handleCreateSession = async () => {
-  const targetProgramPublicKey = new PublicKey("your_target_program_public_key");
+  const targetProgramPublicKey = new PublicKey(
+    "your_target_program_public_key"
+  );
   const topUp = true;
   const expiryInMinutes = 60;
 
-  const session = await sessionWallet.createSession(targetProgramPublicKey, topUp, expiryInMinutes);
+  const session = await sessionWallet.createSession(
+    targetProgramPublicKey,
+    topUp,
+    expiryInMinutes
+  );
 
   if (session) {
     console.log("Session created:", session);
@@ -28,7 +35,6 @@ const handleCreateSession = async () => {
     console.error("Failed to create session");
   }
 };
-
 ```
 
 By calling `createSession`, a new ephemeral keypair is generated and stored on the client-side. The session token is then created and stored alongside the keypair. This enables the user to securely sign transactions using the generated keypair without revealing their actual wallet's private key.
@@ -49,7 +55,6 @@ const handleSendTransaction = async () => {
     console.error("Failed to send transaction");
   }
 };
-
 ```
 
 The `signAndSendTransaction` method provides an extra layer of security by ensuring that the actual wallet's private key is not exposed. The ephemeral key pair stored on the client-side is used to sign the transaction, thus keeping the user's main wallet secure.

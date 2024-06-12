@@ -1,6 +1,7 @@
 ---
 title: "Use session key manager"
-description: "A custom React hook that manages the creation and revocation of session
+description:
+  "A custom React hook that manages the creation and revocation of session
   tokens, and provides essential methods for signing and sending transactions in
   a secure and user-friendly way"
 ---
@@ -15,12 +16,24 @@ interface SessionWalletInterface {
   isLoading: boolean; // Indicates whether the session wallet is loading
   error: string | null; // An error message, if any
   sessionToken: string | null; // Session token for the current session
-  signTransaction: (<T extends Transaction>(transaction: T) => Promise<T>) | undefined; // Sign a single transaction
-  signAllTransactions: (<T extends Transaction >(transactions: T[]) => Promise<T[]>) | undefined; // Sign multiple transactions
+  signTransaction:
+    | (<T extends Transaction>(transaction: T) => Promise<T>)
+    | undefined; // Sign a single transaction
+  signAllTransactions:
+    | (<T extends Transaction>(transactions: T[]) => Promise<T[]>)
+    | undefined; // Sign multiple transactions
   signMessage: ((message: Uint8Array) => Promise<Uint8Array>) | undefined; // Sign a message
-  sendTransaction: (<T extends Transaction>(transaction: T) => Promise<string>) | undefined; // Send a signed transaction
-  signAndSendTransaction: (<T extends Transaction>(transactions: T | T[]) => Promise<string[]>) | undefined; // Sign and send transactions
-  createSession: (targetProgram: PublicKey, topUp: boolean, validUntil?: number) => Promise<{ sessionToken: string; publicKey: string; } | undefined>; // Create a new session
+  sendTransaction:
+    | (<T extends Transaction>(transaction: T) => Promise<string>)
+    | undefined; // Send a signed transaction
+  signAndSendTransaction:
+    | (<T extends Transaction>(transactions: T | T[]) => Promise<string[]>)
+    | undefined; // Sign and send transactions
+  createSession: (
+    targetProgram: PublicKey,
+    topUp: boolean,
+    validUntil?: number
+  ) => Promise<{ sessionToken: string; publicKey: string } | undefined>; // Create a new session
   revokeSession: () => Promise<void>; // Revoke the current session
   getSessionToken: () => Promise<string | null>; // Retrieve the current session token
 }

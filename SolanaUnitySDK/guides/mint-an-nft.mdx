@@ -15,7 +15,7 @@ Secondly, let's define the metadata of the NFT.
 
 ```csharp
 var metadata = new Metadata()
-{ 
+{
     name = "Test",
     symbol = "TST",
     uri = "https://y5fi7acw5f5r4gu6ixcsnxs6bhceujz4ijihcebjly3zv3lcoqkq.arweave.net/x0qPgFbpex4ankXFJt5eCcRKJzxCUHEQKV43mu1idBU",
@@ -24,7 +24,8 @@ var metadata = new Metadata()
 };
 ```
 
-We can now construct the transaction, whichi consists of 5 istructions: 
+We can now construct the transaction, whichi consists of 5 istructions:
+
 - Creating the Mint Account
 - Initilizing the Mint Account
 - Creattin the AssociatedTokenAccount
@@ -61,15 +62,15 @@ var transaction = new TransactionBuilder()
             1,
             Web3.Account))
     .AddInstruction(MetadataProgram.CreateMetadataAccount(
-        PDALookup.FindMetadataPDA(mint), 
-        mint.PublicKey, 
-        Web3.Account, 
-        Web3.Account, 
-        Web3.Account.PublicKey, 
+        PDALookup.FindMetadataPDA(mint),
+        mint.PublicKey,
+        Web3.Account,
+        Web3.Account,
+        Web3.Account.PublicKey,
         metadata,
-        TokenStandard.NonFungible, 
-        true, 
-        true, 
+        TokenStandard.NonFungible,
+        true,
+        true,
         null,
         metadataVersion: MetadataVersion.V3))
     .AddInstruction(MetadataProgram.CreateMasterEdition(
