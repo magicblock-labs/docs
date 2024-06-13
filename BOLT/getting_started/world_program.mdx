@@ -57,7 +57,6 @@ const inititializeComponent = await InitializeComponent({
   payer: provider.wallet.publicKey,
   entity: entityPda,
   componentId: positionComponent.programId,
-  seed: "my_id", // In case an entity has multiple of the same component, we differenciate
 });
 const signature = await provider.sendAndConfirm(
   inititializeComponent.transaction
@@ -75,7 +74,6 @@ const applySystem = await ApplySystem({
   system: systemMovement.programId,
   entity: entityPda,
   components: [positionComponent.programId],
-  seeds: ["my_id"],
 });
 const signature = await provider.sendAndConfirm(applySystem.transaction);
 ```
