@@ -70,9 +70,11 @@ To apply a system:
 ```typescript
 const applySystem = await ApplySystem({
   authority: provider.wallet.publicKey,
-  system: systemMovement.programId,
-  entity: entityPda,
-  components: [positionComponent.programId],
+  systemId: systemMovement.programId,
+  entities: [{
+    entity: entityPda,
+    components: [{ id: positionComponent.programId }],
+  }]
 });
 const signature = await provider.sendAndConfirm(applySystem.transaction);
 ```
