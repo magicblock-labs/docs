@@ -58,9 +58,8 @@ const inititializeComponent = await InitializeComponent({
   entity: entityPda,
   componentId: positionComponent.programId,
 });
-const signature = await provider.sendAndConfirm(
-  inititializeComponent.transaction
-);
+const signature = await provider.sendAndConfirm(inititializeComponent.transaction);
+const componentPda = initializeComponent.componentPda; // We can use this to fetch the state
 ```
 
 ## Applying Systems
