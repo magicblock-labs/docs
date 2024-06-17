@@ -53,12 +53,12 @@ const entityPda = addEntity.entityPda; // we can use this later
 For attaching components:
 
 ```typescript
-const inititializeComponent = await InitializeComponent({
+const initializeComponent = await InitializeComponent({
   payer: provider.wallet.publicKey,
   entity: entityPda,
   componentId: positionComponent.programId,
 });
-const signature = await provider.sendAndConfirm(inititializeComponent.transaction);
+const signature = await provider.sendAndConfirm(initializeComponent.transaction);
 const componentPda = initializeComponent.componentPda; // We can use this to fetch the state
 ```
 
@@ -72,7 +72,7 @@ const applySystem = await ApplySystem({
   systemId: systemMovement.programId,
   entities: [{
     entity: entityPda,
-    components: [{ id: positionComponent.programId }],
+    components: [{ componentId: positionComponent.programId }],
   }]
 });
 const signature = await provider.sendAndConfirm(applySystem.transaction);
