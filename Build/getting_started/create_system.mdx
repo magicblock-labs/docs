@@ -1,0 +1,77 @@
+---
+title: "Create a System"
+description: " "
+---
+
+Systems contain the logic that processes and manipulates entities based on their components. A system will typically operate on all entities that have a specific set of components. For example, a "Movement" system might update the position of a "Position" component
+
+Create a movement system with with
+
+```rust
+bolt system system-movement
+```
+
+which will add a new component to your workspace:
+
+```rust
+use bolt_lang::*;
+use component_position::Position;
+
+declare_id!("FSa6qoJXFBR3a7ThQkTAMrC15p6NkchPEjBdd4n6dXxA");
+
+#[system]
+#[program]
+pub mod system_movement {
+
+    pub fn execute(ctx: Context<Components>, args_p: Vec<u8>) -> Result<Components> {
+        let position = &mut ctx.accounts.position;
+        position.x += 1;
+        position.y += 1;
+        Ok(ctx.accounts)
+    }
+
+    // Define the input components
+    #[system_input]
+    pub struct Components {
+        pub position: Position,
+    }
+}
+
+```
+
+In this simple example we have created an entity Player that holds a Position component with x,y,z coordinates. We can execute the movement system to change its state.
+
+For a more sophisticated movement dynamic, let's define a Velocity component:
+
+```rust
+use bolt_lang::*;
+
+declare_id!("CbHEFbSQdRN4Wnoby9r16umnJ1zWbULBHg4yqzGQonU1");
+
+#[component]
+#[derive(Copy)]
+pub struct Velocity {
+    pub x: i64
+}
+```
+
+Someone might want to introduce a new power-up for faster movement. They could do this simply by adding a new system that acts on the Position component using Velocity
+
+```rust
+#[system]
+pub mod system_apply_velocity {
+
+    pub fn execute(ctx: Context<Components>, _args: Vec<u8>) -> Result<Components> {
+        ctx.accounts.position.x += ctx.accounts.velocity.x;
+        Ok(ctx.accounts)
+    }
+
+    #[system_input]
+    pub struct Components {
+        pub position: Position,
+        pub velocity: Velocity,
+    }
+}
+```
+
+This new system takes as inputs the Position and Velocity components, and defines the logic of the power-up. There is no notion of Solana accounts or CPI - the proxy [World program](https://github.com/magicblock-labs/bolt/tree/main/programs/world) is taking care of everything.
