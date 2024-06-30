@@ -27,7 +27,7 @@
   "tabs": [
     {
       "name": "Build",
-      "url": "BOLT"
+      "url": "Build"
     },
     {
       "name": "Ephemeral Rollups",
@@ -127,23 +127,23 @@
       ]
     },
     {
-      "group": "BOLT",
+      "group": "Build",
       "pages": [
         {
           "group": "Introduction",
           "pages": [
-            "BOLT/Introduction/introduction",
-            "BOLT/Introduction/mapping"
+            "Build/Introduction/introduction",
+            "Build/Introduction/mapping"
           ]
         },
         {
           "group": "Installation",
           "pages": [
-            "BOLT/getting_started/installation",
-            "BOLT/getting_started/hello_bolt",
-            "BOLT/getting_started/create_component",
-            "BOLT/getting_started/create_system",
-            "BOLT/getting_started/world_program"
+            "Build/getting_started/installation",
+            "Build/getting_started/hello_bolt",
+            "Build/getting_started/create_component",
+            "Build/getting_started/create_system",
+            "Build/getting_started/world_program"
           ]
         }
       ]
