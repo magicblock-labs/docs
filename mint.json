@@ -30,8 +30,8 @@
       "url": "Build"
     },
     {
-      "name": "Ephemeral Rollups",
-      "url": "EphemeralRollups"
+      "name": "Accelerate",
+      "url": "Accelerate"
     },
     {
       "name": "Solana Unity SDK",
@@ -56,8 +56,8 @@
       "pages": ["introduction", "Forever Games"]
     },
     {
-      "group": "Ephemeral Rollups",
-      "pages": ["EphemeralRollups/ephemeral_rollups"]
+      "group": "Accelerate",
+      "pages": ["Accelerate/ephemeral_rollups"]
     },
     {
       "group": "Solana Unity SDK",
