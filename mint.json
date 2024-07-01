@@ -55,38 +55,7 @@
       "group": "Accelerate",
       "pages": ["Accelerate/ephemeral_rollups"]
     },
-    {
-      "group": "Sessions",
-      "pages": [
-        {
-          "group": "Session Keys",
-          "pages": [
-            "Onboarding/Session Keys/introduction",
-            "Onboarding/Session Keys/how-do-session-keys-work",
-            "Onboarding/Session Keys/security",
-            "Onboarding/Session Keys/integrating-sessions-in-your-program",
-            "Onboarding/Session Keys/installation",
-            "Onboarding/Session Keys/session-provider-and-context",
-            "Onboarding/Session Keys/usage-examples",
-            "Onboarding/Session Keys/use-sessionkey-manager"
-          ]
-        }
-      ]
-    },
-    {
-      "group": "On-chain identity",
-      "pages": ["Open-source programs/SOAR"]
-    },
-    {
-      "group": "Game examples & tutorials",
-      "pages": [
-        "onchain_chess/on-chain-chess",
-        "onchain_chess/module_1/setup",
-        "onchain_chess/module_2/onchain_logic",
-        "onchain_chess/module_3/import_project"
-      ]
-    },
-    {
+{
       "group": "Build",
       "pages": [
         {
@@ -118,10 +87,8 @@
             "SolanaUnitySDK/getting-started/configuration",
             "SolanaUnitySDK/getting-started/sample-scene"
           ]
-        }
-      ]
-    },
-    {
+        },
+        {
       "group": "Core Concepts",
       "pages": [
         "SolanaUnitySDK/core-concepts/associated-token-account",
@@ -140,6 +107,39 @@
         "SolanaUnitySDK/guides/dex-integration",
         "SolanaUnitySDK/guides/jupiter",
         "SolanaUnitySDK/guides/additional-examples"
+      ]
+    }
+      ]
+    },
+{
+      "group": "Sessions",
+      "pages": [
+        {
+          "group": "Session Keys",
+          "pages": [
+            "Onboarding/Session Keys/introduction",
+            "Onboarding/Session Keys/how-do-session-keys-work",
+            "Onboarding/Session Keys/security",
+            "Onboarding/Session Keys/integrating-sessions-in-your-program",
+            "Onboarding/Session Keys/installation",
+            "Onboarding/Session Keys/session-provider-and-context",
+            "Onboarding/Session Keys/usage-examples",
+            "Onboarding/Session Keys/use-sessionkey-manager"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "On-chain identity",
+      "pages": ["Open-source programs/SOAR"]
+    },
+    {
+      "group": "Game examples & tutorials",
+      "pages": [
+        "onchain_chess/on-chain-chess",
+        "onchain_chess/module_1/setup",
+        "onchain_chess/module_2/onchain_logic",
+        "onchain_chess/module_3/import_project"
       ]
     }
       ]
