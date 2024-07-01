@@ -74,10 +74,8 @@
             "Build/getting_started/create_system",
             "Build/getting_started/world_program"
           ]
-        }
-        ]
-      },
-      {
+        },
+         {
       "group": "Solana Unity SDK",
       "pages": [
         "SolanaUnitySDK/overview",
@@ -112,7 +110,9 @@
       ]
     }
       ]
-    },
+    }
+        ]
+      },
     {
       "group": "Sessions",
       "pages": [
