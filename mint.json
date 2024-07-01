@@ -78,35 +78,35 @@
         {
       "group": "Solana Unity SDK",
       "pages": [
-        "SolanaUnitySDK/overview",
-        "SolanaUnitySDK/contribution-guide",
+        "Build/SolanaUnitySDK/overview",
+        "Build/SolanaUnitySDK/contribution-guide",
         {
           "group": "Getting Started",
           "pages": [
-            "SolanaUnitySDK/getting-started/installation",
-            "SolanaUnitySDK/getting-started/configuration",
-            "SolanaUnitySDK/getting-started/sample-scene"
+            "Build/SolanaUnitySDK/getting-started/installation",
+            "Build/SolanaUnitySDK/getting-started/configuration",
+            "Build/SolanaUnitySDK/getting-started/sample-scene"
           ]
         },
         {
       "group": "Core Concepts",
       "pages": [
-        "SolanaUnitySDK/core-concepts/associated-token-account",
-        "SolanaUnitySDK/core-concepts/transfer-token",
-        "SolanaUnitySDK/core-concepts/transaction-builder",
-        "SolanaUnitySDK/core-concepts/staking",
-        "SolanaUnitySDK/core-concepts/add-signature"
+        "Build/SolanaUnitySDK/core-concepts/associated-token-account",
+        "Build/SolanaUnitySDK/core-concepts/transfer-token",
+        "Build/SolanaUnitySDK/core-concepts/transaction-builder",
+        "Build/SolanaUnitySDK/core-concepts/staking",
+        "Build/SolanaUnitySDK/core-concepts/add-signature"
       ]
     },
     {
       "group": "Guides",
       "pages": [
-        "SolanaUnitySDK/guides/mint-an-nft",
-        "SolanaUnitySDK/guides/host-your-game",
-        "SolanaUnitySDK/guides/publishing-a-game",
-        "SolanaUnitySDK/guides/dex-integration",
-        "SolanaUnitySDK/guides/jupiter",
-        "SolanaUnitySDK/guides/additional-examples"
+        "Build/SolanaUnitySDK/guides/mint-an-nft",
+        "Build/SolanaUnitySDK/guides/host-your-game",
+        "Build/SolanaUnitySDK/guides/publishing-a-game",
+        "Build/SolanaUnitySDK/guides/dex-integration",
+        "Build/SolanaUnitySDK/guides/jupiter",
+        "Build/SolanaUnitySDK/guides/additional-examples"
       ]
     }
       ]
