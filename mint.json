@@ -55,7 +55,7 @@
       "group": "Accelerate",
       "pages": ["Accelerate/ephemeral_rollups"]
     },
-{
+    {
       "group": "Build",
       "pages": [
         {
@@ -74,8 +74,10 @@
             "Build/getting_started/create_system",
             "Build/getting_started/world_program"
           ]
-        },
-        {
+        }
+        ]
+      },
+      {
       "group": "Solana Unity SDK",
       "pages": [
         "SolanaUnitySDK/overview",
@@ -111,7 +113,7 @@
     }
       ]
     },
-{
+    {
       "group": "Sessions",
       "pages": [
         {
@@ -142,9 +144,7 @@
         "onchain_chess/module_3/import_project"
       ]
     }
-      ]
-    }
-  ],
+      ],
   "footerSocials": {
     "twitter": "https://twitter.com/magicblock",
     "github": "https://github.com/magicblock-labs",
