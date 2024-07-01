@@ -72,7 +72,7 @@
           ]
         },
         {
-        "group": "Build",
+        "group": "SDKs",
         "pages": [
          {
       "group": "Solana Unity SDK",
