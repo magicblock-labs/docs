@@ -32,10 +32,6 @@
     {
       "name": "Accelerate",
       "url": "Accelerate"
-    },
-    {
-      "name": "Solana Unity SDK",
-      "url": "SolanaUnitySDK"
     }
   ],
   "anchors": [
@@ -58,42 +54,6 @@
     {
       "group": "Accelerate",
       "pages": ["Accelerate/ephemeral_rollups"]
-    },
-    {
-      "group": "Solana Unity SDK",
-      "pages": [
-        "SolanaUnitySDK/overview",
-        "SolanaUnitySDK/contribution-guide",
-        {
-          "group": "Getting Started",
-          "pages": [
-            "SolanaUnitySDK/getting-started/installation",
-            "SolanaUnitySDK/getting-started/configuration",
-            "SolanaUnitySDK/getting-started/sample-scene"
-          ]
-        }
-      ]
-    },
-    {
-      "group": "Core Concepts",
-      "pages": [
-        "SolanaUnitySDK/core-concepts/associated-token-account",
-        "SolanaUnitySDK/core-concepts/transfer-token",
-        "SolanaUnitySDK/core-concepts/transaction-builder",
-        "SolanaUnitySDK/core-concepts/staking",
-        "SolanaUnitySDK/core-concepts/add-signature"
-      ]
-    },
-    {
-      "group": "Guides",
-      "pages": [
-        "SolanaUnitySDK/guides/mint-an-nft",
-        "SolanaUnitySDK/guides/host-your-game",
-        "SolanaUnitySDK/guides/publishing-a-game",
-        "SolanaUnitySDK/guides/dex-integration",
-        "SolanaUnitySDK/guides/jupiter",
-        "SolanaUnitySDK/guides/additional-examples"
-      ]
     },
     {
       "group": "Sessions",
@@ -145,7 +105,43 @@
             "Build/getting_started/create_system",
             "Build/getting_started/world_program"
           ]
+        },
+        {
+      "group": "Solana Unity SDK",
+      "pages": [
+        "SolanaUnitySDK/overview",
+        "SolanaUnitySDK/contribution-guide",
+        {
+          "group": "Getting Started",
+          "pages": [
+            "SolanaUnitySDK/getting-started/installation",
+            "SolanaUnitySDK/getting-started/configuration",
+            "SolanaUnitySDK/getting-started/sample-scene"
+          ]
         }
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "SolanaUnitySDK/core-concepts/associated-token-account",
+        "SolanaUnitySDK/core-concepts/transfer-token",
+        "SolanaUnitySDK/core-concepts/transaction-builder",
+        "SolanaUnitySDK/core-concepts/staking",
+        "SolanaUnitySDK/core-concepts/add-signature"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "SolanaUnitySDK/guides/mint-an-nft",
+        "SolanaUnitySDK/guides/host-your-game",
+        "SolanaUnitySDK/guides/publishing-a-game",
+        "SolanaUnitySDK/guides/dex-integration",
+        "SolanaUnitySDK/guides/jupiter",
+        "SolanaUnitySDK/guides/additional-examples"
+      ]
+    }
       ]
     }
   ],
