@@ -71,6 +71,9 @@
             "Build/getting_started/world_program"
           ]
         },
+        {
+        "group": "Build",
+        "pages": [
          {
       "group": "Solana Unity SDK",
       "pages": [
@@ -107,6 +110,8 @@
     }
       ]
     }
+      ]
+      }
         ]
       },
     {
