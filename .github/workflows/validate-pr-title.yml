@@ -1,0 +1,26 @@
+name: Validate PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  validate-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Validate PR title
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
+          echo "PR Title: $PR_TITLE"
+
+          if [[ ! $PR_TITLE =~ ^(feat|fix|docs|style|refactor|test|chore)\: ]]; then
+            echo "Invalid PR title. It must start with one of the following: feat, fix, docs, style, refactor, test, chore."
+            exit 1
+          else
+            echo "PR title is valid."
+          fi
