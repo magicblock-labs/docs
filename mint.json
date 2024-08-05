@@ -72,48 +72,48 @@
           ]
         },
         {
-        "group": "SDKs",
-        "pages": [
-         {
-      "group": "Solana Unity SDK",
-      "pages": [
-        "Build/SolanaUnitySDK/overview",
-        "Build/SolanaUnitySDK/contribution-guide",
-        {
-          "group": "Getting Started",
+          "group": "SDKs",
           "pages": [
-            "Build/SolanaUnitySDK/getting-started/installation",
-            "Build/SolanaUnitySDK/getting-started/configuration",
-            "Build/SolanaUnitySDK/getting-started/sample-scene"
+            {
+              "group": "Solana Unity SDK",
+              "pages": [
+                "Build/SolanaUnitySDK/overview",
+                "Build/SolanaUnitySDK/contribution-guide",
+                {
+                  "group": "Getting Started",
+                  "pages": [
+                    "Build/SolanaUnitySDK/getting-started/installation",
+                    "Build/SolanaUnitySDK/getting-started/configuration",
+                    "Build/SolanaUnitySDK/getting-started/sample-scene"
+                  ]
+                },
+                {
+                  "group": "Core Concepts",
+                  "pages": [
+                    "Build/SolanaUnitySDK/core-concepts/associated-token-account",
+                    "Build/SolanaUnitySDK/core-concepts/transfer-token",
+                    "Build/SolanaUnitySDK/core-concepts/transaction-builder",
+                    "Build/SolanaUnitySDK/core-concepts/staking",
+                    "Build/SolanaUnitySDK/core-concepts/add-signature"
+                  ]
+                },
+                {
+                  "group": "Guides",
+                  "pages": [
+                    "Build/SolanaUnitySDK/guides/mint-an-nft",
+                    "Build/SolanaUnitySDK/guides/host-your-game",
+                    "Build/SolanaUnitySDK/guides/publishing-a-game",
+                    "Build/SolanaUnitySDK/guides/dex-integration",
+                    "Build/SolanaUnitySDK/guides/jupiter",
+                    "Build/SolanaUnitySDK/guides/additional-examples"
+                  ]
+                }
+              ]
+            }
           ]
-        },
-        {
-      "group": "Core Concepts",
-      "pages": [
-        "Build/SolanaUnitySDK/core-concepts/associated-token-account",
-        "Build/SolanaUnitySDK/core-concepts/transfer-token",
-        "Build/SolanaUnitySDK/core-concepts/transaction-builder",
-        "Build/SolanaUnitySDK/core-concepts/staking",
-        "Build/SolanaUnitySDK/core-concepts/add-signature"
+        }
       ]
     },
-    {
-      "group": "Guides",
-      "pages": [
-        "Build/SolanaUnitySDK/guides/mint-an-nft",
-        "Build/SolanaUnitySDK/guides/host-your-game",
-        "Build/SolanaUnitySDK/guides/publishing-a-game",
-        "Build/SolanaUnitySDK/guides/dex-integration",
-        "Build/SolanaUnitySDK/guides/jupiter",
-        "Build/SolanaUnitySDK/guides/additional-examples"
-      ]
-    }
-      ]
-    }
-      ]
-      }
-        ]
-      },
     {
       "group": "Accelerate",
       "pages": ["Accelerate/ephemeral_rollups"]
@@ -149,7 +149,7 @@
         "onchain_chess/module_3/import_project"
       ]
     }
-      ],
+  ],
   "footerSocials": {
     "twitter": "https://twitter.com/magicblock",
     "github": "https://github.com/magicblock-labs",
