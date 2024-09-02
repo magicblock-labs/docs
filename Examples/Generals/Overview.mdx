@@ -52,9 +52,9 @@ When the user opens the "Create" page, we run create a new game: [HERE](https://
 
 When the user opens the main page, we fetch the list of existing games from the chain: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameList.ts)
 
-1) When the user joined the game's page, we start listening to the game's state [inside the ephemeral](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
+1) When the user joined the game's page, we start listening to the game's state inside the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
 2) We update the UI to display the map every time the game changes inside of the ephemeral, you can find the code for the page logic: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
-3) When the user executes a move on the map, we send the command transaction through [directly in the ephemeral](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
+3) When the user executes a move on the map, we send the command transaction through directly in the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
 4) This will update the state of the game inside of the ephemeral, notifying all players and updating the UI immediately
 
 ## Recap
