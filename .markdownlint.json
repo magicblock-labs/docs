@@ -1,18 +1,16 @@
 {
-    "heading-style": {
-        "style": "atx"
-    },
-    "ul-indent": {
-        "indent": 2
-    },
-    "line-length": {
-        "line_length": 200,
-        "strict": true
-    },
-    "no-inline-html": {
-        "allowed_elements": [
-            "CodeGroup",
-            "img"
-        ]
-    }
+  "heading-style": {
+    "style": "atx"
+  },
+  "ul-indent": {
+    "indent": 2
+  },
+  "line-length": {
+    "line_length": 200,
+    "strict": true
+  },
+  "no-inline-html": {
+    "allowed_elements": ["CodeGroup", "img"]
+  },
+  "no-alt-text": false
 }
