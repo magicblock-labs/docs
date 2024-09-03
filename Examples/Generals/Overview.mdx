@@ -7,21 +7,21 @@ description: "generals.io clone game using MagicBlock engine"
 
 ## Abstract
 
-In order to get a full birds eye view of all moving pieces involved with using the MagicBlock engine, we provide a real-life example of a fully-fledged game accelerated by the MagicBlock engine.
+In order to get a full birds eye view of all moving pieces involved with using MagicBlock, we provide a real-life example of a fully-fledged game accelerated by the MagicBlock Engine.
 
 You can access and download the code from the github repository: [HERE](https://github.com/magicblock-labs/solana-generals)
 
 ## Architechture
 
-There are a few main components involved when building for the MagicBlock engine:
+There are a few main components involved when building with MagicBlock:
 
-- **The Chain**, this will be `mainnet-beta` or `devnet` solana public chain's RPC
+- **Solana**, this will be `mainnet-beta` or `devnet` solana public chain's RPC
   - This is where the smart contracts will be deployed and fetched from
   - This is where the final and partial state of your game will be settled on
 
-- **The Ephemeral**, this be the MagicBlock validator RPC
+- **Ephemeral Rollups**, this is the MagicBlock validator RPC
   - This is where the transactions for your game will be run on
-  - This is already deployed by MagicBlock (you can just use it as-is)
+  - This is already deployed by MagicBlock and node operators (you can just use it as-is)
 
 - **The Backend**, this is the source code for the smart contract of the game
   - In this example the smart contracts are written using the BOLT framework
@@ -59,13 +59,12 @@ When the user opens the main page, we fetch the list of existing games from the 
 
 ## Recap
 
-To make a game using magic block is very similar to making a game for solana's regular chain.
+Making a game using MagicBlock is very similar to making a game on Solana.
 
-The only difference is:
+The only difference is the delegation process:
 
-- Once we setup the accounts on the solana's chain
-- We `delegate` the accounts so that they can be used inside of the MagicBlock's engine
-- Once the accounts are delegated, we can send all transactions involving those accounts to the ephemeral
-- Those transactions running inside of the ephemeral will be very fast and almost free
-- Once we're done with the game's session, we can `undelegate` the accounts we need to use in the regular chain again
+- Once you setup the accounts on Solana, you can `delegate` the accounts so that they can be used inside of MagicBlock Engine
+- Once the accounts are delegated, you can send all transactions involving those accounts to the Ephemeral Rollups
+- Those transactions running inside of the Ephemeral session run in real time and can be free
+- Once you're done with the game's session, you can `undelegate` the accounts you need to use on Solana again
 
