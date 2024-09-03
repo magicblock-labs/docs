@@ -1,0 +1,71 @@
+---
+title: "MagicBlock Generals"
+description: "generals.io clone game using MagicBlock engine"
+---
+
+<img width="100%" src="/images/magicblock_generals_moves.gif" />
+
+## Abstract
+
+In order to get a full birds eye view of all moving pieces involved with using the MagicBlock engine, we provide a real-life example of a fully-fledged game accelerated by the MagicBlock engine.
+
+You can access and download the code from the github repository: [HERE](https://github.com/magicblock-labs/solana-generals)
+
+## Architechture
+
+There are a few main components involved when building for the MagicBlock engine:
+
+- **The Chain**, this will be `mainnet-beta` or `devnet` solana public chain's RPC
+  - This is where the smart contracts will be deployed and fetched from
+  - This is where the final and partial state of your game will be settled on
+
+- **The Ephemeral**, this be the MagicBlock validator RPC
+  - This is where the transactions for your game will be run on
+  - This is already deployed by MagicBlock (you can just use it as-is)
+
+- **The Backend**, this is the source code for the smart contract of the game
+  - In this example the smart contracts are written using the BOLT framework
+  - Those smart contracts will then be deployed on the regular solana's chain
+  - Source code is available: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/backend)
+
+- **The Frontend**, this is the User Interface of the game
+  - The UI will be fetching state from both the chain and the ephemeral
+  - The UI will be sending transaction to both the chain and the ephemeral
+  - Source code is available: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/frontend)
+
+## Important processes
+
+Browsing through the codebase will help understanding the high-level logic for setting up the ephemeral games.
+
+### When the user creates a new game
+
+When the user opens the "Create" page, we run create a new game: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameCreate.ts)
+
+1) We first create a new account on chain, like a regular solana smart contract
+2) We then delegate this new account to our ephemeral validator
+3) We can then send all our game transactions directly to the ephemeral's RPC after that
+   1) We generate the map (using a transaction sent to the ephemeral's RPC)
+   2) Wait for the players to join
+   3) Start the game when all player joined
+
+### When a player joins the game
+
+When the user opens the main page, we fetch the list of existing games from the chain: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameList.ts)
+
+1) When the user joined the game's page, we start listening to the game's state inside the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
+2) We update the UI to display the map every time the game changes inside of the ephemeral, you can find the code for the page logic: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
+3) When the user executes a move on the map, we send the command transaction through directly in the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
+4) This will update the state of the game inside of the ephemeral, notifying all players and updating the UI immediately
+
+## Recap
+
+To make a game using magic block is very similar to making a game for solana's regular chain.
+
+The only difference is:
+
+- Once we setup the accounts on the solana's chain
+- We `delegate` the accounts so that they can be used inside of the MagicBlock's engine
+- Once the accounts are delegated, we can send all transactions involving those accounts to the ephemeral
+- Those transactions running inside of the ephemeral will be very fast and almost free
+- Once we're done with the game's session, we can `undelegate` the accounts we need to use in the regular chain again
+
