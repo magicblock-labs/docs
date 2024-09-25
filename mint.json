@@ -116,7 +116,11 @@
     },
     {
       "group": "Accelerate",
-      "pages": ["Accelerate/ephemeral_rollups"]
+      "pages": [
+        "Accelerate/ephemeral_rollups",
+        "Accelerate/program_integration",
+        "Accelerate/Anchor/counter"
+      ]
     },
     {
       "group": "Sessions",

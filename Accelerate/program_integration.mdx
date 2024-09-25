@@ -1,0 +1,117 @@
+---
+title: "Integrating in your Program"
+description: "How to integrate Ephemeral Rollups in your Solana Program"
+---
+
+From an integration perspective, using Ephemeral rollups is similar to writing a multi-threaded program.
+Programs can offload work to an Ephemeral Rollup session to process transactions in a low-latency, high-throughput SVM runtime.
+The SVM runtime is provisioned just-in-time, and transactions are processed by nodes from the decentralized networks of ephemeral validators.
+
+Ephemeral Rollups can be used with any program which targets the Solana blockchain, and we maintain a library of common integrations for:
+
+
+<CardGroup cols={2}>
+    <Card
+        title="Native"
+        icon="gear"
+        href="https://github.com/magicblock-labs/magicblock-engine-examples"
+        iconType="duotone"
+    >
+        Integrate with a native rust Solana program
+    </Card>
+    <Card
+        title="Anchor"
+        icon="anchor"
+        href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+        iconType="duotone"
+    >
+        Integrate with an Anchor program
+    </Card>
+    <Card
+        title="Bolt"
+        icon="screwdriver-wrench"
+        href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/bolt-counter"
+        iconType="duotone"
+    >
+        Integrate with the Bolt ECS framework
+    </Card>
+</CardGroup>
+
+## Lifecycle of the integration
+
+The lifecycle of integrating Ephemeral Rollups in your program is as follows:
+
+<Steps>
+    <Step title="Write your program">
+        Write your Solana program as you normally would. Either using using Anchor or Bolt or in native rust, c or even
+        assembly.
+    </Step>
+    <Step title="Add delegation and undelegation hooks">
+        Accounts which are delegated can be used as writable in an Ephemeral Rollup session.
+    </Step>
+    <Step title="Deploy program on Solana">
+        Deploy your program directly on Solana.
+    </Step>
+    <Step title="Connect the frontend">
+        Connect a fronted using any SDKs which respect the SVM RPC specification (web3.js, solana rust sdk, unity sdk or
+        others). Use an RPC router or route on the client side.
+    </Step>
+</Steps>
+
+
+## Delegation
+
+`Delegation` is the process of transferring ownership of one or more of your program's `PDAs` to the delegation program.
+Ephemeral Validators will then be able to use the `PDAs` to perform transactions in the SVM runtime and commit the state.
+
+In rust programs, you can use the `ephemeral_rollups_sdk` crate to delegate accounts.
+
+Install it with:
+```bash
+cargo add ephemeral_rollups_sdk
+```
+
+Then use the `delegate_account` function to delegate an account to the delegation program.
+
+```rust Delegation
+use ephemeral_rollups_sdk::cpi::delegate_account;
+
+delegate_account(
+    &ctx.accounts.payer, // The account that will pay for opening the
+    &ctx.accounts.pda, // The PDA to delegate
+    &ctx.accounts.owner_program, // Owner program of the
+    ...
+    pda_seeds, // Seeds to make the PDA signer
+    0, // 0 means no time limit for the delegation
+    3_000, // Update frequency on the base layer in milliseconds
+)?;
+```
+
+<Note>Both delegation and undelegation are CPIs that can be integrated in existing instructions of your program</Note>
+
+## Undelegation
+
+`Undelegation` is the process of transferring ownership of the `PDAs` back to your program.
+On undelegation, the state is committed and it trigger the finalization process. Once state it validated, the `PDAs` are unlocked and can be used as normal on mainnet
+
+```rust Delegation
+use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
+
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.pda.to_account_info()],
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+Additionally, custom CPI can instruct the ephemeral validators to `commit` and `finalize` a state or `close` a session.
+
+<Note>Note that commit and undelegation accept a list of accounts. These accounts are committed atomically to the base layer which allows to maintain state consistency of dependent accounts</Note>
+
+## Execute transactions
+
+Any other instruction which is part of your program can be executed without changes.
+The transaction will be processed by Solana or Ephemeral Validators depending on the account's delegation status.
