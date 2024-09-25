@@ -1,0 +1,138 @@
+---
+title: "Building a Program to Increment a Counter"
+description: "Learn how to write a simple Anchor program that increments a counter on Solana"
+---
+
+![Counter Program](https://raw.githubusercontent.com/GabrielePicco/notes/main/counter.png)
+
+This guide will walk you through the process of writing a simple Anchor program that increments a counter. You'll learn how to deploy this program on Solana and interact with it using a React client.
+
+## Quick Access to Source Code
+
+If you prefer to dive straight into the code:
+- [Anchor Program Source](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/anchor-counter/programs/anchor-counter/src/lib.rs)
+- [React Client Source](https://github.com/GabrielePicco/ephemeral-counter-ui)
+
+## Writing the Anchor Program
+
+Let's break down the key components of our counter program:
+
+### Core Functionality
+
+The program implements two main instructions:
+
+1. `initialize`: Sets the counter to 0
+2. `increment`: Increments the counter by 1
+
+Here's the core structure of our program:
+
+```rust
+#[delegate]
+#[program]
+pub mod anchor_counter {
+    use super::*;
+
+    /// Initialize the counter.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        Ok(())
+    }
+
+    /// Increment the counter.
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+
+    // ... Additional instructions will be added here
+}
+```
+
+
+Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we're adding the `delegate` macro to inject some useful logic to interact with the delegation program.
+### Delegating the Counter PDA
+
+In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which
+internally calls the `delegate_account` function. `delegate_account` will CPI to the delegation program, which upon validation will gain ownership of the account.
+After this step, an ephemeral validator can start processing transactions on the counter PDA and propose state diff trough the delegation program.
+
+```rust
+/// Delegate the account to the delegation program
+pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    let pda_seeds: &[&[u8]] = &[TEST_PDA_SEED];
+
+    delegate_account(
+        &ctx.accounts.payer, // The account that will pay for opening the delegation session. Rent of opened PDAs will be recover on undelegation.
+        &ctx.accounts.pda,  // The PDA to delegate
+        &ctx.accounts.owner_program, // The owner program of the PDA, in this case the counter program itself
+        &ctx.accounts.buffer,
+        &ctx.accounts.delegation_record,
+        &ctx.accounts.delegation_metadata,
+        &ctx.accounts.delegation_program,
+        &ctx.accounts.system_program,
+        pda_seeds,   // The seeds to make the PDA signer
+        0, // 0 means no time limit for the delegation
+        3_000, // Update frequency on the base layer in milliseconds
+    )?;
+
+    Ok(())
+}
+```
+
+### Committing while the PDA is delegated
+
+The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
+
+```rust
+/// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    commit_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+### Undelegating the PDA
+
+Undelegating the PDA is done by calling the `commit_and_undelegate_accounts` as part of some instruction.
+
+```rust
+/// Undelegate the account from the delegation program
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+### Connecting the React Client
+
+The React client is a simple interface that allows you to interact with the Anchor program.
+It uses the Anchor bindings to interact with the program and the MagicBlock SDK to interact with the Ephemeral Rollup session.
+
+The UI code for this project can be found in the [ephemeral-counter-ui repository](https://github.com/magicblock-labs/ephemeral-counter-ui).
+
+### Ephemeral Endpoint Configuration
+
+To interact with the Ephemeral Rollup session, you need to configure the appropriate endpoint:
+
+- For devnet, use the following ephemeral endpoint:
+
+  https://devnet.magicblock.app
+
+
+- For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
+
+Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
+
+
