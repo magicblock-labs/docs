@@ -18,20 +18,20 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Build your game",
-    "url": "https://assetstore.unity.com/packages/decentralization/infrastructure/solana-sdk-for-unity-246931"
+    "name": "Build",
+    "url": "/Accelerate/Anchor/counter"
   },
   "primaryTab": {
-    "name": "MagicBlock Engine"
+    "name": "Engine"
   },
   "tabs": [
     {
-      "name": "Build",
+      "name": "Framework and SDKs",
       "url": "Build"
     },
     {
-      "name": "Accelerate",
-      "url": "Accelerate"
+      "name": "SDKs",
+      "url": "SDKs"
     }
   ],
   "anchors": [
@@ -49,74 +49,97 @@
   "navigation": [
     {
       "group": "MagicBlock Engine",
-      "pages": ["introduction", "Forever Games"]
+      "pages": [
+        "introduction",
+        "Forever Games"
+      ]
     },
     {
-      "group": "Build",
+      "group": "Ephemeral Rollups",
       "pages": [
+        "Accelerate/ephemeral_rollups",
+        "Accelerate/program_integration",
         {
-          "group": "Introduction",
+          "group": "Anchor",
           "pages": [
-            "Build/Introduction/introduction",
-            "Build/Introduction/mapping"
+            "Accelerate/Anchor/counter"
           ]
         },
         {
-          "group": "Installation",
+          "group": "Bolt",
           "pages": [
-            "Build/getting_started/installation",
-            "Build/getting_started/hello_bolt",
-            "Build/getting_started/create_component",
-            "Build/getting_started/create_system",
-            "Build/getting_started/world_program"
-          ]
-        },
-        {
-          "group": "SDKs",
-          "pages": [
-            {
-              "group": "Solana Unity SDK",
-              "pages": [
-                "Build/SolanaUnitySDK/overview",
-                "Build/SolanaUnitySDK/contribution-guide",
-                {
-                  "group": "Getting Started",
-                  "pages": [
-                    "Build/SolanaUnitySDK/getting-started/installation",
-                    "Build/SolanaUnitySDK/getting-started/configuration",
-                    "Build/SolanaUnitySDK/getting-started/sample-scene"
-                  ]
-                },
-                {
-                  "group": "Core Concepts",
-                  "pages": [
-                    "Build/SolanaUnitySDK/core-concepts/associated-token-account",
-                    "Build/SolanaUnitySDK/core-concepts/transfer-token",
-                    "Build/SolanaUnitySDK/core-concepts/transaction-builder",
-                    "Build/SolanaUnitySDK/core-concepts/staking",
-                    "Build/SolanaUnitySDK/core-concepts/add-signature"
-                  ]
-                },
-                {
-                  "group": "Guides",
-                  "pages": [
-                    "Build/SolanaUnitySDK/guides/mint-an-nft",
-                    "Build/SolanaUnitySDK/guides/host-your-game",
-                    "Build/SolanaUnitySDK/guides/publishing-a-game",
-                    "Build/SolanaUnitySDK/guides/dex-integration",
-                    "Build/SolanaUnitySDK/guides/jupiter",
-                    "Build/SolanaUnitySDK/guides/additional-examples"
-                  ]
-                }
-              ]
-            }
+            "Examples/Generals/Overview"
           ]
         }
       ]
     },
     {
-      "group": "Accelerate",
-      "pages": ["Accelerate/ephemeral_rollups"]
+      "group": "Framework and SDKs",
+      "pages": [
+        "Build/introduction"
+      ]
+    },
+    {
+      "group": "Framework",
+      "pages": [
+        "Build/Bolt/introduction",
+        "Build/Bolt/mapping",
+        {
+          "group": "Getting Started",
+          "pages": [
+            "Build/Bolt/Getting-started/installation",
+            "Build/Bolt/Getting-started/hello_bolt",
+            "Build/Bolt/Getting-started/create_component",
+            "Build/Bolt/Getting-started/create_system",
+            "Build/Bolt/Getting-started/world_program"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "SDKs",
+      "pages": [
+        {
+          "group": "Solana Unity SDK",
+          "pages": [
+            "Build/SolanaUnitySDK/overview",
+            "Build/SolanaUnitySDK/contribution-guide",
+            {
+              "group": "Getting Started",
+              "pages": [
+                "Build/SolanaUnitySDK/getting-started/installation",
+                "Build/SolanaUnitySDK/getting-started/configuration",
+                "Build/SolanaUnitySDK/getting-started/sample-scene"
+              ]
+            },
+            {
+              "group": "Core Concepts",
+              "pages": [
+                "Build/SolanaUnitySDK/core-concepts/associated-token-account",
+                "Build/SolanaUnitySDK/core-concepts/transfer-token",
+                "Build/SolanaUnitySDK/core-concepts/transaction-builder",
+                "Build/SolanaUnitySDK/core-concepts/staking",
+                "Build/SolanaUnitySDK/core-concepts/add-signature"
+              ]
+            },
+            {
+              "group": "Guides",
+              "pages": [
+                "Build/SolanaUnitySDK/guides/mint-an-nft",
+                "Build/SolanaUnitySDK/guides/host-your-game",
+                "Build/SolanaUnitySDK/guides/publishing-a-game",
+                "Build/SolanaUnitySDK/guides/dex-integration",
+                "Build/SolanaUnitySDK/guides/jupiter",
+                "Build/SolanaUnitySDK/guides/additional-examples"
+              ]
+            }
+          ]
+        },
+        {
+          "group": "On-chain identity",
+          "pages": ["Build/Open-source-programs/SOAR"]
+        }
+      ]
     },
     {
       "group": "Sessions",
@@ -124,25 +147,17 @@
         {
           "group": "Session Keys",
           "pages": [
-            "Onboarding/Session Keys/introduction",
-            "Onboarding/Session Keys/how-do-session-keys-work",
-            "Onboarding/Session Keys/security",
-            "Onboarding/Session Keys/integrating-sessions-in-your-program",
-            "Onboarding/Session Keys/installation",
-            "Onboarding/Session Keys/session-provider-and-context",
-            "Onboarding/Session Keys/usage-examples",
-            "Onboarding/Session Keys/use-sessionkey-manager"
+            "Build/Session Keys/introduction",
+            "Build/Session Keys/how-do-session-keys-work",
+            "Build/Session Keys/security",
+            "Build/Session Keys/integrating-sessions-in-your-program",
+            "Build/Session Keys/installation",
+            "Build/Session Keys/session-provider-and-context",
+            "Build/Session Keys/usage-examples",
+            "Build/Session Keys/use-sessionkey-manager"
           ]
         }
       ]
-    },
-    {
-      "group": "On-chain identity",
-      "pages": ["Open-source programs/SOAR"]
-    },
-    {
-      "group": "Game examples & tutorials",
-      "pages": ["Examples/Generals/Overview"]
     }
   ],
   "footerSocials": {

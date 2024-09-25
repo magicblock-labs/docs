@@ -3,13 +3,13 @@ title: Introduction
 description: "The high-performance engine for onchain games and applications on Solana"
 ---
 
+<video autoPlay muted loop playsInline className="w-full aspect-video" src="https://github.com/GabrielePicco/notes/raw/refs/heads/main/demo-day.mov" controls></video>
+
 MagicBlock is a network on top of Solana for building a new type of games and consumer applications that are **open**, **decentralized** and **unstoppable**. MagicBlock accelerates and extends Solana's capabilities while preserving composability.
 
-<img height="200" src="/images/architecture_overview.png" />
-
 ### Why MagicBlock Engine?
-MagicBlock introduces a new primitive to accelerate and scale Solana without state fragmentation. **Ephemeral Rollups are Just-In-Time, SVM-based runtimes that accelerate state transitions for selected Solana Accounts**. Developers can delegate any account from existing Solana smart contracts into the MagicBlock Engine to access faster performances, customizable runtimes and/or dedicated blockspace.
 
+MagicBlock introduces a new primitive to accelerate and scale Solana without state fragmentation. **Ephemeral Rollups are Just-In-Time, SVM-based runtimes that accelerate state transitions for selected Solana Accounts**. Developers can delegate any account from existing Solana smart contracts into the MagicBlock Engine to access faster performances, customizable runtimes and/or dedicated blockspace.
 
 
 ### What can I build with MagicBlock?
@@ -19,8 +19,26 @@ MagicBlock Engine facilitates the creation of any game and consumer application 
 - Games that are **persistent** and can't be stopped, because they don't rely on any server or centralized infrastructure (they run entirely on the blockchain)
 - Games that are **permissionlessly composable**. Because all the game data and logic is open, everyone can extend your game with new content, new logic, or interoperate across games without limits.
 - **Autonomous Worlds** or any application that leverages decentralization to provide an always-on, global and unstoppable experience.
+- Low latency and high throughput financial applications like **decentralized exchanges**, **prediction markets**, **NFT marketplaces** and more.
 
 ### Where do I start?
 
-You can start building the logic of your game/app with the [BOLT framework](/Build/Introduction).
-If you want to accelerate or scale existing smart contracts operations, check out the [Ephemeral Rollups](/Accelerate/ephemeral_rollups) section.
+
+<CardGroup cols={2}>
+    <Card
+        title="Accelerate"
+        icon="bolt"
+        href="/Accelerate/program_integration"
+        iconType="duotone"
+    >
+        Learn how to Integrate Ephemeral Rollups
+    </Card>
+    <Card
+        title="Build"
+        icon="hammer"
+        href="/Build/getting_started/create_component"
+        iconType="duotone"
+    >
+        Explore Framework and SDKs to build unstoppable applications
+    </Card>
+</CardGroup>
