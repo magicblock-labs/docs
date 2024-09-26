@@ -102,6 +102,7 @@ pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
 ### Undelegating the PDA
 
 Undelegating the PDA is done by calling the `commit_and_undelegate_accounts` as part of some instruction.
+Undelegation commit the latest state and give back the ownership of the PDA to the owner program.
 
 ```rust
 /// Undelegate the account from the delegation program
@@ -124,7 +125,6 @@ The UI code for this project can be found in the [ephemeral-counter-ui repositor
 
 <iframe src="https://main--ephemeral-counter.netlify.app/" width="100%" height="500" frameborder="0"></iframe>
 
-
 <Warning>Iframes only work with some wallets (e.g. Backpack). Alternatively, try the deployed demo here: https://main--ephemeral-counter.netlify.app/</Warning>
 
 ### Ephemeral Endpoint Configuration
@@ -135,9 +135,9 @@ To interact with the Ephemeral Rollup session, you need to configure the appropr
 
   https://devnet.magicblock.app
 
-
 - For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
 
 Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
 
+<Note>Currently the routing to different endpoints needs to be done on the client. An RPC router which automatically route transaction to the correct endpoint is being developed</Note>
 
