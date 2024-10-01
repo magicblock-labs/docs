@@ -94,6 +94,7 @@ pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
     commit_and_undelegate_accounts(
         &ctx.accounts.payer,
         vec![&ctx.accounts.pda.to_account_info()],
+        &ctx.accounts.magic_context,
         &ctx.accounts.magic_program,
     )?;
     Ok(())
