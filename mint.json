@@ -59,6 +59,7 @@
       "pages": [
         "Accelerate/ephemeral_rollups",
         "Accelerate/program_integration",
+        "Accelerate/Protocol_fees",
         {
           "group": "Anchor",
           "pages": [
