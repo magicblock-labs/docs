@@ -1,0 +1,20 @@
+---
+title: "MagicBlock Protocol Fees"
+description: "Transaction fees while using Ephemeral Rollups"
+---
+
+MagicBlock Engine is designed to keep the computing costs predictable for application developers while offering flexibility for node operators. 
+The pricing structure is as follow:
+
+
+
+| Type                     | Fees in lamports | Type       |
+| ------------------------ | ---------------- |----------- |
+| Base fee                 | 10               | Protocol   |
+| Delegation fee           | 10%              | Protocol   |
+| Node operator fee        | Variable         | External   |
+
+
+The Base fee is the costs computing costs of sending transactions, on a FCFS basis, in an Ephemeral Rollup session. 
+The Delegation fee is the costs incurred when undelegating an account and is meant to cover the settlement cost.
+The Node operator fee is priority fee that node operators can enforce if they decide to parallelize transactions. 
