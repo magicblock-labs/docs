@@ -27,7 +27,7 @@ The program implements two main instructions:
 Here's the core structure of our program:
 
 ```rust
-#[delegate]
+#[ephemeral]
 #[program]
 pub mod anchor_counter {
     use super::*;
@@ -61,22 +61,11 @@ After this step, an ephemeral validator can start processing transactions on the
 ```rust
 /// Delegate the account to the delegation program
 pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
-    let pda_seeds: &[&[u8]] = &[TEST_PDA_SEED];
-
-    delegate_account(
-        &ctx.accounts.payer, // The account that will pay for opening the delegation session. Rent of opened PDAs will be recover on undelegation.
-        &ctx.accounts.pda,  // The PDA to delegate
-        &ctx.accounts.owner_program, // The owner program of the PDA, in this case the counter program itself
-        &ctx.accounts.buffer,
-        &ctx.accounts.delegation_record,
-        &ctx.accounts.delegation_metadata,
-        &ctx.accounts.delegation_program,
-        &ctx.accounts.system_program,
-        pda_seeds,   // The seeds to make the PDA signer
-        0, // 0 means no time limit for the delegation
-        3_000, // Update frequency on the base layer in milliseconds
+    ctx.accounts.delegate_pda(
+        &ctx.accounts.payer,
+        &[TEST_PDA_SEED],
+        DelegateConfig::default(),
     )?;
-
     Ok(())
 }
 ```
