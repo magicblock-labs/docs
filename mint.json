@@ -1,6 +1,19 @@
 {
   "$schema": "https://mintlify.com/schema.json",
   "name": "MagicBlock Documentation",
+  "head": [
+    {
+      "tag": "script",
+      "attributes": {
+        "async": true,
+        "src": "https://www.googletagmanager.com/gtag/js?id=G-M3W08J15Y9"
+      }
+    },
+    {
+      "tag": "noscript",
+      "innerHTML": "<iframe src='https://www.googletagmanager.com/ns.html?id=G-M3W08J15Y9' height='0' width='0' style='display:none;visibility:hidden'></iframe>"
+    }
+  ],
   "logo": {
     "dark": "/logo/dark.png",
     "light": "/logo/light.png"
