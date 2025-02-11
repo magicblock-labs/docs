@@ -1,6 +1,11 @@
 {
   "$schema": "https://mintlify.com/schema.json",
   "name": "MagicBlock Documentation",
+  "integrations": {
+      "ga4": {
+          "measurementId": "G-M3W08J15Y9"
+      }
+  },
   "head": [
     {
       "tag": "script",
