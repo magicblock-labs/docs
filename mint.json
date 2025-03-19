@@ -1,6 +1,9 @@
 {
   "$schema": "https://mintlify.com/schema.json",
   "name": "MagicBlock Documentation",
+  "components": {
+    "callout": true
+  },
   "logo": {
     "dark": "/logo/dark.png",
     "light": "/logo/light.png"
@@ -17,21 +20,13 @@
       "url": "https://github.com/magicblock-labs"
     }
   ],
-  "topbarCtaButton": {
-    "name": "Build",
-    "url": "/Accelerate/Anchor/counter"
-  },
   "primaryTab": {
-    "name": "Engine"
+    "name": "MagicBlock"
   },
   "tabs": [
     {
-      "name": "Framework and SDKs",
-      "url": "Build"
-    },
-    {
-      "name": "SDKs",
-      "url": "SDKs"
+      "name": "Tools",
+      "url": "pages/tools"
     }
   ],
   "anchors": [
@@ -50,48 +45,47 @@
     {
       "group": "MagicBlock Engine",
       "pages": [
-        "introduction",
-        "Forever Games"
+        "pages/get-started/introduction/why-magicblock",
+        "pages/get-started/introduction/ephemeral-rollup"
       ]
     },
     {
-      "group": "Ephemeral Rollups",
+      "group": "How to Accelerate Your Program",
       "pages": [
-        "Accelerate/ephemeral_rollups",
-        "Accelerate/program_integration",
-        {
-          "group": "Anchor",
-          "pages": [
-            "Accelerate/Anchor/counter"
-          ]
-        },
-        {
-          "group": "Bolt",
-          "pages": [
-            "Examples/Generals/Overview"
-          ]
-        }
+        "pages/get-started/accelerate-your-app/introduction",
+        "pages/get-started/accelerate-your-app/rust",
+        "pages/get-started/accelerate-your-app/anchor"
       ]
     },
     {
-      "group": "Framework and SDKs",
+      "group": "Examples",
       "pages": [
-        "Build/introduction"
+        "pages/get-started/examples/introduction",
+        "pages/get-started/examples/finance",
+        "pages/get-started/examples/games",
+        "pages/get-started/examples/ai",
+        "pages/get-started/examples/payments"
+      ]
+    },
+    {
+      "group": "Tools",
+      "pages": [
+        "pages/tools/introduction"
       ]
     },
     {
       "group": "Framework",
       "pages": [
-        "Build/Bolt/introduction",
-        "Build/Bolt/mapping",
+        "pages/tools/bolt/introduction",
+        "pages/tools/bolt/mapping",
         {
           "group": "Getting Started",
           "pages": [
-            "Build/Bolt/Getting-started/installation",
-            "Build/Bolt/Getting-started/hello_bolt",
-            "Build/Bolt/Getting-started/create_component",
-            "Build/Bolt/Getting-started/create_system",
-            "Build/Bolt/Getting-started/world_program"
+            "pages/tools/bolt/getting-started/installation",
+            "pages/tools/bolt/getting-started/hello-bolt",
+            "pages/tools/bolt/getting-started/create-component",
+            "pages/tools/bolt/getting-started/create-system",
+            "pages/tools/bolt/getting-started/world-program"
           ]
         }
       ]
@@ -102,42 +96,42 @@
         {
           "group": "Solana Unity SDK",
           "pages": [
-            "Build/SolanaUnitySDK/overview",
-            "Build/SolanaUnitySDK/contribution-guide",
+            "pages/tools/solana-unity-sdk/overview",
+            "pages/tools/solana-unity-sdk/contribution-guide",
             {
               "group": "Getting Started",
               "pages": [
-                "Build/SolanaUnitySDK/getting-started/installation",
-                "Build/SolanaUnitySDK/getting-started/configuration",
-                "Build/SolanaUnitySDK/getting-started/sample-scene"
+                "pages/tools/solana-unity-sdk/getting-started/installation",
+                "pages/tools/solana-unity-sdk/getting-started/configuration",
+                "pages/tools/solana-unity-sdk/getting-started/sample-scene"
               ]
             },
             {
               "group": "Core Concepts",
               "pages": [
-                "Build/SolanaUnitySDK/core-concepts/associated-token-account",
-                "Build/SolanaUnitySDK/core-concepts/transfer-token",
-                "Build/SolanaUnitySDK/core-concepts/transaction-builder",
-                "Build/SolanaUnitySDK/core-concepts/staking",
-                "Build/SolanaUnitySDK/core-concepts/add-signature"
+                "pages/tools/solana-unity-sdk/core-concepts/associated-token-account",
+                "pages/tools/solana-unity-sdk/core-concepts/transfer-token",
+                "pages/tools/solana-unity-sdk/core-concepts/transaction-builder",
+                "pages/tools/solana-unity-sdk/core-concepts/staking",
+                "pages/tools/solana-unity-sdk/core-concepts/add-signature"
               ]
             },
             {
               "group": "Guides",
               "pages": [
-                "Build/SolanaUnitySDK/guides/mint-an-nft",
-                "Build/SolanaUnitySDK/guides/host-your-game",
-                "Build/SolanaUnitySDK/guides/publishing-a-game",
-                "Build/SolanaUnitySDK/guides/dex-integration",
-                "Build/SolanaUnitySDK/guides/jupiter",
-                "Build/SolanaUnitySDK/guides/additional-examples"
+                "pages/tools/solana-unity-sdk/guides/mint-an-nft",
+                "pages/tools/solana-unity-sdk/guides/host-your-game",
+                "pages/tools/solana-unity-sdk/guides/publishing-a-game",
+                "pages/tools/solana-unity-sdk/guides/dex-integration",
+                "pages/tools/solana-unity-sdk/guides/jupiter",
+                "pages/tools/solana-unity-sdk/guides/additional-examples"
               ]
             }
           ]
         },
         {
           "group": "On-chain identity",
-          "pages": ["Build/Open-source-programs/SOAR"]
+          "pages": ["pages/tools/open-source-programs/SOAR"]
         }
       ]
     },
@@ -147,14 +141,14 @@
         {
           "group": "Session Keys",
           "pages": [
-            "Build/Session Keys/introduction",
-            "Build/Session Keys/how-do-session-keys-work",
-            "Build/Session Keys/security",
-            "Build/Session Keys/integrating-sessions-in-your-program",
-            "Build/Session Keys/installation",
-            "Build/Session Keys/session-provider-and-context",
-            "Build/Session Keys/usage-examples",
-            "Build/Session Keys/use-sessionkey-manager"
+            "pages/tools/session-keys/introduction",
+            "pages/tools/session-keys/how-do-session-keys-work",
+            "pages/tools/session-keys/security",
+            "pages/tools/session-keys/integrating-sessions-in-your-program",
+            "pages/tools/session-keys/installation",
+            "pages/tools/session-keys/session-provider-and-context",
+            "pages/tools/session-keys/usage-examples",
+            "pages/tools/session-keys/use-sessionkey-manager"
           ]
         }
       ]

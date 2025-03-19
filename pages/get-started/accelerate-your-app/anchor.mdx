@@ -1,5 +1,5 @@
 ---
-title: "Building a Program to Increment a Counter"
+title: "Anchor"
 description: "Learn how to write a simple Anchor program that increments a counter on Solana"
 ---
 
@@ -7,17 +7,40 @@ description: "Learn how to write a simple Anchor program that increments a count
 
 This guide will walk you through the process of writing a simple Anchor program that increments a counter. You'll learn how to deploy this program on Solana and interact with it using a React client.
 
+## Software Packages
+
+This program is developed and tested with the following software packages. Other sofware may also be compatible.
+
+| Software   | Version | Installation Guide                                              |
+| ---------- | ------- | --------------------------------------------------------------- |
+| **Solana** | 2.0.21  | [Install Solana](https://docs.anza.xyz/cli/install)             |
+| **Rust**   | 1.82.0  | [Install Rust](https://www.rust-lang.org/tools/install)         |
+| **Anchor** | 0.30.1  | [Install Anchor](https://www.anchor-lang.com/docs/installation) |
+
 ## Quick Access to Source Code
 
 If you prefer to dive straight into the code:
-- [Anchor Program Source](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/anchor-counter/programs/anchor-counter/src/lib.rs)
-- [React Client Source](https://github.com/GabrielePicco/ephemeral-counter-ui)
+
+<CardGroup cols={2}>
+  <Card
+    title="Source Code: Anchor Counter Program"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/anchor-counter/programs/anchor-counter/src/lib.rs"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="Source Code: React Client"
+    icon="react"
+    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
 
 ## Writing the Anchor Program
 
 Let's break down the key components of our counter program:
 
-### Core Functionality
+## Core Functionality
 
 The program implements two main instructions:
 
@@ -50,8 +73,8 @@ pub mod anchor_counter {
 }
 ```
 
-
 Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we're adding the `delegate` macro to inject some useful logic to interact with the delegation program.
+
 ### Delegating the Counter PDA
 
 In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which
@@ -118,16 +141,31 @@ pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
 }
 ```
 
-### Connecting the React Client
+## Connecting the React Client
 
 The React client is a simple interface that allows you to interact with the Anchor program.
 It uses the Anchor bindings to interact with the program and the MagicBlock SDK to interact with the Ephemeral Rollup session.
 
-The UI code for this project can be found in the [ephemeral-counter-ui repository](https://github.com/magicblock-labs/ephemeral-counter-ui).
+{" "}
 
-<iframe src="https://main--ephemeral-counter.netlify.app/" width="100%" height="500" frameborder="0"></iframe>
+<Card
+  title="Source Code: React Client"
+  icon="react"
+  href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+  iconType="duotone"
+></Card>
 
-<Warning>Iframes only work with some wallets (e.g. Backpack). Alternatively, try the deployed demo here: https://main--ephemeral-counter.netlify.app/</Warning>
+<iframe
+  src="https://main--ephemeral-counter.netlify.app/"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+<Warning>
+  Iframes only work with some wallets (e.g. Backpack). Alternatively, try the
+  deployed demo here: https://main--ephemeral-counter.netlify.app/
+</Warning>
 
 ### Ephemeral Endpoint Configuration
 
@@ -141,5 +179,25 @@ To interact with the Ephemeral Rollup session, you need to configure the appropr
 
 Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
 
-<Note>Currently the routing to different endpoints needs to be done on the client. An RPC router which automatically route transaction to the correct endpoint is being developed</Note>
+<Note>
+  Currently the routing to different endpoints needs to be done manually. These
+  public RPC endpoints are currently free and supported for development: <br />
+  <br /> Solana Devnet: https://api.devnet.solana.com <br />
+  ER Devnet: https://devnet.magicblock.app <br /> <br />A smart RPC router for
+  automatic routing is under development.
+</Note>
 
+<CardGroup cols={2}>
+  <Card
+    title="Source Code: Anchor Counter Program"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/anchor-counter/programs/anchor-counter/src/lib.rs"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="Source Code: React Client"
+    icon="react"
+    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
