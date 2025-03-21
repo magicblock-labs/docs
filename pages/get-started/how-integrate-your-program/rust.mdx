@@ -1,5 +1,5 @@
 ---
-title: "Rust"
+title: "Rust Example"
 description: "Learn how to write a simple Rust program that delegates and increments a counter on Solana"
 ---
 
@@ -288,6 +288,8 @@ The complete test for this project can be found in the [Typescript Test Script](
 
 ### Test delegation transaction
 
+Create a instruction with the right order and attributes of accounts, and the instruction discriminator for delegation of your program. Send the transaction with the instruction to Solana network.
+
 ```typescript
 import * as web3 from "@solana/web3.js";
 
@@ -368,6 +370,8 @@ const txHash = await web3.sendAndConfirmTransaction(
 ```
 
 ### Test undelegation transaction
+
+Create a instruction with the right order and attributes of accounts, and the instruction discriminator for undelegation of your program. Send the transaction with the instruction to ER network.
 
 ```typescript
 import * as web3 from "@solana/web3.js";

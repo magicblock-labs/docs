@@ -13,9 +13,7 @@ description: "Unlock the next era of real-time on-chain gaming"
   controls
 ></video>
 
-## Why On-Chain Games?
-
-#### 🔴 Problems in Web2 Gaming
+#### 🔴 Problems with Gaming
 
 - **Lack of True Ownership** – Game assets are controlled by companies.
 - **Shut Down Risk** – Servers go offline, and players lose progress.
@@ -44,13 +42,21 @@ In order to get a full birds eye view of all moving pieces involved with using M
   <Card
     title="Source Code: MagicBlock Labs - Generals"
     icon="github"
-    href="https://github.com/magicblock-labs/solana-generals"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals"
     iconType="duotone"
   >
     Learn more about building and integrating games with MagicBlock!
   </Card>
   <Card
-    title="Tools"
+    title="Bolt"
+    icon="bolt"
+    href="/pages/tools/bolt/introduction"
+    iconType="duotone"
+  >
+    Simplify on-chain game development with BOLT
+  </Card>
+  <Card
+    title="More Tools"
     icon="code"
     href="/pages/tools/introduction"
     iconType="duotone"
@@ -77,12 +83,12 @@ There are a few main components involved when building with MagicBlock:
 
   - In this example the smart contracts are written using the BOLT framework
   - Those smart contracts will then be deployed on the regular solana's chain
-  - Source code is available: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/backend)
+  - Source code is available: [HERE](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals/tree/main/backend)
 
 - **The Frontend**, this is the User Interface of the game
   - The UI will be fetching state from both the chain and the ephemeral
   - The UI will be sending transaction to both the chain and the ephemeral
-  - Source code is available: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/frontend)
+  - Source code is available: [HERE](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals/tree/main/frontend)
 
 ### Important processes
 
@@ -90,7 +96,7 @@ Browsing through the codebase will help understanding the high-level logic for s
 
 ### When the user creates a new game
 
-When the user opens the "Create" page, we run create a new game: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameCreate.ts)
+When the user opens the "Create" page, we run create a new game: [HERE](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals/blob/main/frontend/src/states/gameCreate.ts)
 
 1. We first create a new account on chain, like a regular solana smart contract
 2. We then delegate this new account to our ephemeral validator
@@ -101,11 +107,11 @@ When the user opens the "Create" page, we run create a new game: [HERE](https://
 
 #### When a player joins the game
 
-When the user opens the main page, we fetch the list of existing games from the chain: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameList.ts)
+When the user opens the main page, we fetch the list of existing games from the chain: [HERE](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals/blob/main/frontend/src/states/gameList.ts)
 
-1. When the user joined the game's page, we start listening to the game's state inside the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
-2. We update the UI to display the map every time the game changes inside of the ephemeral, you can find the code for the page logic: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
-3. When the user executes a move on the map, we send the command transaction through directly in the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
+1. When the user joined the game's page, we start listening to the game's state inside the ephemeral: [HERE](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals/blob/main/frontend/src/states/gameListen.ts)
+2. We update the UI to display the map every time the game changes inside of the ephemeral, you can find the code for the page logic: [HERE](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
+3. When the user executes a move on the map, we send the command transaction through directly in the ephemeral: [HERE](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
 4. This will update the state of the game inside of the ephemeral, notifying all players and updating the UI immediately
 
 ### Recap

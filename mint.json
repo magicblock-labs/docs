@@ -21,7 +21,7 @@
     }
   ],
   "primaryTab": {
-    "name": "MagicBlock"
+    "name": "MagicBlock Engine"
   },
   "tabs": [
     {
@@ -50,21 +50,22 @@
       ]
     },
     {
-      "group": "How to Accelerate Your Program",
+      "group": "How to Integrate Your Program",
       "pages": [
-        "pages/get-started/accelerate-your-app/introduction",
-        "pages/get-started/accelerate-your-app/rust",
-        "pages/get-started/accelerate-your-app/anchor"
+        "pages/get-started/how-integrate-your-program/overview",
+        "pages/get-started/how-integrate-your-program/anchor",
+        "pages/get-started/how-integrate-your-program/rust"
       ]
     },
     {
-      "group": "Examples",
+      "group": "Use Cases",
       "pages": [
         "pages/get-started/examples/introduction",
         "pages/get-started/examples/finance",
         "pages/get-started/examples/games",
         "pages/get-started/examples/ai",
-        "pages/get-started/examples/payments"
+        "pages/get-started/examples/payments",
+        "pages/get-started/examples/depin"
       ]
     },
     {
