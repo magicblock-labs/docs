@@ -60,19 +60,17 @@
     {
       "group": "Use Cases",
       "pages": [
-        "pages/get-started/examples/introduction",
-        "pages/get-started/examples/finance",
-        "pages/get-started/examples/games",
-        "pages/get-started/examples/ai",
-        "pages/get-started/examples/payments",
-        "pages/get-started/examples/depin"
+        "pages/get-started/use-cases/introduction",
+        "pages/get-started/use-cases/finance",
+        "pages/get-started/use-cases/games",
+        "pages/get-started/use-cases/ai",
+        "pages/get-started/use-cases/payments",
+        "pages/get-started/use-cases/depin"
       ]
     },
     {
       "group": "Tools",
-      "pages": [
-        "pages/tools/introduction"
-      ]
+      "pages": ["pages/tools/introduction"]
     },
     {
       "group": "Framework",
