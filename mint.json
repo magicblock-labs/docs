@@ -1,8 +1,10 @@
 {
   "$schema": "https://mintlify.com/schema.json",
   "name": "MagicBlock Documentation",
-  "components": {
-    "callout": true
+  "integrations": {
+      "ga4": {
+          "measurementId": "G-M3W08J15Y9"
+      }
   },
   "logo": {
     "dark": "/logo/dark.png",
