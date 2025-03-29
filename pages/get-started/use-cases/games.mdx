@@ -1,0 +1,126 @@
+---
+title: Games
+description: "Unlock the next era of real-time on-chain gaming"
+---
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="https://github.com/GabrielePicco/notes/raw/refs/heads/main/demo-day.mov"
+  controls
+></video>
+
+#### 🔴 Problems with Gaming
+
+- **Lack of True Ownership** – Game assets are controlled by companies.
+- **Shut Down Risk** – Servers go offline, and players lose progress.
+- **Closed Ecosystems** – No interoperability between game economies.
+
+#### ⛓️ Current Blockchain Limitations
+
+- **Slow Gameplay** – High latency prevents real-time interactions.
+- **High Gas Costs** – Transactions are expensive for frequent in-game actions.
+- **Limited Developer Tooling** – Complex blockchain development.
+
+#### ⚡ MagicBlock's Solution
+
+- **True Digital Ownership** – Players own and trade assets without restrictions.
+- **Real-Time Gameplay** – Instant, gas-efficient transactions for smooth experiences.
+- **Composable Worlds** – Game logic and economies can be extended by anyone.
+
+## Example: MagicBlock Labs - Generals
+
+### Abstract
+
+In order to get a full birds eye view of all moving pieces involved with using MagicBlock, we provide a real-life example of a fully-fledged game accelerated by the MagicBlock Engine.
+
+<img width="100%" src="/images/magicblock_generals_moves.gif" />
+<CardGroup cols={2}>
+  <Card
+    title="Source Code: MagicBlock Labs - Generals"
+    icon="github"
+    href="https://github.com/magicblock-labs/solana-generals"
+    iconType="duotone"
+  >
+    Learn more about building and integrating games with MagicBlock!
+  </Card>
+  <Card
+    title="Bolt"
+    icon="bolt"
+    href="/pages/tools/bolt/introduction"
+    iconType="duotone"
+  >
+    Simplify on-chain game development with BOLT
+  </Card>
+  <Card
+    title="More Tools"
+    icon="code"
+    href="/pages/tools/introduction"
+    iconType="duotone"
+  >
+    Steamline your workflow with BOLT, Solana Unity SDK, SOAR, Session Keys ...
+  </Card>
+</CardGroup>
+
+### Architechture
+
+There are a few main components involved when building with MagicBlock:
+
+- **Solana**, this will be `mainnet-beta` or `devnet` solana public chain's RPC
+
+  - This is where the smart contracts will be deployed and fetched from
+  - This is where the final and partial state of your game will be settled on
+
+- **Ephemeral Rollups**, this is the MagicBlock validator RPC
+
+  - This is where the transactions for your game will be run on
+  - This is already deployed by MagicBlock and node operators (you can just use it as-is)
+
+- **The Backend**, this is the source code for the smart contract of the game
+
+  - In this example the smart contracts are written using the BOLT framework
+  - Those smart contracts will then be deployed on the regular solana's chain
+  - Source code is available: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/backend)
+
+- **The Frontend**, this is the User Interface of the game
+  - The UI will be fetching state from both the chain and the ephemeral
+  - The UI will be sending transaction to both the chain and the ephemeral
+  - Source code is available: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/frontend)
+
+### Important processes
+
+Browsing through the codebase will help understanding the high-level logic for setting up the ephemeral games.
+
+### When the user creates a new game
+
+When the user opens the "Create" page, we run create a new game: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameCreate.ts)
+
+1. We first create a new account on chain, like a regular solana smart contract
+2. We then delegate this new account to our ephemeral validator
+3. We can then send all our game transactions directly to the ephemeral's RPC after that
+   1. We generate the map (using a transaction sent to the ephemeral's RPC)
+   2. Wait for the players to join
+   3. Start the game when all player joined
+
+#### When a player joins the game
+
+When the user opens the main page, we fetch the list of existing games from the chain: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameList.ts)
+
+1. When the user joined the game's page, we start listening to the game's state inside the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
+2. We update the UI to display the map every time the game changes inside of the ephemeral, you can find the code for the page logic: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
+3. When the user executes a move on the map, we send the command transaction through directly in the ephemeral: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
+4. This will update the state of the game inside of the ephemeral, notifying all players and updating the UI immediately
+
+### Recap
+
+Making a game using MagicBlock is very similar to making a game on Solana.
+
+The only difference is the delegation process:
+
+- Once you setup the accounts on Solana, you can `delegate` the accounts so that they can be used inside of MagicBlock Engine
+- Once the accounts are delegated, you can send all transactions involving those accounts to the Ephemeral Rollups
+- Those transactions running inside of the Ephemeral session run in real time and can be free
+- Once you're done with the game's session, you can `undelegate` the accounts you need to use on Solana again

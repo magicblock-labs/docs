@@ -1,0 +1,191 @@
+---
+title: "Overview"
+description: "How to integrate Ephemeral Rollups in your Solana Program"
+---
+
+From an integration perspective, using Ephemeral Rollups is similar to writing a multi-threaded program. Programs can offload work to an Ephemeral Rollup session to process transactions in a low-latency, high-throughput SVM runtime. The SVM runtime is provisioned just-in-time, and transactions are processed by nodes from the decentralized networks of ephemeral validators.
+
+Ephemeral Rollups can be used with any program that targets the Solana blockchain. We maintain a library of common integrations for:
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  Integrate with an Anchor program
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  Integrate with an Native Rust program
+</Card>
+
+</CardGroup>
+
+## Lifecycle of the Integration
+
+The lifecycle of integrating Ephemeral Rollups in your program is as follows:
+
+<Steps>
+  <Step title="Write your program">
+    Write your Solana program as you normally would, using Anchor, native Rust,
+    Bolt, C, or even assembly.
+  </Step>
+  <Step title="Add delegation and undelegation hooks">
+    Accounts that are delegated can be used as writable in an Ephemeral Rollup
+    session.
+  </Step>
+  <Step title="Deploy your program on Solana">
+    Deploy your program directly on Solana.
+  </Step>
+  <Step title="Execute transactions">
+    Execute transactions on-chain or off-chain using any SDKs that complies with
+    the SVM RPC specification (web3.js, Solana Rust SDK, Unity SDK, or others).
+  </Step>
+</Steps>
+<Note>
+  These public RPC endpoints are currently free and supported for development.
+  <br /> Solana Devnet: https://api.devnet.solana.com <br />
+  ER Devnet: https://devnet.magicblock.app
+</Note>
+
+## Add delegation and undelegation hooks
+
+Empower your program with ultra-latency transactions by adding delegation and undelegation hooks. Simply add two functions from the native Rust SDK to your program.
+
+### Delegation
+
+`Delegation` is the process of transferring ownership of one or more of your program's `PDAs` to the delegation program. Ephemeral Validators will then be able to use the `PDAs` to perform transactions in the SVM runtime and commit the state.
+
+In Rust programs, you can use the `ephemeral_rollups_sdk` crate to delegate accounts.
+
+Install it with:
+
+```bash
+cargo add ephemeral_rollups_sdk
+```
+
+Then use the `delegate_account` function to delegate an account to the delegation program.
+
+```rust Delegation
+use ephemeral_rollups_sdk::cpi::delegate_account;
+
+delegate_account(
+    &ctx.accounts.payer, // The account that will pay for opening the
+    &ctx.accounts.pda, // The PDA to delegate
+    &ctx.accounts.owner_program, // Owner program of the PDA
+    ...
+    pda_seeds, // Seeds to make the PDA signer
+    0, // 0 means no time limit for the delegation
+    3_000, // Update frequency on the base layer in milliseconds
+)?;
+```
+
+<Note>
+  Both delegation and undelegation are CPIs that can be integrated in existing
+  instructions of your program
+</Note>
+
+### Undelegation
+
+`Undelegation` is the process of transferring ownership of the `PDAs` back to your program.
+On undelegation, the state is committed and it trigger the finalization process. Once state it validated, the `PDAs` are unlocked and can be used as normal on mainnet
+
+```rust Delegation
+use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
+
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.pda.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+Additionally, custom CPI can instruct the ephemeral validators to `commit` and `finalize` a state or `close` a session.
+
+<Note>
+  Note that commit and undelegation accept a list of accounts. These accounts
+  are committed atomically to the base layer which allows to maintain state
+  consistency of dependent accounts
+</Note>
+
+## Execute transactions
+
+Once deployed with delegation and undelgeation hooks, any instruction which is part of your program can be executed with ultra-low latency without changes.
+The **transaction will be processed** by Base Layer (Solana) or Ephemeral Rollup (ER) validators **depending on the account's delegation status**.
+
+### Any Program Instruction
+
+When executing any of your program instructions through a specialized RPC router, the transaction list of accounts is checked:
+
+- Ultra-low Latency: If **all writable accounts are delegated**, the transaction is executed with low-latency on ER.
+  - If **account is newly delegated**, the newly delegated account is cloned from Base Layer to ER with its original owner .
+  - If **account is delegated and already cloned from Base Layer to ER with its original owner**, existing delegated account on ER is utilized.
+  - If **account is undelegated and non-writable**, undelegated account is cloned from Base Layer to ER.
+- Normal: If **all writable accounts are undelegated**, the transaction is executed on Base Layer.
+- Error: If **writable accounts are delegated and undelegated**, the transaction fails.
+  <img height="200" src="/images/interact.png" />
+
+### Delegate Transaction
+
+Before executing ultra-low latency transactions on ER, the state account must be delegated through the delegation hook of your program. This is what happens when delegating state account(s) from Base Layer to ER:
+
+- **Base Layer:** Account owner is locked and set to MagicBlock's Delegation Program.
+- **ER:** No account is created during delegation on ER yet, but afterwards upon any transaction to ER.
+
+Transaction fails if account is already delegated.
+
+<img height="200" src="/images/delegate.png" />
+
+### Undelegate Transaction
+
+You can commit and undelegate the account from ER to Base Layer through the undelegation hook. This is what happens when undelegating state accounts:
+
+- **ER:** Commit for account(s) is scheduled. Account(s) are undelegated i.e. owner changes from original program to Delegation Program.
+- **Base Layer:** CPI callback is called to get, finalize and recreate account from ER to Base Layer with its original program as owner.
+
+Transaction fails if account is already undelegated.
+
+<img height="200" src="/images/undelegate.png" />
+
+### Commit Transaction
+
+You can also sync the state from ER to Base Layer without changing delegation by committing the account state through a commit hook. This is what happens when committing states from ER to Base Layer:
+
+- **ER:** Commit for account(s) is scheduled.
+- **Base Layer:** CPI callback is called to get, finalize and update account from ER to Base Layer with Delegation Program as owner.
+
+Transaction fails if account is already undelegated.
+
+<img height="200" src="/images/commit.png" />
+
+## Learn how to build with Native Rust and Anchor!
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  Integrate with an Anchor program
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  Integrate with an Native Rust program
+</Card>
+
+</CardGroup>

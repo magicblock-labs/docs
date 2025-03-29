@@ -1,0 +1,111 @@
+---
+title: "Ephemeral Rollup"
+description: "Scaling solution for performant, composable applications"
+---
+
+<img height="200" src="/images/architecture_overview.png" />
+
+Magicblock's core idea **leverages the Solana Virtual Machine (SVM)’s account-based structure and parallel execution** to optimize state management. By structuring the state into **clusters**, users can **lock one or multiple accounts** and temporarily shift state execution to a **dedicated auxiliary layer**—which we define as the **"ephemeral rollup" (ER)**.
+
+### **How It Works**
+
+1. **State Delegation** – Users lock state accounts to an ephemeral rollup, enabling a configurable runtime that operates independently.
+2. **Sequencer Control** – The sequencer temporarily modifies the state in this rollup. If constraints are violated, the state is **forcefully reverted** and unlocked on the L1.
+3. **Parallel Read Access** – Even as accounts are delegated, transactions on the base layer can still **read their state**, ensuring compatibility. Non-delegated accounts remain fully **modifiable and unaffected**.
+
+### **Capabilities of Ephemeral Rollups**
+
+The ephemeral rollup functions as a **specialized SVM runtime**, significantly enhancing transaction throughput. This runtime can be **customized** to include:
+
+- ✅ **Gasless Transactions** – Enable scalability and mass adoption.
+- ✅ **Faster Block Times** – Enables real-time interactions for seamless UX.
+- ✅ **Integrated Scheduling (Ticking Mechanism)** – Built-in automation, like **Clockwork**, to execute transactions on schedule.
+
+Programs and assets reside directly on the base layer and are fully compatible. Any improvements or advancements at the base layer are immediately available, without the need to modify or re-deploy programs.
+
+- ✅ **Program and States Synchronization** – No fragementation. States and programs can interact with any existing protocol and assets.
+- ✅ **Horizontal Scaling** – Launch multiple rollups on-demand and perform millions of transactions.
+- ✅ **Familiar Tooling** – Reuse any existing and familiar programming language, libraries and testing tools.
+
+<Card title="Seamless User Experience">
+  All of this happens **transparently to the end user**. A **specialized RPC
+  provider** dynamically routes transactions to both the **base layer and the
+  ephemeral rollup(s) in parallel**—optimizing execution.
+</Card>
+
+The [white paper](https://arxiv.org/abs/2311.02650) describes the architecture and the scalability solution in detail.
+
+## How are Transaction executed?
+
+<img height="200" src="/images/magicblock-er.png" />
+
+Once transactions are submitted via specialized RPCs, the provisioner detects delegation events and manages runtime provisioning based on configuration.Below is a high-level overview of the process of executing transactions in the ephemeral rollup:
+
+<Steps>
+  <Step title="Delegation">
+    State accounts are delegated to the Ephemeral Rollup via the Delegation
+    Program, specifying parameters like lifetime and update frequency.
+  </Step>
+  <Step title="Transaction Execution">
+    Transactions are routed to the appropriate execution layer (base or
+    Ephemeral) via an RPC router.
+  </Step>
+  <Step title="State Commitment">
+    The operator periodically commits the ephemeral state to the base layer,
+    including new state and relevant pointers. The state is finalized using a
+    fraud-proof mechanism as detailed in the paper.
+  </Step>
+  <Step title="Continued Transaction Execution">
+    Transactions are continuously routed to the appropriate execution layer
+    (base or Ephemeral) via an RPC router.
+  </Step>
+  <Step title="Final Commitment and Undelegation">
+    Ephemeral states are committed to the base layer and accounts are
+    undelegated via the Delegation Program to the original owner.
+  </Step>
+</Steps>
+
+## Additional Resources
+
+• [Whitepaper](https://arxiv.org/abs/2311.02650)
+
+• [Presentation at Breakpoint 2023](https://t.co/P8SEeSEb8j)
+
+• [a16z CSX Demo Day](https://www.youtube.com/watch?v=UFUlv-gIBTk)
+
+### Where to continue?
+
+<CardGroup cols={2}>
+  <Card
+    title="Why MagicBlock?"
+    icon="bolt"
+    href="/pages/get-started/introduction/why-magicblock"
+    iconType="duotone"
+  >
+    Find out why building with MagicBlock
+  </Card>
+  <Card
+    title="Build"
+    icon="hammer"
+    href="/pages/get-started/how-integrate-your-program/introduction"
+    iconType="duotone"
+  >
+    Try out with Rust, Anchor, and Typescript
+  </Card>
+  <Card
+    title="Examples"
+    icon="star"
+    href="/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    Discover new ideas from examples
+  </Card>
+  <Card
+    title="Frameworks and SDKs"
+    icon="code"
+    href="/pages/tools/introduction"
+    iconType="duotone"
+  >
+    Dive into Frameworks and SDKs
+  </Card>
+</CardGroup>

@@ -58,7 +58,9 @@ const initializeComponent = await InitializeComponent({
   entity: entityPda,
   componentId: positionComponent.programId,
 });
-const signature = await provider.sendAndConfirm(initializeComponent.transaction);
+const signature = await provider.sendAndConfirm(
+  initializeComponent.transaction
+);
 const componentPda = initializeComponent.componentPda; // We can use this to fetch the state
 ```
 
@@ -70,10 +72,12 @@ To apply a system:
 const applySystem = await ApplySystem({
   authority: provider.wallet.publicKey,
   systemId: systemMovement.programId,
-  entities: [{
-    entity: entityPda,
-    components: [{ componentId: positionComponent.programId }],
-  }]
+  entities: [
+    {
+      entity: entityPda,
+      components: [{ componentId: positionComponent.programId }],
+    },
+  ],
 });
 const signature = await provider.sendAndConfirm(applySystem.transaction);
 ```
