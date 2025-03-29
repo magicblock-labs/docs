@@ -118,7 +118,7 @@ After this step, an ephemeral validator can start processing transactions on the
 <Card
   title="Transaction (Base Layer): Delegate"
   icon="magnifying-glass"
-  href="https://solscan.io/tx/gRXKc3zvPTkoapNyJDCGGTB2cnQ9jb7TJJuDHex2Q1Mk2swpRtHQDHRKMjZAQCXeMfAWpqZ7axbX4RAH8ewrNYf?cluster=devnet"
+  href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
   iconType="duotone"
 >Inspect transactions details on Solana Explorer</Card>
 ```rust
@@ -179,6 +179,24 @@ accounts: &[AccountInfo],
 ### Committing while the PDA is delegated
 
 The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
+<CardGroup cols={2}>
+  <Card
+    title="Transaction (ER): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+  <Card
+    title="Transaction (Base layer): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+</CardGroup>
 ```rust
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -226,7 +244,7 @@ Undelegation commit the latest state and give back the ownership of the PDA to t
   <Card
     title="Transaction (ER): Undelegate"
     icon="magnifying-glass"
-    href="https://solscan.io/tx/2vcy1r5t5q2oBWuKtZzmxtpZvazjNJGZKq1R4u7VMBBaLUmJLz3dk7bPi4xqYiFKHfAd8hVaYHQkZMabj8zSvRVV?cluster=custom&customUrl=https://devnet.magicblock.app"
+    href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
     Inspect transaction details on Solana Explorer
@@ -234,7 +252,7 @@ Undelegation commit the latest state and give back the ownership of the PDA to t
   <Card
     title="Transaction (Base layer): Undelegate"
     icon="magnifying-glass"
-    href="https://solscan.io/tx/651eKJxd1wSDsg4kjgxKaqXg2DkvbaN7oTsVDJFeeDi5Gei2ags2bMAuVcDptZkXJrr1A7fZ6b8SH2jGjnbP4whC?cluster=devnet"
+    href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
     iconType="duotone"
   >
     Inspect transaction details on Solana Explorer
@@ -315,20 +333,22 @@ let system_program = next_account_info(account_info_iter)?;
 Build valid transactions that calls your program instructions for delegation and undelegation.
 The complete test for this project can be found in the [Typescript Test Script](https://github.com/jonasXchen/magicblock-rust-counter/tree/main/tests).
 
-### Test delegation transaction
+### Test `delegation` transaction
 
-Create a instruction with the right order and attributes of accounts, and the instruction discriminator for delegation of your program. Send the transaction with the instruction to Solana network.
+Create a instruction with the right order and attributes of accounts, and the instruction discriminator for `delegation` of your program. Send the transaction with the instruction to Base Layer (Solana) network.
 
 <Card
   title="Transaction (Base Layer): Delegate"
   icon="magnifying-glass"
-  href="https://solscan.io/tx/gRXKc3zvPTkoapNyJDCGGTB2cnQ9jb7TJJuDHex2Q1Mk2swpRtHQDHRKMjZAQCXeMfAWpqZ7axbX4RAH8ewrNYf?cluster=devnet"
+  href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
   iconType="duotone"
 >
   Inspect transactions details on Solana Explorer
 </Card>
 
-```typescript import * as web3 from "@solana/web3.js";
+```typescript
+import * as web3 from "@solana/web3.js";
+
 // Build delegation transaction
 const tx = new web3.Transaction();
 const keys = [
@@ -405,15 +425,89 @@ const txHash = await web3.sendAndConfirmTransaction(
 );
 ```
 
-### Test undelegation transaction
+## Test `commit` transaction
 
-Create a instruction with the right order and attributes of accounts, and the instruction discriminator for undelegation of your program. Send the transaction with the instruction to ER network.
+Create a instruction with the right order and attributes of accounts, and the instruction discriminator for `commit` of your program. Send the transaction with the instruction to ER network.
+
+<CardGroup cols={2}>
+  <Card
+    title="Transaction (ER): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+  <Card
+    title="Transaction (Base layer): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+</CardGroup>
+
+```typescript
+import * as web3 from "@solana/web3.js";
+
+// 3: Commit
+// Create, send and confirm transaction
+const tx = new web3.Transaction();
+const keys = [
+  // Initializer
+  {
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
+  },
+  // Counter Account
+  {
+    pubkey: counterPda,
+    isSigner: false,
+    isWritable: true,
+  },
+  // Magic Program
+  {
+    pubkey: MAGIC_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Magic Context
+  {
+    pubkey: MAGIC_CONTEXT_ID,
+    isSigner: false,
+    isWritable: true,
+  },
+];
+const serializedInstructionData = Buffer.from(CounterInstruction.Commit, "hex");
+const commitIx = new web3.TransactionInstruction({
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
+});
+tx.add(commitIx);
+const connection = new web3.Connection(rpcMagicblock);
+const txHash = await web3.sendAndConfirmTransaction(
+  connection,
+  tx,
+  [userKeypair],
+  {
+    skipPreflight: true,
+    commitment: "confirmed",
+  }
+);
+```
+
+### Test `undelegation` transaction
+
+Create a instruction with the right order and attributes of accounts, and the instruction discriminator for `undelegation` of your program. Send the transaction with the instruction to ER network.
 
 <CardGroup cols={2}>
   <Card
     title="Transaction (ER): Undelegate"
     icon="magnifying-glass"
-    href="https://solscan.io/tx/2vcy1r5t5q2oBWuKtZzmxtpZvazjNJGZKq1R4u7VMBBaLUmJLz3dk7bPi4xqYiFKHfAd8hVaYHQkZMabj8zSvRVV?cluster=custom&customUrl=https://devnet.magicblock.app"
+    href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
     Inspect transaction details on Solana Explorer
@@ -421,50 +515,50 @@ Create a instruction with the right order and attributes of accounts, and the in
   <Card
     title="Transaction (Base layer): Undelegate"
     icon="magnifying-glass"
-    href="https://solscan.io/tx/651eKJxd1wSDsg4kjgxKaqXg2DkvbaN7oTsVDJFeeDi5Gei2ags2bMAuVcDptZkXJrr1A7fZ6b8SH2jGjnbP4whC?cluster=devnet"
+    href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
     iconType="duotone"
   >
     Inspect transaction details on Solana Explorer
   </Card>
 </CardGroup>
-```typescript import * as web3 from "@solana/web3.js";
-
+```typescript
+import * as web3 from "@solana/web3.js"
 // Build commit and undelegation transaction
 const tx = new web3.Transaction();
 const keys = [
-// Initializer
-{
-pubkey: userKeypair.publicKey,
-isSigner: true,
-isWritable: true,
-},
-// Counter Account
-{
-pubkey: counterPda,
-isSigner: false,
-isWritable: true,
-},
-// Magic Program
-{
-pubkey: MAGIC_PROGRAM_ID,
-isSigner: false,
-isWritable: false,
-},
-// Magic Context
-{
-pubkey: MAGIC_CONTEXT_ID,
-isSigner: false,
-isWritable: true,
-},
+  // Initializer
+  {
+  pubkey: userKeypair.publicKey,
+  isSigner: true,
+  isWritable: true,
+  },
+  // Counter Account
+  {
+  pubkey: counterPda,
+  isSigner: false,
+  isWritable: true,
+  },
+  // Magic Program
+  {
+  pubkey: MAGIC_PROGRAM_ID,
+  isSigner: false,
+  isWritable: false,
+  },
+  // Magic Context
+  {
+  pubkey: MAGIC_CONTEXT_ID,
+  isSigner: false,
+  isWritable: true,
+  },
 ];
 const serializedInstructionData = Buffer.from(
-CounterInstruction.CommitAndUndelegate,
-"hex"
+  CounterInstruction.CommitAndUndelegate,
+  "hex"
 );
 const undelegateIx = new web3.TransactionInstruction({
-keys: keys,
-programId: PROGRAM_ID,
-data: serializedInstructionData,
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
 });
 tx.add(undelegateIx);
 
@@ -478,7 +572,7 @@ tx,
 skipPreflight: true,
 commitment: "confirmed",
 }
-);
+)
 
 ````
 
