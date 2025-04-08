@@ -3,7 +3,6 @@ title: Why MagicBlock?
 description: "The high-performance engine for real-time applications on Solana"
 ---
 
-<img height="200" src="/images/magicblock-solana.png" />
 <Card>
   MagicBlock is an extension of the Solana network designed for high-performance
   decentralized applications. It enhances Solana’s capabilities while preserving
@@ -12,23 +11,28 @@ description: "The high-performance engine for real-time applications on Solana"
 
 ## Why MagicBlock?
 
-Most applications rely on centralized servers for cost efficiency, performance and security. While blockchain technology is revolutionizing decentralized applications, it still faces key challenges:
+While blockchain technology is revolutionizing decentralized applications, it still faces fundamental challenges in:
 
 - **Latency** – Blockchain transaction speeds are too slow for real-time applications.
 - **Cost** – Even "low-fee" blockchains can become expensive at scale.
 - **Scalability** – Current architectures struggle to handle high-throughput applications.
 
-MagicBlock overcomes these limitations with an ephemeral rollup, seamlessly blending the best of centralized and decentralized infrastructures—without trade-offs.
+MagicBlock solves these issues with an **ephemeral rollup**, enabling developers to build dApps that require **10 ms state transitions**, **gasless transactions**, and **horizontal scaling**. Here's how:
 
-## What is MagicBlock?
+#### Built on Solana's Ecosystem and Performance
 
-MagicBlock Engine is a **Solana Virtual Machine (SVM)** based **Ephemeral Rollup (ER)** system that seamlessly integrates with Solana’s base layer. While traditional rollups and Solana’s execution model have constraints for resource-intensive applications, MagicBlock eliminates these limitations by enabling:
+MagicBlock operates as a specialized **Solana Virtual Machine (SVM) runtime**, seamlessly integrating with Solana’s base layer. Developers deploying programs on Solana are fully compatible with the ephemeral rollup down to the bytecode, benefiting from the SVM’s high performance and robust ecosystem.
 
-- ✅ **Real-Time State Transitions**: Solana’s default 400 ms block time isn’t fast enough for real-time applications. MagicBlock allows **custom execution environments with 10 ms latency** while maintaining full compatibility.
-- ✅ **Composability of SVM Ecosystem**: Traditional rollups fragment application states across multiple environments. MagicBlock **syncs programs and states** across Solana’s base layer and ephemeral rollup.
-- ✅ **Near-Zero Transaction Fees**: Even a $0.01 fee per transaction adds up at scale. MagicBlock drastically reduces costs, enabling **gasless or near-zero** transactions.
-- ✅ **Horizontal Scalability**: Traditional rollups struggle to scale efficiently while preserving decentralization. MagicBlock enables **horizontal auto-scaling** ephemeral rollups, handling millions of transactions per second.
-- ✅ **Developer-Friendly Deployment**: Programs deployed on Solana remain fully compatible with MagicBlock’s ephemeral rollup down to the bytecode, making migration effortless.
+<img height="200" src="/images/magicblock-solana.png" />
+
+#### Overcoming Limitations in Scaling and Cost
+
+Traditional rollups and Solana’s current execution model have inherent constraints when handling resource-intensive applications. MagicBlock removes these limitations by enabling:
+
+- **Ultra-Low Latency (10 ms Block Time)**: Solana's default 400 ms block time is too slow for real-time applications. MagicBlock allows developers to customize execution environments while maintaining full compatibility.
+- **State Integrity Without Fragmentation**: Traditional rollups fragment application states across multiple environments, making interoperability difficult. MagicBlock prevents this by utilizing specialized RPC providers that **route and process transactions in parallel** between Solana’s base layer and ephemeral rollups.
+- **Near-Zero Transaction Fees**: Even Solana’s low fees (~$0.01 per transaction) can be expensive at scale. MagicBlock drastically reduces costs, enabling minimal or **zero-fee transactions**.
+- **Horizontal Scalability**: Standard rollups struggle to scale efficiently. MagicBlock enables **horizontal auto-scaling**, seamlessly spinning up multiple ephemeral rollups to process millions of transactions per second.
 
 ### Where do I start?
 
@@ -44,15 +48,15 @@ MagicBlock Engine is a **Solana Virtual Machine (SVM)** based **Ephemeral Rollup
   <Card
     title="Build"
     icon="hammer"
-    href="/pages/get-started/how-integrate-your-program/overview"
+    href="/pages/get-started/accelerate-your-app/introduction"
     iconType="duotone"
   >
     Try out with Rust, Anchor, and Typescript
   </Card>
   <Card
-    title="Examples"
+    title="Use Cases"
     icon="star"
-    href="/pages/get-started/use-cases/introduction"
+    href="/pages/get-started/examples/introduction"
     iconType="duotone"
   >
     Discover new ideas from examples
