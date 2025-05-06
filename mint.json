@@ -10,7 +10,7 @@
     "dark": "/logo/MagicBlock-Logo-White.png",
     "light": "/logo/MagicBlock-Logo-Black.png"
   },
-  "favicon": "/favicon.png",
+  "favicon": "/logo/favicon.png",
   "colors": {
     "primary": "#0069ED",
     "light": "#4D9CFF",
