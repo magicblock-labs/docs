@@ -4,6 +4,9 @@
   "integrations": {
       "ga4": {
           "measurementId": "G-M3W08J15Y9"
+      },
+      "googleAnalytics": {
+          "id": "G-M3W08J15Y9"
       }
   },
   "logo": {
