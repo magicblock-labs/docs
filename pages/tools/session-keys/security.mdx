@@ -9,7 +9,7 @@ Key Management is an extremely important aspect of the security. One thing to no
 \
 Our current client side key management is only on the web. Given the constraints, we do take adequate security measures on the browser. \
 \
-The ephemeral keypair is encrypted and safely stored in the user's browser using IndexedDB, an in-browser database. When a user initiates an action, such as signing and sending a transaction, the session token signs the transaction using the temporary key pair. The smart contract can then validate the transaction, confirming that the user's wallet authorized the session token.\
+The ephemeral keypair is encrypted and safely stored in the user's browser using IndexedDB, an in-browser database. When a user initiates an action, such as signing and sending a transaction, the session token signs the transaction using the temporary key pair. The smart contract can then validate the transaction, confirming that the user's wallet authorized the session token.
 
 1. Generate a random keypair using `web3.Keypair.generate()`
 2. Generate a random encryption key
