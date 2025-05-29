@@ -231,6 +231,19 @@ To interact with the Ephemeral Rollup session, you need to configure the appropr
   https://devnet.magicblock.app
 
 - For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
+- For localhost, download, install, and run the ephemeral validator locally with the appropriate environment variables:
+
+```bash
+# 1. Install the Local Validator
+npm install -g @magicblock-labs/ephemeral-validator
+
+# 2. Start the Local Validator
+ACCOUNTS_REMOTE=https://rpc.magicblock.app/devnet ACCOUNTS_LIFECYCLE=ephemeral ephemeral-validator
+
+# 3. Run the Tests with the Local Validator
+PROVIDER_ENDPOINT=http://localhost:8899 WS_ENDPOINT=ws://localhost:8900 anchor test --skip-build --skip-deploy --skip-local-validator
+
+```
 
 Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
 
