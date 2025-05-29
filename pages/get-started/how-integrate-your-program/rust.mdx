@@ -65,7 +65,7 @@ The program implements two main instructions:
 1. `InitializeCounter`: Initialize and sets the counter to 0 (called on Base Layer)
 2. `IncreaseCounter`: Increments the initialized counter by X amount (called on Base Layer or ER)
 
-The program implements three instructions for delegating and undelegating the counter:
+The program implements specific instructions for delegating and undelegating the counter:
 
 1. `Delegate`: Delegates counter from Base Layer to ER (called on Base Layer)
 2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
@@ -599,7 +599,7 @@ commitment: "confirmed",
 }
 )
 
-`````
+````
 
 ### Ephemeral Endpoint Configuration
 
@@ -622,7 +622,7 @@ ACCOUNTS_REMOTE=https://rpc.magicblock.app/devnet ACCOUNTS_LIFECYCLE=ephemeral e
 # 3. Run the Tests with the Local Validator
 PROVIDER_ENDPOINT=http://localhost:8899 WS_ENDPOINT=ws://localhost:8900 yarn test
 
-```
+````
 
 Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
 
@@ -648,5 +648,3 @@ Make sure to update your client configuration to use the correct endpoint based 
     iconType="duotone"
   ></Card>
 </CardGroup>
-``` ````
-`````
