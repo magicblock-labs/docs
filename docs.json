@@ -51,7 +51,7 @@
             ]
           },
           {
-            "group": "Framework",
+            "group": "BOLT Framework",
             "pages": [
               "pages/tools/bolt/introduction",
               "pages/tools/bolt/mapping",
