@@ -9,6 +9,7 @@ Below is a simplified example showing how a rollup program requests and consumes
 use ephemeral_vrf_sdk::{create_request_randomness_ix, random_u8_with_range};
 
 pub fn request_loot_drop(ctx: Context<RequestLootDrop>, seed: [u8; 32]) -> Result<()> {
+    // `create_request_randomness_ix` composes the `RequestRandomness` instruction
     create_request_randomness_ix(ctx.accounts.vrf_program_identity.key(), seed, consume_randomness)?;
     Ok(())
 }
@@ -25,5 +26,6 @@ pub fn consume_randomness(ctx: Context<ConsumeRandomness>, value: [u8; 32]) -> R
 ```
 
 The first instruction requests randomness and specifies the callback `consume_randomness`. Once the VRF proof is generated, the runtime calls the callback, passing the random output for use in game logic.
+An oracle from the EphemeralVrf network executes the `ProvideRandomness` instruction to deliver the proof and output.
 This pattern runs entirely within the [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) environment.
 

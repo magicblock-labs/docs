@@ -3,12 +3,13 @@ title: "Testing and Debugging"
 description: "Ways to test randomness flows during development"
 ---
 
-When building with verifiable randomness, you can emulate the VRF flow locally before deploying to a live [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup).
+When building with verifiable randomness, you can emulate the VRF flow locally before deploying to a live [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup). Use `cargo test-sbf --features test-sbf` to run the EphemeralVrf unit and integration tests.
 
 ### Local Mocking
 
 - Use the mock VRF signer provided in the `ephemeral_vrf_sdk` to simulate randomness callbacks.
 - Inject deterministic seeds to produce predictable outputs for unit tests.
+- You can run the oracle service locally with `cargo run --bin vrf-oracle` to mimic `ProvideRandomness`.
 
 ### Troubleshooting
 
