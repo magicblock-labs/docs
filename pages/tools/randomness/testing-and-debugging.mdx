@@ -1,0 +1,18 @@
+---
+title: "Testing and Debugging"
+description: "Ways to test randomness flows during development"
+---
+
+When building with verifiable randomness, you can emulate the VRF flow locally before deploying to a live [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup).
+
+### Local Mocking
+
+- Use the mock VRF signer provided in the `ephemeral_vrf_sdk` to simulate randomness callbacks.
+- Inject deterministic seeds to produce predictable outputs for unit tests.
+
+### Troubleshooting
+
+- If a callback fails, verify that the requesting program and seed match the values used to generate the proof.
+- Check logs for invalid signer errors. This often indicates a mismatched `vrf_program_identity`.
+
+By replicating the callback and proof verification in your tests, you can catch issues early and ensure your game logic handles both success and failure cases.

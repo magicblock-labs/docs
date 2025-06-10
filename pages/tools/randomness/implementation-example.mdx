@@ -1,0 +1,29 @@
+---
+title: "Implementation Example"
+description: "Using randomness in a rollup program"
+---
+
+Below is a simplified example showing how a rollup program requests and consumes randomness.
+
+```rust
+use ephemeral_vrf_sdk::{create_request_randomness_ix, random_u8_with_range};
+
+pub fn request_loot_drop(ctx: Context<RequestLootDrop>, seed: [u8; 32]) -> Result<()> {
+    create_request_randomness_ix(ctx.accounts.vrf_program_identity.key(), seed, consume_randomness)?;
+    Ok(())
+}
+
+pub fn consume_randomness(ctx: Context<ConsumeRandomness>, value: [u8; 32]) -> Result<()> {
+    let roll = random_u8_with_range(&value, 0..100);
+    if roll < 50 {
+        // grant rare loot
+    }
+    // always confirm the callback comes from the official signer
+    require_keys_eq!(ctx.accounts.vrf_program_identity.key(), ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY);
+    Ok(())
+}
+```
+
+The first instruction requests randomness and specifies the callback `consume_randomness`. Once the VRF proof is generated, the runtime calls the callback, passing the random output for use in game logic.
+This pattern runs entirely within the [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) environment.
+

@@ -1,0 +1,16 @@
+---
+title: "FAQ"
+description: "Common questions about verifiable randomness"
+---
+
+### Why not use block hashes for randomness?
+
+Block hashes can be predicted or manipulated by miners and validators, making them unsuitable for fair gameplay. MagicBlock's VRF proves the randomness was generated independently of block production.
+
+### How fast is the randomness callback?
+
+The VRF operates within the [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) execution window, so results are typically available within a single transaction round, without external polling.
+
+### Can I audit the randomness proofs?
+
+Yes. Each request includes a proof that anyone can verify on-chain using the same cryptography as the VRF signer. This transparency ensures players can confirm fairness.
