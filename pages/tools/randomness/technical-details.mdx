@@ -10,5 +10,16 @@ Random numbers are generated via a VRF built on Curve25519's Ristretto group and
 
 Helper utilities like `random_u32`, `random_u8_with_range`, and `random_bool` make it simple to convert the `[u8; 32]` output into usable values. Because the request and consume steps occur inside the ephemeral execution window, users get real-time results with verifiable fairness and without relying on external servers.
 
-The EphemeralVrf codebase is still under active development and has not been audited. Test thoroughly before integrating it into production rollups.
+## Flow
+<img height="200" src="/images/vrf-flow.png" />
 
+The flow starts with a “Request for randomness”. 
+
+1. Your program will CPI into the MagicBlock VRF program and append a request to the queue. 
+2. Once your randomness request is in the queue, an oracle will release the request and perform the randomness computation.
+3. Upon completion, it returns the result and proof to the MagicBlock VRF program.
+4. After verifying the proof, the VRF program will call back into your program into a predefined function that will “consume” the randomness.
+
+<Note>
+The EphemeralVrf codebase is still under active development and has not been audited. Test thoroughly before integrating it into production rollups.
+</Note>
