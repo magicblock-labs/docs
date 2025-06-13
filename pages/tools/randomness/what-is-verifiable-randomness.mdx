@@ -1,0 +1,24 @@
+---
+title: "What is Verifiable Randomness?"
+description: "Provably fair randomness for on-chain logic"
+---
+
+Verifiable randomness provides a tamper-proof source of chance for on-chain programs.
+Unlike pseudorandom values derived from timestamps or block hashes, it is generated off-chain and delivered alongside a cryptographic proof that anyone can verify on-chain.
+
+MagicBlock exposes this capability through **EphemeralVrf** – a Solana VRF implementation that uses a network of oracles to compute and verify random values. The protocol follows [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381), leveraging Curve25519's Ristretto group and Schnorr‑style signatures for proofs. See the [Technical Details](./technical-details) page for integration specifics.
+
+MagicBlock rollups access this randomness through the `ephemeral_vrf_sdk`,
+which runs entirely within the [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup)
+execution window.
+
+This lets programs implement mechanics like loot drops, gacha pulls, or matchmaking without trusting a single party. The receipt proves that the number was produced fairly and cannot be manipulated.
+
+#### Example use cases
+
+- Provably fair loot boxes or chest drops
+- Secure gacha systems
+- Randomized spawn or resource generation
+- Chain-verified PvP matchmaking
+- Trustless raffles or giveaways
+

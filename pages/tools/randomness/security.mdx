@@ -1,0 +1,19 @@
+---
+title: "Security"
+description: "How randomness proofs are verified"
+---
+
+The randomness proof is cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
+
+```rust
+#[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
+pub vrf_program_identity: Signer<'info>,
+```
+
+Only the official MagicBlock oracle can trigger the callback, preventing spoofed or manipulated results. Invalid proofs automatically fail, and other programs cannot front‑run the request.
+
+EphemeralVrf checks for conditions like `InvalidProof` and `Unauthorized` so incorrect signatures or unauthorized callers are rejected before your game logic runs. The implementation has not been audited yet, so always monitor callbacks in staging before going live.
+
+Avoid letting users provide the entire `caller_seed` directly—combine it with game state or timestamps to prevent seed grinding. Because everything executes inside the deterministic rollup, the random value cannot be reused or delayed.
+This enforcement happens within the same [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) that executes your game logic.
+

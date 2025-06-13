@@ -131,7 +131,17 @@
                 ]
               }
             ]
-          }
+          },
+            {
+              "group": "Randomness",
+              "pages": [
+                "pages/tools/randomness/what-is-verifiable-randomness",
+                "pages/tools/randomness/technical-details",
+                "pages/tools/randomness/security",
+                "pages/tools/randomness/best-practices",
+                "pages/tools/randomness/faq"
+              ]
+            }
         ]
       }
     ],
