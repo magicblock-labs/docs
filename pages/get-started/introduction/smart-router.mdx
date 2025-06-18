@@ -1,0 +1,117 @@
+---
+title: Smart Router
+description: Learn how Magicblock's Smart Router accelerates transactions by routing them to the right execution environment.
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/Wc2XMAKtEug?si=bjitIDG7w5fY5zmK&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+The **Magicblock Smart Router** is an open-source dynamic transaction routing engine that accelerates transactions by intelligently deciding where they should be executed — either on **Ephemeral Rollups** or **Solana** — based on transaction metadata.
+
+This removes the complexity of infrastructure decisions from the developer’s workflow, enabling seamless user experiences across different execution environments.
+
+### **What Does It Do**
+
+<img height="200" src="/images/smart-router.png" />
+
+The Smart Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest and suitable endpoint:
+
+- **Ephemeral Rollup** for fast, low-latency execution
+- **Solana** for permanent, high-throughput execution
+
+This decision is made transparently, with no need for manual routing logic from the developer providing significant benefits in transaction speed and development experience.
+
+- ✅ **Simple Integration with Single Endpoint**: Just connect to a single RPC endpoint.
+- ✅ **Seamless Wallet Experience**: Connect, sign, and submit — no need to know what’s happening behind the scenes.
+- ✅ **Faster Confirmations**: Smart Router routes to the fastest available endpoint.
+
+### **How It Works**
+
+<img height="200" src="/images/smart-router-scenarios.png" />
+
+1. **Client - Transaction Submission**  
+   The dApp or user sends a transaction to the Smart Router RPC endpoint.
+
+2. **RPC - Metadata Inspection**  
+   The Smart Router inspects the transaction metadata and checks the owner of writable accounts.
+
+3. **Validator - Smart Routing and Execution**  
+   Based on the metadata, the router determines whether to send it to:
+
+   - 🔄 **Ephemeral Rollup** (temporary, fast execution)
+   - 🔁 **Solana** (persistent, secure execution)
+
+   The router sends the transaction to the right execution layer. Users just sign and submit — no extra steps needed.
+
+<Note>
+  Currently the routing to different endpoints needs to be done manually. These
+  public RPC endpoints are currently free and supported for development: <br />
+  <br /> Solana Devnet: https://api.devnet.solana.com <br />
+  ER Devnet: https://devnet.magicblock.app <br /> <br />A smart RPC router for
+  automatic routing is under development.
+</Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="Why MagicBlock?"
+    icon="wand"
+    href="/pages/get-started/introduction/why-magicblock"
+    iconType="duotone"
+  >
+    Find out why building with MagicBlock
+  </Card>
+  <Card
+    title="Ephemeral Rollup"
+    icon="bolt"
+    href="/pages/get-started/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Learn how Ephemeral Rollups works
+  </Card>
+  <Card
+    title="Build"
+    icon="hammer"
+    href="/pages/get-started/how-integrate-your-program/overview"
+    iconType="duotone"
+  >
+    Try out with Rust, Anchor, and Typescript
+  </Card>
+  <Card
+    title="Use Cases"
+    icon="star"
+    href="/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    Discover new ideas from examples
+  </Card>
+  <Card
+    title="Frameworks and SDKs"
+    icon="code"
+    href="/pages/tools/introduction"
+    iconType="duotone"
+  >
+    Dive into Frameworks and SDKs
+  </Card>
+</CardGroup>
