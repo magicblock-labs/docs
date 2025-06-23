@@ -26,7 +26,7 @@
             "group": "How to Integrate Your Program",
             "pages": [
               "pages/get-started/how-integrate-your-program/overview",
-              "pages/get-started/how-integrate-your-program/flow",
+              "pages/get-started/how-integrate-your-program/transactions",
               "pages/get-started/how-integrate-your-program/anchor",
               "pages/get-started/how-integrate-your-program/rust"
             ]
