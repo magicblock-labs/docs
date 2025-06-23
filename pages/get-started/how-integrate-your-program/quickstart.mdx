@@ -1,5 +1,5 @@
 ---
-title: "Overview"
+title: "Quickstart"
 description: "How to integrate Ephemeral Rollups in your Solana Program"
 ---
 
@@ -126,7 +126,8 @@ To make it easier to integrate via the frontend, we created the [Magic Router](/
 Differing from the standard Solana RPC flow, we need to first request the blockhash from the Magic Router, since it'll differ based on route.
 
 ```typescript Frontend
- const cluster = "https://devnet-router.magicblock.app"
+const cluster = "https://devnet-router.magicblock.app"
+const connection = new Connection(cluster, "confirmed");
 
 // Construct a standard Solana transaction
 const transaction = await exampleClient.current?.methods
@@ -158,6 +159,14 @@ const blockhashResponse = await fetch(cluster, {
 
 // Add custom blockhash
 transaction.recentBlockhash = blockHashData.result.blockhash;
+
+transaction.feePayer = userKeypair.current.publicKey;
+transaction.sign(userKeypair.current);
+
+// Send
+const rawTx = transaction.serialize();
+const signature = await connection.sendRawTransaction(rawTx);
+console.log("✅ tx sig:", signature);
 ```
 
 <Note>
