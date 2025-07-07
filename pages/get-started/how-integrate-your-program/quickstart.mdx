@@ -77,7 +77,7 @@ Then use the `delegate_account` function to delegate an account to the delegatio
 use ephemeral_rollups_sdk::cpi::delegate_account;
 
 delegate_account(
-    &ctx.accounts.payer, // The account that will pay for opening the
+    &ctx.accounts.payer, // The account that will pay for opening the session
     &ctx.accounts.pda, // The PDA to delegate
     &ctx.accounts.owner_program, // Owner program of the PDA
     ...
