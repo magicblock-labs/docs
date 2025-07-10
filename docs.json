@@ -18,8 +18,8 @@
             "pages": [
               "pages/get-started/introduction/why-magicblock",
               "pages/get-started/introduction/ephemeral-rollup",
-              "pages/get-started/introduction/smart-router"
-             
+              "pages/get-started/introduction/smart-router",
+              "pages/get-started/introduction/pricing"
             ]
           },
           {
