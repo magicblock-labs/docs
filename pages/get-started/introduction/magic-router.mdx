@@ -1,6 +1,6 @@
 ---
-title: Smart Router
-description: Learn how Magicblock's Smart Router accelerates transactions by routing them to the right execution environment.
+title: Magic Router
+description: Learn how Magicblock's Magic Router accelerates transactions by routing them to the right execution environment.
 ---
 
 <div
@@ -28,15 +28,15 @@ description: Learn how Magicblock's Smart Router accelerates transactions by rou
   />
 </div>
 
-**Magicblock's Smart Router** is an open-source dynamic transaction routing engine that accelerates transactions by intelligently deciding where they should be executed — either on **Ephemeral Rollups** or **Solana** — based on transaction metadata.
+**Magicblock's Magic Router** is an open-source dynamic transaction routing engine that accelerates transactions by intelligently deciding where they should be executed — either on **Ephemeral Rollups** or **Solana** — based on transaction metadata.
 
 This removes the complexity of infrastructure decisions from the developer’s workflow, enabling seamless user experiences across different execution environments.
 
 ### **What Does It Do**
 
-<img height="200" src="/images/smart-router.png" />
+<img height="200" src="/images/magic-router.png" />
 
-The Smart Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest dedicated endpoint:
+The Magic Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest dedicated endpoint:
 
 - **Ephemeral Rollup** for fast, low-latency, zero-cost execution
 - **Solana** for persistent, high-throughput execution
@@ -45,17 +45,17 @@ This decision is made transparently, with no need for manual routing logic from 
 
 - ✅ **Simple Integration with Single Endpoint**: Just connect to a single RPC endpoint.
 - ✅ **Seamless Wallet Experience**: Connect, sign, and submit — no need to know what’s happening behind the scenes.
-- ✅ **Faster Confirmations**: Smart Router routes to the fastest available endpoint.
+- ✅ **Faster Confirmations**: Magic Router routes to the fastest available endpoint.
 
 ### **How It Works**
 
-<img height="200" src="/images/smart-router-scenarios.png" />
+<img height="200" src="/images/magic-router-scenarios.png" />
 
 1. **Client - Transaction Submission**  
-   The dApp or user sends a transaction to the Smart Router RPC endpoint.
+   The dApp or user sends a transaction to the Magic Router RPC endpoint.
 
 2. **RPC - Metadata Inspection**  
-   The Smart Router inspects the transaction metadata and checks the owner of writable accounts.
+   The Magic Router inspects the transaction metadata and checks the owner of writable accounts.
 
 3. **Validator - Smart Routing and Execution**  
    Based on the metadata, the router determines whether to send it to:
@@ -67,7 +67,7 @@ This decision is made transparently, with no need for manual routing logic from 
 
 <Note>
   These public RPC endpoints are currently free and supported for development:
-  <br /> Smart Router Devnet: https://devnet-rpc.magicblock.app <br />
+  <br /> Magic Router Devnet: https://devnet-rpc.magicblock.app <br />
   Solana Devnet: https://api.devnet.solana.com <br />
   ER Devnet: https://devnet.magicblock.app <br />
 </Note>
