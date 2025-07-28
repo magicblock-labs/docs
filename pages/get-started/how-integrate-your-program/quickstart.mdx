@@ -121,13 +121,12 @@ Additionally, custom CPI can instruct the ephemeral validators to `commit` and `
 
 ## Frontend
 
-To make it easier to integrate via the frontend, we created the [Magic Router](/pages/get-started/introduction/smart-router). You send  transactions directly to the magic router, and we can determine for you whether it should be routed to the [Ephemeral Rollup](/pages/get-started/introduction/ephemeral-rollup) or base layer. 
-
-Differing from the standard Solana RPC flow, we need to first request the blockhash from the Magic Router, since it'll differ based on route.
+To make it easier to integrate via the frontend, we created the [Magic Router](/pages/get-started/how-integrate-your-program/magic-router). You send  transactions directly to the magic router, and we can determine for you whether it should be routed to the [Ephemeral Rollup](/pages/get-started/introduction/ephemeral-rollup) or base layer. 
 
 ```typescript Frontend
-const cluster = "https://devnet-router.magicblock.app"
-const connection = new Connection(cluster, "confirmed");
+import { sendMagicTransaction } from "magic-router-sdk";
+
+const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
 
 // Construct a standard Solana transaction
 const transaction = await exampleClient.current?.methods
@@ -144,29 +143,12 @@ const noopInstruction = new TransactionInstruction({
   });
 transaction.add(noopInstruction);
 
-// Get blockhash
-const blockhashResponse = await fetch(cluster, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 1,
-      method: 'getBlockhashForAccounts',
-      params: ["11111111111111111111111", // writeable accounts
-              "11111111111111111111111"] 
-  })
-});
-
-// Add custom blockhash
-transaction.recentBlockhash = blockHashData.result.blockhash;
-
-transaction.feePayer = userKeypair.current.publicKey;
-transaction.sign(userKeypair.current);
-
-// Send
-const rawTx = transaction.serialize();
-const signature = await connection.sendRawTransaction(rawTx);
-console.log("✅ tx sig:", signature);
+// Send the transaction
+const signature = await sendMagicTransaction(
+  routerConnection,
+  tx,
+  [userKeypair]
+)
 ```
 
 <Note>
