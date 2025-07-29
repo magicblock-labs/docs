@@ -3,6 +3,8 @@ title: "Quickstart"
 description: "How to integrate Ephemeral Rollups in your Solana Program"
 ---
 
+import Endpoints from '/snippets/endpoints.mdx'
+
 From an integration perspective, using Ephemeral Rollups is similar to writing a multi-threaded program. Programs can offload work to an Ephemeral Rollup session to process transactions in a low-latency, high-throughput SVM runtime. The SVM runtime is provisioned just-in-time, and transactions are processed by nodes from the decentralized networks of ephemeral validators.
 
 Ephemeral Rollups can be used with any program that targets the Solana blockchain. We maintain a library of common integrations for:
@@ -48,12 +50,6 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
     the SVM RPC specification (web3.js, Solana Rust SDK, Unity SDK, or others).
   </Step>
 </Steps>
-<Note>
-  These public RPC endpoints are currently free and supported for development:
-  <br /> Magic Router Devnet: https://devnet-router.magicblock.app <br />
-  Solana Devnet: https://api.devnet.solana.com <br />
-  ER Devnet: https://devnet.magicblock.app <br />
-</Note>
 
 ## Add delegation and undelegation hooks
 
@@ -151,6 +147,4 @@ const signature = await sendMagicTransaction(
 )
 ```
 
-<Note>
-  Our current Solana Devnet Magic Router endpoint is: https://devnet-router.magicblock.app, however this is subject to change.
-</Note>
+<Endpoints/>
