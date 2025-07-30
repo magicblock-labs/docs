@@ -113,6 +113,7 @@
                 "group": "Magic Router SDK",
                 "pages": [
                   "pages/tools/magic-router-sdk/introduction",
+                  "pages/tools/magic-router-sdk/core-concepts",
                   "pages/tools/magic-router-sdk/getting-started",
                   {
                     "group": "Router API reference",
