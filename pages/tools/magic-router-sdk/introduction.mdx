@@ -1,0 +1,69 @@
+---
+title: Introduction
+description: Using Magicblock's Magic Router SDK to abstract away complexity
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="Getting Started"
+    icon="rocket"
+    href="/pages/tools/magic-router-sdk/getting-started"
+    iconType="duotone"
+  >
+    Install the SDK and learn core concepts for transaction routing.
+  </Card>
+  <Card
+    title="Magic Router Overview"
+    icon="route"
+    href="/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    Learn how Magic Router accelerates transactions with intelligent routing.
+  </Card>
+</CardGroup>
+
+## Magic Router SDK
+
+The Magic Router SDK is a TypeScript library that simplifies transaction preparation and routing for MagicBlock's Ephemeral Rollups infrastructure. Instead of manually determining whether transactions should execute on Solana mainnet or an Ephemeral Rollup, the SDK handles this complexity automatically through intelligent metadata analysis.
+
+## Purpose & Benefits
+
+The Magic Router SDK abstracts away the complexity of MagicBlock's dual-layer execution environment:
+
+- **Automatic Routing**: Transactions are intelligently routed to either Ephemeral Rollups or Solana based on account metadata
+- **Simplified Integration**: Single endpoint connection with no manual routing logic required
+- **Optimized Performance**: Transactions execute on the fastest available layer for immediate confirmation
+- **Seamless Wallet Experience**: Standard Solana transaction signing with enhanced routing capabilities
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Smart Transaction Preparation"
+    icon="brain"
+    iconType="duotone"
+  >
+    The SDK automatically fetches the correct blockhash for your transaction's writable accounts, ensuring compatibility with both Ephemeral Rollups and Solana mainnet.
+  </Card>
+  <Card
+    title="Validator Discovery"
+    icon="radar"
+    iconType="duotone"
+  >
+    Automatically identifies and connects to the closest available validator for optimal transaction performance.
+  </Card>
+  <Card
+    title="Flexible Signing Options"
+    icon="signature"
+    iconType="duotone"
+  >
+    Supports both browser wallet integration and programmatic signing with local signers or session keys.
+  </Card>
+  <Card
+    title="Account Analysis"
+    icon="magnifying-glass-chart"
+    iconType="duotone"
+  >
+    Built-in utilities to extract and analyze writable accounts from transactions for intelligent routing decisions.
+  </Card>
+</CardGroup>

@@ -1,0 +1,247 @@
+---
+title: Getting Started
+description: Getting set up with the Magic Router SDK
+---
+
+## Installation
+
+Install the Magic Router SDK using your preferred package manager:
+
+<CodeGroup>
+
+```bash npm
+npm install magic-router-sdk
+```
+
+```bash yarn
+yarn add magic-router-sdk
+```
+
+```bash pnpm
+pnpm add magic-router-sdk
+```
+
+</CodeGroup>
+
+## Basic Setup
+
+Import the SDK functions you need:
+
+```typescript
+import { 
+  prepareMagicTransaction, 
+  sendMagicTransaction,
+  getClosestValidator,
+  getWritableAccounts
+} from 'magic-router-sdk';
+import { Connection, Transaction } from '@solana/web3.js';
+```
+
+Connect to the Magic Router endpoint:
+
+```typescript
+const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+```
+
+## Understanding the Fundamentals
+
+Before diving into usage examples, it's important to understand the core concepts behind Magic Router SDK. These concepts explain why certain methods exist and how they optimize your transaction flow.
+
+<Card
+  title="Core Concepts"
+  icon="lightbulb"
+  href="/pages/tools/magic-router-sdk/core-concepts"
+  iconType="duotone"
+>
+  Learn about account delegation, blockhash management, and validator selection in the Magic Router ecosystem.
+</Card>
+
+## Basic Usage Examples
+
+### Preparing Transactions (Browser Wallets)
+
+Use `prepareMagicTransaction` when working with browser wallets that handle signing:
+
+```typescript
+import { prepareMagicTransaction } from 'magic-router-sdk';
+
+// Build your transaction as usual
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userPublicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// Prepare the transaction with correct blockhash
+const preparedTransaction = await prepareMagicTransaction(
+  connection, 
+  transaction
+);
+
+// Sign with wallet (e.g., Phantom, Solflare)
+const signedTransaction = await wallet.signTransaction(preparedTransaction);
+
+// Send the signed transaction
+const signature = await connection.sendRawTransaction(
+  signedTransaction.serialize()
+);
+```
+
+### Sending Transactions (Local Signers)
+
+Use `sendMagicTransaction` when you have local signers or session keys:
+
+```typescript
+import { sendMagicTransaction } from 'magic-router-sdk';
+
+// Build your transaction
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userKeypair.publicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// Send transaction with automatic preparation and signing
+const signature = await sendMagicTransaction(
+  connection,
+  transaction,
+  [userKeypair] // Array of signers
+);
+
+console.log("Transaction signature:", signature);
+```
+
+### Validator Discovery
+
+Find the optimal validator for your connection:
+
+```typescript
+import { getClosestValidator } from 'magic-router-sdk';
+
+const closestValidatorPubkey = await getClosestValidator(connection);
+console.log("Closest validator:", closestValidatorPubkey.toBase58());
+```
+
+#### Delegating Accounts to a Validator
+
+Once you have the closest validator, you can delegate accounts to enable Ephemeral Rollup execution:
+
+```typescript
+import { sendMagicTransaction, getClosestValidator } from 'magic-router-sdk';
+
+async function delegateAccountToValidator(program, userKeypair, connection) {
+  // Get the closest validator for optimal performance
+  const validatorKey = await getClosestValidator(connection);
+  
+  // Create delegation transaction
+  const delegationTx = await program.methods
+    .delegate({
+      commitFrequencyMs: 30000, // Commit every 30 seconds
+      validator: validatorKey,
+    })
+    .accounts({
+      payer: userKeypair.publicKey,
+    })
+    .transaction();
+
+  // Send the delegation transaction
+  const signature = await sendMagicTransaction(
+    connection,
+    delegationTx,
+    [userKeypair]
+  );
+
+  console.log("✅ Account delegated to validator:", validatorKey.toBase58());
+  console.log("Delegation signature:", signature);
+  
+  return signature;
+}
+
+// Example usage
+await delegateAccountToValidator(myProgram, userKeypair, connection);
+```
+
+After delegation, transactions involving the delegated accounts will automatically route to the Ephemeral Rollup for faster execution.
+
+## Complete Example
+
+Here's a full example combining all concepts:
+
+```typescript
+import { 
+  Connection, 
+  Keypair, 
+  Transaction,
+  TransactionInstruction,
+  PublicKey 
+} from '@solana/web3.js';
+import { 
+  sendMagicTransaction,
+  getWritableAccounts,
+  getClosestValidator 
+} from 'magic-router-sdk';
+
+async function executeGameMove() {
+  // Connect to Magic Router
+  const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+  
+  // Get optimal validator
+  const validator = await getClosestValidator(connection);
+  console.log(`Using validator: ${validator.toBase58()}`);
+  
+  // Build game transaction
+  const transaction = await gameProgram.methods
+    .makeMove({ x: 3, y: 4 })
+    .accounts({
+      gameState: gameStatePda,
+      player: playerKeypair.publicKey,
+    })
+    .transaction();
+  
+  // Analyze accounts that will be modified
+  const writableAccounts = getWritableAccounts(transaction);
+  console.log("Modifying accounts:", writableAccounts);
+  
+  // Execute transaction with automatic routing
+  const signature = await sendMagicTransaction(
+    connection,
+    transaction,
+    [playerKeypair]
+  );
+  
+  console.log("Move executed:", signature);
+}
+```
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card
+    title="Core Concepts"
+    icon="lightbulb"
+    href="/pages/tools/magic-router-sdk/core-concepts"
+    iconType="duotone"
+  >
+    Deep dive into the fundamental concepts behind Magic Router SDK.
+  </Card>
+  <Card
+    title="Magic Router Overview"
+    icon="route"
+    href="/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    Learn more about account delegation and how Magic Router works.
+  </Card>
+  <Card
+    title="Session Keys"
+    icon="key"
+    href="/pages/tools/session-keys/introduction"
+    iconType="duotone"
+  >
+    Explore Session Keys for gasless gaming experiences.
+  </Card>
+</CardGroup>

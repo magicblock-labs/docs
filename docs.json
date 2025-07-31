@@ -110,6 +110,18 @@
                 ]
               },
               {
+                "group": "Magic Router SDK",
+                "pages": [
+                  "pages/tools/magic-router-sdk/introduction",
+                  "pages/tools/magic-router-sdk/core-concepts",
+                  "pages/tools/magic-router-sdk/getting-started",
+                  {
+                    "group": "Router API reference",
+                    "openapi": "openapi.json"
+                  }
+                ]
+              },
+              {
                 "group": "On-chain identity",
                 "pages": [
                   "pages/tools/open-source-programs/SOAR"
@@ -135,16 +147,16 @@
               }
             ]
           },
-            {
-              "group": "Randomness",
-              "pages": [
-                "pages/tools/randomness/what-is-verifiable-randomness",
-                "pages/tools/randomness/technical-details",
-                "pages/tools/randomness/security",
-                "pages/tools/randomness/best-practices",
-                "pages/tools/randomness/faq"
-              ]
-            }
+          {
+            "group": "Randomness",
+            "pages": [
+              "pages/tools/randomness/what-is-verifiable-randomness",
+              "pages/tools/randomness/technical-details",
+              "pages/tools/randomness/security",
+              "pages/tools/randomness/best-practices",
+              "pages/tools/randomness/faq"
+            ]
+          }
         ]
       }
     ],

@@ -1,0 +1,196 @@
+---
+title: Core Concepts
+description: Understanding the fundamental concepts behind Magic Router SDK
+---
+
+## Why Fetch Blockhash for Accounts?
+
+In MagicBlock's architecture, accounts can exist in two execution environments:
+
+- **Solana Mainnet**: The base layer for persistent, composable state
+- **Ephemeral Rollups**: High-performance execution layers for delegated accounts
+
+Each environment has its own blockhash progression. The Magic Router SDK uses the `getBlockhashForAccounts` method to:
+
+1. **Analyze Account Delegation**: Check where your transaction's writable accounts are currently delegated
+2. **Fetch Correct Blockhash**: Get the appropriate blockhash from either the Ephemeral Rollup or Solana mainnet
+3. **Ensure Transaction Validity**: Prevent transaction failures due to blockhash mismatches
+
+<Warning>
+Using a standard Solana `getLatestBlockhash()` call may result in transaction failures if your accounts are delegated to an Ephemeral Rollup, as the blockhash progression differs between layers.
+</Warning>
+
+## Why Get the Nearest Validator?
+
+The `getClosestValidator` function optimizes transaction performance by:
+
+- **Reducing Latency**: Connecting to geographically closer validators for faster transaction confirmation
+- **Load Balancing**: Distributing transactions across available validators in the network
+- **Network Optimization**: Ensuring optimal routing through the MagicBlock infrastructure
+
+When delegating, we need to delegate to a specific validator. While this can be any validator of your choosing, you can use `getClosestValidator` to automatically select the best one for your users. Here is an example of a contract and frontend following this flow.
+
+## Complete Delegation Example
+
+### Smart Contract Implementation
+
+First, let's look at the Rust contract that handles account delegation:
+
+```rust
+use anchor_lang::prelude::*;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct DelegateParams {
+    pub commit_frequency_ms: u32,
+    pub validator: Option<Pubkey>,
+}
+
+#[program]
+pub mod my_game {
+    use super::*;
+    
+    /// Delegate account to an Ephemeral Rollup validator
+    pub fn delegate(ctx: Context<DelegateBalance>, params: DelegateParams) -> Result<()> {
+        let config = DelegateConfig {
+            commit_frequency_ms: params.commit_frequency_ms,
+            validator: params.validator,
+        };
+
+        ctx.accounts.delegate_balance(
+            &ctx.accounts.payer,
+            &[ctx.accounts.payer.key.as_ref()],
+            config,
+        )?;
+        
+        msg!("Account delegated to validator: {:?}", params.validator);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct DelegateBalance<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+### Frontend Implementation
+
+Now let's see how to call this from the frontend using the Magic Router SDK:
+
+```typescript
+import { 
+  Connection, 
+  Keypair, 
+  PublicKey 
+} from '@solana/web3.js';
+import { 
+  sendMagicTransaction,
+  getClosestValidator 
+} from 'magic-router-sdk';
+import { AnchorProvider, Program } from '@coral-xyz/anchor';
+
+async function delegateAccountsToValidator() {
+  // Connect to Magic Router
+  const routerConnection = new Connection(
+    "https://devnet-router.magicblock.app", 
+    "confirmed"
+  );
+  
+  // Get the optimal validator automatically
+  const validatorKey = await getClosestValidator(routerConnection);
+  console.log("Selected validator:", validatorKey.toBase58());
+  
+  // Create delegation transaction for multiple accounts
+  const tx = await program.methods
+    .delegate({
+      commitFrequencyMs: 30000, // Commit every 30 seconds
+      validator: validatorKey,
+    })
+    .accounts({
+      payer: provider.wallet.publicKey,
+    })
+    .postInstructions([
+      // Delegate additional accounts in the same transaction
+      await program.methods
+        .delegate({
+          commitFrequencyMs: 30000,
+          validator: validatorKey,
+        })
+        .accounts({
+          payer: secondAccount.publicKey,
+        })
+        .instruction()
+    ])
+    .transaction();
+
+  // Send the delegation transaction
+  const signature = await sendMagicTransaction(
+    routerConnection,
+    tx,
+    [provider.wallet.payer, secondAccount] // Sign with both accounts
+  );
+  
+  console.log("✅ Accounts delegated successfully!");
+  console.log("Transaction signature:", signature);
+  console.log("Validator:", validatorKey.toBase58());
+  
+  return signature;
+}
+
+// Usage in your application
+async function initializeGame() {
+  try {
+    // Delegate accounts to enable high-performance execution
+    await delegateAccountsToValidator();
+    
+    // Now game transactions will route to the Ephemeral Rollup
+    console.log("🚀 Ready for high-speed gaming!");
+    
+  } catch (error) {
+    console.error("Delegation failed:", error);
+  }
+}
+```
+
+### Key Benefits of This Approach
+
+<AccordionGroup>
+  <Accordion title="Automatic Validator Selection">
+    Using `getClosestValidator()` ensures optimal performance by automatically selecting the geographically closest and least loaded validator for your users.
+  </Accordion>
+  
+  <Accordion title="Batch Delegation">
+    The example shows how to delegate multiple accounts in a single transaction using `postInstructions()`, reducing transaction costs and setup time.
+  </Accordion>
+  
+  <Accordion title="Flexible Commit Frequency">
+    The `commitFrequencyMs` parameter allows you to balance between performance (lower frequency) and data persistence guarantees (higher frequency).
+  </Accordion>
+</AccordionGroup>
+
+<Info>
+After delegation, all subsequent transactions involving these accounts will automatically route to the Ephemeral Rollup, providing sub-second confirmation times and higher throughput for your application.
+</Info>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Getting Started"
+    icon="play"
+    href="/pages/tools/magic-router-sdk/getting-started"
+    iconType="duotone"
+  >
+    Start implementing the Magic Router SDK in your application.
+  </Card>
+  <Card
+    title="Magic Router Overview"
+    icon="route"
+    href="/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    Learn more about the broader Magic Router architecture.
+  </Card>
+</CardGroup> 

@@ -1,0 +1,361 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MagicBlock RPC Router API",
+        "description": "The MagicBlock RPC Router is an auxiliary service designed to provide dynamic request routing capabilities within the MagicBlock Ephemeral Rollups (ER) infrastructure.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://devnet-router.magicblock.app",
+            "description": "MagicBlock Router RPC Router"
+        }
+    ],
+    "paths": {
+        "/getRoutes": {
+            "post": {
+                "summary": "getRoutes",
+                "description": "Get available ephemeral rollup nodes",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "jsonrpc": {
+                                        "type": "string",
+                                        "enum": ["2.0"],
+                                        "default": "2.0"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "enum": ["getRoutes"],
+                                        "default": "getRoutes"
+                                    }
+                                },
+                                "required": ["jsonrpc", "id", "method"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "jsonrpc": {
+                                            "type": "string",
+                                            "enum": ["2.0"],
+                                            "default": "2.0"
+                                        },
+                                        "id": {
+                                            "type": "integer",
+                                            "default": 1
+                                        },
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "identity": {
+                                                        "type": "string",
+                                                        "description": "Node identity/address"
+                                                    },
+                                                    "fqdn": {
+                                                        "type": "string",
+                                                        "description": "Fully qualified domain name"
+                                                    },
+                                                    "baseFee": {
+                                                        "type": "integer",
+                                                        "description": "Base fee in lamports"
+                                                    },
+                                                    "blockTimeMs": {
+                                                        "type": "integer",
+                                                        "description": "Block time in milliseconds"
+                                                    },
+                                                    "countryCode": {
+                                                        "type": "string",
+                                                        "description": "Country code"
+                                                    }
+                                                },
+                                                "required": ["identity", "fqdn", "baseFee", "blockTimeMs", "countryCode"]
+                                            }
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "default": null
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "jsonrpc": "2.0",
+                                    "id": 1,
+                                    "result": [
+                                        {
+                                            "identity": "validator_pubkey",
+                                            "fqdn": "validator_fqdn",
+                                            "baseFee": 5000,
+                                            "blockTimeMs": 400,
+                                            "countryCode": "US"
+                                        },
+                                        {
+                                            "identity": "validator_pubkey",
+                                            "fqdn": "validator_fqdn",
+                                            "baseFee": 3000,
+                                            "blockTimeMs": 350,
+                                            "countryCode": "EU"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/getBlockhashForAccounts": {
+            "post": {
+                "summary": "getBlockhashForAccounts",
+                "description": "Get blockhash for multiple account addresses.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "jsonrpc": {
+                                        "type": "string",
+                                        "enum": ["2.0"],
+                                        "default": "2.0"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "enum": ["getBlockhashForAccounts"],
+                                        "default": "getBlockhashForAccounts"
+                                    },
+                                    "params": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "description": "Array of account addresses"
+                                        },
+                                        "minItems": 1,
+                                        "description": "Array of account address arrays",
+                                        "default": [
+                                            [
+                                                "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                                                "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                                            ]
+                                        ]
+                                    }
+                                },
+                                "required": ["jsonrpc", "id", "method", "params"]
+                            },
+                            "example": {
+                                "jsonrpc": "2.0",
+                                "id": 1,
+                                "method": "getBlockhashForAccounts",
+                                "params": [
+                                    [
+                                        "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                                        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                                    ]
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "jsonrpc": {
+                                            "type": "string",
+                                            "enum": ["2.0"],
+                                            "default": "2.0"
+                                        },
+                                        "id": {
+                                            "oneOf": [
+                                                {"type": "integer"},
+                                                {"type": "string"}
+                                            ]
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "properties": {
+                                                "blockhash": {
+                                                    "type": "string",
+                                                    "description": "The blockhash for the accounts"
+                                                },
+                                                "lastValidBlockHeight": {
+                                                    "type": "integer",
+                                                    "description": "The last valid block height"
+                                                }
+                                            },
+                                            "required": ["blockhash", "lastValidBlockHeight"]
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "default": null
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "jsonrpc": "2.0",
+                                    "id": 1,
+                                    "result": {
+                                        "blockhash": "example_blockhash",
+                                        "lastValidBlockHeight": 123456789
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/getDelegationStatus": {
+            "post": {
+                "summary": "getDelegationStatus",
+                "description": "Get delegation status for a single account.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "jsonrpc": {
+                                        "type": "string",
+                                        "enum": ["2.0"],
+                                        "default": "2.0"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "enum": ["getDelegationStatus"],
+                                        "default": "getDelegationStatus"
+                                    },
+                                    "params": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 1,
+                                        "description": "Single account address",
+                                        "default": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                                    }
+                                },
+                                "required": ["jsonrpc", "id", "method", "params"]
+                            },
+                            "example": {
+                                "jsonrpc": "2.0",
+                                "id": 1,
+                                "method": "getDelegationStatus",
+                                "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "jsonrpc": {
+                                            "type": "string",
+                                            "enum": ["2.0"],
+                                            "default": "2.0"
+                                        },
+                                        "id": {
+                                            "oneOf": [
+                                                {"type": "integer"},
+                                                {"type": "string"}
+                                            ]
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "properties": {
+                                                "isDelegated": {
+                                                    "type": "boolean",
+                                                    "description": "Whether the account is delegated"
+                                                },
+                                                "delegationRecord": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "authority": {
+                                                            "type": "string",
+                                                            "description": "The authority address"
+                                                        },
+                                                        "owner": {
+                                                            "type": "string",
+                                                            "description": "The owner address"
+                                                        },
+                                                        "delegationSlot": {
+                                                            "type": "integer",
+                                                            "description": "The delegation slot"
+                                                        },
+                                                        "lamports": {
+                                                            "type": "integer",
+                                                            "description": "The amount in lamports"
+                                                        }
+                                                    },
+                                                    "required": ["authority", "owner", "delegationSlot", "lamports"]
+                                                }
+                                            },
+                                            "required": ["isDelegated", "delegationRecord"]
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "default": null
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "jsonrpc": "2.0",
+                                    "id": 1,
+                                    "result": {
+                                        "isDelegated": true,
+                                        "delegationRecord": {
+                                            "authority": "11111111111111111111111111111111",
+                                            "owner": "3JnJ727jWEmPVU8qfXwtH63sCNDX7nMgsLbg8qy8aaPX",
+                                            "delegationSlot": 388473478,
+                                            "lamports": 15144960
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
