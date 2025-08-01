@@ -121,6 +121,88 @@
                 }
             }
         },
+        "/getIdentity": {
+            "post": {
+                "summary": "getIdentity",
+                "description": "Get the identity information of the current router node",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "jsonrpc": {
+                                        "type": "string",
+                                        "enum": ["2.0"],
+                                        "default": "2.0"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "enum": ["getIdentity"],
+                                        "default": "getIdentity"
+                                    }
+                                },
+                                "required": ["jsonrpc", "id", "method"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "jsonrpc": {
+                                            "type": "string",
+                                            "enum": ["2.0"],
+                                            "default": "2.0"
+                                        },
+                                        "id": {
+                                            "type": "integer",
+                                            "default": 1
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "properties": {
+                                                "identity": {
+                                                    "type": "string",
+                                                    "description": "The public key identity of the router node"
+                                                },
+                                                "fqdn": {
+                                                    "type": "string",
+                                                    "description": "The fully qualified domain name of the router node"
+                                                }
+                                            },
+                                            "required": ["identity", "fqdn"]
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "default": null
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "jsonrpc": "2.0",
+                                    "id": 1,
+                                    "result": {
+                                        "identity": "validator_pubkey",
+                                        "fqdn": "validator_fqdn"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/getBlockhashForAccounts": {
             "post": {
                 "summary": "getBlockhashForAccounts",
