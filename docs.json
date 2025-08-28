@@ -49,9 +49,7 @@
         "groups": [
           {
             "group": "Tools",
-            "pages": [
-              "pages/tools/introduction"
-            ]
+            "pages": ["pages/tools/introduction"]
           },
           {
             "group": "BOLT Framework",
@@ -123,9 +121,7 @@
               },
               {
                 "group": "On-chain identity",
-                "pages": [
-                  "pages/tools/open-source-programs/SOAR"
-                ]
+                "pages": ["pages/tools/open-source-programs/SOAR"]
               }
             ]
           },
