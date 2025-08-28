@@ -134,7 +134,6 @@
                   "pages/tools/session-keys/introduction",
                   "pages/tools/session-keys/how-do-session-keys-work",
                   "pages/tools/session-keys/security",
-                  "pages/tools/session-keys/getting-started",
                   "pages/tools/session-keys/integrating-sessions-in-your-program",
                   "pages/tools/session-keys/installation",
                   "pages/tools/session-keys/session-provider-and-context",
