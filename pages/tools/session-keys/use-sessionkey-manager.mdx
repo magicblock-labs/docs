@@ -13,27 +13,48 @@ The `SessionWalletInterface` consists of the following properties and methods:
 ```typescript
 interface SessionWalletInterface {
   publicKey: PublicKey | null; // Public key associated with the session wallet
+  ownerPublicKey: PublicKey | null; // The Publickey of the session token authority(The creator of the session token)
   isLoading: boolean; // Indicates whether the session wallet is loading
   error: string | null; // An error message, if any
   sessionToken: string | null; // Session token for the current session
   signTransaction:
-    | (<T extends Transaction>(transaction: T) => Promise<T>)
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T>)
     | undefined; // Sign a single transaction
   signAllTransactions:
-    | (<T extends Transaction>(transactions: T[]) => Promise<T[]>)
+    | (<T extends Transaction>(
+        transactions: T[],
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T[]>)
     | undefined; // Sign multiple transactions
   signMessage: ((message: Uint8Array) => Promise<Uint8Array>) | undefined; // Sign a message
   sendTransaction:
-    | (<T extends Transaction>(transaction: T) => Promise<string>)
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string>)
     | undefined; // Send a signed transaction
   signAndSendTransaction:
-    | (<T extends Transaction>(transactions: T | T[]) => Promise<string[]>)
+    | (<T extends Transaction>(
+        transactions: T | T[],
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string[]>)
     | undefined; // Sign and send transactions
   createSession: (
-    targetProgram: PublicKey,
-    topUp: boolean,
-    validUntil?: number
-  ) => Promise<{ sessionToken: string; publicKey: string } | undefined>; // Create a new session
+    targetProgram: PublicKey, // Target Solana program
+    topUpLamports?: number, // Top up session wallet with lamports or not
+    validUntil?: number, // Duration of session token before expiration
+    sessionCreatedCallback?: (sessionInfo: {
+      sessionToken: string;
+      publicKey: string;
+    }) => void
+  ) => Promise<SessionWalletInterface | undefined>; // Create a new session
   revokeSession: () => Promise<void>; // Revoke the current session
   getSessionToken: () => Promise<string | null>; // Retrieve the current session token
 }
