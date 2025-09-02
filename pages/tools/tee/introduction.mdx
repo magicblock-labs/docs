@@ -30,9 +30,9 @@ There are multiple privacy-preserving approaches used in blockchains. Each has d
 | Solution | What is it? | Pros | Cons |
 | --- | --- | --- | --- |
 | Trusted Execution Environments | Hardware-secured execution within a CPU | Near-native performance, run normal code | Trust assumption in vendor hardware |
-| Fully Homomorphic Encryption | Compute directly on encrypted data | Data never decrypted | Extremely slow, specialized tooling, difficult key management |
-| Zero Knowledge Proofs | Prove something without revealing inputs | Efficient verification; strong for identity/compliance/correctness | Proving is heavy |
-| Multi-party Computation | Split a secret across multiple parties to compute jointly | Strong cryptographic guarantees | Coordination overhead, high latency, specialized tooling |
+| Fully Homomorphic Encryption | Compute directly on encrypted data | Data never decrypted | Extremely slow, specialized tooling, difficult key management, bugs and vulnerabilities|
+| Zero Knowledge Proofs | Prove something without revealing inputs | Efficient verification; strong for identity/compliance/correctness | Proving is heavy, bugs and vulnerabilities |
+| Multi-party Computation | Split a secret across multiple parties to compute jointly | Strong cryptographic guarantees | Coordination overhead, high latency, specialized tooling, bugs and vulnerabilities |
 
 - **ZK**: efficient verification, not optimized for general low-latency computation
 - **MPC**: shared trust, higher latency and coordination
