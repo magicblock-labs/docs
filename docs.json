@@ -39,7 +39,8 @@
               "pages/get-started/use-cases/games",
               "pages/get-started/use-cases/ai",
               "pages/get-started/use-cases/payments",
-              "pages/get-started/use-cases/depin"
+              "pages/get-started/use-cases/depin",
+              "pages/get-started/use-cases/privacy"
             ]
           }
         ]
@@ -151,6 +152,15 @@
               "pages/tools/randomness/security",
               "pages/tools/randomness/best-practices",
               "pages/tools/randomness/faq"
+            ]
+          },
+          {
+            "group": "TEE",
+            "pages": [
+              "pages/tools/tee/introduction",
+              "pages/tools/tee/program-implementation",
+              "pages/tools/tee/client-implementation",
+              "pages/tools/tee/authorization"
             ]
           }
         ]
