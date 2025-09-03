@@ -155,6 +155,13 @@
             ]
           },
           {
+            "group": "Oracles",
+            "pages": [
+              "pages/tools/oracle/introduction",
+              "pages/tools/oracle/implementation"
+            ]
+          },
+          {
             "group": "TEE",
             "pages": [
               "pages/tools/tee/introduction",
