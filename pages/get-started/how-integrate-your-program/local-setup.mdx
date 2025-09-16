@@ -1,0 +1,61 @@
+---
+title: "Local Validator Setup"
+description: "Run and test your Solana or Anchor programs with Local Ephemeral Rollups"
+---
+
+## Why Use a Local Setup?
+
+When testng delegations and real-time behaviour of your Solana programs, fast feedback loops may be critical.
+
+Running an **Local Ephemeral Rollup** allows you to:
+
+- Test delegations and behaviours quickly without network latency and rate limits.
+- Simulate real-time Solana runtime transactions locally.
+- Customize your local ephemeral validator to your needs.
+
+---
+
+## Quickstart Local Ephemeral Validator
+
+Install the latest version of validator to your localhost:
+
+```bash
+npm install -g @magicblock-labs/ephemeral-validator@latest
+```
+
+Start the validator locally (pointing to devnet):
+
+```bash
+RUST_LOG=info ephemeral-validator --accounts-lifecycle ephemeral --remote-url "https://rpc.magicblock.app/devnet"
+```
+
+Find customization options for your validator such as rpc port:
+
+```bash
+ephemeral-validator -h
+```
+
+---
+
+Explore test scripts with local ephemeral validator for both Anchor and Native Rust:
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="/pages/get-started/how-integrate-your-program/anchor"
+    iconType="duotone"
+  >
+    Integrate with an Anchor program
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="/pages/get-started/how-integrate-your-program/rust"
+    iconType="duotone"
+  >
+    Integrate with a Native Rust program
+  </Card>
+</CardGroup>
+
+---

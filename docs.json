@@ -26,6 +26,7 @@
             "pages": [
               "pages/get-started/how-integrate-your-program/quickstart",
               "pages/get-started/how-integrate-your-program/magic-router",
+              "pages/get-started/how-integrate-your-program/local-setup",
               "pages/get-started/how-integrate-your-program/transactions",
               "pages/get-started/how-integrate-your-program/anchor",
               "pages/get-started/how-integrate-your-program/rust"
