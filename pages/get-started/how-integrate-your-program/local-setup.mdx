@@ -17,45 +17,130 @@ Running an **Local Ephemeral Rollup** allows you to:
 
 ## Quickstart Local Ephemeral Validator
 
-Install the latest version of validator to your localhost:
+<Tabs>
+  <Tab title="devnet">
+    <Steps>
+      <Step title="Upgrade and deploy program on devnet">
+        Upgrade your program with MagicBlock delegation and deploy it to your
+        preferred environment:
+            Set devnet environment and deploy program
+          ```bash
+          solana config set --url devnet
+          solana program deploy YOUR_PROGRAM_PATH
+          ```
+      </Step>
+      <Step title="Install and run MagicBlock ER validator for devnet">
+        1. Install latest MagicBlock ER validator:
+        ```bash
+        npm install -g @magicblock-labs/ephemeral-validator@latest
+        ```
+        2. Run local ER validator pointing to devnet:
+        ```bash
+        RUST_LOG=info ephemeral-validator \
+          --accounts-lifecycle ephemeral \
+          --remote-url "https://rpc.magicblock.app/devnet" \
+        ```
+      </Step>
+      <Step title="Test your real-time program instructions and delegation">
+        Run tests on devnet:
+        ```bash
+        yarn test
+        ```
+        Explore test scripts with local ephemeral validator for both Anchor and Native Rust:
+        <CardGroup cols={2}>
+          <Card
+            title="Anchor"
+            icon="anchor"
+            href="/pages/get-started/how-integrate-your-program/anchor#ephemeral-endpoint-configuration"
+            iconType="duotone"
+          >
+            Integrate with an Anchor program
+          </Card>
+          <Card
+            title="Native Rust"
+            icon="rust"
+            href="/pages/get-started/how-integrate-your-program/rust#ephemeral-endpoint-configuration"
+            iconType="duotone"
+          >
+            Integrate with a Native Rust program
+          </Card>
+        </CardGroup>
+      </Step>
+    </Steps>
 
-```bash
-npm install -g @magicblock-labs/ephemeral-validator@latest
-```
+  </Tab>
+  <Tab title="localhost">
+    <Steps>
+      <Step title="Upgrade and deploy program on localhost">
+          1. Install solana-test-validator
+        ```bash
+        sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+        ```
+          2. Run solana-test-validator on default port 8899 and 8900 with cloned Delegation Program and accounts from devnet:
+        ```bash
+        solana-test-validator \
+          --ledger ./my-ledger-1 \
+          --reset \
+          --clone mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev \
+          --clone EpJnX7ueXk7fKojBymqmVuCuwyhDQsYcLVL1XMsBbvDX \
+          --clone 7JrkjmZPprHwtuvtuGTXp9hwfGYFAQLnLeFM52kqAgXg \
+          --clone-upgradeable-program DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh --url https://api.devnet.solana.com
+        ```
+          3. Deploy program to local solana-test-validator
+        ```bash
+          solana config set --url localhost
+          solana program deploy YOUR_PROGRAM_PATH
+        ```
+      </Step>
+      <Step title="Install and run MagicBlock ER validator for localhost">
+        1. Install latest MagicBlock ER validator:
+        ```bash
+        npm install -g @magicblock-labs/ephemeral-validator@latest
+        ````
+        2. Run local ER validator pointing to localhost:
+        ```bash
+        RUST_LOG=info ephemeral-validator \
+          --accounts-lifecycle ephemeral \
+          --remote-cluster development \
+          --remote-url http://127.0.0.1:8899 \
+          --remote-ws-url ws://127.0.0.1:8900 \
+          --rpc-port 7799
+        ```
+      </Step>
+      <Step title="Test your real-time program instructions and delegation">
+          Run tests on localhost:
+          ```bash
+          EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+          EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+          PROVIDER_ENDPOINT=http://localhost:8899 \
+          WS_ENDPOINT=http://localhost:8900 \
+          yarn test
+          ```
+          Explore test scripts with local ephemeral validator for both Anchor and Native Rust:
+          <CardGroup cols={2}>
+            <Card
+              title="Anchor"
+              icon="anchor"
+              href="/pages/get-started/how-integrate-your-program/anchor#ephemeral-endpoint-configuration"
+              iconType="duotone"
+            >
+              Integrate with an Anchor program
+            </Card>
+            <Card
+              title="Native Rust"
+              icon="rust"
+              href="/pages/get-started/how-integrate-your-program/rust#ephemeral-endpoint-configuration"
+              iconType="duotone"
+            >
+              Integrate with a Native Rust program
+            </Card>
+          </CardGroup>
+      </Step>
+    </Steps>
 
-Start the validator locally (pointing to devnet):
-
-```bash
-RUST_LOG=info ephemeral-validator --accounts-lifecycle ephemeral --remote-url "https://rpc.magicblock.app/devnet"
-```
-
-Find customization options for your validator such as rpc port:
-
-```bash
-ephemeral-validator -h
-```
+  </Tab>
+</Tabs>
 
 ---
-
-Explore test scripts with local ephemeral validator for both Anchor and Native Rust:
-
-<CardGroup cols={2}>
-  <Card
-    title="Anchor"
-    icon="anchor"
-    href="/pages/get-started/how-integrate-your-program/anchor#ephemeral-endpoint-configuration"
-    iconType="duotone"
-  >
-    Integrate with an Anchor program
-  </Card>
-  <Card
-    title="Native Rust"
-    icon="rust"
-    href="/pages/get-started/how-integrate-your-program/rust#ephemeral-endpoint-configuration"
-    iconType="duotone"
-  >
-    Integrate with a Native Rust program
-  </Card>
-</CardGroup>
 
 ---
