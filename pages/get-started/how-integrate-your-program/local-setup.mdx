@@ -3,6 +3,8 @@ title: "Local Validator Setup"
 description: "Run and test your Native Rust or Anchor programs with Local Ephemeral Rollups"
 ---
 
+import Validators from "/snippets/validators.mdx";
+
 ## Why Use a Local Setup?
 
 When testng delegations and real-time behaviour of your Solana programs, fast feedback loops may be critical.
@@ -28,6 +30,7 @@ Running an **Local Ephemeral Rollup** allows you to:
           solana config set --url devnet
           solana program deploy YOUR_PROGRAM_PATH
           ```
+        <Validators />
       </Step>
       <Step title="Install and run MagicBlock ER validator for devnet">
         1. Install latest MagicBlock ER validator:
@@ -94,6 +97,7 @@ Running an **Local Ephemeral Rollup** allows you to:
           solana config set --url localhost
           solana program deploy YOUR_PROGRAM_PATH
         ```
+        <Validators />
       </Step>
       <Step title="Install and run MagicBlock ER validator for localhost">
         1. Install latest MagicBlock ER validator:
