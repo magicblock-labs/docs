@@ -39,12 +39,15 @@ Running an **Local Ephemeral Rollup** allows you to:
         RUST_LOG=info ephemeral-validator \
           --accounts-lifecycle ephemeral \
           --remote-url "https://rpc.magicblock.app/devnet" \
+          --rpc-port 7799
         ```
       </Step>
       <Step title="Test your real-time program instructions and delegation">
         Run tests on devnet:
         ```bash
-        yarn test
+          EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+          EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+          yarn test
         ```
         Explore test scripts with local ephemeral validator for both Anchor and Native Rust:
         <CardGroup cols={2}>
