@@ -3,7 +3,7 @@ title: "Rust Example"
 description: "Learn how to write a simple Rust program that delegates and increments a counter on Solana"
 ---
 
-import Endpoints from '/snippets/endpoints.mdx'
+import Endpoints from "/snippets/endpoints.mdx";
 
 <div
   style={{
@@ -601,7 +601,7 @@ commitment: "confirmed",
 }
 )
 
-````
+```
 
 ### Ephemeral Endpoint Configuration
 
@@ -613,18 +613,7 @@ To interact with the Ephemeral Rollup session, you need to configure the appropr
 
 - For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
 
-- For localhost, download, install, and run the ephemeral validator locally with the appropriate environment variables:
-```bash
-# 1. Install the Local Validator
-npm install -g @magicblock-labs/ephemeral-validator
-
-# 2. Start the Local Validator
-ACCOUNTS_REMOTE=https://rpc.magicblock.app/devnet ACCOUNTS_LIFECYCLE=ephemeral ephemeral-validator
-
-# 3. Run the Tests with the Local Validator
-PROVIDER_ENDPOINT=http://localhost:8899 WS_ENDPOINT=ws://localhost:8900 yarn test
-
-````
+- For <a href="/pages/get-started/how-integrate-your-program/local-setup">localhost</a>, download, install, and run the ephemeral validator locally with the appropriate environment variables.
 
 Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
 
@@ -644,3 +633,4 @@ Make sure to update your client configuration to use the correct endpoint based 
     iconType="duotone"
   ></Card>
 </CardGroup>
+```
