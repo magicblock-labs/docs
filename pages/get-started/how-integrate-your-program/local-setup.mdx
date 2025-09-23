@@ -7,37 +7,60 @@ import Validators from "/snippets/validators.mdx";
 
 ## Why Use a Local Setup?
 
-When testng delegations and real-time behaviour of your Solana programs, fast feedback loops may be critical.
+When testing delegations and real-time behavior of your Solana programs, **fast feedback loops** are critical.
 
-Running an **Local Ephemeral Rollup** allows you to:
+Running a **Local Ephemeral Rollup Validator** allows you to:
 
-- Test delegations and behaviours quickly without network latency and rate limits.
-- Simulate real-time Solana runtime transactions locally.
-- Customize your local ephemeral validator to your needs.
+- Test delegations and behaviors quickly without network latency or rate limits.
+- Simulate Solana runtime transactions locally.
+- Customize your validator setup for your own needs.
 
 ---
 
-## Quickstart Local Ephemeral Validator
+## Quickstart: Local Ephemeral Validator
+
+Explore delegation and test scripts for both Anchor and Native Rust:
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="/pages/get-started/how-integrate-your-program/anchor"
+    iconType="duotone"
+  >
+    Integrate with an Anchor program
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="/pages/get-started/how-integrate-your-program/rust"
+    iconType="duotone"
+  >
+    Integrate with a Native Rust program
+  </Card>
+</CardGroup>
 
 <Tabs>
-  <Tab title="devnet">
+  <Tab title="Devnet">
     <Steps>
-      <Step title="Upgrade and deploy program on devnet">
-        Upgrade your program with MagicBlock delegation and deploy it to your
-        preferred environment:
-            Set devnet environment and deploy program
-          ```bash
-          solana config set --url devnet
-          solana program deploy YOUR_PROGRAM_PATH
-          ```
+      <Step title="Upgrade and deploy program on Devnet">
+        Upgrade your program with MagicBlock delegation and deploy it to Devnet:
+
+        ```bash
+        solana config set --url devnet
+        solana program deploy YOUR_PROGRAM_PATH
+        ```
+
         <Validators />
       </Step>
-      <Step title="Install and run MagicBlock ER validator for devnet">
-        1. Install latest MagicBlock ER validator:
+
+      <Step title="Install and run MagicBlock ER validator (Devnet)">
+        1. Install the latest MagicBlock Ephemeral Validator:
         ```bash
         npm install -g @magicblock-labs/ephemeral-validator@latest
         ```
-        2. Run local ER validator pointing to devnet:
+
+        2. Run the local ephemeral validator pointing to Devnet:
         ```bash
         RUST_LOG=info ephemeral-validator \
           --accounts-lifecycle ephemeral \
@@ -45,44 +68,29 @@ Running an **Local Ephemeral Rollup** allows you to:
           --rpc-port 7799
         ```
       </Step>
-      <Step title="Test your real-time program instructions and delegation">
-        Run tests on devnet:
+
+      <Step title="Test program instructions and delegation (Devnet)">
+        Run your tests against the local ephemeral validator:
+
         ```bash
-          EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
-          EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
-          yarn test
+        EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+        EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+        yarn test
         ```
-        Explore test scripts with local ephemeral validator for both Anchor and Native Rust:
-        <CardGroup cols={2}>
-          <Card
-            title="Anchor"
-            icon="anchor"
-            href="/pages/get-started/how-integrate-your-program/anchor#ephemeral-endpoint-configuration"
-            iconType="duotone"
-          >
-            Integrate with an Anchor program
-          </Card>
-          <Card
-            title="Native Rust"
-            icon="rust"
-            href="/pages/get-started/how-integrate-your-program/rust#ephemeral-endpoint-configuration"
-            iconType="duotone"
-          >
-            Integrate with a Native Rust program
-          </Card>
-        </CardGroup>
       </Step>
     </Steps>
 
   </Tab>
-  <Tab title="localhost">
+
+  <Tab title="Localhost">
     <Steps>
-      <Step title="Upgrade and deploy program on localhost">
-          1. Install solana-test-validator
+      <Step title="Set up Solana Test Validator (Localhost) and your deploy upgraded program">
+        1. Install `solana-test-validator`:
         ```bash
         sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
         ```
-          2. Run solana-test-validator on default port 8899 and 8900 with cloned Delegation Program and accounts from devnet:
+
+        2. Run `solana-test-validator` with cloned delegation program and accounts from Devnet:
         ```bash
         solana-test-validator \
           --ledger ./my-ledger-1 \
@@ -90,21 +98,26 @@ Running an **Local Ephemeral Rollup** allows you to:
           --clone mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev \
           --clone EpJnX7ueXk7fKojBymqmVuCuwyhDQsYcLVL1XMsBbvDX \
           --clone 7JrkjmZPprHwtuvtuGTXp9hwfGYFAQLnLeFM52kqAgXg \
-          --clone-upgradeable-program DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh --url https://api.devnet.solana.com
+          --clone-upgradeable-program DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh \
+          --url https://api.devnet.solana.com
         ```
-          3. Deploy program to local solana-test-validator
+
+        3. Deploy your upgraded program to localhost:
         ```bash
-          solana config set --url localhost
-          solana program deploy YOUR_PROGRAM_PATH
+        solana config set --url localhost
+        solana program deploy YOUR_PROGRAM_PATH
         ```
+
         <Validators />
       </Step>
-      <Step title="Install and run MagicBlock ER validator for localhost">
-        1. Install latest MagicBlock ER validator:
+
+      <Step title="Install and run MagicBlock ER validator (Localhost)">
+        1. Install the latest MagicBlock Ephemeral Validator:
         ```bash
         npm install -g @magicblock-labs/ephemeral-validator@latest
-        ````
-        2. Run local ER validator pointing to localhost:
+        ```
+
+        2. Run the local ephemeral validator pointing to localhost:
         ```bash
         RUST_LOG=info ephemeral-validator \
           --accounts-lifecycle ephemeral \
@@ -114,40 +127,19 @@ Running an **Local Ephemeral Rollup** allows you to:
           --rpc-port 7799
         ```
       </Step>
-      <Step title="Test your real-time program instructions and delegation">
-          Run tests on localhost:
-          ```bash
-          EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
-          EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
-          PROVIDER_ENDPOINT=http://localhost:8899 \
-          WS_ENDPOINT=http://localhost:8900 \
-          yarn test
-          ```
-          Explore test scripts with local ephemeral validator for both Anchor and Native Rust:
-          <CardGroup cols={2}>
-            <Card
-              title="Anchor"
-              icon="anchor"
-              href="/pages/get-started/how-integrate-your-program/anchor"
-              iconType="duotone"
-            >
-              Integrate with an Anchor program
-            </Card>
-            <Card
-              title="Native Rust"
-              icon="rust"
-              href="/pages/get-started/how-integrate-your-program/rust"
-              iconType="duotone"
-            >
-              Integrate with a Native Rust program
-            </Card>
-          </CardGroup>
+
+      <Step title="Test program instructions and delegation (Localhost)">
+        Run your tests against the local ephemeral validator:
+
+        ```bash
+        EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+        EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+        PROVIDER_ENDPOINT=http://localhost:8899 \
+        WS_ENDPOINT=http://localhost:8900 \
+        yarn test
+        ```
       </Step>
     </Steps>
 
   </Tab>
 </Tabs>
-
----
-
----
