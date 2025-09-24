@@ -49,6 +49,7 @@ Explore delegation and test scripts for both Anchor and Native Rust:
         <Tabs>
           <Tab title="Rust Native">
             ```bash
+          cargo build-sbf
           solana config set --url devnet
           solana program deploy YOUR_PROGRAM_PATH
             ```
@@ -60,8 +61,6 @@ Explore delegation and test scripts for both Anchor and Native Rust:
             ```
           </Tab>
         </Tabs>
-
-
         <Validators />
       </Step>
 
@@ -127,10 +126,11 @@ Explore delegation and test scripts for both Anchor and Native Rust:
           --url https://api.devnet.solana.com
         ```
 
-        3. Deploy your upgraded program to localhost:
+        3. Upgrade and deploy your program to localhost:
           <Tabs>
             <Tab title="Rust Native">
               ```bash
+            cargo build-sbf
             solana config set --url localhost
             solana program deploy YOUR_PROGRAM_PATH
               ```
