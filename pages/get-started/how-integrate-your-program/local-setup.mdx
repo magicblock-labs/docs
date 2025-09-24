@@ -46,10 +46,21 @@ Explore delegation and test scripts for both Anchor and Native Rust:
       <Step title="Upgrade and deploy program on Devnet">
         Upgrade your program with MagicBlock delegation and deploy it to Devnet:
 
-        ```bash
-        solana config set --url devnet
-        solana program deploy YOUR_PROGRAM_PATH
-        ```
+        <Tabs>
+          <Tab title="Rust Native">
+            ```bash
+          solana config set --url devnet
+          solana program deploy YOUR_PROGRAM_PATH
+            ```
+          </Tab>
+          <Tab title="Anchor">
+            ```bash
+          anchor build && anchor deploy \
+          --provider.cluster devnet
+            ```
+          </Tab>
+        </Tabs>
+
 
         <Validators />
       </Step>
@@ -71,12 +82,26 @@ Explore delegation and test scripts for both Anchor and Native Rust:
 
       <Step title="Test program instructions and delegation (Devnet)">
         Run your tests against the local ephemeral validator:
-
-        ```bash
+      <Tabs>
+        <Tab title="Rust Native">
+          ```bash
         EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
         EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
         yarn test
-        ```
+          ```
+        </Tab>
+        <Tab title="Anchor">
+          ```bash
+        EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
+        EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
+        anchor test \
+          --provider.cluster devnet \
+          --skip-local-validator \
+          --skip-build \
+          --skip-deploy
+          ```
+        </Tab>
+      </Tabs>
       </Step>
     </Steps>
 
@@ -103,11 +128,20 @@ Explore delegation and test scripts for both Anchor and Native Rust:
         ```
 
         3. Deploy your upgraded program to localhost:
-        ```bash
-        solana config set --url localhost
-        solana program deploy YOUR_PROGRAM_PATH
-        ```
-
+          <Tabs>
+            <Tab title="Rust Native">
+              ```bash
+            solana config set --url localhost
+            solana program deploy YOUR_PROGRAM_PATH
+              ```
+            </Tab>
+            <Tab title="Anchor">
+              ```bash
+            anchor build && anchor deploy \
+            --provider.cluster localnet
+              ```
+            </Tab>
+          </Tabs>
         <Validators />
       </Step>
 
@@ -131,13 +165,28 @@ Explore delegation and test scripts for both Anchor and Native Rust:
       <Step title="Test program instructions and delegation (Localhost)">
         Run your tests against the local ephemeral validator:
 
-        ```bash
+      <Tabs>
+        <Tab title="Rust Native">
+          ```bash
         EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
         EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
         PROVIDER_ENDPOINT=http://localhost:8899 \
         WS_ENDPOINT=http://localhost:8900 \
         yarn test
-        ```
+          ```
+        </Tab>
+        <Tab title="Anchor">
+          ```bash
+        EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
+        EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
+        anchor test \
+          --provider.cluster localnet \
+          --skip-local-validator \
+          --skip-build \
+          --skip-deploy
+          ```
+        </Tab>
+      </Tabs>
       </Step>
     </Steps>
 
