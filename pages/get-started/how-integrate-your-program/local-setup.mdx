@@ -40,9 +40,13 @@ Explore delegation and test scripts for both Anchor and Native Rust:
   </Card>
 </CardGroup>
 
+### ⚠️ Important: Upgrade your program with the correct validator identity
+
 When using a local ER validator, you need to connect it to your preferred base layer (e.g., `mainnet-beta`, `devnet`, or `localhost`) where the accounts are delegated. To delegate your PDA to a `specific ER validator identity`, you must update the `delegation config` in your program. This ensures that accounts can be properly committed and undelegated on the base layer.
 
 <Validators />
+
+### Deploy and test on base layer via correct validator identity
 
 <Tabs>
 <Tab title="solana-test-validator (localhost)">
