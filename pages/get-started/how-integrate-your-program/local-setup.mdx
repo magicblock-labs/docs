@@ -40,73 +40,12 @@ Explore delegation and test scripts for both Anchor and Native Rust:
   </Card>
 </CardGroup>
 
+When using a local ER validator, you need to connect it to your preferred base layer (e.g., `mainnet-beta`, `devnet`, or `localhost`) where the accounts are delegated. To delegate your PDA to a `specific ER validator identity`, you must update the `delegation config` in your program. This ensures that accounts can be properly committed and undelegated on the base layer.
+
+<Validators />
+
 <Tabs>
-  <Tab title="Devnet">
-    <Steps>
-      <Step title="Upgrade and deploy program on Devnet">
-        Upgrade your program with MagicBlock delegation and deploy it to Devnet:
-
-        <Tabs>
-          <Tab title="Rust Native">
-            ```bash
-          cargo build-sbf
-          solana config set --url devnet
-          solana program deploy YOUR_PROGRAM_PATH
-            ```
-          </Tab>
-          <Tab title="Anchor">
-            ```bash
-          anchor build && anchor deploy \
-          --provider.cluster devnet
-            ```
-          </Tab>
-        </Tabs>
-        <Validators />
-      </Step>
-
-      <Step title="Install and run MagicBlock ER validator (Devnet)">
-        1. Install the latest MagicBlock Ephemeral Validator:
-        ```bash
-        npm install -g @magicblock-labs/ephemeral-validator@latest
-        ```
-
-        2. Run the local ephemeral validator pointing to Devnet:
-        ```bash
-        RUST_LOG=info ephemeral-validator \
-          --accounts-lifecycle ephemeral \
-          --remote-url "https://rpc.magicblock.app/devnet" \
-          --rpc-port 7799
-        ```
-      </Step>
-
-      <Step title="Test program instructions and delegation (Devnet)">
-        Run your tests against the local ephemeral validator:
-      <Tabs>
-        <Tab title="Rust Native">
-          ```bash
-        EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
-        EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
-        yarn test
-          ```
-        </Tab>
-        <Tab title="Anchor">
-          ```bash
-        EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
-        EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
-        anchor test \
-          --provider.cluster devnet \
-          --skip-local-validator \
-          --skip-build \
-          --skip-deploy
-          ```
-        </Tab>
-      </Tabs>
-      </Step>
-    </Steps>
-
-  </Tab>
-
-  <Tab title="Localhost">
+<Tab title="solana-test-validator">
     <Steps>
       <Step title="Set up Solana Test Validator (Localhost) and deploy your upgraded program">
         1. Install `solana-test-validator`:
@@ -142,7 +81,6 @@ Explore delegation and test scripts for both Anchor and Native Rust:
               ```
             </Tab>
           </Tabs>
-        <Validators />
       </Step>
 
       <Step title="Install and run MagicBlock ER validator (Localhost)">
@@ -191,4 +129,69 @@ Explore delegation and test scripts for both Anchor and Native Rust:
     </Steps>
 
   </Tab>
+  <Tab title="devnet">
+    <Steps>
+      <Step title="Upgrade and deploy program on Devnet">
+        Upgrade your program with MagicBlock delegation and deploy it to Devnet:
+
+        <Tabs>
+          <Tab title="Rust Native">
+            ```bash
+          cargo build-sbf
+          solana config set --url devnet
+          solana program deploy YOUR_PROGRAM_PATH
+            ```
+          </Tab>
+          <Tab title="Anchor">
+            ```bash
+          anchor build && anchor deploy \
+          --provider.cluster devnet
+            ```
+          </Tab>
+        </Tabs>
+
+      </Step>
+
+      <Step title="Install and run MagicBlock ER validator (Devnet)">
+        1. Install the latest MagicBlock Ephemeral Validator:
+        ```bash
+        npm install -g @magicblock-labs/ephemeral-validator@latest
+        ```
+
+        2. Run the local ephemeral validator pointing to Devnet:
+        ```bash
+        RUST_LOG=info ephemeral-validator \
+          --accounts-lifecycle ephemeral \
+          --remote-url "https://rpc.magicblock.app/devnet" \
+          --rpc-port 7799
+        ```
+      </Step>
+
+      <Step title="Test program instructions and delegation (Devnet)">
+        Run your tests against the local ephemeral validator:
+      <Tabs>
+        <Tab title="Rust Native">
+          ```bash
+        EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+        EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+        yarn test
+          ```
+        </Tab>
+        <Tab title="Anchor">
+          ```bash
+        EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
+        EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
+        anchor test \
+          --provider.cluster devnet \
+          --skip-local-validator \
+          --skip-build \
+          --skip-deploy
+          ```
+        </Tab>
+      </Tabs>
+      </Step>
+    </Steps>
+
+  </Tab>
+
 </Tabs>
