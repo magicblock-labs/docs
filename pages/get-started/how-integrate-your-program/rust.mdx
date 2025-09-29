@@ -158,6 +158,7 @@ use solana_program::{
 use ephemeral_rollups_sdk::cpi::{delegate_account, DelegateAccounts, DelegateConfig};
 
 // For Base Layer only
+// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
 pub fn process_delegate(
 \_program_id: &Pubkey,
 accounts: &[AccountInfo],
@@ -192,7 +193,7 @@ accounts: &[AccountInfo],
 
     let delegate_config = DelegateConfig {
         commit_frequency_ms: 30_000,
-        validator: None,
+        validator: Some(pubkey!("MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57")), // Asia ER, please set based on ER validator.
     };
 
     delegate_account(delegate_accounts, pda_seeds, delegate_config)?;
