@@ -8,8 +8,13 @@
     "dark": "#0050B4"
   },
   "favicon": "/logo/favicon.png",
+  "redirects": [
+    {
+      "source": "/pages/get-started/introduction/why-magicblock",
+      "destination": "/pages/overview/products"
+    }
+  ],
   "navigation": {
-
     "tabs": [
       {
         "tab": "Overview",
