@@ -13,19 +13,9 @@
     "tabs": [
       {
         "tab": "Overview",
-        "groups": [
-          {
-            "group": "Products",
-            "pages": [
-              "pages/overview"
-            ]
-          },
-          {
-            "group": "Guides & Starter Kits",
-            "pages": [
-              "pages/overview/guides-and-starter-kits/overview"
-            ]
-          },
+        "pages" : [
+          "pages/overview/products",
+          "pages/overview/templates",
           {
             "group": "Additional Information",
             "pages": [
@@ -36,9 +26,11 @@
             ]
           }
         ]
+
+
       },
       {
-        "tab": "Ephemeral Rollups (ER)",
+        "tab": "Ephemeral Rollup",
         "groups": [
           {
             "group": "Introduction",
@@ -72,7 +64,7 @@
         ]
       },
       {
-        "tab": "Trusted Execution Environment (TEE)",
+        "tab": "Trusted Execution Environment",
         "groups": [
           {
             "group": "Introduction",
@@ -97,7 +89,7 @@
         ]
       },
       {
-        "tab": "Verifiable Randomness Function (VRF)",
+        "tab": "Verifiable Randomness",
         "groups": [
           {
             "group": "Introduction",
@@ -123,12 +115,12 @@
         ]
       },
       {
-        "tab": "Guides & Starter Kits",
+        "tab": "Templates",
         "groups": [
           {
             "group": "Introduction",
             "pages": [
-              "pages/overview/guides-and-starter-kits/overview"
+              "pages/overview/templates"
             ]
           }
         ]
