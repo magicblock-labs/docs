@@ -1,0 +1,275 @@
+---
+title: "Anchor Example"
+description: "Learn how to write a simple Anchor program that increments a counter on Solana"
+---
+
+import Endpoints from "/snippets/endpoints.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Anchor Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+This guide will walk you through the process of writing a simple Anchor program that increments a counter. You'll learn how to deploy this program on Solana and interact with it using a React client.
+
+---
+
+## Software Packages
+
+This program is developed and tested with the following software packages. Other sofware may also be compatible.
+
+| Software   | Version | Installation Guide                                              |
+| ---------- | ------- | --------------------------------------------------------------- |
+| **Solana** | 2.1.21  | [Install Solana](https://docs.anza.xyz/cli/install)             |
+| **Rust**   | 1.82.0  | [Install Rust](https://www.rust-lang.org/tools/install)         |
+| **Anchor** | 0.31.1  | [Install Anchor](https://www.anchor-lang.com/docs/installation) |
+
+## Quick Access to Source Code
+
+If you prefer to dive straight into the code:
+
+<CardGroup cols={2}>
+  <Card
+    title="Source Code: Anchor Counter Program"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="Source Code: React Client"
+    icon="react"
+    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
+
+## Writing the Anchor Program
+
+Let's break down the key components of our counter program:
+
+## Core Functionality
+
+The program implements two main instructions:
+
+1. `initialize`: Sets the counter to 0
+2. `increment`: Increments the counter by 1
+
+Here's the core structure of our program:
+
+```rust
+#[ephemeral]
+#[program]
+pub mod anchor_counter {
+    use super::*;
+
+    /// Initialize the counter.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        Ok(())
+    }
+
+    /// Increment the counter.
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+
+    // ... Additional instructions will be added here
+}
+```
+
+Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we're adding the `delegate` macro to inject some useful logic to interact with the delegation program.
+
+### Delegating the Counter PDA
+
+In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which
+internally calls the `delegate_account` function. `delegate_account` will CPI to the delegation program, which upon validation will gain ownership of the account.
+After this step, an ephemeral validator can start processing transactions on the counter PDA and propose state diff trough the delegation program.
+
+<Card
+  title="Transaction (Base Layer): Delegate"
+  icon="magnifying-glass"
+  href="https://solscan.io/tx/5tyEk8gkdP88xe8GL7X12f9WGZfYZtmDbuXozvqkpea4rphXPiNp91vAzmSjsyUR399wimBYazEszKSH35sidPRH?cluster=devnet"
+  iconType="duotone"
+>
+  Inspect transactions details on Solana Explorer
+</Card>
+```rust
+/// Add delegate function to the context
+#[delegate]
+#[derive(Accounts)]
+pub struct DelegateInput<'info> {
+    pub payer: Signer<'info>,
+    /// CHECK The pda to delegate
+    #[account(mut, del)]
+    pub pda: AccountInfo<'info>,
+}
+````
+
+```rust
+/// Delegate the account to the delegation program
+/// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
+pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    ctx.accounts.delegate_pda(
+        &ctx.accounts.payer,
+        &[TEST_PDA_SEED],
+        DelegateConfig {
+            commit_frequency_ms: 30_000,
+            validator: Some(pubkey!("MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57")), // Asia ER, please set based on ER validator.
+        }
+    )?;
+    Ok(())
+}
+```
+
+### Committing while the PDA is delegated
+
+The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
+
+<CardGroup cols={2}>
+  <Card
+    title="Transaction (ER): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/335F5UcgAW3P8wSaVoEPiBoxeykw9wR1kcJLWUnd9sHmxymCgGvLtxaGDy6ZKDgJw2ku9jtRqwVNY85DuAHvs9GT?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+  <Card
+    title="Transaction (Base layer): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/3xzMGbj2fwFCnGp6r7wyMv5LExmL6SXaEbt52DmxA3Wx1LyksuXpPJS4AAPtqoSeJe3aF7oY3jFNiEhBQKwhzRGN?cluster=devnet"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+</CardGroup>
+```rust
+/// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    commit_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+````
+
+### Undelegating the PDA
+
+Undelegating the PDA is done by calling the `commit_and_undelegate_accounts` as part of some instruction.
+Undelegation commit the latest state and give back the ownership of the PDA to the owner program.
+
+<CardGroup cols={2}>
+  <Card
+    title="Transaction (ER): Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/3MN6Avygk3FwsuQPoKHzpLo9kBBommHwRHTdgxBooDwsaNHgSYr1yaDXYEe63Eii5DCVbtaK89Yyrhy3dSGhHmvw?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+  <Card
+    title="Transaction (Base layer): Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/2YwzNQh632bJu8TSP9GPsXmh7o78KgMMM9QPNbdaAzamtjGZfmT4o7bkG2PtpCWp7aJmmxpxTXr4Qo36k5EjgPab?cluster=devnet"
+    iconType="duotone"
+  >
+    Inspect transaction details on Solana Explorer
+  </Card>
+</CardGroup>
+
+```rust
+/// Undelegate the account from the delegation program
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+## Connecting the React Client
+
+The React client is a simple interface that allows you to interact with the Anchor program.
+It uses the Anchor bindings to interact with the program and the MagicBlock SDK to interact with the Ephemeral Rollup session.
+
+{" "}
+
+<Card
+  title="Source Code: React Client"
+  icon="react"
+  href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+  iconType="duotone"
+></Card>
+
+<iframe
+  src="https://main--ephemeral-counter.netlify.app/"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+<Warning>
+  Iframes only work with some wallets (e.g. Backpack). Alternatively, try the
+  deployed demo here: https://main--ephemeral-counter.netlify.app/
+</Warning>
+
+### Ephemeral Endpoint Configuration
+
+To interact with the Ephemeral Rollup session, you need to configure the appropriate endpoint:
+
+- For devnet, use the following ephemeral endpoint:
+
+  https://devnet.magicblock.app
+
+- For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
+- For <a href="/pages/ephemeral-rollups-ers/how-to-guide/local-development">localhost</a>, download, install, and run the ephemeral validator locally with the appropriate environment variables.
+
+Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
+
+<Endpoints />
+
+<CardGroup cols={2}>
+  <Card
+    title="Source Code: Anchor Counter Program"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="Source Code: React Client"
+    icon="react"
+    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
