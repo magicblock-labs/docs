@@ -9,43 +9,131 @@
   },
   "favicon": "/logo/favicon.png",
   "navigation": {
+
     "tabs": [
       {
-        "tab": "MagicBlock Engine",
+        "tab": "Overview",
         "groups": [
           {
-            "group": "MagicBlock Engine",
+            "group": "Products",
             "pages": [
-              "pages/get-started/introduction/why-magicblock",
-              "pages/get-started/introduction/ephemeral-rollup",
-              "pages/get-started/introduction/pricing"
+              "pages/overview"
             ]
           },
           {
-            "group": "How to Integrate Your Program",
+            "group": "Guides & Starter Kits",
             "pages": [
-              "pages/get-started/how-integrate-your-program/quickstart",
-              "pages/get-started/how-integrate-your-program/magic-router",
-              "pages/get-started/how-integrate-your-program/local-setup",
-              "pages/get-started/how-integrate-your-program/transactions",
-              "pages/get-started/how-integrate-your-program/anchor",
-              "pages/get-started/how-integrate-your-program/rust"
+              "pages/overview/guides-and-starter-kits/overview"
             ]
           },
           {
-            "group": "Use Cases",
+            "group": "Additional Information",
             "pages": [
-              "pages/get-started/use-cases/introduction",
-              "pages/get-started/use-cases/finance",
-              "pages/get-started/use-cases/games",
-              "pages/get-started/use-cases/ai",
-              "pages/get-started/use-cases/payments",
-              "pages/get-started/use-cases/depin",
-              "pages/get-started/use-cases/privacy"
+              "pages/overview/additional-information/whitepaper",
+              "pages/overview/additional-information/security-and-audits",
+              "pages/overview/additional-information/pricing",
+              "pages/overview/additional-information/server-status"
             ]
           }
         ]
       },
+      {
+        "tab": "Ephemeral Rollups (ER)",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pages/ephemeral-rollups-ers/introduction/why",
+              {
+                "group": "How it Works",
+                "pages": [
+                  "pages/ephemeral-rollups-ers/introduction/ephemeral-rollup",
+                  "pages/ephemeral-rollups-ers/introduction/magic-router"
+                ]
+              }
+              
+            ]
+          },
+          {
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/ephemeral-rollups-ers/how-to-guide/quickstart",
+              "pages/ephemeral-rollups-ers/how-to-guide/local-development",
+              "pages/ephemeral-rollups-ers/how-to-guide/rust",
+              "pages/ephemeral-rollups-ers/how-to-guide/anchor"
+            ]
+          },
+          {
+            "group": "API & SDK",
+            "pages": [
+              "pages/ephemeral-rollups-ers/api-and-sdk/overview"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Trusted Execution Environment (TEE)",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pages/trusted-execution-environments-tees/introduction/onchain-privacy",
+              "pages/trusted-execution-environments-tees/introduction/authorization"
+            ]
+          },
+                    {
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/trusted-execution-environments-tees/how-to-guide/program-implementation",
+              "pages/trusted-execution-environments-tees/how-to-guide/client-implementation"
+            ]
+          },
+          {
+            "group": "API & SDK",
+            "pages": [
+              "pages/trusted-execution-environments-tees/api-and-sdk/overview"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Verifiable Randomness Function (VRF)",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pages/verifiable-randomness-functions-vrfs/introduction/what-is-verifiable-randomness",
+              "pages/verifiable-randomness-functions-vrfs/introduction/technical-details",
+              "pages/verifiable-randomness-functions-vrfs/introduction/security",
+              "pages/verifiable-randomness-functions-vrfs/introduction/best-practices",
+              "pages/verifiable-randomness-functions-vrfs/introduction/faq"
+            ]
+          },{
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/verifiable-randomness-functions-vrfs/how-to-guide/overview"
+            ]
+          },
+          {
+            "group": "API & SDK",
+            "pages": [
+              "pages/verifiable-randomness-functions-vrfs/api-and-sdk/overview"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides & Starter Kits",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pages/overview/guides-and-starter-kits/overview"
+            ]
+          }
+        ]
+      },
+      
       {
         "tab": "Tools",
         "groups": [
@@ -146,34 +234,16 @@
             ]
           },
           {
-            "group": "Randomness",
-            "pages": [
-              "pages/tools/randomness/what-is-verifiable-randomness",
-              "pages/tools/randomness/technical-details",
-              "pages/tools/randomness/security",
-              "pages/tools/randomness/best-practices",
-              "pages/tools/randomness/faq"
-            ]
-          },
-          {
             "group": "Oracles",
             "pages": [
               "pages/tools/oracle/introduction",
               "pages/tools/oracle/implementation"
             ]
-          },
-          {
-            "group": "TEE",
-            "pages": [
-              "pages/tools/tee/introduction",
-              "pages/tools/tee/program-implementation",
-              "pages/tools/tee/client-implementation",
-              "pages/tools/tee/authorization"
-            ]
           }
         ]
       }
     ],
+    
     "global": {
       "anchors": [
         {

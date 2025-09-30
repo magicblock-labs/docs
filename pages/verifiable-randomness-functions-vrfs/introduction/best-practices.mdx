@@ -1,0 +1,25 @@
+---
+title: "Best Practices"
+description: "Guidelines for integrating verifiable randomness"
+---
+
+Use these tips to get the most reliable results when requesting randomness.
+Ensure your rollup delegates to a trusted oracle queue with the `DelegateOracleQueue` instruction so that requests are fulfilled promptly.
+
+### Seed Selection
+
+- Combine user input with server timestamps or game state to create unpredictable seeds.
+- Avoid letting players specify the entire `caller_seed` to prevent grinding.
+
+### Callback Validation
+
+- Always check the `vrf_program_identity` to confirm the callback is from MagicBlock's official signer.
+- Reject callbacks that do not match the original request parameters.
+
+### State Management
+
+- Store any pending request identifiers so that retries or unexpected callbacks can be handled safely.
+- Track the oracle queue your requests were delegated to so results can be matched back correctly.
+- Keep random outputs ephemeral—consume them immediately within your [rollup logic](/pages/get-started/introduction/ephemeral-rollup) and avoid reusing them.
+
+Following these guidelines reduces the risk of manipulation and ensures consistent randomness across sessions.

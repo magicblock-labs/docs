@@ -1,3 +1,7 @@
+import TeeCards from "/snippets/tee-cards.mdx";
+
+---
+
 ### Program Implementation Flow
 
 Writing programs for the MagicBlock TEE is similar to writing a standard Solana program, with the addition of a Permission Program used to manage privacy controls.
@@ -77,29 +81,4 @@ import TeeEndpoint from "/snippets/tee-endpoint.mdx";
 
 <TeeEndpoint />
 
-<CardGroup cols={2}>
-  <Card
-    title="Authorization"
-    icon="key"
-    href="/pages/tools/tee/authorization"
-    iconType="duotone"
-  >
-    Permission groups and access
-  </Card>
-  <Card
-    title="Client Implementation"
-    icon="browser"
-    href="/pages/tools/tee/client-implementation"
-    iconType="duotone"
-  >
-    Attestation, challenge, and access
-  </Card>
-  <Card
-    title="Privacy Use Case"
-    icon="shield-check"
-    href="/pages/get-started/use-cases/privacy"
-    iconType="duotone"
-  >
-    Build private, verifiable applications
-  </Card>
-</CardGroup>
+<TeeCards />
