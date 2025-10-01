@@ -274,16 +274,8 @@
             ]
           },
           {
-<<<<<<< HEAD
             "group": "On-chain identity",
             "pages": ["pages/tools/open-source-programs/SOAR"]
-=======
-            "group": "Oracles",
-            "pages": [
-              "pages/tools/oracle/introduction",
-              "pages/tools/oracle/implementation"
-            ]
->>>>>>> origin/main
           }
         ]
       }
