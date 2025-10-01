@@ -10,11 +10,7 @@
   "favicon": "/logo/favicon.png",
   "redirects": [
     {
-<<<<<<< HEAD
-      "source": "/pages/get-started*",
-=======
-      "source": "/pages/get-started/introduction/why-magicblock",
->>>>>>> origin/main
+      "source": "/pages/get-started/*",
       "destination": "/pages/overview/products"
     }
   ],
@@ -65,7 +61,6 @@
             ]
           },
           {
-<<<<<<< HEAD
             "group": "API",
             "pages": [
               "api-reference/er-api/getRoutes",
@@ -123,11 +118,6 @@
             "group": "Introduction",
             "pages": [
               "pages/overview/templates"
-=======
-            "group": "API & SDK",
-            "pages": [
-              "pages/ephemeral-rollups-ers/api-and-sdk/overview"
->>>>>>> origin/main
             ]
           }
         ]
