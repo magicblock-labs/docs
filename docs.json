@@ -10,7 +10,7 @@
   "favicon": "/logo/favicon.png",
   "redirects": [
     {
-      "source": "/pages/get-started/introduction/why-magicblock",
+      "source": "/pages/get-started/*",
       "destination": "/pages/overview/products"
     }
   ],
@@ -61,9 +61,63 @@
             ]
           },
           {
-            "group": "API & SDK",
+            "group": "API",
             "pages": [
-              "pages/ephemeral-rollups-ers/api-and-sdk/overview"
+              "api-reference/er-api/getRoutes",
+              "api-reference/er-api/getIdentity",
+              "api-reference/er-api/getBlockhashForAccounts",
+              "api-reference/er-api/getSignatureStatuses",
+              "api-reference/er-api/getAccountInfo"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Trusted Execution Environment",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pages/trusted-execution-environments-tees/introduction/onchain-privacy",
+              "pages/trusted-execution-environments-tees/introduction/authorization"
+            ]
+          },
+                    {
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/trusted-execution-environments-tees/how-to-guide/program-implementation",
+              "pages/trusted-execution-environments-tees/how-to-guide/client-implementation"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Verifiable Randomness",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pages/verifiable-randomness-functions-vrfs/introduction/what-is-verifiable-randomness",
+              "pages/verifiable-randomness-functions-vrfs/introduction/technical-details",
+              "pages/verifiable-randomness-functions-vrfs/introduction/security",
+              "pages/verifiable-randomness-functions-vrfs/introduction/best-practices",
+              "pages/verifiable-randomness-functions-vrfs/introduction/faq"
+            ]
+          },{
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/verifiable-randomness-functions-vrfs/how-to-guide/overview"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Templates",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "pages/overview/templates"
             ]
           }
         ]
@@ -139,6 +193,33 @@
             "pages": ["pages/tools/introduction"]
           },
           {
+            "group": "Session Keys",
+            "pages": [
+
+                  "pages/tools/session-keys/introduction",
+                  "pages/tools/session-keys/how-do-session-keys-work",
+                  "pages/tools/session-keys/security",
+                  {
+                    "group": "Getting Started",
+                    "pages": [
+                        "pages/tools/session-keys/integrating-sessions-in-your-program",
+                        "pages/tools/session-keys/installation",
+                        "pages/tools/session-keys/session-provider-and-context",
+                        "pages/tools/session-keys/usage-examples",
+                        "pages/tools/session-keys/use-sessionkey-manager"
+                    ]
+                  }
+
+                ]
+          },
+          {
+            "group": "Oracles",
+            "pages": [
+              "pages/tools/oracle/introduction",
+              "pages/tools/oracle/implementation"
+            ]
+          },
+          {
             "group": "BOLT Framework",
             "pages": [
               "pages/tools/bolt/introduction",
@@ -155,87 +236,46 @@
               }
             ]
           },
+
           {
-            "group": "SDKs",
+            "group": "Solana Unity SDK",
             "pages": [
+              "pages/tools/solana-unity-sdk/overview",
+              "pages/tools/solana-unity-sdk/contribution-guide",
               {
-                "group": "Solana Unity SDK",
+                "group": "Getting Started",
                 "pages": [
-                  "pages/tools/solana-unity-sdk/overview",
-                  "pages/tools/solana-unity-sdk/contribution-guide",
-                  {
-                    "group": "Getting Started",
-                    "pages": [
-                      "pages/tools/solana-unity-sdk/getting-started/installation",
-                      "pages/tools/solana-unity-sdk/getting-started/configuration",
-                      "pages/tools/solana-unity-sdk/getting-started/sample-scene"
-                    ]
-                  },
-                  {
-                    "group": "Core Concepts",
-                    "pages": [
-                      "pages/tools/solana-unity-sdk/core-concepts/associated-token-account",
-                      "pages/tools/solana-unity-sdk/core-concepts/transfer-token",
-                      "pages/tools/solana-unity-sdk/core-concepts/transaction-builder",
-                      "pages/tools/solana-unity-sdk/core-concepts/staking",
-                      "pages/tools/solana-unity-sdk/core-concepts/add-signature"
-                    ]
-                  },
-                  {
-                    "group": "Guides",
-                    "pages": [
-                      "pages/tools/solana-unity-sdk/guides/mint-an-nft",
-                      "pages/tools/solana-unity-sdk/guides/host-your-game",
-                      "pages/tools/solana-unity-sdk/guides/publishing-a-game",
-                      "pages/tools/solana-unity-sdk/guides/dex-integration",
-                      "pages/tools/solana-unity-sdk/guides/jupiter",
-                      "pages/tools/solana-unity-sdk/guides/additional-examples"
-                    ]
-                  }
+                  "pages/tools/solana-unity-sdk/getting-started/installation",
+                  "pages/tools/solana-unity-sdk/getting-started/configuration",
+                  "pages/tools/solana-unity-sdk/getting-started/sample-scene"
                 ]
               },
               {
-                "group": "Magic Router SDK",
+                "group": "Core Concepts",
                 "pages": [
-                  "pages/tools/magic-router-sdk/introduction",
-                  "pages/tools/magic-router-sdk/core-concepts",
-                  "pages/tools/magic-router-sdk/getting-started",
-                  {
-                    "group": "Router API reference",
-                    "openapi": "openapi.json"
-                  }
+                  "pages/tools/solana-unity-sdk/core-concepts/associated-token-account",
+                  "pages/tools/solana-unity-sdk/core-concepts/transfer-token",
+                  "pages/tools/solana-unity-sdk/core-concepts/transaction-builder",
+                  "pages/tools/solana-unity-sdk/core-concepts/staking",
+                  "pages/tools/solana-unity-sdk/core-concepts/add-signature"
                 ]
               },
               {
-                "group": "On-chain identity",
-                "pages": ["pages/tools/open-source-programs/SOAR"]
-              }
-            ]
-          },
-          {
-            "group": "Sessions",
-            "pages": [
-              {
-                "group": "Session Keys",
+                "group": "Guides",
                 "pages": [
-                  "pages/tools/session-keys/introduction",
-                  "pages/tools/session-keys/how-do-session-keys-work",
-                  "pages/tools/session-keys/security",
-                  "pages/tools/session-keys/integrating-sessions-in-your-program",
-                  "pages/tools/session-keys/installation",
-                  "pages/tools/session-keys/session-provider-and-context",
-                  "pages/tools/session-keys/usage-examples",
-                  "pages/tools/session-keys/use-sessionkey-manager"
+                  "pages/tools/solana-unity-sdk/guides/mint-an-nft",
+                  "pages/tools/solana-unity-sdk/guides/host-your-game",
+                  "pages/tools/solana-unity-sdk/guides/publishing-a-game",
+                  "pages/tools/solana-unity-sdk/guides/dex-integration",
+                  "pages/tools/solana-unity-sdk/guides/jupiter",
+                  "pages/tools/solana-unity-sdk/guides/additional-examples"
                 ]
               }
             ]
           },
           {
-            "group": "Oracles",
-            "pages": [
-              "pages/tools/oracle/introduction",
-              "pages/tools/oracle/implementation"
-            ]
+            "group": "On-chain identity",
+            "pages": ["pages/tools/open-source-programs/SOAR"]
           }
         ]
       }
