@@ -32,43 +32,55 @@ import Endpoints from "/snippets/endpoints.mdx";
 
 **Magicblock's Magic Router** is an dynamic transaction routing engine that accelerates transactions by intelligently deciding where they should be executed — either on **Ephemeral Rollups** or **Solana** — based on transaction metadata.
 
-This removes the complexity of infrastructure decisions from the developer’s workflow, enabling seamless user experiences across different execution environments.
-
-<Tip>
-  {" "}
-  Try out a demo of the Magic Router [here](https://router-demo.magicblock.app/)
-  or explore our Pyth price data demo [here](https://pyth-template.magicblock.app/)
-</Tip>
-
----
-
-## **Dynamic Transaction Routing**
-
-<img height="200" src="/images/magic-router.png" />
-<Card>
-  User transactions are submitted **without modification** and are
-  **transparently executed**. A [**specialized RPC
-  provider**](pages/ephemeral-rollups-ers/introduction/magic-router) routes
-  transactions to base layer or ER dynamically based on metadata.
-</Card>
-
-The Magic Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest dedicated endpoint:
-
-- **Ephemeral Rollup** for fast, low-latency, zero-cost execution
-- **Solana** for persistent, high-throughput execution
-
 This eliminates the need for manual routing logic from the developer, providing significant benefits in transaction speed and development experience.
 
 - ✅ **Simple Integration with Single Endpoint**: Just connect to a single RPC endpoint.
 - ✅ **Seamless Wallet Experience**: Connect, sign, and submit — no need to know what’s happening behind the scenes.
 - ✅ **Faster Confirmations**: Magic Router routes to the fastest available endpoint.
 
-### **How It Works**
+---
+
+## Examples
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  >
+    Integrate with an Anchor program
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
+    iconType="duotone"
+  >
+    Integrate with a Native Rust program
+  </Card>
+  <Card
+    title="API"
+    icon="server"
+    href="/api-reference/er-api/getRoutes"
+    iconType="duotone"
+  >
+    Experiment with Magic Router API
+  </Card>
+</CardGroup>
+
+---
+
+## Dynamic Transaction Routing
+
+<img height="200" src="/images/magic-router.png" />
+<Endpoints />
+
+The Magic Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest dedicated endpoint:
 
 <img height="200" src="/images/magic-router-scenarios.png" />
-
-1. **Client - Transaction Submission**  
-   The dApp or user sends a transaction to the Magic Router RPC endpoint.
+1. **Client - Transaction Submission** The dApp or user sends a transaction to the
+Magic Router RPC endpoint.
 
 2. **RPC - Metadata Inspection**  
    The Magic Router inspects the transaction metadata and checks the owner of writable accounts.
@@ -76,9 +88,5 @@ This eliminates the need for manual routing logic from the developer, providing 
 3. **Validator - Smart Routing and Execution**  
    Based on the metadata, the router determines whether to send it to:
 
-   - **Ephemeral Rollup**
-   - **Solana**
-
-   The router sends the transaction to the right execution layer. Users just sign and submit — no extra steps needed.
-
-<Endpoints />
+   - **Ephemeral Rollup** for fast, low-latency, zero-cost execution
+   - **Solana** for persistent, high-throughput execution
