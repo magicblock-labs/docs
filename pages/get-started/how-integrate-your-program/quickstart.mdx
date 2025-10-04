@@ -122,10 +122,10 @@ To make it easier to integrate via the frontend, we created the [Magic Router](/
 ```typescript Frontend
 import { sendMagicTransaction } from "magic-router-sdk";
 
-const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+const routerConnection = new Connection("https://devnet-router.magicblock.app", "confirmed");
 
 // Construct a standard Solana transaction
-const transaction = await exampleClient.current?.methods
+const tx = await exampleClient.current?.methods
   .exampleMethod(0)
   .accounts({
       user: userPda,
