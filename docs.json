@@ -67,7 +67,8 @@
               "api-reference/er-api/getIdentity",
               "api-reference/er-api/getBlockhashForAccounts",
               "api-reference/er-api/getSignatureStatuses",
-              "api-reference/er-api/getAccountInfo"
+              "api-reference/er-api/getAccountInfo",
+              "api-reference/er-api/getDelegationStatus"
             ]
           }
         ]

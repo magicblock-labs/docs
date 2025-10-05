@@ -42,6 +42,22 @@ This eliminates the need for manual routing logic from the developer, providing 
 
 ## Examples
 
+```ts
+import { sendAndConfirmTransaction } from "@solana/web3.js";
+import { ConnectionMagicRouter } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const connection = new ConnectionMagicRouter(
+  "https://devnet-router.magicblock.app/",
+  { wsEndpoint: "wss://devnet-router.magicblock.app/" }
+);
+let tx = new Transaction();
+tx.add(ix);
+const txHash = await sendAndConfirmTransaction(connection, tx, [payer], {
+  skipPreflight: true,
+  commitment: "confirmed",
+});
+```
+
 <CardGroup cols={2}>
   <Card
     title="Anchor"
@@ -82,11 +98,15 @@ The Magic Router analyzes each transaction’s metadata (e.g. writable accounts,
 1. **Client - Transaction Submission** The dApp or user sends a transaction to the
 Magic Router RPC endpoint.
 
-2. **RPC - Metadata Inspection**  
+2. **RPC - Metadata Inspection**
    The Magic Router inspects the transaction metadata and checks the owner of writable accounts.
 
-3. **Validator - Smart Routing and Execution**  
+3. **Validator - Smart Routing and Execution**
    Based on the metadata, the router determines whether to send it to:
 
    - **Ephemeral Rollup** for fast, low-latency, zero-cost execution
    - **Solana** for persistent, high-throughput execution
+
+```
+
+```

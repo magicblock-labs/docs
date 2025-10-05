@@ -475,7 +475,13 @@
         "/getDelegationStatus": {
             "post": {
                 "summary": "getDelegationStatus",
-                "description": "Get delegation status for a single account.",
+                "servers": [
+                    {
+                    "url": "https://devnet-router.magicblock.app",
+                    "description": "Devnet - RPC Magic Router"
+                    }
+                ],
+                "description": "Get delegation status for a single account from Magic Router.",
                 "requestBody": {
                     "required": true,
                     "content": {
