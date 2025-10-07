@@ -1,11 +1,9 @@
 ---
 title: "Security"
-description: "How randomness proofs are verified"
+description: "MagicBlock's VRF program is audited and generates verifiable randomness"
 ---
 
-MagicBlock's randomness is generated through the VRF program and verified oracles, primarily by blockhash, unix time, and oracle private key:
-
-<img height="200" src="/images/vrf-proof.png" />
+MagicBlock exposes randomness through [**VRF Program**](https://github.com/magicblock-labs/ephemeral-vrf/) – a Solana VRF implementation that uses a network of oracles to compute and verify random values. The protocol follows [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381), leveraging Curve25519's Ristretto group and Schnorr‑style signatures for proofs. See the [Technical Details](./technical-details) page for integration specifics.
 
 Upon randomness request, the VRF program computes a [unique hashId](https://github.com/magicblock-labs/ephemeral-vrf/blob/main/program/src/request_randomness.rs#L71) from various inputs and stores it in the onchain oracle queue:
 
@@ -21,7 +19,11 @@ Upon randomness request, the VRF program computes a [unique hashId](https://gith
     ]);
 ```
 
-The randomness proof is cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
+Verified oracles sign the unique queue items with their private key, the resulted signature or `randomness proof` is verifiable onchain:
+
+<img height="300" src="/images/vrf-proof.png" />
+
+The `randomness proof` is cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
 
 ```rust
 #[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]

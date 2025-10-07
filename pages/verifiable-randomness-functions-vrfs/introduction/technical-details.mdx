@@ -3,7 +3,7 @@ title: "Technical Details"
 description: "How MagicBlock integrates verifiable randomness"
 ---
 
-Random numbers are generated via a VRF built on Curve25519's Ristretto group and proven using a Schnorr-like signature as described in RFC&nbsp;9381. The proof and output are returned to the rollup with a signed callback from the MagicBlock VRF signer PDA. Your program verifies the caller and then uses the randomness in gameplay logic.
+Random numbers are generated via a VRF built on Curve25519's Ristretto group and proven using a Schnorr-like signature as described in [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381). The proof and output are returned to the rollup with a signed callback from the MagicBlock VRF signer PDA. Your program verifies the caller and then uses the randomness in gameplay logic.
 
 Helper utilities like `random_u32`, `random_u8_with_range`, and `random_bool` make it simple to convert the `[u8; 32]` output into usable values. Because the request and consume steps occur inside the ephemeral execution window, users get real-time results with verifiable fairness and without relying on external servers.
 
