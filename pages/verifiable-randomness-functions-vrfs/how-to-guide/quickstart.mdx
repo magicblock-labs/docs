@@ -1,0 +1,248 @@
+---
+title: "Quickstart"
+description: "Learn how to request and consume verifiable randomness onchain using the MagicBlock VRF SDK on Solana."
+---
+
+import Endpoints from "/snippets/endpoints.mdx";
+import Validators from "/snippets/validators.mdx";
+
+---
+
+Any Solana program can request and consume verifiable randomness onchain within seconds using the MagicBlock VRF SDK. By the end of this guide, you'll have a working example that rolls a dice using verifiable randomness.
+
+## Process of `Requesting` and `Consuming` Onchain Randomness
+
+<Steps>
+  <Step title={<a href="#step-1-write-your-program">Write your program</a>}>
+    Write your Solana program as you normally would, using Anchor, native Rust,
+    Bolt, C, or even assembly.
+  </Step>
+  <Step
+    title={
+      <a href="#step-2-add-request-and-consume-randomness">
+        Add request and consume randomness instructions
+      </a>
+    }
+  >
+    Add CPI hooks that request and consume randomness via callback from a
+    verified oracle.
+  </Step>
+  <Step
+    title={
+      <a href="#step-3-deploy-your-program">Deploy your program on Solana</a>
+    }
+  >
+    Deploy your Solana program using Anchor or Solana CLI.
+  </Step>
+  <Step
+    title={
+      <a href="#step-4-execute-randomness-transactions">
+        Execute transactions for onchain randomness
+      </a>
+    }
+  >
+    Run your transactions to generate and consume randomness onchain.
+  </Step>
+</Steps>
+
+---
+
+## Step 1: Write your program
+
+Start with a simple dice program that includes an `initialize` instruction and a `Player` struct to store the randomness result:
+
+```rust
+pub const PLAYER: &[u8] = b"playerd";
+
+#[program]
+pub mod random_dice {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        msg!(
+            "Initializing player account: {:?}",
+            ctx.accounts.player.key()
+        );
+        Ok(())
+    }
+
+    // ... Additional instructions will be added here
+}
+
+/// Context for initializing player
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[account(init_if_needed, payer = payer, space = 8 + 1, seeds = [PLAYER, payer.key().to_bytes().as_slice()], bump)]
+    pub player: Account<'info, Player>,
+    pub system_program: Program<'info, System>,
+}
+
+/// Player struct
+#[account]
+pub struct Player {
+    pub last_result: u8,
+}
+```
+
+Find the full basic randomness example for Anchor framework implementation:
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor Example"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/roll-dice"
+    iconType="duotone"
+  >
+    Randomness with an Anchor program
+  </Card>
+</CardGroup>
+
+---
+
+## Step 2: Add `request randomness` and `consume randomness` instructions
+
+> `Request Randomness` is the process of generating a random `hashId` with the relevant callback instruction for the verified oracles to be triggered.
+
+> `Consume Randomness` is the process of using the verifiable randomness which is provided and triggered by verified oracle.
+
+**Anchor framework example:**
+
+1. Add `ephemeral_vrf_sdk` with Anchor features to your program
+
+```bash
+cargo add ephemeral_vrf_sdk --features anchor
+```
+
+Import `vrf` , `create_request_randomness_ix`, `RequestRandomnessParams`, and `SerializableAccountMeta`:
+
+```rust
+use ephemeral_vrf_sdk::anchor::vrf;
+use ephemeral_vrf_sdk::instructions::{create_request_randomness_ix, RequestRandomnessParams};
+use ephemeral_vrf_sdk::types::SerializableAccountMeta;
+```
+
+2. Add instructions `roll_dice` to request randomness and `callback_roll_dice` to consume randomness, along with its context:
+
+```rust
+#[program]
+pub mod random_dice {
+    use super::*;
+
+    // ... `initialize` instruction
+
+    // Request Randomness
+    pub fn roll_dice(ctx: Context<DoRollDiceCtx>, client_seed: u8) -> Result<()> {
+        msg!("Requesting randomness...");
+        let ix = create_request_randomness_ix(RequestRandomnessParams {
+            payer: ctx.accounts.payer.key(),
+            oracle_queue: ctx.accounts.oracle_queue.key(),
+            callback_program_id: ID,
+            callback_discriminator: instruction::CallbackRollDice::DISCRIMINATOR.to_vec(),
+            caller_seed: [client_seed; 32],
+            // Specify any account that is required by the callback
+            accounts_metas: Some(vec![SerializableAccountMeta {
+                pubkey: ctx.accounts.player.key(),
+                is_signer: false,
+                is_writable: true,
+            }]),
+            ..Default::default()
+        });
+        ctx.accounts
+            .invoke_signed_vrf(&ctx.accounts.payer.to_account_info(), &ix)?;
+        Ok(())
+    }
+
+    // Consume Randomness
+    pub fn callback_roll_dice(
+        ctx: Context<CallbackRollDiceCtx>,
+        randomness: [u8; 32],
+    ) -> Result<()> {
+        let rnd_u8 = ephemeral_vrf_sdk::rnd::random_u8_with_range(&randomness, 1, 6);
+        msg!("Consuming random number: {:?}", rnd_u8);
+        let player = &mut ctx.accounts.player;
+        player.last_result = rnd_u8; // Update the player's last result
+        Ok(())
+    }
+}
+
+#[vrf]
+#[derive(Accounts)]
+pub struct DoRollDiceCtx<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[account(seeds = [PLAYER, payer.key().to_bytes().as_slice()], bump)]
+    pub player: Account<'info, Player>,
+    /// CHECK: The oracle queue
+    #[account(mut, address = ephemeral_vrf_sdk::consts::DEFAULT_QUEUE)]
+    pub oracle_queue: AccountInfo<'info>,
+}
+
+#[derive(Accounts)]
+pub struct CallbackRollDiceCtx<'info> {
+    /// This check ensure that the vrf_program_identity (which is a PDA) is a singer
+    /// enforcing the callback is executed by the VRF program trough CPI
+    #[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
+    pub vrf_program_identity: Signer<'info>,
+    #[account(mut)]
+    pub player: Account<'info, Player>,
+}
+
+// ... Other context and account struct.
+```
+
+---
+
+## Step 3: Deploy your program on Solana
+
+Now you're program is ready to deploy!
+
+```bash
+anchor build && anchor deploy
+```
+
+---
+
+## Step 4: Ready to execute transactions for onchain randomness
+
+Run the following test:
+
+```bash
+anchor test --skip-build --skip-deploy --skip-local-validator
+```
+
+Test:
+
+```typescript
+import * as anchor from "@coral-xyz/anchor";
+import { Program, web3 } from "@coral-xyz/anchor";
+import { RandomDice } from "../target/types/random_dice";
+
+describe("roll-dice", () => {
+  // Configure the client to use the local cluster.
+  anchor.setProvider(anchor.AnchorProvider.env());
+
+  const program = anchor.workspace.RandomDice as Program<RandomDice>;
+
+  it("Initialized player!", async () => {
+    const tx = await program.methods.initialize().rpc();
+    console.log("Your transaction signature", tx);
+  });
+
+  it("Do Roll Dice!", async () => {
+    const tx = await program.methods.rollDice(0).rpc();
+    console.log("Your transaction signature", tx);
+    const playerPk = web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("playerd"), anchor.getProvider().publicKey.toBytes()],
+      program.programId
+    )[0];
+    let player = await program.account.player.fetch(playerPk, "processed");
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log("Player PDA: ", playerPk.toBase58());
+    console.log("player: ", player);
+  });
+});
+```
+
+---

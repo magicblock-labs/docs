@@ -211,7 +211,7 @@ pub struct DelegateInput<'info> {
 
 Now you're program is upgraded and ready! Build and deploy to the desired cluster:
 
-```rust
+```bash
 anchor build && anchor deploy
 ```
 
@@ -219,9 +219,15 @@ anchor build && anchor deploy
 
 ## Step 4: Ready to execute transactions for delegation and real-time speed
 
-Use Anchor IDL file to build and send transactions:
+Run the following test:
 
-```typescript Frontend
+```bash
+anchor test --skip-build --skip-deploy --skip-local-validator
+```
+
+Test:
+
+```typescript
 // Set Anchor providers
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);

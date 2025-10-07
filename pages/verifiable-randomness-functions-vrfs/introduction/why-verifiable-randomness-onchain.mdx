@@ -1,0 +1,27 @@
+---
+title: "Why Verifiable Onchain Randomness?"
+description: "Verifiable randomness ensures that random outcomes in decentralized applications are **fair, transparent, and tamper-proof**"
+---
+
+**Traditional offchain randomness** suffers from:
+
+- ❌ **Lack of transparency** — users cannot verify how random numbers are generated.
+- 🧮 **Manipulation risks** — developers, miners, or validators could influence outcomes for financial gain.
+- 🕒 **Delayed or unreliable delivery** — offchain randomness may not align with onchain execution timing.
+
+**Verifiable onchain randomness** solves these challenges by providing:
+
+- 🔒 **Cryptographic verification** — randomness results are proven and validated onchain.
+- ⚖️ **Fairness and trustlessness** — no single party can manipulate outcomes.
+- ⛓️ **Full transparency** — every random value can be audited directly on the blockchain.
+- ⚡ **Instant availability** — randomness is delivered onchain within seconds, ready for use in smart contracts.
+
+MagicBlock exposes this capability through **EphemeralVrf** – a Solana VRF implementation that uses a network of oracles to compute and verify random values. The protocol follows [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381), leveraging Curve25519's Ristretto group and Schnorr‑style signatures for proofs. See the [Technical Details](./technical-details) page for integration specifics.
+
+#### Example use cases
+
+- Provably fair loot boxes or chest drops
+- Secure gacha systems
+- Randomized spawn or resource generation
+- Chain-verified PvP matchmaking
+- Trustless raffles or giveaways
