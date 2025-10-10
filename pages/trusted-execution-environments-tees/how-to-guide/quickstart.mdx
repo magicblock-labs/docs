@@ -76,22 +76,32 @@ Find the full private transfer example with Anchor framework and client implemen
 
 <Tabs>
     <Tab title="1. Write program">
+        A simple transfer program where tokens are tracked through deposit accounts, and locked in a vault account:
         <WriteProgramCode />
         [⬆️ Back to Top](#private-transfer-example)
     </Tab>
     <Tab title="2. Delegate">
+        > `Delegation` is the process of transferring ownership of one or more of your program's `PDAs` to the delegation program. Ephemeral Validators will then be able to use the `PDAs` to perform transactions in the SVM runtime.
+
+        > `Undelegation` is the process of transferring ownership of the `PDAs` back to your program. On undelegation, the state is committed and it trigger the finalization process. Once state it validated, the `PDAs` are unlocked and can be used as normal on mainnet
+
+        Specify your preferred delegation config such as auto commits and specific ER validator:
+        <Validators />
         <DelegateCode />
         [⬆️ Back to Top](#private-transfer-example)
     </Tab>
     <Tab title="3. Restrict">
+        Create groups of users and define permissions for state accounts to restrict access:
         <RestrictCode />
         [⬆️ Back to Top](#private-transfer-example)
     </Tab>
     <Tab title="4. Deploy">
+        Now you’re program is upgraded and ready! Build and deploy to the desired cluster:
         <DeployCode />
         [⬆️ Back to Top](#private-transfer-example)
     </Tab>
     <Tab title="5. Authorize">
+        Request an authorization token for user to interact with TEE endpoint:
         <AuthorizeCode />
         [⬆️ Back to Top](#private-transfer-example)
     </Tab>
