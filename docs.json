@@ -79,16 +79,16 @@
           {
             "group": "How-to-Guide",
             "pages": [
-              "pages/trusted-execution-environments-tees/how-to-guide/quickstart",
-              "pages/trusted-execution-environments-tees/how-to-guide/program-implementation",
-              "pages/trusted-execution-environments-tees/how-to-guide/client-implementation"
+              "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
+              "pages/private-ephemeral-rollups-pers/how-to-guide/program-implementation",
+              "pages/private-ephemeral-rollups-pers/how-to-guide/client-implementation"
             ]
           },
           {
             "group": "Reference Material",
             "pages": [
-              "pages/trusted-execution-environments-tees/introduction/onchain-privacy",
-              "pages/trusted-execution-environments-tees/introduction/authorization"
+              "pages/private-ephemeral-rollups-pers/introduction/onchain-privacy",
+              "pages/private-ephemeral-rollups-pers/introduction/authorization"
             ]
           }
 
