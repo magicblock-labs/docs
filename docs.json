@@ -74,7 +74,7 @@
         ]
       },
       {
-        "tab": "Trusted Execution Environment",
+        "tab": "Private Ephemeral Rollup",
         "groups": [
           {
             "group": "How-to-Guide",
