@@ -1,0 +1,80 @@
+```rust
+/// ... other imports
+
+use magicblock_permission_client::instructions::{
+    CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
+};
+
+/// ... other constants
+
+#[ephemeral]
+#[program]
+pub mod private_payments {
+    use anchor_spl::token::{transfer_checked, TransferChecked};
+
+    use super::*;
+
+    /// ... other instructions
+
+    /// Creates a permission group and permission for a deposit account using the external permission program.
+    /// Calls out to the permission program to create a group and permission for the deposit account.
+    pub fn create_permission(ctx: Context<CreatePermission>, id: Pubkey) -> Result<()> {
+        let CreatePermission {
+            payer,
+            permission,
+            permission_program,
+            group,
+            deposit,
+            user,
+            system_program,
+        } = ctx.accounts;
+
+        CreateGroupCpiBuilder::new(&permission_program)
+            .group(&group)
+            .id(id)
+            .members(vec![user.key()])
+            .payer(&payer)
+            .system_program(system_program)
+            .invoke()?;
+
+        CreatePermissionCpiBuilder::new(&permission_program)
+            .permission(&permission)
+            .delegated_account(&deposit.to_account_info())
+            .group(&group)
+            .payer(&payer)
+            .system_program(system_program)
+            .invoke_signed(&[&[
+                DEPOSIT_PDA_SEED,
+                user.key().as_ref(),
+                deposit.token_mint.as_ref(),
+                &[ctx.bumps.deposit],
+            ]])?;
+
+        Ok(())
+    }
+}
+
+/// Other context and accounts ...
+
+#[derive(Accounts)]
+pub struct CreatePermission<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Anyone can create the permission
+    pub user: UncheckedAccount<'info>,
+    #[account(
+        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), deposit.token_mint.as_ref()],
+        bump
+    )]
+    pub deposit: Account<'info, Deposit>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub group: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    pub permission_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+```

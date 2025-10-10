@@ -1,0 +1,82 @@
+---
+title: "Quickstart"
+description: "Enable privacy in any Solana program state account through MagicBlock's ER and Trusted Execution Environment."
+---
+
+import Endpoints from "/snippets/endpoints.mdx";
+import Validators from "/snippets/validators.mdx";
+import Construction from "/snippets/construction.mdx";
+
+import WriteProgramCode from "/snippets/tee-tabs/write-program-code.mdx";
+import DelegateCode from "/snippets/tee-tabs/delegate-code.mdx";
+import RestrictCode from "/snippets/tee-tabs/restrict-code.mdx";
+import DeployCode from "/snippets/tee-tabs/deploy-code.mdx";
+import AuthorizeCode from "/snippets/tee-tabs/authorize-code.mdx";
+import TestCode from "/snippets/tee-tabs/test-code.mdx";
+
+---
+
+## Process of Privacy upgrade
+
+<Steps>
+  <Step title={<a href="#1-write-program">Write your program</a>}>
+    Write your Solana program as you normally.
+  </Step>
+  <Step title={<a href="#2-delegate">Add delegation hooks in your program</a>}>
+    Add CPI hooks to delegate, commit and undelegate state accounts through
+    Ephemeral Rollup sessions.
+  </Step>
+  <Step
+    title={
+      <a href="#3-restrict">
+        Add restrictions through permission hooks in your program.
+      </a>
+    }
+  >
+    Add CPI hooks that create groups and permissions that enable restrictions
+    for specific delegated accounts.
+  </Step>
+  <Step title={<a href="#4-deploy">Deploy your program on Solana</a>}>
+    Deploy your Solana program using Anchor CLI.
+  </Step>
+  <Step
+    title={<a href="#5-authorize">Implement authorization in your client</a>}
+  >
+    Sign user message to retrieve authorization token from TEE endpoint.
+  </Step>
+  <Step title={<a href="#6-test">Execute transactions and test privacy</a>}>
+    Request for authorization token and send confidential transactions.
+  </Step>
+</Steps>
+
+---
+
+## Private Payment Example
+
+<Tabs>
+    <Tab title="1. Write program">
+        <WriteProgramCode />
+        [⬆️ Back to Top](#private-payment-example)
+    </Tab>
+    <Tab title="2. Delegate">
+        <DelegateCode />
+        [⬆️ Back to Top](#private-payment-example)
+    </Tab>
+    <Tab title="3. Restrict">
+        <RestrictCode />
+        [⬆️ Back to Top](#private-payment-example)
+    </Tab>
+    <Tab title="4. Deploy">
+        <DeployCode />
+        [⬆️ Back to Top](#private-payment-example)
+    </Tab>
+    <Tab title="5. Authorize">
+        <AuthorizeCode />
+        [⬆️ Back to Top](#private-payment-example)
+    </Tab>
+    <Tab title="6. Test">
+        <Construction />
+        [⬆️ Back to Top](#private-payment-example)
+    </Tab>
+
+</Tabs>

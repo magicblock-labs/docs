@@ -14,27 +14,26 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
 
 <Steps>
   <Step title={<a href="#step-1%3A-write-your-program">Write your program</a>}>
-    Write your Solana program as you normally would, using Anchor, native Rust,
-    Bolt, C, or even assembly.
+    Write your Solana program as you normally would.
   </Step>
   <Step
     title={
       <a href="#step-2%3A-add-delegation-and-undelegation-hooks">
-        Add delegation and undelegation hooks
+        Add delegation and undelegation hooks in your program
       </a>
     }
   >
-    Accounts that are delegated can be used as writable in an Ephemeral Rollup
-    session.
+    Add CPI hooks to delegate, commit and undelegate state accounts through
+    Ephemeral Rollup sessions.
   </Step>
   <Step
     title={
       <a href="#step-3%3A-deploy-your-program-on-solana">
-        Deploy your program on Solana
+        Deploy your program on Solana.
       </a>
     }
   >
-    Deploy your program directly on Solana.
+    Deploy your program directly on Solana using Anchor or Solana CLI.
   </Step>
   <Step
     title={
@@ -43,8 +42,8 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
       </a>
     }
   >
-    Execute your transactions without modifications on-chain and off-chain that
-    also comply with the SVM RPC specification.
+    Send transactions without modifications on-chain and off-chain that also
+    comply with the SVM RPC specification.
   </Step>
 </Steps>
 

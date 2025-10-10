@@ -38,7 +38,16 @@
         "tab": "Ephemeral Rollup",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/ephemeral-rollups-ers/how-to-guide/quickstart",
+              "pages/ephemeral-rollups-ers/how-to-guide/local-development",
+              "pages/ephemeral-rollups-ers/how-to-guide/rust",
+              "pages/ephemeral-rollups-ers/how-to-guide/anchor"
+            ]
+          },
+          {
+            "group": "Reference Material",
             "pages": [
               "pages/ephemeral-rollups-ers/introduction/why",
               {
@@ -49,15 +58,6 @@
                 ]
               }
               
-            ]
-          },
-          {
-            "group": "How-to-Guide",
-            "pages": [
-              "pages/ephemeral-rollups-ers/how-to-guide/quickstart",
-              "pages/ephemeral-rollups-ers/how-to-guide/local-development",
-              "pages/ephemeral-rollups-ers/how-to-guide/rust",
-              "pages/ephemeral-rollups-ers/how-to-guide/anchor"
             ]
           },
           {
@@ -77,26 +77,35 @@
         "tab": "Trusted Execution Environment",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/trusted-execution-environments-tees/how-to-guide/quickstart",
+              "pages/trusted-execution-environments-tees/how-to-guide/program-implementation",
+              "pages/trusted-execution-environments-tees/how-to-guide/client-implementation"
+            ]
+          },
+          {
+            "group": "Reference Material",
             "pages": [
               "pages/trusted-execution-environments-tees/introduction/onchain-privacy",
               "pages/trusted-execution-environments-tees/introduction/authorization"
             ]
-          },
-          {
-            "group": "How-to-Guide",
-            "pages": [
-              "pages/trusted-execution-environments-tees/how-to-guide/program-implementation",
-              "pages/trusted-execution-environments-tees/how-to-guide/client-implementation"
-            ]
           }
+
         ]
       },
       {
         "tab": "Verifiable Randomness",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "How-to-Guide",
+            "pages": [
+              "pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart",
+              "pages/verifiable-randomness-functions-vrfs/how-to-guide/best-practices"
+            ]
+          },
+          {
+            "group": "Reference Material",
             "pages": [
               "pages/verifiable-randomness-functions-vrfs/introduction/why-verifiable-randomness-onchain",
               {
@@ -107,13 +116,6 @@
                   "pages/verifiable-randomness-functions-vrfs/introduction/faq"
                 ]
               }
-            ]
-          },
-          {
-            "group": "How-to-Guide",
-            "pages": [
-              "pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart",
-              "pages/verifiable-randomness-functions-vrfs/how-to-guide/best-practices"
             ]
           }
         ]
