@@ -1,0 +1,67 @@
+```typescript
+// Set ER Validator
+const ER_VALIDATOR = new web3.PublicKey(
+  "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
+); // Asia ER Validator
+
+// Set Anchor providers
+const provider = anchor.AnchorProvider.env();
+anchor.setProvider(provider);
+const providerEphemeralRollup = new anchor.AnchorProvider(
+  new anchor.web3.Connection("https://devnet-as.magicblock.app/", {
+    wsEndpoint: "wss://devnet.magicblock.app/",
+  }),
+  anchor.Wallet.local()
+);
+
+// Set program and pda
+const program = anchor.workspace.AnchorCounter as Program<AnchorCounter>;
+const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
+  [Buffer.from(SEED_TEST_PDA)],
+  program.programId
+);
+
+// Initialize Counter on Base Layer
+let initTx = await program.methods
+  .increment()
+  .accounts({
+    counter: pda,
+  })
+  .transaction();
+initTx.feePayer = provider.wallet.publicKey;
+initTx.recentBlockhash = (
+  await provider.connection.getLatestBlockhash()
+).blockhash;
+initTx = await provider.connection.signTransaction(initTx);
+const dinitTxHash = await provider.sendAndConfirm(initTx);
+
+// Delegate Counter on Base Layer to ER
+let delTx = await program.methods
+  .increment()
+  .accounts({
+    payer: provider.wallet.publicKey,
+    validator: ER_VALIDATOR,
+    pda: pda,
+  })
+  .transaction();
+delTx.feePayer = provider.connection.wallet.publicKey;
+delTx.recentBlockhash = (
+  await provider.connection.getLatestBlockhash()
+).blockhash;
+delTx = await provider.wallet.signTransaction(delTx);
+const delTxHash = await provider.sendAndConfirm(delTx);
+
+// Increment Counter in real-time on ER
+let incTx = await program.methods
+  .increment()
+  .accounts({
+    counter: pda,
+  })
+  .transaction();
+incTx.feePayer = providerEphemeralRollup.wallet.publicKey;
+incTx.recentBlockhash = (
+  await providerEphemeralRollup.connection.getLatestBlockhash()
+).blockhash;
+incTx = await providerEphemeralRollup.wallet.signTransaction(incTx);
+const incTxHash = await providerEphemeralRollup.sendAndConfirm(incTx);
+```

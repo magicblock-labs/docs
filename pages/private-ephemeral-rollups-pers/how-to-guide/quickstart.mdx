@@ -6,13 +6,14 @@ description: "Enable privacy in any Solana program state account through MagicBl
 import Endpoints from "/snippets/endpoints.mdx";
 import Validators from "/snippets/validators.mdx";
 import Construction from "/snippets/construction.mdx";
+import Software from "/snippets/software.mdx";
 
-import WriteProgramCode from "/snippets/tee-tabs/write-program-code.mdx";
-import DelegateCode from "/snippets/tee-tabs/delegate-code.mdx";
-import RestrictCode from "/snippets/tee-tabs/restrict-code.mdx";
-import DeployCode from "/snippets/tee-tabs/deploy-code.mdx";
-import AuthorizeCode from "/snippets/tee-tabs/authorize-code.mdx";
-import TestCode from "/snippets/tee-tabs/test-code.mdx";
+import WriteProgramCode from "/snippets/private-transfer-code/write-program.mdx";
+import DelegateCode from "/snippets/private-transfer-code/delegate.mdx";
+import RestrictCode from "/snippets/private-transfer-code/restrict.mdx";
+import AuthorizeCode from "/snippets/private-transfer-code/authorize.mdx";
+import TestCode from "/snippets/private-transfer-code/test.mdx";
+import DelegationInfo from "/snippets/delegation-info.mdx";
 
 ---
 
@@ -53,6 +54,8 @@ import TestCode from "/snippets/tee-tabs/test-code.mdx";
 
 ## Private Transfer Example
 
+<Software />
+
 Find the full private transfer example with Anchor framework and client implementation:
 
 <CardGroup cols={2}>
@@ -74,6 +77,8 @@ Find the full private transfer example with Anchor framework and client implemen
   </Card>
 </CardGroup>
 
+---
+
 <Tabs>
     <Tab title="1. Write program">
         A simple transfer program where tokens are tracked through deposit accounts, and locked in a vault account:
@@ -81,10 +86,7 @@ Find the full private transfer example with Anchor framework and client implemen
         [⬆️ Back to Top](#private-transfer-example)
     </Tab>
     <Tab title="2. Delegate">
-        > `Delegation` is the process of transferring ownership of one or more of your program's `PDAs` to the delegation program. Ephemeral Validators will then be able to use the `PDAs` to perform transactions in the SVM runtime.
-
-        > `Undelegation` is the process of transferring ownership of the `PDAs` back to your program. On undelegation, the state is committed and it trigger the finalization process. Once state it validated, the `PDAs` are unlocked and can be used as normal on mainnet
-
+        <DelegationInfo />
         Specify your preferred delegation config such as auto commits and specific ER validator:
         <Validators />
         <DelegateCode />
@@ -97,7 +99,9 @@ Find the full private transfer example with Anchor framework and client implemen
     </Tab>
     <Tab title="4. Deploy">
         Now you’re program is upgraded and ready! Build and deploy to the desired cluster:
-        <DeployCode />
+        ```bash
+          anchor build && anchor deploy
+        ```
         [⬆️ Back to Top](#private-transfer-example)
     </Tab>
     <Tab title="5. Authorize">
@@ -111,3 +115,4 @@ Find the full private transfer example with Anchor framework and client implemen
     </Tab>
 
 </Tabs>
+```

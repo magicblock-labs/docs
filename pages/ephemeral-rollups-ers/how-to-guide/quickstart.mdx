@@ -5,6 +5,12 @@ description: "Any Solana program can be upgraded with Ephemeral Rollups by addin
 
 import Endpoints from "/snippets/endpoints.mdx";
 import Validators from "/snippets/validators.mdx";
+import Software from "/snippets/software.mdx";
+
+import WriteProgramCode from "/snippets/anchor-counter-code/write-program.mdx";
+import DelegateCode from "/snippets/anchor-counter-code/delegate.mdx";
+import TestCode from "/snippets/anchor-counter-code/test.mdx";
+import DelegationInfo from "/snippets/delegation-info.mdx";
 
 ---
 
@@ -13,12 +19,12 @@ import Validators from "/snippets/validators.mdx";
 The lifecycle of integrating Ephemeral Rollups in your program is as follows:
 
 <Steps>
-  <Step title={<a href="#step-1%3A-write-your-program">Write your program</a>}>
+  <Step title={<a href="#1-write-program">Write your program</a>}>
     Write your Solana program as you normally would.
   </Step>
   <Step
     title={
-      <a href="#step-2%3A-add-delegation-and-undelegation-hooks">
+      <a href="#2-delegate">
         Add delegation and undelegation hooks in your program
       </a>
     }
@@ -26,18 +32,12 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
     Add CPI hooks to delegate, commit and undelegate state accounts through
     Ephemeral Rollup sessions.
   </Step>
-  <Step
-    title={
-      <a href="#step-3%3A-deploy-your-program-on-solana">
-        Deploy your program on Solana.
-      </a>
-    }
-  >
+  <Step title={<a href="#3-deploy">Deploy your program on Solana.</a>}>
     Deploy your program directly on Solana using Anchor or Solana CLI.
   </Step>
   <Step
     title={
-      <a href="#step-4%3A-ready-to-execute-transactions-for-delegation-and-real-time-speed">
+      <a href="#4-test">
         Ready to execute transactions for delegation and real-time speed
       </a>
     }
@@ -46,6 +46,12 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
     comply with the SVM RPC specification.
   </Step>
 </Steps>
+
+---
+
+## Counter Example
+
+<Software />
 
 Find the full basic counter example for Rust Native and Anchor framework implementation:
 
@@ -71,222 +77,71 @@ Find the full basic counter example for Rust Native and Anchor framework impleme
 
 ---
 
-## Step 1: Write your program
+<Tabs>
+  <Tab title="1. Write program">
+    A simple counter program where value is initialized and incremented in a state account:
+    <WriteProgramCode />
+    [⬆️ Back to Top](#counter-example)
+  </Tab>
+  <Tab title="2. Delegate">
+    1. Add `ephemeral-rollups-sdk` with Anchor features to your program
 
-A simple counter program have the following instructions `initialize` and `increment`:
+    ```bash
+    cargo add ephemeral-rollups-sdk --features anchor
+    ```
 
-```rust
-#[program]
-pub mod anchor_counter {
-    use super::*;
+    Import `delegate`, `commit`, `ephemeral`, `DelegateConfig`, `commit_accounts` and `commit_and_undelegate_accounts`:
 
-    /// Initialize the counter.
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        let counter = &mut ctx.accounts.counter;
-        counter.count = 0;
-        Ok(())
-    }
+    ```rust
+    use ephemeral_rollups_sdk::anchor::{
+      commit,
+      delegate,
+      ephemeral
+    };
+    use ephemeral_rollups_sdk::cpi::DelegateConfig;
+    use ephemeral_rollups_sdk::ephem::{
+      commit_accounts,
+      commit_and_undelegate_accounts
+      };
+    ```
 
-    /// Increment the counter.
-    pub fn increment(ctx: Context<Increment>) -> Result<()> {
-        let counter = &mut ctx.accounts.counter;
-        counter.count += 1;
-        Ok(())
-    }
+    2.  Add `delegate` macro and instruction, `ephemeral` macro, and `undelegate` instruction to your program. Specify your preferred delegation config such as auto commits and specific ER validator:
+    <DelegateCode />
 
-    // ... Additional instructions will be added here
-}
+    <DelegationInfo />
+    <Validators />
+    [⬆️ Back to Top](#counter-example)
 
-/// Context for initializing counter
-#[derive(Accounts)]
-pub struct Initialize<'info> {
-    #[account(init_if_needed, payer = user, space = 8 + 8, seeds = [TEST_PDA_SEED], bump)]
-    pub counter: Account<'info, Counter>,
-    #[account(mut)]
-    pub user: Signer<'info>,
-    pub system_program: Program<'info, System>,
-}
+  </Tab>
 
+  <Tab title="3. Deploy">
+    Now you’re program is upgraded and ready! Build and deploy to the desired
+    cluster:
 
-/// Context for incrementing counter
-#[derive(Accounts)]
-pub struct Increment<'info> {
-    #[account(mut, seeds = [TEST_PDA_SEED], bump)]
-    pub counter: Account<'info, Counter>,
-}
+    ```bash
+    anchor build && anchor deploy
+    ```
 
-/// Counter struct
-#[account]
-pub struct Counter {
-    pub count: u64,
-}
-```
+    [⬆️ Back to Top](#counter-example)
 
----
+  </Tab>
 
-## Step 2: Add delegation and undelegation hooks
+  <Tab title="4. Test">
+    Ready to execute transactions for delegation and real-time speed.
+    <Validators />
 
-> `Delegation` is the process of transferring ownership of one or more of your program's `PDAs` to the delegation program. Ephemeral Validators will then be able to use the `PDAs` to perform transactions in the SVM runtime.
+    ```bash
+    anchor test --skip-build --skip-deploy --skip-local-validator
+    ```
+    Run the following test:
+    <TestCode />
 
-> `Undelegation` is the process of transferring ownership of the `PDAs` back to your program. On undelegation, the state is committed and it trigger the finalization process. Once state it validated, the `PDAs` are unlocked and can be used as normal on mainnet
+    To make it easier to integrate via the frontend, we created the [Magic Router](/pages/ephemeral-rollups-ers/introduction/magic-router). You send transactions directly to the magic router, and we can determine for you whether it should be routed to the [Ephemeral Rollup](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) or base layer.
 
-**Anchor framework example:**
+    <Endpoints />
+    [⬆️ Back to Top](#counter-example)
 
-1. Add `ephemeral-rollups-sdk` with Anchor features to your program
-
-```bash
-cargo add ephemeral-rollups-sdk --features anchor
-```
-
-Import `delegate`, `commit`, `ephemeral`, `DelegateConfig`, `commit_accounts` and `commit_and_undelegate_accounts`:
-
-```rust
-use ephemeral_rollups_sdk::anchor::{
-  commit,
-  delegate,
-  ephemeral
-};
-use ephemeral_rollups_sdk::cpi::DelegateConfig;
-use ephemeral_rollups_sdk::ephem::{
-  commit_accounts,
-  commit_and_undelegate_accounts
-  };
-```
-
-2. Add `delegate` macro and instruction, `ephemeral` macro, and `undelegate` instruction to your program. Specify your preferred delegation config such as auto commits and specific ER validator:
-
-<Validators />
-
-```rust
-#[ephemeral]
-#[program]
-pub mod anchor_counter {
-    use super::*;
-
-    // ... Initialize and Incroment instructions.
-
-    /// Delegate the account to the delegation program
-    /// IMPORTANT: Set specific validator based on ER
-    pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
-        ctx.accounts.delegate_pda(
-            &ctx.accounts.payer,
-            &[TEST_PDA_SEED],
-            DelegateConfig {
-                commit_frequency_ms: 30_000,
-                validator: Some(pubkey!("MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57")),
-            },
-        )?;
-        Ok(())
-    }
-
-    /// Undelegate the account from the delegation program
-    pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
-        commit_and_undelegate_accounts(
-            &ctx.accounts.payer,
-            vec![&ctx.accounts.counter.to_account_info()],
-            &ctx.accounts.magic_context,
-            &ctx.accounts.magic_program,
-        )?;
-        Ok(())
-    }
-}
-
-/// Add delegate function to the context
-#[delegate]
-#[derive(Accounts)]
-pub struct DelegateInput<'info> {
-    pub payer: Signer<'info>,
-    /// CHECK The pda to delegate
-    #[account(mut, del)]
-    pub pda: AccountInfo<'info>,
-}
-
-// ... Other context and account struct.
-```
+  </Tab>
+</Tabs>
 
 ---
-
-## Step 3: Deploy your program on Solana
-
-Now you're program is upgraded and ready! Build and deploy to the desired cluster:
-
-```bash
-anchor build && anchor deploy
-```
-
----
-
-## Step 4: Ready to execute transactions for delegation and real-time speed
-
-Run the following test:
-
-```bash
-anchor test --skip-build --skip-deploy --skip-local-validator
-```
-
-Test:
-
-```typescript
-// Set Anchor providers
-const provider = anchor.AnchorProvider.env();
-anchor.setProvider(provider);
-const providerEphemeralRollup = new anchor.AnchorProvider(
-  new anchor.web3.Connection("https://devnet-as.magicblock.app/", {
-    wsEndpoint: "wss://devnet.magicblock.app/",
-  }),
-  anchor.Wallet.local()
-);
-
-// Set program and pda
-const program = anchor.workspace.AnchorCounter as Program<AnchorCounter>;
-const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
-  [Buffer.from(SEED_TEST_PDA)],
-  program.programId
-);
-
-// Initialize Counter on Base Layer
-let initTx = await program.methods
-  .increment()
-  .accounts({
-    counter: pda,
-  })
-  .transaction();
-initTx.feePayer = provider.wallet.publicKey;
-initTx.recentBlockhash = (
-  await provider.connection.getLatestBlockhash()
-).blockhash;
-initTx = await provider.connection.signTransaction(initTx);
-const dinitTxHash = await provider.sendAndConfirm(initTx);
-
-// Delegate Counter on Base Layer to ER
-let delTx = await program.methods
-  .increment()
-  .accounts({
-    counter: pda,
-  })
-  .transaction();
-delTx.feePayer = provider.connection.wallet.publicKey;
-delTx.recentBlockhash = (
-  await provider.connection.getLatestBlockhash()
-).blockhash;
-delTx = await provider.wallet.signTransaction(delTx);
-const delTxHash = await provider.sendAndConfirm(delTx);
-
-// Increment Counter in real-time on ER
-let incTx = await program.methods
-  .increment()
-  .accounts({
-    counter: pda,
-  })
-  .transaction();
-incTx.feePayer = providerEphemeralRollup.wallet.publicKey;
-incTx.recentBlockhash = (
-  await providerEphemeralRollup.connection.getLatestBlockhash()
-).blockhash;
-incTx = await providerEphemeralRollup.wallet.signTransaction(incTx);
-const incTxHash = await providerEphemeralRollup.sendAndConfirm(incTx);
-```
-
-To make it easier to integrate via the frontend, we created the [Magic Router](/pages/ephemeral-rollups-ers/introduction/magic-router). You send transactions directly to the magic router, and we can determine for you whether it should be routed to the [Ephemeral Rollup](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) or base layer.
-
-<Endpoints />
