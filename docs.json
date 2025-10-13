@@ -20,14 +20,14 @@
         "tab": "Overview",
         "pages" : [
           "pages/overview/products",
-          "pages/overview/templates",
           {
             "group": "Additional Information",
             "pages": [
               "pages/overview/additional-information/whitepaper",
               "pages/overview/additional-information/security-and-audits",
               "pages/overview/additional-information/pricing",
-              "pages/overview/additional-information/server-status"
+              "pages/overview/additional-information/server-status",
+              "pages/overview/additional-information/request-for-products"
             ]
           }
         ]
@@ -122,13 +122,12 @@
       },
       {
         "tab": "Templates",
-        "groups": [
-          {
-            "group": "Introduction",
-            "pages": [
-              "pages/overview/templates"
-            ]
-          }
+        "pages": [
+          "pages/templates/private-payments",
+          "pages/templates/real-time-price-feed",
+          "pages/templates/random-character-generator",
+          "pages/templates/onchain-dice",
+          "pages/templates/counter"
         ]
       },
       {
