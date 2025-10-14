@@ -25,24 +25,14 @@ import Validators from "/snippets/validators.mdx";
         ```bash
         sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
         ```
+        2. Install the latest MagicBlock Ephemeral Validator:
+        ```bash
+        npm install -g @magicblock-labs/ephemeral-validator@latest
+        ```
 
         2. Run `solana-test-validator` with cloned delegation program and accounts from Devnet:
         ```bash
-        solana-test-validator \
-          --ledger ./my-ledger-1 \
-          --reset \
-          --clone mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev \
-          --clone EpJnX7ueXk7fKojBymqmVuCuwyhDQsYcLVL1XMsBbvDX \
-          --clone 7JrkjmZPprHwtuvtuGTXp9hwfGYFAQLnLeFM52kqAgXg \
-          --clone noopb9bkMVfRPU8AsbpTUg8AQkHtKwMYZiFUjNRtMmV \
-          --clone-upgradeable-program DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh \
-          --clone Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh \
-          --clone 5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc \
-          --clone F72HqCR8nwYsVyeVd38pgKkjXmXFzVAM8rjZZsXWbdE \
-          --clone vrfkfM4uoisXZQPrFiS2brY4oMkU9EWjyvmvqaFd5AS \
-          --clone-upgradeable-program Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz \
-          --clone-upgradeable-program BTWAqWNBmF2TboMh3fxMJfgR16xGHYD7Kgr2dPwbRPBi \
-          --url https://api.devnet.solana.com
+        mb-test-validator --reset
         ```
 
         3. Upgrade and deploy your program to localhost:
@@ -63,13 +53,8 @@ import Validators from "/snippets/validators.mdx";
           </Tabs>
       </Step>
 
-      <Step title="Install and run MagicBlock ER validator (Localhost)">
-        1. Install the latest MagicBlock Ephemeral Validator:
-        ```bash
-        npm install -g @magicblock-labs/ephemeral-validator@latest
-        ```
-
-        2. Run the local ephemeral validator pointing to localhost:
+      <Step title="Run MagicBlock ER validator (Localhost)">
+        Run the local ephemeral validator pointing to localhost:
         ```bash
         RUST_LOG=info ephemeral-validator \
           --accounts-lifecycle ephemeral \
