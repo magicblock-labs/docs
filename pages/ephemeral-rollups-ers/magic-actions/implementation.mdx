@@ -1,0 +1,130 @@
+---
+title: Implementation
+description: Program-side guide to building with Magic Actions
+---
+
+### Prerequisites
+
+Add dependencies in `Cargo.toml`:
+
+```toml
+[dependencies]
+anchor-lang = { version = "0.31.1", features = ["init-if-needed"] }
+ephemeral-rollups-sdk = { version = "0.3.4", features = ["anchor"] }
+```
+
+
+### 1) Create the call handler instruction
+
+The handler runs on the base layer immediately after commit. It must use the external call handler discriminator and typically manually deserialize committed accounts.
+
+```rust
+use ephemeral_rollups_sdk::consts::EXTERNAL_CALL_HANDLER_DISCRIMINATOR;
+use anchor_lang::prelude::*;
+use anchor_lang::Discriminator;
+use ephemeral_rollups_sdk::anchor::commit;
+
+#[instruction(discriminator = &EXTERNAL_CALL_HANDLER_DISCRIMINATOR)]
+pub fn your_handler(ctx: Context<YourHandler>) -> Result<()> {
+    let committed_info = &ctx.accounts.committed_account.to_account_info();
+    let mut data: &[u8] = &committed_info.try_borrow_data()?;
+    let account_data = YourAccountType::try_deserialize(&mut data)?;
+
+    let target = &mut ctx.accounts.target_account;
+    // ... your logic using account_data
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct YourHandler<'info> {
+    /// CHECK: injected
+    #[account(mut)]
+    pub escrow: UncheckedAccount<'info>,
+    /// CHECK: injected
+    pub escrow_auth: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub target_account: Account<'info, TargetAccountType>,
+    /// CHECK: committed account
+    pub committed_account: UncheckedAccount<'info>,
+}
+```
+
+<Note>
+- Use `discriminator = &EXTERNAL_CALL_HANDLER_DISCRIMINATOR`
+- Use `UncheckedAccount` for committed accounts and manual deserialization
+- First two accounts are injected: `escrow`, `escrow_auth`
+</Note>
+
+
+### 2) Build the commit instruction with handler
+
+```rust
+use anchor_lang::prelude::*;
+use anchor_lang::InstructionData;
+use ephemeral_rollups_sdk::ephem::{MagicInstructionBuilder, MagicAction, CallHandler, CommitType};
+use ephemeral_rollups_sdk::{ActionArgs, ShortAccountMeta};
+
+#[commit]
+pub fn commit_with_action(ctx: Context<CommitWithAction>) -> Result<()> {
+    let instruction_data = anchor_lang::InstructionData::data(&crate::instruction::YourHandler {});
+
+    let call_handler = CallHandler {
+        args: ActionArgs { escrow_index: 1, data: instruction_data },
+        compute_units: 200_000,
+        escrow_authority: ctx.accounts.payer.to_account_info(),
+        destination_program: crate::ID,
+        accounts: vec![
+            ShortAccountMeta { pubkey: ctx.accounts.target_account.key(), is_writable: true },
+            ShortAccountMeta { pubkey: ctx.accounts.committed_account.key(), is_writable: false },
+        ],
+    };
+
+    MagicInstructionBuilder {
+        payer: ctx.accounts.payer.to_account_info(),
+        magic_context: ctx.accounts.magic_context.to_account_info(),
+        magic_program: ctx.accounts.magic_program.to_account_info(),
+        magic_action: MagicAction::Commit(CommitType::WithHandler {
+            commited_accounts: vec![ctx.accounts.committed_account.to_account_info()],
+            call_handlers: vec![call_handler],
+        }),
+    }.build_and_invoke()?;
+
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct CommitWithAction<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[account(mut)]
+    pub committed_account: Account<'info, YourAccountType>,
+    /// CHECK: handler target
+    pub target_account: UncheckedAccount<'info>,
+}
+```
+
+### Multiple handlers and accounts
+
+You can commit multiple accounts and chain several handlers. Handlers execute sequentially.
+
+```rust
+magic_action: MagicAction::Commit(CommitType::WithHandler {
+    commited_accounts: vec![a1.to_account_info(), a2.to_account_info()],
+    call_handlers: vec![h1, h2, h3],
+})
+```
+
+### See also
+
+<CardGroup cols={2}>
+  <Card
+    title="ER lifecycle"
+    icon="bolt"
+    href="/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Delegation, Commitment & Undelegation
+  </Card>
+</CardGroup>
+
+

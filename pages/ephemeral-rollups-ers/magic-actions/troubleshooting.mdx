@@ -1,0 +1,71 @@
+---
+title: Troubleshooting
+description: Diagnose common issues with Magic Actions commits and handlers
+---
+
+### Handler not executing
+
+- Verify `discriminator = &EXTERNAL_CALL_HANDLER_DISCRIMINATOR`
+- Allocate sufficient `compute_units`
+
+### Deserialization errors
+
+- Use `UncheckedAccount` for committed accounts in handler context
+- Manually deserialize via `try_deserialize` on borrowed data
+- Check account discriminator matches expected type
+
+### Transaction failures
+
+- Ensure all handler accounts are listed in `ShortAccountMeta`
+- Match `is_writable` flags to actual usage
+- Increase compute budget for all handlers in the commit
+
+### Limitations & considerations
+
+- Handlers execute on base layer and consume base-layer fees
+- Standard Solana limits apply (compute, account locks)
+- Atomicity: any handler failure reverts the commit
+- First two handler accounts are injected (`escrow`, `escrow_auth`)
+
+### Helpful links
+
+<CardGroup cols={2}>
+  <Card
+    title="ER lifecycle"
+    icon="bolt"
+    href="/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Delegation, Commitment & Undelegation
+  </Card>
+
+  <Card
+    title="Magic Router"
+    icon="route"
+    href="/pages/ephemeral-rollups-ers/introduction/magic-router"
+    iconType="duotone"
+  >
+    Router overview and flow
+  </Card>
+
+
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+    >
+    Explore reference implementation on GitHub
+  </Card>
+
+  <Card
+    title="Community Support"
+    icon="discord"
+    href="https://discord.gg/magicblock"
+    iconType="duotone"
+  >
+    Chat with the team and community
+  </Card>
+</CardGroup>
+
+
