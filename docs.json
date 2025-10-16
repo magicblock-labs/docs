@@ -2,6 +2,11 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "MagicBlock Documentation",
+  "errors": {
+    "404": {
+      "redirect": true
+    }
+  },
   "colors": {
     "primary": "#0069ED",
     "light": "#4D9CFF",
