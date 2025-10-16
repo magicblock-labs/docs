@@ -54,18 +54,19 @@
                 "group": "How it Works",
                 "pages": [
                   "pages/ephemeral-rollups-ers/introduction/ephemeral-rollup",
-                  "pages/ephemeral-rollups-ers/introduction/magic-router"
-                ]
-              },
-              {
-                "group": "Magic Actions",
-                "pages": [
-                  "pages/ephemeral-rollups-ers/magic-actions/overview",
-                  "pages/ephemeral-rollups-ers/magic-actions/implementation",
-                  "pages/ephemeral-rollups-ers/magic-actions/client",
-                  "pages/ephemeral-rollups-ers/magic-actions/troubleshooting"
+                  "pages/ephemeral-rollups-ers/introduction/magic-router",
+                  {
+                    "group": "Magic Actions",
+                    "pages": [
+                      "pages/ephemeral-rollups-ers/magic-actions/overview",
+                      "pages/ephemeral-rollups-ers/magic-actions/implementation",
+                      "pages/ephemeral-rollups-ers/magic-actions/client",
+                      "pages/ephemeral-rollups-ers/magic-actions/troubleshooting"
+                    ]
+                  }
                 ]
               }
+              
               
             ]
           },
