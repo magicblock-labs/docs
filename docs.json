@@ -41,6 +41,7 @@
       },
       {
         "tab": "Ephemeral Rollup",
+        "icon": "bolt",
         "groups": [
           {
             "group": "How-to-Guide",
@@ -90,6 +91,7 @@
       },
       {
         "tab": "Private Ephemeral Rollup",
+        "icon": "shield-check",
         "groups": [
           {
             "group": "How-to-Guide",
@@ -111,6 +113,7 @@
       },
       {
         "tab": "Verifiable Randomness",
+        "icon": "dice",
         "groups": [
           {
             "group": "How-to-Guide",
@@ -137,6 +140,7 @@
       },
       {
         "tab": "Templates",
+        "icon": "book",
         "pages": [
           "pages/templates/private-payments",
           "pages/templates/real-time-price-feed",
@@ -147,6 +151,7 @@
       },
       {
         "tab": "Tools",
+        "icon": "screwdriver-wrench",
         "groups": [
           {
             "group": "Tools",
