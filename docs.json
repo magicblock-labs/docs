@@ -2,6 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "MagicBlock Documentation",
+  "description": "With MagicBlock, anything you imagine is possible. Build unstoppable games, high-speed DeFi, and Web3 apps that run like Web2.",
   "errors": {
     "404": {
       "redirect": true
@@ -9,8 +10,12 @@
   },
   "colors": {
     "primary": "#aa00ff",
-    "light": "#e85aff",
-    "dark": "#6c00c5"
+    "light": "#aa00ff",
+    "dark": "#aa00ff"
+
+  },
+  "thumbnails": {
+    "background": "/images/thumbmail-bg.jpg"
   },
   "favicon": "/logo/favicon.png",
   "redirects": [
@@ -19,6 +24,30 @@
       "destination": "/pages/overview/products"
     }
   ],
+  "logo": {
+    "light": "/logo/MagicBlock-Logo-Black.png",
+    "dark": "/logo/MagicBlock-Logo-White.png"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Github",
+        "href": "https://github.com/magicblock-labs"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "twitter": "https://twitter.com/magicblock",
+      "github": "https://github.com/magicblock-labs",
+      "linkedin": "https://www.linkedin.com/company/magicblock"
+    }
+  },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-M3W08J15Y9"
+    }
+  },
   "navigation": {
     "tabs": [
       {
@@ -259,30 +288,6 @@
           "icon": "discord"
         }
       ]
-    }
-  },
-  "logo": {
-    "light": "/logo/MagicBlock-Logo-Black.png",
-    "dark": "/logo/MagicBlock-Logo-White.png"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Github",
-        "href": "https://github.com/magicblock-labs"
-      }
-    ]
-  },
-  "footer": {
-    "socials": {
-      "twitter": "https://twitter.com/magicblock",
-      "github": "https://github.com/magicblock-labs",
-      "linkedin": "https://www.linkedin.com/company/magicblock"
-    }
-  },
-  "integrations": {
-    "ga4": {
-      "measurementId": "G-M3W08J15Y9"
     }
   }
 }
