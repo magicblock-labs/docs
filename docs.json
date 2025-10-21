@@ -8,9 +8,9 @@
     }
   },
   "colors": {
-    "primary": "#0069ED",
-    "light": "#4D9CFF",
-    "dark": "#0050B4"
+    "primary": "#aa00ff",
+    "light": "#e85aff",
+    "dark": "#6c00c5"
   },
   "favicon": "/logo/favicon.png",
   "redirects": [
