@@ -1,32 +1,32 @@
 ---
-title: "Rust Example"
-description: "Learn how to write a simple Rust program that delegates and increments a counter on Solana"
+title: 'Rust Example'
+description: 'Learn how to write a simple Rust program that delegates and increments a counter on Solana'
 ---
 
-import Endpoints from "/snippets/endpoints.mdx";
+import Endpoints from '/snippets/endpoints.mdx';
 
 <div
   style={{
-    position: "relative",
-    paddingBottom: "56.25%",
+    position: 'relative',
+    paddingBottom: '56.25%',
     height: 0,
-    overflow: "hidden",
+    overflow: 'hidden',
   }}
 >
   <iframe
-    src="https://www.youtube.com/embed/b77bwSGDHK0?si=Oknc5f8CuC17WBnV&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    src='https://www.youtube.com/embed/b77bwSGDHK0?si=Oknc5f8CuC17WBnV&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V'
     title="Build a real-time Rust Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
     style={{
-      position: "absolute",
+      position: 'absolute',
       top: 0,
       left: 0,
-      width: "100%",
-      height: "100%",
+      width: '100%',
+      height: '100%',
     }}
-    frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    frameBorder='0'
+    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
     allowFullScreen
-    referrerPolicy="strict-origin-when-cross-origin"
+    referrerPolicy='strict-origin-when-cross-origin'
   />
 </div>
 
@@ -49,16 +49,16 @@ If you prefer to dive straight into the code:
 
 <CardGroup cols={2}>
   <Card
-    title="Source Code: Native Rust Counter Program"
-    icon="rust"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
-    iconType="duotone"
+    title='Source Code: Native Rust Counter Program'
+    icon='rust'
+    href='https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter'
+    iconType='duotone'
   ></Card>
   <Card
-    title="Source Code: Typescript Test Script"
-    icon="js"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests/rust-counter.ts"
-    iconType="duotone"
+    title='Source Code: Typescript Test Script'
+    icon='js'
+    href='https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests/rust-counter.ts'
+    iconType='duotone'
   ></Card>
 </CardGroup>
 
@@ -78,7 +78,7 @@ The program implements specific instructions for delegating and undelegating the
 
 Here's the core structure of our program:
 
-```rust
+```rust expandable
 pub enum ProgramInstruction {
     InitializeCounter,
     IncreaseCounter {
@@ -145,12 +145,15 @@ internally calls the `delegate_account` function. `delegate_account` will CPI to
 After this step, an ephemeral validator can start processing transactions on the counter PDA and propose state diff trough the delegation program.
 
 <Card
-  title="Transaction (Base Layer): Delegate"
-  icon="magnifying-glass"
-  href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
-  iconType="duotone"
->Inspect transactions details on Solana Explorer</Card>
-```rust
+  title='Transaction (Base Layer): Delegate'
+  icon='magnifying-glass'
+  href='https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet'
+  iconType='duotone'
+>
+  Inspect transactions details on Solana Explorer
+</Card>
+
+```rust expandable
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     pubkey::Pubkey,
@@ -162,8 +165,8 @@ use ephemeral_rollups_sdk::cpi::{delegate_account, DelegateAccounts, DelegateCon
 // For Base Layer only
 // Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
 pub fn process_delegate(
-\_program_id: &Pubkey,
-accounts: &[AccountInfo],
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
 ) -> ProgramResult {
 
     // Get accounts
@@ -211,30 +214,32 @@ accounts: &[AccountInfo],
 
 }
 
-````
+```
 
 ### Committing while the PDA is delegated
 
 The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
+
 <CardGroup cols={2}>
   <Card
-    title="Transaction (ER): Commit"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
-    iconType="duotone"
+    title='Transaction (ER): Commit'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
   <Card
-    title="Transaction (Base layer): Commit"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
-    iconType="duotone"
+    title='Transaction (Base layer): Commit'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
 </CardGroup>
-```rust
+
+```rust expandable
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     pubkey::Pubkey,
@@ -269,8 +274,10 @@ pub fn process_commit(
     )?;
 
     Ok(())
+
 }
-````
+
+```
 
 ### Undelegating the PDA
 
@@ -279,24 +286,24 @@ Undelegation commit the latest state and give back the ownership of the PDA to t
 
 <CardGroup cols={2}>
   <Card
-    title="Transaction (ER): Undelegate"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
-    iconType="duotone"
+    title='Transaction (ER): Undelegate'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
   <Card
-    title="Transaction (Base layer): Undelegate"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
-    iconType="duotone"
+    title='Transaction (Base layer): Undelegate'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
 </CardGroup>
 
-```rust
+```rust expandable
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     pubkey::Pubkey,
@@ -308,15 +315,15 @@ use ephemeral_rollups_sdk::ephem::{commit_and_undelegate_accounts, commit_accoun
 
 // For ER only
 pub fn process_commit_and_undelegate(
-\_program_id: &Pubkey,
-accounts: &[AccountInfo],
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
 ) -> ProgramResult {
-// Get accounts
-let account_info_iter = &mut accounts.iter();
-let initializer = next_account_info(account_info_iter)?;
-let counter_account = next_account_info(account_info_iter)?;
-let magic_program = next_account_info(account_info_iter)?;
-let magic_context = next_account_info(account_info_iter)?;
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let counter_account = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
 
     // Signer should be the same as the initializer
     if !initializer.is_signer {
@@ -338,16 +345,16 @@ let magic_context = next_account_info(account_info_iter)?;
 
 // For Base Layer CPI callback
 pub fn process_undelegate(
-program_id: &Pubkey,
-accounts: &[AccountInfo],
-pda_seeds: Vec<Vec<u8>>
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    pda_seeds: Vec<Vec<u8>>
 ) -> ProgramResult {
-// Get accounts
-let account_info_iter = &mut accounts.iter();
-let delegated_pda = next_account_info(account_info_iter)?;
-let delegation_buffer = next_account_info(account_info_iter)?;
-let initializer = next_account_info(account_info_iter)?;
-let system_program = next_account_info(account_info_iter)?;
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let delegated_pda = next_account_info(account_info_iter)?;
+    let delegation_buffer = next_account_info(account_info_iter)?;
+    let initializer = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
 
     // CPI on Solana
     undelegate_account(
@@ -375,24 +382,24 @@ The complete test for this project can be found in the [Typescript Test Script](
 Create a instruction with the right order and attributes of accounts, and the instruction discriminator for `delegation` of your program. Send the transaction with the instruction to Base Layer (Solana) network.
 
 <Card
-  title="Transaction (Base Layer): Delegate"
-  icon="magnifying-glass"
-  href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
-  iconType="duotone"
+  title='Transaction (Base Layer): Delegate'
+  icon='magnifying-glass'
+  href='https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet'
+  iconType='duotone'
 >
   Inspect transactions details on Solana Explorer
 </Card>
 
-```typescript
-import * as web3 from "@solana/web3.js";
+```typescript expandable
+import * as web3 from '@solana/web3.js';
 
 // Add local validator identity to the remaining accounts if running on localnet
 const remainingAccounts =
-  connectionEphemeralRollup.rpcEndpoint.includes("localhost") ||
-  connectionEphemeralRollup.rpcEndpoint.includes("127.0.0.1")
+  connectionEphemeralRollup.rpcEndpoint.includes('localhost') ||
+  connectionEphemeralRollup.rpcEndpoint.includes('127.0.0.1')
     ? [
         {
-          pubkey: new PublicKey("mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev"),
+          pubkey: new PublicKey('mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev'),
           isSigner: false,
           isWritable: false,
         },
@@ -455,7 +462,7 @@ const keys = [
 ];
 const serializedInstructionData = Buffer.from(
   CounterInstruction.Delegate,
-  "hex"
+  'hex'
 );
 const delegateIx = new web3.TransactionInstruction({
   keys: keys,
@@ -472,7 +479,7 @@ const txHash = await web3.sendAndConfirmTransaction(
   [userKeypair],
   {
     skipPreflight: true,
-    commitment: "confirmed",
+    commitment: 'confirmed',
   }
 );
 ```
@@ -483,25 +490,25 @@ Create a instruction with the right order and attributes of accounts, and the in
 
 <CardGroup cols={2}>
   <Card
-    title="Transaction (ER): Commit"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
-    iconType="duotone"
+    title='Transaction (ER): Commit'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
   <Card
-    title="Transaction (Base layer): Commit"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
-    iconType="duotone"
+    title='Transaction (Base layer): Commit'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
 </CardGroup>
 
-```typescript
-import * as web3 from "@solana/web3.js";
+```typescript expandable
+import * as web3 from '@solana/web3.js';
 
 // 3: Commit
 // Create, send and confirm transaction
@@ -532,7 +539,7 @@ const keys = [
     isWritable: true,
   },
 ];
-const serializedInstructionData = Buffer.from(CounterInstruction.Commit, "hex");
+const serializedInstructionData = Buffer.from(CounterInstruction.Commit, 'hex');
 const commitIx = new web3.TransactionInstruction({
   keys: keys,
   programId: PROGRAM_ID,
@@ -546,7 +553,7 @@ const txHash = await web3.sendAndConfirmTransaction(
   [userKeypair],
   {
     skipPreflight: true,
-    commitment: "confirmed",
+    commitment: 'confirmed',
   }
 );
 ```
@@ -557,55 +564,56 @@ Create a instruction with the right order and attributes of accounts, and the in
 
 <CardGroup cols={2}>
   <Card
-    title="Transaction (ER): Undelegate"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
-    iconType="duotone"
+    title='Transaction (ER): Undelegate'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
   <Card
-    title="Transaction (Base layer): Undelegate"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
-    iconType="duotone"
+    title='Transaction (Base layer): Undelegate'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
 </CardGroup>
-```typescript
-import * as web3 from "@solana/web3.js"
+
+```typescript expandable
+import * as web3 from '@solana/web3.js';
 // Build commit and undelegation transaction
 const tx = new web3.Transaction();
 const keys = [
   // Initializer
   {
-  pubkey: userKeypair.publicKey,
-  isSigner: true,
-  isWritable: true,
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
   },
   // Counter Account
   {
-  pubkey: counterPda,
-  isSigner: false,
-  isWritable: true,
+    pubkey: counterPda,
+    isSigner: false,
+    isWritable: true,
   },
   // Magic Program
   {
-  pubkey: MAGIC_PROGRAM_ID,
-  isSigner: false,
-  isWritable: false,
+    pubkey: MAGIC_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
   },
   // Magic Context
   {
-  pubkey: MAGIC_CONTEXT_ID,
-  isSigner: false,
-  isWritable: true,
+    pubkey: MAGIC_CONTEXT_ID,
+    isSigner: false,
+    isWritable: true,
   },
 ];
 const serializedInstructionData = Buffer.from(
   CounterInstruction.CommitAndUndelegate,
-  "hex"
+  'hex'
 );
 const undelegateIx = new web3.TransactionInstruction({
   keys: keys,
@@ -617,15 +625,14 @@ tx.add(undelegateIx);
 // Send and confirm transaction to ER. Afterwards CPI callback will be triggered to "Undelegate" instruction of your program on the Base Layer.
 const connection = new web3.Connection(rpcER);
 const txHash = await web3.sendAndConfirmTransaction(
-connection,
-tx,
-[userKeypair],
-{
-skipPreflight: true,
-commitment: "confirmed",
-}
-)
-
+  connection,
+  tx,
+  [userKeypair],
+  {
+    skipPreflight: true,
+    commitment: 'confirmed',
+  }
+);
 ```
 
 ### Ephemeral Endpoint Configuration
@@ -642,20 +649,19 @@ To interact with the Ephemeral Rollup session, you need to configure the appropr
 
 Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
 
-<Endpoints/>
+<Endpoints />
 
 <CardGroup cols={2}>
   <Card
-    title="Source Code: Native Rust Counter Program"
-    icon="rust"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
-    iconType="duotone"
+    title='Source Code: Native Rust Counter Program'
+    icon='rust'
+    href='https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter'
+    iconType='duotone'
   ></Card>
   <Card
-    title="Source Code: Typescript Test Script"
-    icon="js"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests/rust-counter.ts"
-    iconType="duotone"
+    title='Source Code: Typescript Test Script'
+    icon='js'
+    href='https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests/rust-counter.ts'
+    iconType='duotone'
   ></Card>
 </CardGroup>
-```

@@ -1,32 +1,32 @@
 ---
-title: "Anchor Example"
-description: "Learn how to write a simple Anchor program that increments a counter on Solana"
+title: 'Anchor Example'
+description: 'Learn how to write a simple Anchor program that increments a counter on Solana'
 ---
 
-import Endpoints from "/snippets/endpoints.mdx";
+import Endpoints from '/snippets/endpoints.mdx';
 
 <div
   style={{
-    position: "relative",
-    paddingBottom: "56.25%",
+    position: 'relative',
+    paddingBottom: '56.25%',
     height: 0,
-    overflow: "hidden",
+    overflow: 'hidden',
   }}
 >
   <iframe
-    src="https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    src='https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V'
     title="Build a real-time Anchor Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
     style={{
-      position: "absolute",
+      position: 'absolute',
       top: 0,
       left: 0,
-      width: "100%",
-      height: "100%",
+      width: '100%',
+      height: '100%',
     }}
-    frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    frameBorder='0'
+    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
     allowFullScreen
-    referrerPolicy="strict-origin-when-cross-origin"
+    referrerPolicy='strict-origin-when-cross-origin'
   />
 </div>
 
@@ -50,16 +50,16 @@ If you prefer to dive straight into the code:
 
 <CardGroup cols={2}>
   <Card
-    title="Source Code: Anchor Counter Program"
-    icon="anchor"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
-    iconType="duotone"
+    title='Source Code: Anchor Counter Program'
+    icon='anchor'
+    href='https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter'
+    iconType='duotone'
   ></Card>
   <Card
-    title="Source Code: React Client"
-    icon="react"
-    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
-    iconType="duotone"
+    title='Source Code: React Client'
+    icon='react'
+    href='https://github.com/GabrielePicco/ephemeral-counter-ui'
+    iconType='duotone'
   ></Card>
 </CardGroup>
 
@@ -104,18 +104,19 @@ Nothing special here, just a simple Anchor program that increments a counter. Th
 
 ### Delegating the Counter PDA
 
-In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which
-internally calls the `delegate_account` function. `delegate_account` will CPI to the delegation program, which upon validation will gain ownership of the account.
+In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an `delegate` instruction which
+internally calls the `delegate_pda` function. `delegate` will CPI to the delegation program, which upon validation will gain ownership of the account.
 After this step, an ephemeral validator can start processing transactions on the counter PDA and propose state diff trough the delegation program.
 
 <Card
-  title="Transaction (Base Layer): Delegate"
-  icon="magnifying-glass"
-  href="https://solscan.io/tx/5tyEk8gkdP88xe8GL7X12f9WGZfYZtmDbuXozvqkpea4rphXPiNp91vAzmSjsyUR399wimBYazEszKSH35sidPRH?cluster=devnet"
-  iconType="duotone"
+  title='Transaction (Base Layer): Delegate'
+  icon='magnifying-glass'
+  href='https://solscan.io/tx/5tyEk8gkdP88xe8GL7X12f9WGZfYZtmDbuXozvqkpea4rphXPiNp91vAzmSjsyUR399wimBYazEszKSH35sidPRH?cluster=devnet'
+  iconType='duotone'
 >
   Inspect transactions details on Solana Explorer
 </Card>
+
 ```rust
 /// Add delegate function to the context
 #[delegate]
@@ -126,7 +127,7 @@ pub struct DelegateInput<'info> {
     #[account(mut, del)]
     pub pda: AccountInfo<'info>,
 }
-````
+```
 
 ```rust
 /// Delegate the account to the delegation program
@@ -151,22 +152,23 @@ The ephemeral runtime allow to commit the state of the PDA while it is delegated
 
 <CardGroup cols={2}>
   <Card
-    title="Transaction (ER): Commit"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/335F5UcgAW3P8wSaVoEPiBoxeykw9wR1kcJLWUnd9sHmxymCgGvLtxaGDy6ZKDgJw2ku9jtRqwVNY85DuAHvs9GT?cluster=custom&customUrl=https://devnet.magicblock.app"
-    iconType="duotone"
+    title='Transaction (ER): Commit'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/335F5UcgAW3P8wSaVoEPiBoxeykw9wR1kcJLWUnd9sHmxymCgGvLtxaGDy6ZKDgJw2ku9jtRqwVNY85DuAHvs9GT?cluster=custom&customUrl=https://devnet.magicblock.app'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
   <Card
-    title="Transaction (Base layer): Commit"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/3xzMGbj2fwFCnGp6r7wyMv5LExmL6SXaEbt52DmxA3Wx1LyksuXpPJS4AAPtqoSeJe3aF7oY3jFNiEhBQKwhzRGN?cluster=devnet"
-    iconType="duotone"
+    title='Transaction (Base layer): Commit'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/3xzMGbj2fwFCnGp6r7wyMv5LExmL6SXaEbt52DmxA3Wx1LyksuXpPJS4AAPtqoSeJe3aF7oY3jFNiEhBQKwhzRGN?cluster=devnet'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
 </CardGroup>
+
 ```rust
 /// Increment the counter and manually commit the account in the Ephemeral Rollup session.
 pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
@@ -180,7 +182,7 @@ pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
     )?;
     Ok(())
 }
-````
+```
 
 ### Undelegating the PDA
 
@@ -189,18 +191,18 @@ Undelegation commit the latest state and give back the ownership of the PDA to t
 
 <CardGroup cols={2}>
   <Card
-    title="Transaction (ER): Undelegate"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/3MN6Avygk3FwsuQPoKHzpLo9kBBommHwRHTdgxBooDwsaNHgSYr1yaDXYEe63Eii5DCVbtaK89Yyrhy3dSGhHmvw?cluster=custom&customUrl=https://devnet.magicblock.app"
-    iconType="duotone"
+    title='Transaction (ER): Undelegate'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/3MN6Avygk3FwsuQPoKHzpLo9kBBommHwRHTdgxBooDwsaNHgSYr1yaDXYEe63Eii5DCVbtaK89Yyrhy3dSGhHmvw?cluster=custom&customUrl=https://devnet.magicblock.app'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
   <Card
-    title="Transaction (Base layer): Undelegate"
-    icon="magnifying-glass"
-    href="https://solscan.io/tx/2YwzNQh632bJu8TSP9GPsXmh7o78KgMMM9QPNbdaAzamtjGZfmT4o7bkG2PtpCWp7aJmmxpxTXr4Qo36k5EjgPab?cluster=devnet"
-    iconType="duotone"
+    title='Transaction (Base layer): Undelegate'
+    icon='magnifying-glass'
+    href='https://solscan.io/tx/2YwzNQh632bJu8TSP9GPsXmh7o78KgMMM9QPNbdaAzamtjGZfmT4o7bkG2PtpCWp7aJmmxpxTXr4Qo36k5EjgPab?cluster=devnet'
+    iconType='duotone'
   >
     Inspect transaction details on Solana Explorer
   </Card>
@@ -227,17 +229,17 @@ It uses the Anchor bindings to interact with the program and the MagicBlock SDK 
 {" "}
 
 <Card
-  title="Source Code: React Client"
-  icon="react"
-  href="https://github.com/GabrielePicco/ephemeral-counter-ui"
-  iconType="duotone"
+  title='Source Code: React Client'
+  icon='react'
+  href='https://github.com/GabrielePicco/ephemeral-counter-ui'
+  iconType='duotone'
 ></Card>
 
 <iframe
-  src="https://main--ephemeral-counter.netlify.app/"
-  width="100%"
-  height="500"
-  frameborder="0"
+  src='https://main--ephemeral-counter.netlify.app/'
+  width='100%'
+  height='500'
+  frameborder='0'
 ></iframe>
 
 <Warning>
@@ -262,15 +264,15 @@ Make sure to update your client configuration to use the correct endpoint based 
 
 <CardGroup cols={2}>
   <Card
-    title="Source Code: Anchor Counter Program"
-    icon="anchor"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
-    iconType="duotone"
+    title='Source Code: Anchor Counter Program'
+    icon='anchor'
+    href='https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter'
+    iconType='duotone'
   ></Card>
   <Card
-    title="Source Code: React Client"
-    icon="react"
-    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
-    iconType="duotone"
+    title='Source Code: React Client'
+    icon='react'
+    href='https://github.com/GabrielePicco/ephemeral-counter-ui'
+    iconType='duotone'
   ></Card>
 </CardGroup>

@@ -1,9 +1,9 @@
 ---
-title: "Local Development"
-description: "Run and test your Native Rust or Anchor programs with full customization on your local host and Ephemeral Rollups minimizing network latency and rate limit risk."
+title: 'Local Development'
+description: 'Run and test your Native Rust or Anchor programs with full customization on your local host and Ephemeral Rollups minimizing network latency and rate limit risk.'
 ---
 
-import Validators from "/snippets/validators.mdx";
+import Validators from '/snippets/validators.mdx';
 
 ---
 
@@ -36,21 +36,18 @@ import Validators from "/snippets/validators.mdx";
         ```
 
         3. Upgrade and deploy your program to localhost:
-          <Tabs>
-            <Tab title="Rust Native">
-              ```bash
-            cargo build-sbf
-            solana config set --url localhost
-            solana program deploy YOUR_PROGRAM_PATH
-              ```
-            </Tab>
-            <Tab title="Anchor">
-              ```bash
-            anchor build && anchor deploy \
-            --provider.cluster localnet
-              ```
-            </Tab>
-          </Tabs>
+          <CodeGroup>
+          ```bash Rust Native icon="rust"
+          cargo build-sbf
+          solana config set --url localhost
+          solana program deploy YOUR_PROGRAM_PATH
+          ```
+
+          ```bash Anchor icon="anchor"
+          anchor build && anchor deploy \
+          --provider.cluster localnet
+          ```
+          </CodeGroup>
       </Step>
 
       <Step title="Run MagicBlock ER validator (Localhost)">
@@ -68,28 +65,25 @@ import Validators from "/snippets/validators.mdx";
       <Step title="Test program instructions and delegation (Localhost)">
         Run your tests against the local ephemeral validator:
 
-      <Tabs>
-        <Tab title="Rust Native">
-          ```bash
-        EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
-        EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
-        PROVIDER_ENDPOINT=http://localhost:8899 \
-        WS_ENDPOINT=ws://localhost:8900 \
-        yarn test
-          ```
-        </Tab>
-        <Tab title="Anchor">
-          ```bash
-        EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
-        EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
-        anchor test \
-          --provider.cluster localnet \
-          --skip-local-validator \
-          --skip-build \
-          --skip-deploy
-          ```
-        </Tab>
-      </Tabs>
+      <CodeGroup>
+      ```bash Rust Native icon="rust"
+      EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+      EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+      PROVIDER_ENDPOINT=http://localhost:8899 \
+      WS_ENDPOINT=ws://localhost:8900 \
+      yarn test
+      ```
+
+      ```bash Anchor icon="anchor"
+      EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
+      EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
+      anchor test \
+        --provider.cluster localnet \
+        --skip-local-validator \
+        --skip-build \
+        --skip-deploy
+      ```
+      </CodeGroup>
       </Step>
     </Steps>
 
@@ -99,22 +93,18 @@ import Validators from "/snippets/validators.mdx";
       <Step title="Upgrade and deploy program on Devnet">
         Upgrade your program with MagicBlock delegation and deploy it to Devnet:
 
-        <Tabs>
-          <Tab title="Rust Native">
-            ```bash
-          cargo build-sbf
-          solana config set --url devnet
-          solana program deploy YOUR_PROGRAM_PATH
-            ```
-          </Tab>
-          <Tab title="Anchor">
-            ```bash
-          anchor build && anchor deploy \
-          --provider.cluster devnet
-            ```
-          </Tab>
-        </Tabs>
+        <CodeGroup>
+        ```bash Rust Native icon="rust"
+        cargo build-sbf
+        solana config set --url devnet
+        solana program deploy YOUR_PROGRAM_PATH
+        ```
 
+        ```bash Anchor icon="anchor"
+        anchor build && anchor deploy \
+        --provider.cluster devnet
+        ```
+        </CodeGroup>
       </Step>
 
       <Step title="Install and run MagicBlock ER validator (Devnet)">
@@ -134,26 +124,23 @@ import Validators from "/snippets/validators.mdx";
 
       <Step title="Test program instructions and delegation (Devnet)">
         Run your tests against the local ephemeral validator:
-      <Tabs>
-        <Tab title="Rust Native">
-          ```bash
-        EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
-        EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
-        yarn test
-          ```
-        </Tab>
-        <Tab title="Anchor">
-          ```bash
-        EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
-        EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
-        anchor test \
-          --provider.cluster devnet \
-          --skip-local-validator \
-          --skip-build \
-          --skip-deploy
-          ```
-        </Tab>
-      </Tabs>
+      <CodeGroup>
+      ```bash Rust Native icon="rust"
+      EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+      EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+      yarn test
+      ```
+
+      ```bash Anchor icon="anchor"
+      EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
+      EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
+      anchor test \
+        --provider.cluster devnet \
+        --skip-local-validator \
+        --skip-build \
+        --skip-deploy
+      ```
+      </CodeGroup>
       </Step>
     </Steps>
 
@@ -164,18 +151,18 @@ Explore delegation and test scripts for both Anchor and Native Rust:
 
 <CardGroup cols={2}>
   <Card
-    title="Anchor"
-    icon="anchor"
-    href="/pages/ephemeral-rollups-ers/how-to-guide/anchor"
-    iconType="duotone"
+    title='Anchor'
+    icon='anchor'
+    href='/pages/ephemeral-rollups-ers/how-to-guide/anchor'
+    iconType='duotone'
   >
     Integrate with an Anchor program
   </Card>
   <Card
-    title="Native Rust"
-    icon="rust"
-    href="/pages/ephemeral-rollups-ers/how-to-guide/rust"
-    iconType="duotone"
+    title='Native Rust'
+    icon='rust'
+    href='/pages/ephemeral-rollups-ers/how-to-guide/rust'
+    iconType='duotone'
   >
     Integrate with a Native Rust program
   </Card>
