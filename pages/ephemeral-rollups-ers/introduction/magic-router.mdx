@@ -89,12 +89,12 @@ const txHash = await sendAndConfirmTransaction(connection, tx, [payer], {
 
 ## Dynamic Transaction Routing
 
-<img height="200" src="/images/magic-router.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
 <Endpoints />
 
 The Magic Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest dedicated endpoint:
 
-<img height="200" src="/images/magic-router-scenarios.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router-scenarios.png" />
 1. **Client - Transaction Submission** The dApp or user sends a transaction to the
 Magic Router RPC endpoint.
 
