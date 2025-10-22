@@ -3,7 +3,7 @@ title: Magic Router
 description: Learn how Magicblock's Magic Router accelerates transactions by routing them to the right execution environment.
 ---
 
-import Endpoints from '/snippets/endpoints.mdx'
+import Endpoints from "/snippets/endpoints.mdx";
 
 <div
   style={{
@@ -34,11 +34,15 @@ import Endpoints from '/snippets/endpoints.mdx'
 
 This removes the complexity of infrastructure decisions from the developer’s workflow, enabling seamless user experiences across different execution environments.
 
-<Tip> Try out a demo of the Magic Router [here](https://router-demo.magicblock.app/) or explore our Pyth price data demo [here](https://pyth-template.magicblock.app/)</Tip>
+<Tip>
+  {" "}
+  Try out a demo of the Magic Router [here](https://router-demo.magicblock.app/)
+  or explore our Pyth price data demo [here](https://pyth-template.magicblock.app/)
+</Tip>
 
 ### **What Does It Do**
 
-<img height="200" src="/images/magic-router.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
 
 The Magic Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest dedicated endpoint:
 
@@ -53,7 +57,7 @@ This eliminates the need for manual routing logic from the developer, providing 
 
 ### **How It Works**
 
-<img height="200" src="/images/magic-router-scenarios.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router-scenarios.png" />
 
 1. **Client - Transaction Submission**  
    The dApp or user sends a transaction to the Magic Router RPC endpoint.
@@ -69,7 +73,7 @@ This eliminates the need for manual routing logic from the developer, providing 
 
    The router sends the transaction to the right execution layer. Users just sign and submit — no extra steps needed.
 
-<Endpoints/>
+<Endpoints />
 
 <CardGroup cols={2}>
   <Card

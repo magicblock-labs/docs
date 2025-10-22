@@ -77,7 +77,13 @@
             "pages": [
               "pages/ephemeral-rollups-ers/how-to-guide/quickstart",
               "pages/ephemeral-rollups-ers/how-to-guide/local-development",
-              "pages/ephemeral-rollups-ers/how-to-guide/rust",
+              {
+                "group": "Rust Example",
+                "pages": [
+                  "pages/ephemeral-rollups-ers/how-to-guide/rust-program",
+                  "pages/ephemeral-rollups-ers/how-to-guide/rust-tests"
+                ]
+              },
               "pages/ephemeral-rollups-ers/how-to-guide/anchor"
             ]
           },

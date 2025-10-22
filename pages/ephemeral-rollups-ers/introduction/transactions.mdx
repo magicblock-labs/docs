@@ -38,7 +38,7 @@ When executing any of your program instructions through a specialized RPC router
   - If **account is undelegated and non-writable**, undelegated account is cloned from Base Layer to ER.
 - Normal: If **all writable accounts are undelegated**, the transaction is executed on Base Layer.
 - Error: If **writable accounts are delegated and undelegated**, the transaction fails.
-  <img height="200" src="/images/interact.png" />
+  <img class="w-full h-auto max-w-5xl" src="/images/interact.png" />
 
 ### Delegate Transaction
 
@@ -49,7 +49,7 @@ Before executing ultra-low latency transactions on ER, the state account must be
 
 Transaction fails if account is already delegated.
 
-<img height="200" src="/images/delegate.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/delegate.png" />
 
 ### Undelegate Transaction
 
@@ -60,7 +60,7 @@ You can commit and undelegate the account from ER to Base Layer through the unde
 
 Transaction fails if account is already undelegated.
 
-<img height="200" src="/images/undelegate.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/undelegate.png" />
 
 ### Commit Transaction
 
@@ -71,7 +71,7 @@ You can also sync the state from ER to Base Layer without changing delegation by
 
 Transaction fails if account is already undelegated.
 
-<img height="200" src="/images/commit.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/commit.png" />
 
 ## Learn how to build with Native Rust and Anchor!
 
