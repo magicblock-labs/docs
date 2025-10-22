@@ -74,41 +74,49 @@ If you prefer to dive straight into the code:
 
 ---
 
-## Core Functionality
-
-The program implements two main instructions:
-
-1. `InitializeCounter`: Initialize and sets the counter to 0 (called on Base Layer)
-2. `IncreaseCounter`: Increments the initialized counter by X amount (called on Base Layer or ER)
-
-The program implements specific instructions for delegating and undelegating the counter:
-
-1. `Delegate`: Delegates counter from Base Layer to ER (called on Base Layer)
-2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
-3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
-4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
-
-Here's the core structure of our program:
-
-<InstructionsCode />
-
-<Note>
-  Your "Undelegate" instruction must have the exact discriminator. It is never
-  called by you, instead the validator on the Base Layer will callback with a
-  CPI into your program after undelegating your account on ER.
-</Note>
-
----
-
-## Delegate, commit and undelegate PDAs of your program
+## Write your program
 
 <Steps>
+  <Step
+    title={
+      <a href="#overview">Write program and add delegation instructions</a>
+    }
+  ></Step>
   <Step title={<a href="#delegate">Delegate PDA on Base Layer</a>}></Step>
   <Step title={<a href="#commit">Commit PDA on ER</a>}></Step>
   <Step title={<a href="#undelegate">Undelegate PDA on ER</a>}></Step>
 </Steps>
 
 <Tabs>
+  <Tab title="Overview">
+    ## Core Functionality
+
+    The program implements two main instructions:
+
+    1. `InitializeCounter`: Initialize and sets the counter to 0 (called on Base Layer)
+    2. `IncreaseCounter`: Increments the initialized counter by X amount (called on Base Layer or ER)
+
+    The program implements specific instructions for delegating and undelegating the counter:
+
+    1. `Delegate`: Delegates counter from Base Layer to ER (called on Base Layer)
+    2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
+    3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
+    4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
+
+    Here's the core structure of our program:
+
+    {" "}
+    <InstructionsCode />
+    <Note>
+      Your "Undelegate" instruction must have the exact discriminator. It is never
+      called by you, instead the validator on the Base Layer will callback with a
+      CPI into your program after undelegating your account on ER.
+    </Note>
+
+
+    [⬆️ Back to Top](#write-your-program)
+
+  </Tab>
   <Tab title="Delegate">
     ### Delegating the Counter PDA
 
@@ -126,7 +134,7 @@ Here's the core structure of our program:
     </Card>
 
     <DelegateCode />
-    [⬆️ Back to Top](#delegate%2C-commit-and-undelegate-pdas-of-your-program)
+    [⬆️ Back to Top](#write-your-program)
 
   </Tab>
     <Tab title="Commit">
@@ -154,7 +162,7 @@ Here's the core structure of our program:
     </CardGroup>
 
     <CommitCode />
-    [⬆️ Back to Top](#delegate%2C-commit-and-undelegate-pdas-of-your-program)
+    [⬆️ Back to Top](#write-your-program)
 
   </Tab>
   <Tab title="Undelegate">
@@ -182,8 +190,8 @@ Here's the core structure of our program:
       </Card>
     </CardGroup>
 
-    <Undelegate />
-    [⬆️ Back to Top](#delegate%2C-commit-and-undelegate-pdas-of-your-program)
+    <UndelegateCode />
+    [⬆️ Back to Top](#write-your-program)
 
   </Tab>
 </Tabs>
