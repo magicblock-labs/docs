@@ -1,38 +1,4 @@
 ```rust
-#[ephemeral]
-#[program]
-pub mod anchor_counter {
-    use super::*;
-
-    // ... Initialize and Incroment instructions.
-
-    /// Delegate the account to the delegation program
-    /// IMPORTANT: Set specific validator based on ER
-    pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
-        ctx.accounts.delegate_pda(
-            &ctx.accounts.payer,
-            &[TEST_PDA_SEED],
-            DelegateConfig {
-                // Optionally set a specific validator from the first remaining account
-                validator: ctx.remaining_accounts.first().map(|acc| acc.key()),
-                ..Default::default()
-            }
-        )?;
-        Ok(())
-    }
-
-    /// Undelegate the account from the delegation program
-    pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
-        commit_and_undelegate_accounts(
-            &ctx.accounts.payer,
-            vec![&ctx.accounts.counter.to_account_info()],
-            &ctx.accounts.magic_context,
-            &ctx.accounts.magic_program,
-        )?;
-        Ok(())
-    }
-}
-
 /// Add delegate function to the context
 #[delegate]
 #[derive(Accounts)]
@@ -44,6 +10,21 @@ pub struct DelegateInput<'info> {
     #[account(mut, del)]
     pub pda: AccountInfo<'info>,
 }
+```
 
-// ... Other context and account struct.
+```rust
+/// Delegate the account to the delegation program
+/// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
+pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    ctx.accounts.delegate_pda(
+        &ctx.accounts.payer,
+        &[TEST_PDA_SEED],
+        DelegateConfig {
+            // Optionally set a specific validator from the first remaining account
+            validator: ctx.remaining_accounts.first().map(|acc| acc.key()),
+            ..Default::default()
+        },
+    )?;
+    Ok(())
+}
 ```

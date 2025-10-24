@@ -6,6 +6,7 @@ description: "Learn how to write a simple Rust program that delegates and increm
 import Endpoints from "/snippets/endpoints.mdx";
 import Validators from "/snippets/validators.mdx";
 import SoftwareRust from "/snippets/software-rust.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
 
 import DelegateCode from "/snippets/rust-counter-code/delegate.mdx";
 import CommitCode from "/snippets/rust-counter-code/commit.mdx";
@@ -37,59 +38,74 @@ import InstructionsCode from "/snippets/rust-counter-code/instructions.mdx";
   />
 </div>
 
-This guide will walk you through the process of writing a simple native Rust program (without Anchor dependencies) that increments a counter. You’ll learn how to deploy this program on Solana and interact with it using a Typescript test script.
-
 ---
 
-## Software Packages
+## Step-By-Step Guide
 
-<SoftwareRust />
-
----
-
-## Quick Access
-
-If you prefer to dive straight into the code:
-
-<CardGroup cols={2}>
-  <Card
-    title="Source Code: Native Rust Counter Program"
-    icon="rust"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
-    iconType="duotone"
-  ></Card>
-  <Card
-    title="Source Code: Typescript Test Script"
-    icon="js"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
-    iconType="duotone"
-  ></Card>
-  <Card
-    title="Local Development"
-    icon="computer"
-    href="/pages/ephemeral-rollups-ers/how-to-guide/local-development"
-    iconType="duotone"
-  ></Card>
-</CardGroup>
-
----
-
-## Write your program
+The lifecycle of integrating Ephemeral Rollups in your program is as follows:
 
 <Steps>
   <Step
     title={
       <a href="#overview">Write program and add delegation instructions</a>
     }
-  ></Step>
-  <Step title={<a href="#delegate">Delegate PDA on Base Layer</a>}></Step>
-  <Step title={<a href="#commit">Commit PDA on ER</a>}></Step>
-  <Step title={<a href="#undelegate">Undelegate PDA on ER</a>}></Step>
+  >
+    Write your Solana program as you normally would.
+  </Step>
+  <Step title={<a href="#delegate">Delegate PDA on Base Layer</a>}>
+    Add CPI hooks to delegate, commit and undelegate state accounts through
+    Ephemeral Rollup sessions.
+  </Step>
+  <Step title={<a href="#commit">Commit PDA on ER</a>}>
+    Deploy your program directly on Solana using Solana CLI.
+  </Step>
+  <Step title={<a href="#undelegate">Undelegate PDA on ER</a>}>
+    Send transactions without modifications on-chain and off-chain that also
+    comply with the SVM RPC specification.
+  </Step>
 </Steps>
+
+---
+
+## Counter Example
+
+<SoftwareRust />
+
+### Quick Access
+
+If you prefer to dive straight into the code:
+
+<CardGroup cols={2}>
+  <Card
+    title="Native Rust Counter Program"
+    icon="rust"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
+    iconType="duotone"
+  >
+    Program Source Code
+  </Card>
+  <Card
+    title="Program Tests"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
+    iconType="duotone"
+  >
+    Test Scripts with Typescript
+  </Card>
+  <Card
+    title="Local Development"
+    icon="computer"
+    href="/pages/ephemeral-rollups-ers/how-to-guide/local-development"
+    iconType="duotone"
+  >
+    Configure Custom Environment
+  </Card>
+</CardGroup>
+
+### Code Snippets
 
 <Tabs>
   <Tab title="Overview">
-    ## Core Functionality
 
     The program implements two main instructions:
 
@@ -134,7 +150,7 @@ If you prefer to dive straight into the code:
     </Card>
 
     <DelegateCode />
-    [⬆️ Back to Top](#write-your-program)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
     <Tab title="Commit">
@@ -162,7 +178,7 @@ If you prefer to dive straight into the code:
     </CardGroup>
 
     <CommitCode />
-    [⬆️ Back to Top](#write-your-program)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
   <Tab title="Undelegate">
@@ -191,13 +207,13 @@ If you prefer to dive straight into the code:
     </CardGroup>
 
     <UndelegateCode />
-    [⬆️ Back to Top](#write-your-program)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
 </Tabs>
 
 ---
 
-```
+<SolanaResources />
 
-```
+---

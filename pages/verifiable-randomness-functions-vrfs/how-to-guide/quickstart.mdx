@@ -17,9 +17,9 @@ import TestCode from "/snippets/roll-dice-code/test.mdx";
 
 ---
 
-Any Solana program can request and consume verifiable randomness onchain within seconds using the MagicBlock VRF SDK. By the end of this guide, you'll have a working example that rolls a dice using verifiable randomness.
+## Step-By-Step Guide
 
-## Process of `Requesting` and `Consuming` Onchain Randomness
+Any Solana program can request and consume verifiable randomness onchain within seconds using the MagicBlock VRF SDK. By the end of this guide, you'll have a working example that rolls a dice using verifiable randomness.
 
 <Steps>
   <Step title={<a href="#1-write-program">Write your program</a>}>
@@ -51,6 +51,8 @@ Any Solana program can request and consume verifiable randomness onchain within 
 
 <Software />
 
+### Quick Access
+
 Find the full basic randomness example for Anchor framework implementation:
 
 <CardGroup cols={2}>
@@ -72,7 +74,7 @@ Find the full basic randomness example for Anchor framework implementation:
   </Card>
 </CardGroup>
 
----
+### Code Snippets
 
 <Tabs>
   <Tab title="1. Write program">
@@ -80,7 +82,7 @@ Find the full basic randomness example for Anchor framework implementation:
     
     <InitializeCode />
 
-    [⬆️ Back to Top](#roll-dice-example)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
   <Tab title="2. Request & Consume Randomnness">
@@ -107,7 +109,7 @@ Find the full basic randomness example for Anchor framework implementation:
 
     > `Consume Randomness` is the process of using the verifiable randomness by your program which is provided and triggered through verified oracle.
 
-    [⬆️ Back to Top](#roll-dice-example)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
   <Tab title="3. Deploy">
@@ -116,7 +118,7 @@ Find the full basic randomness example for Anchor framework implementation:
     ```bash
     anchor build && anchor deploy
     ```
-    [⬆️ Back to Top](#roll-dice-example)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
   <Tab title="4. Test">
@@ -126,7 +128,7 @@ Find the full basic randomness example for Anchor framework implementation:
     ```
     Run the following test:
     <TestCode />
-    [⬆️ Back to Top](#roll-dice-example)
+    [⬆️ Back to Top](#code-snippets)
   </Tab>
 </Tabs>
 

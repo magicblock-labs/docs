@@ -1,4 +1,5 @@
 ```rust
+#[ephemeral]
 #[program]
 pub mod anchor_counter {
     use super::*;
@@ -17,7 +18,21 @@ pub mod anchor_counter {
         Ok(())
     }
 
-    // ... Additional instructions will be added here
+    /// Delegate the account to the delegation program
+    /// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
+    pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    // ...
+    }
+
+    /// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+    pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    // ...
+    }
+
+    /// Undelegate the account from the delegation program
+    pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    // ...
+    }
 }
 
 /// Context for initializing counter
@@ -43,4 +58,8 @@ pub struct Increment<'info> {
 pub struct Counter {
     pub count: u64,
 }
+
+/// Other context for delegation
+
+
 ```

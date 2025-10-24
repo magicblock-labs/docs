@@ -6,19 +6,45 @@ description: "Any Solana program can be upgraded with Ephemeral Rollups by addin
 import Endpoints from "/snippets/endpoints.mdx";
 import Validators from "/snippets/validators.mdx";
 import Software from "/snippets/software.mdx";
-import ExplorerCards from "/snippets/explorer-cards.mdx";
-import RpcCards from "/snippets/rpc-cards.mdx";
-import ValidatorCards from "/snippets/validator-cards.mdx";
-import ServerStatusCards from "/snippets/serverstatus-cards.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
 
 import WriteProgramCode from "/snippets/anchor-counter-code/write-program.mdx";
 import DelegateCode from "/snippets/anchor-counter-code/delegate.mdx";
+import CommitCode from "/snippets/anchor-counter-code/commit.mdx";
+import UndelegateCode from "/snippets/anchor-counter-code/undelegate.mdx";
 import TestCode from "/snippets/anchor-counter-code/test.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 
 ---
 
-## Lifecycle of the Integration
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Anchor Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## Step-By-Step Guide
 
 The lifecycle of integrating Ephemeral Rollups in your program is as follows:
 
@@ -57,35 +83,59 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
 
 <Software />
 
-Find the full basic counter example for Rust Native and Anchor framework implementation:
+### Quick Access
+
+Find the full basic counter example with Anchor framework implementation, or check out the Rust Native implementation:
 
 <CardGroup cols={2}>
-<Card
-  title="Anchor"
-  icon="anchor"
-  href="/pages/ephemeral-rollups-ers/how-to-guide/anchor"
-  iconType="duotone"
->
-  Integrate with an Anchor program
-</Card>
-<Card
-  title="Native Rust"
-  icon="rust"
-  href="/pages/ephemeral-rollups-ers/how-to-guide/rust"
-  iconType="duotone"
->
-  Integrate with an Native Rust program
-</Card>
-
+  <Card
+    title="Anchor Counter Program"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  >
+    Program Source Code
+  </Card>
+  <Card
+    title="Anchor Client App"
+    icon="react"
+    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    iconType="duotone"
+  >
+    React Client Source Code
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="/pages/ephemeral-rollups-ers/how-to-guide/rust-program"
+    iconType="duotone"
+  >
+    Native Rust Program implementation
+  </Card>
 </CardGroup>
 
----
+### Code Snippets
 
 <Tabs>
   <Tab title="1. Write program">
-    A simple counter program where value is initialized and incremented in a state account:
+
+    The program implements two main instructions:
+
+    1. `initialize`: Sets the counter to 0
+    2. `increment`: Increments the counter by 1
+
+    The program implements specific instructions for delegating and undelegating the counter:
+
+    1. `Delegate`: Delegates counter from Base Layer to ER (called on Base Layer)
+    2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
+    3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
+    4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
     <WriteProgramCode />
-    [⬆️ Back to Top](#counter-example)
+
+    Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we're adding the `ephemeral` macro for undelegation and `delegate` macro to inject some useful logic to interact with the delegation program.
+
+    [⬆️ Back to Top](#code-snippets)
+
   </Tab>
   <Tab title="2. Delegate">
     1. Add `ephemeral-rollups-sdk` with Anchor features to your program
@@ -111,10 +161,13 @@ Find the full basic counter example for Rust Native and Anchor framework impleme
 
     2.  Add `delegate` macro and instruction, `ephemeral` macro, and `undelegate` instruction to your program. Specify your preferred delegation config such as auto commits and specific ER validator:
     <DelegateCode />
+    <CommitCode />
+    <UndelegateCode />
 
     <DelegationInfo />
     <Validators />
-    [⬆️ Back to Top](#counter-example)
+
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
 
@@ -126,7 +179,7 @@ Find the full basic counter example for Rust Native and Anchor framework impleme
     anchor build && anchor deploy
     ```
 
-    [⬆️ Back to Top](#counter-example)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
 
@@ -143,35 +196,14 @@ Find the full basic counter example for Rust Native and Anchor framework impleme
     To make it easier to integrate via the frontend, we created the [Magic Router](/pages/ephemeral-rollups-ers/introduction/magic-router). You send transactions directly to the magic router, and we can determine for you whether it should be routed to the [Ephemeral Rollup](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) or base layer.
 
     <Endpoints />
-    [⬆️ Back to Top](#counter-example)
+
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
 </Tabs>
 
 ---
 
-## Solana Explorer
-
-Get insights about your transactions and accounts on Solana:
-
-<ExplorerCards />
-
-## Solana RPC Providers
-
-Send transactions and requests through existing RPC providers:
-
-<RpcCards />
-
-## Solana Validator Dashboard
-
-Find real-time updates on Solana's validator infrastructure:
-
-<ValidatorCards />
-
-## Server Status Subscriptions
-
-Subscribe to Solana's and MagicBlock's server status:
-
-<ServerStatusCards />
+<SolanaResources />
 
 ---

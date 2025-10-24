@@ -1,11 +1,12 @@
 ---
-title: "Test Scripts"
+title: "Test Your Program"
 description: "Learn how to test a simple Rust program"
 ---
 
 import Endpoints from "/snippets/endpoints.mdx";
 import Validators from "/snippets/validators.mdx";
 import SoftwareRust from "/snippets/software-rust.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
 
 import TestWeb3jsConnectionCode from "/snippets/rust-counter-code/test-web3js-connection.mdx";
 import TestWeb3jsDelegateCode from "/snippets/rust-counter-code/test-web3js-delegate.mdx";
@@ -19,46 +20,61 @@ import DelegationInfo from "/snippets/delegation-info.mdx";
 
 ---
 
+## Step-By-Step Guide
+
+Build valid transactions that calls your program instructions for delegation and undelegation.
+The complete test for this project can be found in the [Typescript Test Script](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests).
+
+<Steps>
+  <Step title={<a href="#connection">Import SDK and initialize Connection</a>}>
+    Set up connection and accounts
+  </Step>
+  <Step title={<a href="#delegate">Delegate PDA on Base Layer</a>}>
+    Test CPI hook to delegate state account on Base Layer
+  </Step>
+  <Step title={<a href="#commit">Commit PDA on ER</a>}>
+    Test CPI hook to commit state account on ER
+  </Step>
+  <Step title={<a href="#undelegate">Undelegate PDA on ER</a>}>
+    Test CPI hook to undelegate state account on ER
+  </Step>
+</Steps>
+
+---
+
 ## Quick Access
 
 If you prefer to dive straight into the code:
 
 <CardGroup cols={2}>
   <Card
-    title="Source Code: Native Rust Counter Program"
+    title="Native Rust Counter Program"
     icon="rust"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
     iconType="duotone"
-  ></Card>
+  >
+    Program Source Code
+  </Card>
   <Card
-    title="Source Code: Typescript Test Script"
+    title="Program Tests"
     icon="js"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
     iconType="duotone"
-  ></Card>
+  >
+    Test Scripts with Typescript
+  </Card>
   <Card
     title="Local Development"
     icon="computer"
     href="/pages/ephemeral-rollups-ers/how-to-guide/local-development"
     iconType="duotone"
-  ></Card>
+  >
+    Configure Custom Environment
+  </Card>
 </CardGroup>
 
----
+### Code Snippets
 
-## Test your program
-
-Build valid transactions that calls your program instructions for delegation and undelegation.
-The complete test for this project can be found in the [Typescript Test Script](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests).
-
-<Steps>
-  <Step title={<a href="#connection">Initialize Connection</a>}></Step>
-  <Step title={<a href="#delegate">Delegate PDA on Base Layer</a>}></Step>
-  <Step title={<a href="#commit">Commit PDA on ER</a>}></Step>
-  <Step title={<a href="#undelegate">Undelegate PDA on ER</a>}></Step>
-</Steps>
-
-<Endpoints />
 <Tabs>
   <Tab title="Connection">
     ### Import SDK and create Connection
@@ -74,12 +90,14 @@ The complete test for this project can be found in the [Typescript Test Script](
       ```
     </CodeGroup>
 
+    <Endpoints />
     <CodeGroup>
       <TestKitConnectionCode />
+
       <TestWeb3jsConnectionCode />
     </CodeGroup>
 
-    [⬆️ Back to Top](#test-your-program)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
 
@@ -102,7 +120,7 @@ The complete test for this project can be found in the [Typescript Test Script](
       <TestWeb3jsDelegateCode />
     </CodeGroup>
 
-    [⬆️ Back to Top](#test-your-program)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
     <Tab title="Commit">
@@ -134,7 +152,7 @@ The complete test for this project can be found in the [Typescript Test Script](
       <TestWeb3jsCommitCode />
     </CodeGroup>
 
-    [⬆️ Back to Top](#test-your-program)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
   <Tab title="Undelegate">
@@ -165,9 +183,13 @@ The complete test for this project can be found in the [Typescript Test Script](
       <TestKitUndelegateCode />
       <TestWeb3jsUndelegateCode />
     </CodeGroup>
-    [⬆️ Back to Top](#test-your-program)
+    [⬆️ Back to Top](#code-snippets)
 
   </Tab>
 </Tabs>
+
+---
+
+<SolanaResources />
 
 ---

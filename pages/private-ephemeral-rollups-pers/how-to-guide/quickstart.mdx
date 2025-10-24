@@ -21,7 +21,7 @@ import DelegationInfo from "/snippets/delegation-info.mdx";
 
 ---
 
-## Process of Privacy upgrade
+## Step-By-Step Guide
 
 <Steps>
   <Step title={<a href="#1-write-program">Write your program</a>}>
@@ -60,6 +60,8 @@ import DelegationInfo from "/snippets/delegation-info.mdx";
 
 <Software />
 
+### Quick Access
+
 Find the full private transfer example with Anchor framework and client implementation:
 
 <CardGroup cols={2}>
@@ -81,41 +83,41 @@ Find the full private transfer example with Anchor framework and client implemen
   </Card>
 </CardGroup>
 
----
+### Code Snippets
 
 <Tabs>
     <Tab title="1. Write program">
         A simple transfer program where tokens are tracked through deposit accounts, and locked in a vault account:
         <WriteProgramCode />
-        [⬆️ Back to Top](#private-transfer-example)
+        [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="2. Delegate">
         <DelegationInfo />
         Specify your preferred delegation config such as auto commits and specific ER validator:
         <Validators />
         <DelegateCode />
-        [⬆️ Back to Top](#private-transfer-example)
+        [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="3. Restrict">
         Create groups of users and define permissions for state accounts to restrict access:
         <RestrictCode />
-        [⬆️ Back to Top](#private-transfer-example)
+        [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="4. Deploy">
         Now you’re program is upgraded and ready! Build and deploy to the desired cluster:
         ```bash
           anchor build && anchor deploy
         ```
-        [⬆️ Back to Top](#private-transfer-example)
+        [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="5. Authorize">
         Request an authorization token for user to interact with TEE endpoint:
         <AuthorizeCode />
-        [⬆️ Back to Top](#private-transfer-example)
+        [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="6. Test">
         <Construction />
-        [⬆️ Back to Top](#private-transfer-example)
+        [⬆️ Back to Top](#code-snippets)
     </Tab>
 
 </Tabs>

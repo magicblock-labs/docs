@@ -83,8 +83,7 @@
                   "pages/ephemeral-rollups-ers/how-to-guide/rust-program",
                   "pages/ephemeral-rollups-ers/how-to-guide/rust-tests"
                 ]
-              },
-              "pages/ephemeral-rollups-ers/how-to-guide/anchor"
+              }
             ]
           },
           {
