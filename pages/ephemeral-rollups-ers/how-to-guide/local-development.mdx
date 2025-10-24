@@ -7,15 +7,11 @@ import Validators from "/snippets/validators.mdx";
 
 ---
 
-### ⚠️ Important: Upgrade your program with local validator identity
+### ⚠️ Important
 
-> When using a local ER validator, you need to connect it to your preferred base layer (e.g., `mainnet-beta`, `devnet`, or `localhost`) where the accounts are delegated. To delegate your PDA to a `specific ER validator identity`, you must update the `delegation config` in your program. This ensures that accounts can be properly committed and undelegated on the base layer.
+> When using a local ER validator, you need to connect it to your preferred base layer (e.g., `mainnet-beta`, `devnet`, or `localhost`) where the accounts are delegated.
 
 <Validators />
-
----
-
-### Deploy and test on base layer via correct validator identity
 
 <Tabs>
 <Tab title="solana-test-validator (localhost)">
