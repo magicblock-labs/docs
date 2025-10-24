@@ -3,7 +3,7 @@ title: Magic Router
 description: Learn how Magicblock's Magic Router accelerates transactions by routing them to the right execution environment.
 ---
 
-import Endpoints from "/snippets/endpoints.mdx";
+import Routers from "/snippets/routers.mdx";
 
 <div
   style={{
@@ -30,6 +30,10 @@ import Endpoints from "/snippets/endpoints.mdx";
   />
 </div>
 
+---
+
+## Dynamic Transaction Routing
+
 **Magicblock's Magic Router** is an dynamic transaction routing engine that accelerates transactions by intelligently deciding where they should be executed — either on **Ephemeral Rollups** or **Solana** — based on transaction metadata.
 
 This eliminates the need for manual routing logic from the developer, providing significant benefits in transaction speed and development experience.
@@ -38,25 +42,11 @@ This eliminates the need for manual routing logic from the developer, providing 
 - ✅ **Seamless Wallet Experience**: Connect, sign, and submit — no need to know what’s happening behind the scenes.
 - ✅ **Faster Confirmations**: Magic Router routes to the fastest available endpoint.
 
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
 ---
 
-## Examples
-
-```ts
-import { sendAndConfirmTransaction } from "@solana/web3.js";
-import { ConnectionMagicRouter } from "@magicblock-labs/ephemeral-rollups-sdk";
-
-const connection = new ConnectionMagicRouter(
-  "https://devnet-router.magicblock.app/",
-  { wsEndpoint: "wss://devnet-router.magicblock.app/" }
-);
-let tx = new Transaction();
-tx.add(ix);
-const txHash = await sendAndConfirmTransaction(connection, tx, [payer], {
-  skipPreflight: true,
-  commitment: "confirmed",
-});
-```
+## Quick Access
 
 <CardGroup cols={2}>
   <Card
@@ -87,10 +77,60 @@ const txHash = await sendAndConfirmTransaction(connection, tx, [payer], {
 
 ---
 
-## Dynamic Transaction Routing
+## Code Snippets
 
-<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
-<Endpoints />
+Initialize connection with Magic Router before you send transaction dynamically.
+
+<Routers />
+
+Utilize MagicBlock's SDK to initialize, send and confirm transaction:
+
+- `ephemeral-rollups-kit` powered with `@solana/kit`
+- `ephemeral-rollups-sdk` powered with `@solana/web.js`
+
+<CodeGroup>
+```ts kit
+import { 
+  Connection, 
+} from "@magicblock-labs/ephemeral-rollups-kit";
+
+// Initialize connection
+const connection = await Connection.create(
+"https://devnet-router.magicblock.app",
+"wss://devnet-router.magicblock.app"
+)
+
+// ... create transaction
+
+// Send and confirm transaction
+const txHash = await connection.sendAndConfirmTransaction(
+transactionMessage,
+[userKeypair],
+{ commitment: "confirmed", skipPreflight: true }
+)
+
+````
+
+```ts web3.js
+import { sendAndConfirmTransaction } from "@solana/web3.js";
+import { ConnectionMagicRouter } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Initialize connection
+const connection = new ConnectionMagicRouter(
+  "https://devnet-router.magicblock.app/",
+  { wsEndpoint: "wss://devnet-router.magicblock.app/" }
+);
+
+// ... create transaction
+
+// Send and confirm transaction
+const txHash = await sendAndConfirmTransaction(connection, tx, [payer], {
+  skipPreflight: true,
+  commitment: "confirmed",
+});
+````
+
+</CodeGroup>
 
 The Magic Router analyzes each transaction’s metadata (e.g. writable accounts, owner, and signer) and automatically routes it to the closest dedicated endpoint:
 
@@ -107,6 +147,4 @@ Magic Router RPC endpoint.
    - **Ephemeral Rollup** for fast, low-latency, zero-cost execution
    - **Solana** for persistent, high-throughput execution
 
-```
-
-```
+---
