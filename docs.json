@@ -192,6 +192,12 @@
             "pages": ["pages/tools/introduction"]
           },
           {
+            "group": "Wallets & Onramp",
+            "pages": [
+                  "pages/tools/wallets-and-onramp/overview"
+                ]
+          },
+          {
             "group": "Session Keys",
             "pages": [
 
