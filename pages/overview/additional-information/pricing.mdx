@@ -3,6 +3,12 @@ title: "Pricing"
 description: "MagicBlock’s pricing is modeled after decentralized cloud infrastructure. The goal is to keep computing costs **predictable for developers**, while still providing **flexibility for enterprises** that need priority access or dedicated resources."
 ---
 
+import { CostSimulator } from "/snippets/components/CostSimulator.jsx";
+
+---
+
+## Cost Simulator: 30-Days
+
 ---
 
 ## Ephemeral Rollup (ER) Nodes
@@ -14,6 +20,10 @@ description: "MagicBlock’s pricing is modeled after decentralized cloud infras
 | **Base fee**    | 0                | Per transaction (Tx)             |
 | **Session fee** | 0.0003           | Per ER session (at undelegation) |
 | **Commit fee**  | 0.0001           | Per commit to Solana             |
+
+<CostSimulator />
+
+---
 
 **Dedicated nodes** are ideal for enterprises and high-scale teams. They provide maximum reliability, predictable costs, and MEV protection with your own dedicated infrastructure.
 
