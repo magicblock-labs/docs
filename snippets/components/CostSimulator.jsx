@@ -66,20 +66,6 @@ export const CostSimulator = () => {
 
   return (
     <div style={{ maxWidth: width }}>
-      {/* Summary */}
-      {/* <div style={{ marginTop: "1rem" }}>
-        <ul>
-          <li><strong>Total Transactions: {totalSolanaTx.toLocaleString()}</strong></li>
-          <li><strong>Solana Fees: ${solanaCosts[lastIndex].toLocaleString()}</strong></li>
-          <li>
-            <strong>ER Fees: ${erCosts[lastIndex].toLocaleString()}</strong>
-            <ul>
-              <li>Commits: {totalERCommits.toLocaleString()}</li>
-              <li>Sessions: {totalERSessions.toLocaleString()}</li>
-            </ul>
-          </li>
-        </ul>
-      </div> */}
 
       {/* Sliders */}
       <div style={
@@ -134,18 +120,28 @@ export const CostSimulator = () => {
       </div>
 
       {/* Total counts & cost */}
-      <div style={{ marginTop: "1rem" }}>
-
-        <p> With <strong>{(totalSolanaTx / 1_000_000).toFixed(2)}M transactions</strong>, </p>
-        <p style={{ marginTop: "0.5rem", fontWeight: "bold", color: "#aa00ff" }}>
-          {erCosts[lastIndex] > solanaCosts[lastIndex]
-            ? `ER is ${(erCosts[lastIndex]/solanaCosts[lastIndex]).toFixed(2).toLocaleString()}x more expensive.`
-            : `ER is ${(solanaCosts[lastIndex]/erCosts[lastIndex]).toFixed(2).toLocaleString()}x cheaper.`}
+      <div style={{ marginTop: "1rem", lineHeight: 1.5 }}>
+        <p>
+          <strong>{(totalSolanaTx / 1_000_000).toFixed(2)}M transactions</strong> over 30 days.
         </p>
+
+        {erCosts[lastIndex] < solanaCosts[lastIndex] ? (
+          <p style={{ marginTop: "0.5rem" }}>
+            {" "}You save{" "}
+            <span style={{ fontWeight: "bold", color: "#aa00ff" }}>
+              ${((solanaCosts[lastIndex] - erCosts[lastIndex]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}{', or '}{(solanaCosts[lastIndex] / erCosts[lastIndex]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}x cheaper
+            </span>
+            .
+          </p>
+        ) : (
+          <p style={{ marginTop: "0.5rem",  }}>
+            {" "}Try <strong>lowering commits and delegations</strong> to get a cost advantage.
+          </p>
+        )}
       </div>
 
       {/* SVG graph */}
-      <div style={{ width: "100%", maxWidth: "600px", margin: "0 auto" }}>
+      <div style={{ width: "100%", maxWidth: "600px", margin: "0 auto", paddingLeft: "40px", paddingRight: "10px" }}>
         <svg width={width} height={height} 
           viewBox={`0 0 ${width} ${height}`}
           width="100%"
@@ -159,7 +155,7 @@ export const CostSimulator = () => {
             return (
               <g key={i}>
                 <line x1={padding} y1={y} x2={width - padding} y2={y} stroke="#eee" />
-                <text x={padding - 5} y={y + 4} textAnchor="end" fontSize="12" fill="#555">
+                <text x={padding - 5} y={y + 4} textAnchor="end" fontSize="12" fill="#555" fontWeight="bold">
                   ${Number(price).toLocaleString()}
                 </text>
               </g>
@@ -173,15 +169,15 @@ export const CostSimulator = () => {
               return (
                 <g key={i}>
                   <line x1={x} y1={padding} x2={x} y2={height - padding} stroke="#eee" />
-                  <text x={x} y={height - padding + 15} textAnchor="middle" fontSize="12" fill="#555">
+                  <text x={x} y={height - padding + 15} textAnchor="middle" fontSize="12" fill="#555" fontWeight="bold">
                     {day}
                   </text>
                   <circle cx={x} cy={yScale(solanaCosts[i])} r={3} fill="#59e09d" />
-                  <text x={x} y={yScale(solanaCosts[i]) - 5} fontSize="14" fill="#59e09d" textAnchor="middle">
+                  <text x={x} y={yScale(solanaCosts[i]) - 8} fontSize="14" fill="#59e09d" textAnchor="middle" fontWeight="bold">
                     ${solanaCosts[i].toLocaleString()}
                   </text>
                   <circle cx={x} cy={yScale(erCosts[i])} r={3} fill="#f2805a" />
-                  <text x={x} y={yScale(erCosts[i]) - 5} fontSize="14" fill="#f2805a" textAnchor="middle">
+                  <text x={x} y={yScale(erCosts[i]) - 8} fontSize="14" fill="#f2805a" textAnchor="middle" fontWeight="bold">
                     ${erCosts[i].toLocaleString()}
                   </text>
                 </g>
@@ -221,7 +217,7 @@ export const CostSimulator = () => {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-        <span style={{ fontSize: "0.6rem" }}>Price: ${solPriceUSD} USD/SOL</span>
+        <span style={{ fontSize: "0.8rem" }}>Price: ${solPriceUSD} USD/SOL</span>
       </div>
 
     </div>
