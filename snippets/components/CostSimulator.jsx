@@ -136,7 +136,7 @@ export const CostSimulator = () => {
       {/* Total counts & cost */}
       <div style={{ marginTop: "1rem" }}>
 
-        <p>With<strong> {totalSolanaTx.toLocaleString()} transactions</strong>, </p>
+        <p> With <strong>{(totalSolanaTx / 1_000_000).toFixed(2)}M transactions</strong>, </p>
         <p style={{ marginTop: "0.5rem", fontWeight: "bold", color: "#aa00ff" }}>
           {erCosts[lastIndex] > solanaCosts[lastIndex]
             ? `ER is ${(erCosts[lastIndex]/solanaCosts[lastIndex]).toFixed(2).toLocaleString()}x more expensive.`
