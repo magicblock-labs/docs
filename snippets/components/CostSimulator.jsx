@@ -208,11 +208,11 @@ export const CostSimulator = () => {
       <div style={{ display: "flex", gap: "2rem", marginBottom: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div style={{ width: 12, height: 12, backgroundColor: "#59e09d" }} />
-          <span>Solana</span>
+          <span>Solana Only</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div style={{ width: 12, height: 12, backgroundColor: "#f2805a" }} />
-          <span>ER (Commits + Delegations)</span>
+          <span>With ER (Commits + Delegations)</span>
         </div>
       </div>
 
