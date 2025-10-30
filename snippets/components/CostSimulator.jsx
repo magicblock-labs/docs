@@ -1,5 +1,5 @@
 export const CostSimulator = () => {
-  const [tps, setTps] = useState(50);
+  const [tps, setTps] = useState(10000);
   const [cpm, setCpm] = useState(30); // commits/sec
   const [dpm, setDpm] = useState(1); // delegations/sec
 
@@ -82,7 +82,7 @@ export const CostSimulator = () => {
           <input
             type="range"
             min="1"
-            max="100"
+            max="50000"
             step="1"
             value={tps}
             onChange={(e) => handleTpsChange(Number(e.target.value))}
@@ -105,7 +105,7 @@ export const CostSimulator = () => {
             />
           </label>
           <label style={{ flex: 1, fontSize: "14px"  }}>
-            Delegation(s) per minute: {dpm}
+            Delegation Session(s) per minute: {dpm}
             <input
               type="range"
               min="1"
