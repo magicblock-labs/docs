@@ -77,7 +77,7 @@ export const CostSimulator = () => {
           marginBottom: "1rem" }
       }>
         {/* Transaction slider */}
-        <label>
+        <label style={{ fontSize: "14px" }}>
           Transaction(s) per second: {tps}
           <input
             type="range"
@@ -92,7 +92,7 @@ export const CostSimulator = () => {
 
         {/* Commits and Delegations in one row */}
         <div style={{ display: "flex", gap: "1rem" }}>
-          <label style={{ flex: 1 }}>
+          <label style={{ flex: 1, fontSize: "14px" }}>
             Commit(s) per minute: {cpm}
             <input
               type="range"
@@ -104,7 +104,7 @@ export const CostSimulator = () => {
               style={{ width: "100%" }}
             />
           </label>
-          <label style={{ flex: 1 }}>
+          <label style={{ flex: 1, fontSize: "14px"  }}>
             Delegation(s) per minute: {dpm}
             <input
               type="range"
@@ -120,7 +120,7 @@ export const CostSimulator = () => {
       </div>
 
       {/* Total counts & cost */}
-      <div style={{ marginTop: "1rem", lineHeight: 1.5 }}>
+      <div style={{ marginTop: "1rem", lineHeight: 1.5, fontSize: "14px" }}>
         <p>
           <strong>{(totalSolanaTx / 1_000_000).toFixed(2)}M transactions</strong> over 30 days.
         </p>
@@ -204,20 +204,33 @@ export const CostSimulator = () => {
         </svg>
       </div>
 
-      {/* Legend */}
-      <div style={{ display: "flex", gap: "2rem", marginBottom: "1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <div style={{ width: 12, height: 12, backgroundColor: "#59e09d" }} />
-          <span>Solana Only</span>
+      {/* Legend + Price */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",       // wrap on small screens
+          gap: "0.5rem",          // spacing between wrapped items
+          marginBottom: "1rem"
+        }}
+      >
+        {/* Legends */}
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{ width: 12, height: 12, backgroundColor: "#59e09d" }} />
+            <span style={{ fontSize: "14px" }}>Solana Only</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{ width: 12, height: 12, backgroundColor: "#f2805a" }} />
+            <span style={{ fontSize: "14px" }}>With ER (Commits + Delegations)</span>
+          </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <div style={{ width: 12, height: 12, backgroundColor: "#f2805a" }} />
-          <span>With ER (Commits + Delegations)</span>
-        </div>
-      </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-        <span style={{ fontSize: "0.8rem" }}>Price: ${solPriceUSD} USD/SOL</span>
+        {/* Price */}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span style={{ fontSize: "14px" }}>Price: ${solPriceUSD} USD/SOL</span>
+        </div>
       </div>
 
     </div>
