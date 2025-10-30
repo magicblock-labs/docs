@@ -78,7 +78,7 @@ export const CostSimulator = () => {
       }>
         {/* Transaction slider */}
         <label style={{ fontSize: "14px" }}>
-          Transaction(s) per second: {tps}
+          Transaction(s) per second: {tps.toLocaleString()}
           <input
             type="range"
             min="1"
@@ -122,14 +122,17 @@ export const CostSimulator = () => {
       {/* Total counts & cost */}
       <div style={{ marginTop: "1rem", lineHeight: 1.5, fontSize: "14px" }}>
         <p>
-          <strong>{(totalSolanaTx / 1_000_000).toFixed(2)}M transactions</strong> over 30 days.
-        </p>
+          <strong>{(totalSolanaTx / 1_000_000).toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2
+            })}M transactions</strong> over 30 days.
+            </p>
 
         {erCosts[lastIndex] < solanaCosts[lastIndex] ? (
           <p style={{ marginTop: "0.5rem" }}>
             {" "}You save{" "}
             <span style={{ fontWeight: "bold", color: "#aa00ff" }}>
-              ${((solanaCosts[lastIndex] - erCosts[lastIndex]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}{', or '}{(solanaCosts[lastIndex] / erCosts[lastIndex]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}x cheaper
+              ${((solanaCosts[lastIndex] - erCosts[lastIndex]).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }))}{', or '}{(solanaCosts[lastIndex] / erCosts[lastIndex]).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}x cheaper
             </span>
             .
           </p>
