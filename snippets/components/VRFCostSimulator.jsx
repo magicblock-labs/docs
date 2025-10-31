@@ -155,13 +155,7 @@ export const VRFCostSimulator = () => {
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <div style={{ width: 12, height: 12, backgroundColor: "#59e09d" }} />
             <span style={{ fontSize: "14px" }}>
-              <a 
-                href="https://x.com/switchboardxyz/status/1547303552829345793" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-              >
-                Switchboard VRF
-              </a>
+              Other VRFs
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
