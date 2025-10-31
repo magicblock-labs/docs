@@ -217,8 +217,8 @@ export const ERCostSimulator = () => {
                   <text x={x} y={height - padding + 15} textAnchor="middle" fontSize="12" fill="#555" fontWeight="bold">
                     {day}
                   </text>
-                  <circle cx={x} cy={yScale(solanaCosts[i])} r={3} fill="#59e09d" />
-                  <text x={x} y={yScale(solanaCosts[i]) - 8} fontSize="14" fill="#59e09d" textAnchor="middle" fontWeight="bold">
+                  <circle cx={x} cy={yScale(solanaCosts[i])} r={3} fill="#f2805a" />
+                  <text x={x} y={yScale(solanaCosts[i]) - 8} fontSize="14" fill="#f2805a" textAnchor="middle" fontWeight="bold">
                     ${solanaCosts[i].toLocaleString()}
                   </text>
                   <circle cx={x} cy={yScale(erCosts[i])} r={3} fill="#aa00ff" />
@@ -244,7 +244,7 @@ export const ERCostSimulator = () => {
           >
             Day
           </text>
-          <path d={linePath(solanaCosts)} stroke="#59e09d" strokeWidth="2" fill="none" />
+          <path d={linePath(solanaCosts)} stroke="#f2805a" strokeWidth="2" fill="none" />
           <path d={linePath(erCosts)} stroke="#aa00ff" strokeWidth="2" fill="none" />
         </svg>
       </div>
@@ -263,7 +263,7 @@ export const ERCostSimulator = () => {
         {/* Legends */}
         <div style={{ display: "flex", gap:"0rem 1rem", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: 12, height: 12, backgroundColor: "#59e09d" }} />
+            <div style={{ width: 12, height: 12, backgroundColor: "#f2805a" }} />
             <span style={{ fontSize: "14px" }}>Solana Only</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
