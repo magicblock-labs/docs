@@ -3,7 +3,8 @@ title: "Pricing"
 description: "MagicBlock’s pricing is modeled after decentralized cloud infrastructure. The goal is to keep computing costs **predictable for developers**, while still providing **flexibility for enterprises** that need priority access or dedicated resources."
 ---
 
-import { CostSimulator } from "/snippets/components/CostSimulator.jsx";
+import { ERCostSimulator } from "/snippets/components/ERCostSimulator.jsx";
+import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
 
 ---
 
@@ -17,12 +18,6 @@ import { CostSimulator } from "/snippets/components/CostSimulator.jsx";
 | **Session fee** | 0.0003           | Per ER session (at undelegation) |
 | **Commit fee**  | 0.0001           | Per commit to Solana             |
 
-### Cost Simulator: 30-Days
-
-<CostSimulator />
-
----
-
 **Dedicated nodes** are ideal for enterprises and high-scale teams. They provide maximum reliability, predictable costs, and MEV protection with your own dedicated infrastructure.
 
 | **Fee type**    | **Amount (SOL)** | **Description**      |
@@ -32,6 +27,10 @@ import { CostSimulator } from "/snippets/components/CostSimulator.jsx";
 | **Commit fee**  | 0.0001           | Per commit to Solana |
 
 [Learn more about ER →](/pages/ephemeral-rollups-ers/introduction/why)
+
+### Cost Simulator: 30-Days
+
+<ERCostSimulator />
 
 ---
 
@@ -46,6 +45,10 @@ The VRF service provides **provably fair randomness on-chain**. Fees cover proof
 | **Base fee (within 1–2 slots)** | 0.0005           | Per randomness request |
 
 [Learn more about VRF →](/pages/verifiable-randomness-functions-vrfs/introduction/what-is-verifiable-randomness)
+
+### Cost Simulator: 30-Days
+
+<VRFCostSimulator />
 
 ---
 

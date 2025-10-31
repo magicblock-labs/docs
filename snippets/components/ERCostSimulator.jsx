@@ -1,12 +1,14 @@
-export const CostSimulator = () => {
+export const ERCostSimulator = () => {
   const [tps, setTps] = useState(10000);
   const [cpm, setCpm] = useState(30); // commits/sec
   const [dpm, setDpm] = useState(1); // delegations/sec
+  const [isDedicated, setIsDedicated] = useState(false);
 
   // Fees in SOL
   const solanaFeePerTx = 0.000005; // SOL per transaction
   const erFeePerCommit = 0.0001;   // SOL per commit
   const erFeePerSession = 0.0003;  // SOL per session
+  const dedicatedBaseFee = 0.00000005; // extra ER per transaction if dedicated
   
   const solPriceUSD = 200        // USD per SOL
 
@@ -22,21 +24,18 @@ export const CostSimulator = () => {
   const solanaCosts = days.map(
     (_, i) => (i + 1) * tps * secondsPerDay * solanaFeePerTx * solPriceUSD
   );
-  const erCosts = days.map(
-    (_, i) => (i + 1) * (commitFeesPerDay + sessionFeesPerDay)
-  );
+  const erCosts = days.map((_, i) => {
+    const base = (i + 1) * (commitFeesPerDay + sessionFeesPerDay);
+    const extra = isDedicated ? (i + 1) * tps * secondsPerDay * dedicatedBaseFee * solPriceUSD : 0;
+    return base + extra;
+  });
 
   const totalSolanaTx = tps * secondsPerDay * days.length;
-  const totalERCommits = cpm * secondsPerDay * days.length;
-  const totalERSessions = dpm * secondsPerDay * days.length;
 
   const maxCost = Math.max(...solanaCosts, ...erCosts);
   const xStep = (width - padding * 2) / (days.length - 1);
   const yScale = (val) => height - padding - (val / maxCost) * (height - padding * 2);
-
-  const linePath = (data) =>
-    data.map((val, i) => `${i === 0 ? "M" : "L"}${padding + i * xStep},${yScale(val)}`).join(" ");
-
+  const linePath = (data) => data.map((val, i) => `${i === 0 ? "M" : "L"}${padding + i * xStep},${yScale(val)}`).join(" ");
   const lastIndex = days.length - 1;
 
   const handleTpsChange = (newTps) => {
@@ -66,6 +65,49 @@ export const CostSimulator = () => {
 
   return (
     <div style={{ maxWidth: width }}>
+
+      {/* Toggle switch */}
+      <div style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <span style={{ fontSize: "14px" }}>Public Node</span>
+        <label style={{
+          position: "relative",
+          display: "inline-block",
+          width: "36px",
+          height: "20px",
+          marginBottom: 0, 
+          verticalAlign: "middle"
+        }}>
+          <input 
+            type="checkbox" 
+            checked={isDedicated} 
+            onChange={() => setIsDedicated(!isDedicated)}
+            style={{ opacity: 0, width: 0, height: 0 }}
+          />
+          {/* Track */}
+          <span style={{
+            position: "absolute",
+            cursor: "pointer",
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: isDedicated ? "#2545f6" : "#2545f6",
+            transition: ".4s",
+            borderRadius: "24px",
+          }} />
+
+          {/* Knob */}
+          <span style={{
+            position: "absolute",
+            height: "18px",
+            width: "18px",
+            left: isDedicated ? "calc(100% - 19px)" : "1px",
+            top: 1,
+            bottom: "3px",
+            backgroundColor: "white",
+            transition: ".4s",
+            borderRadius: "50%",
+          }} />
+        </label>
+        <span style={{ fontSize: "14px" }}>Dedicated Node</span>
+      </div>
 
       {/* Sliders */}
       <div style={
@@ -179,8 +221,8 @@ export const CostSimulator = () => {
                   <text x={x} y={yScale(solanaCosts[i]) - 8} fontSize="14" fill="#59e09d" textAnchor="middle" fontWeight="bold">
                     ${solanaCosts[i].toLocaleString()}
                   </text>
-                  <circle cx={x} cy={yScale(erCosts[i])} r={3} fill="#f2805a" />
-                  <text x={x} y={yScale(erCosts[i]) - 8} fontSize="14" fill="#f2805a" textAnchor="middle" fontWeight="bold">
+                  <circle cx={x} cy={yScale(erCosts[i])} r={3} fill="#aa00ff" />
+                  <text x={x} y={yScale(erCosts[i]) - 8} fontSize="14" fill="#aa00ff" textAnchor="middle" fontWeight="bold">
                     ${erCosts[i].toLocaleString()}
                   </text>
                 </g>
@@ -203,7 +245,7 @@ export const CostSimulator = () => {
             Day
           </text>
           <path d={linePath(solanaCosts)} stroke="#59e09d" strokeWidth="2" fill="none" />
-          <path d={linePath(erCosts)} stroke="#f2805a" strokeWidth="2" fill="none" />
+          <path d={linePath(erCosts)} stroke="#aa00ff" strokeWidth="2" fill="none" />
         </svg>
       </div>
 
@@ -213,20 +255,20 @@ export const CostSimulator = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          flexWrap: "wrap",       // wrap on small screens
-          gap: "0.5rem",          // spacing between wrapped items
-          marginBottom: "1rem"
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          marginBottom: "1rem",
         }}
       >
         {/* Legends */}
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap:"0rem 1rem", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <div style={{ width: 12, height: 12, backgroundColor: "#59e09d" }} />
             <span style={{ fontSize: "14px" }}>Solana Only</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: 12, height: 12, backgroundColor: "#f2805a" }} />
-            <span style={{ fontSize: "14px" }}>With ER (Commits + Delegations)</span>
+            <div style={{ width: 12, height: 12, backgroundColor: "#aa00ff" }} />
+            <span style={{ fontSize: "14px" }}>MagicBlock (ER Sessions + Commits)</span>
           </div>
         </div>
 
