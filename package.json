@@ -10,5 +10,7 @@
   "dependencies": {
     "recharts": "^3.3.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@mintlify/cli": "^4.0.791"
+  }
 }
