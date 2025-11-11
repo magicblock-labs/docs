@@ -141,7 +141,9 @@ Find the full basic counter example with Anchor framework implementation, or che
     1. `Delegate`: Delegates counter from Base Layer to ER (called on Base Layer)
     2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
     3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
-    4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
+    4. `Undelegate`:
+        - Schedules sync and undelegation of counter (called on ER)
+        - Undelegation triggered through callback instruction injected through #[ephemeral] (called on Base Layer through validator CPI)
     <WriteProgramCode />
 
     Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we're adding the `ephemeral` macro for undelegation and `delegate` macro to inject some useful logic to interact with the delegation program.
