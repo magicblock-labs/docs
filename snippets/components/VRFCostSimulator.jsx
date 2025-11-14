@@ -1,5 +1,5 @@
 export const VRFCostSimulator = () => {
-  const [vrfps, setVrf] = useState(1);
+  const [vrfpm, setVrf] = useState(5);
 
   // Fees in SOL
   const alternativeVrfFeePerTx = 0.002; // SOL per transaction
@@ -11,16 +11,16 @@ export const VRFCostSimulator = () => {
   const width = 600;
   const height = 300;
   const padding = 50;
-  const secondsPerDay = 24 * 60 * 60;
+  const minutesPerDay = 24 * 60;
 
   const alternativeVrfCosts = days.map(
-    (_, i) => (i + 1) * vrfps * secondsPerDay * alternativeVrfFeePerTx * solPriceUSD
+    (_, i) => (i + 1) * vrfpm * minutesPerDay * alternativeVrfFeePerTx * solPriceUSD
   );
   const magicblockVrfCosts = days.map(
-    (_, i) => (i + 1) * vrfps * secondsPerDay * magicblockVrfFeePerTx * solPriceUSD
+    (_, i) => (i + 1) * vrfpm * minutesPerDay * magicblockVrfFeePerTx * solPriceUSD
   );
 
-  const totalAlternativeVrfCost = vrfps * secondsPerDay * days.length;
+  const totalAlternativeVrfCost = vrfpm * minutesPerDay * days.length;
 
   const maxCost = Math.max(...alternativeVrfCosts, ...magicblockVrfCosts);
   const xStep = (width - padding * 2) / (days.length - 1);
@@ -43,13 +43,13 @@ export const VRFCostSimulator = () => {
       }>
         {/* Transaction slider */}
         <label style={{ fontSize: "14px" }}>
-          VRF(s) per second: {vrfps.toLocaleString()}
+          VRF request(s) per minute: {vrfpm.toLocaleString()}
           <input
             type="range"
             min="1"
             max="100"
             step="1"
-            value={vrfps}
+            value={vrfpm}
             onChange={(e) => setVrf(Number(e.target.value))}
             style={{ width: "100%" }}
           />
