@@ -1,5 +1,5 @@
 export const VRFCostSimulator = () => {
-  const [vrfps, setVrf] = useState(10);
+  const [vrfps, setVrf] = useState(1);
 
   // Fees in SOL
   const alternativeVrfFeePerTx = 0.002; // SOL per transaction
@@ -47,7 +47,7 @@ export const VRFCostSimulator = () => {
           <input
             type="range"
             min="1"
-            max="1000"
+            max="100"
             step="1"
             value={vrfps}
             onChange={(e) => setVrf(Number(e.target.value))}
