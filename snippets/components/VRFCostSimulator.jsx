@@ -1,9 +1,11 @@
 export const VRFCostSimulator = () => {
   const [vrfpm, setVrf] = useState(5);
+  const [isER, setIsER] = useState(false);
 
   // Fees in SOL
   const alternativeVrfFeePerTx = 0.002; // SOL per transaction
-  const magicblockVrfFeePerTx = 0.0005; // SOL per transaction
+  const magicblockVrfFeePerTx = 0.0005; // SOL per transaction for VRF without ER
+  const magicblockVrfFeePerTxDiscounted = 0.0002; // SOL per transaction for VRF with ER
 
   const solPriceUSD = 200        // USD per SOL
 
@@ -17,7 +19,10 @@ export const VRFCostSimulator = () => {
     (_, i) => (i + 1) * vrfpm * minutesPerDay * alternativeVrfFeePerTx * solPriceUSD
   );
   const magicblockVrfCosts = days.map(
-    (_, i) => (i + 1) * vrfpm * minutesPerDay * magicblockVrfFeePerTx * solPriceUSD
+    (_, i) => {
+      const feePerTx = isER ? magicblockVrfFeePerTxDiscounted : magicblockVrfFeePerTx; 
+      return (i + 1) * vrfpm * minutesPerDay * feePerTx * solPriceUSD;
+    }
   );
 
   const totalAlternativeVrfCost = vrfpm * minutesPerDay * days.length;
@@ -31,6 +36,49 @@ export const VRFCostSimulator = () => {
 
   return (
     <div style={{ maxWidth: width }}>
+
+            {/* Toggle switch */}
+      <div style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <span style={{ fontSize: "14px" }}>Solana</span>
+        <label style={{
+          position: "relative",
+          display: "inline-block",
+          width: "36px",
+          height: "20px",
+          marginBottom: 0, 
+          verticalAlign: "middle"
+        }}>
+          <input 
+            type="checkbox" 
+            checked={isER} 
+            onChange={() => setIsER(!isER)}
+            style={{ opacity: 0, width: 0, height: 0 }}
+          />
+          {/* Track */}
+          <span style={{
+            position: "absolute",
+            cursor: "pointer",
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: isER ? "#2545f6" : "#2545f6",
+            transition: ".4s",
+            borderRadius: "24px",
+          }} />
+
+          {/* Knob */}
+          <span style={{
+            position: "absolute",
+            height: "18px",
+            width: "18px",
+            left: isER ? "calc(100% - 19px)" : "1px",
+            top: 1,
+            bottom: "3px",
+            backgroundColor: "white",
+            transition: ".4s",
+            borderRadius: "50%",
+          }} />
+        </label>
+        <span style={{ fontSize: "14px" }}>With ER</span>
+      </div>
 
       {/* Sliders */}
       <div style={
