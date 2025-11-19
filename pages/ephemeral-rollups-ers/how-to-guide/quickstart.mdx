@@ -13,6 +13,7 @@ import DelegateCode from "/snippets/anchor-counter-code/delegate.mdx";
 import CommitCode from "/snippets/anchor-counter-code/commit.mdx";
 import UndelegateCode from "/snippets/anchor-counter-code/undelegate.mdx";
 import TestCode from "/snippets/anchor-counter-code/test.mdx";
+import AdvancedResize from "/snippets/anchor-counter-code/advanced-resize.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 
 ---
@@ -212,6 +213,25 @@ Find the full basic counter example with Anchor framework implementation, or che
     <Endpoints />
 
     [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+</Tabs>
+
+---
+
+### Advanced Code Snippets
+
+<Tabs>
+  <Tab title="Resize PDA">
+    When resizing a delegated PDA:
+    - PDA must have enough lamports to remain rent-exempt for the new account size.
+    - If additional lamports are needed, the **payer account must be delegated** to provide the difference.
+    - PDA must be owned by the program, and the transaction must include any signer(s) required for transferring lamports.
+    - Use `system_instruction::allocate`
+
+    <AdvancedResize />
+    [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
 </Tabs>

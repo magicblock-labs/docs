@@ -12,6 +12,7 @@ import DelegateCode from "/snippets/rust-counter-code/delegate.mdx";
 import CommitCode from "/snippets/rust-counter-code/commit.mdx";
 import UndelegateCode from "/snippets/rust-counter-code/undelegate.mdx";
 import InstructionsCode from "/snippets/rust-counter-code/instructions.mdx";
+import AdvancedResize from "/snippets/rust-counter-code/advanced-resize.mdx";
 
 <div
   style={{
@@ -47,19 +48,21 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
 <Steps>
   <Step
     title={
-      <a href="#overview">Write program and add delegation instructions</a>
+      <a href="#1-write-program">
+        Write program and add delegation instructions
+      </a>
     }
   >
     Write your Solana program as you normally would.
   </Step>
-  <Step title={<a href="#delegate">Delegate PDA on Base Layer</a>}>
+  <Step title={<a href="#2-delegate">Delegate PDA on Base Layer</a>}>
     Add CPI hooks to delegate, commit and undelegate state accounts through
     Ephemeral Rollup sessions.
   </Step>
-  <Step title={<a href="#commit">Commit PDA on ER</a>}>
+  <Step title={<a href="#3-commit">Commit PDA on ER</a>}>
     Deploy your program directly on Solana using Solana CLI.
   </Step>
-  <Step title={<a href="#undelegate">Undelegate PDA on ER</a>}>
+  <Step title={<a href="#4-undelegate">Undelegate PDA on ER</a>}>
     Send transactions without modifications on-chain and off-chain that also
     comply with the SVM RPC specification.
   </Step>
@@ -105,7 +108,7 @@ If you prefer to dive straight into the code:
 ### Code Snippets
 
 <Tabs>
-  <Tab title="Overview">
+  <Tab title="1. Write Program">
 
     The program implements two main instructions:
 
@@ -133,7 +136,7 @@ If you prefer to dive straight into the code:
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title="Delegate">
+  <Tab title="2. Delegate">
     ### Delegating the Counter PDA
 
     In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which
@@ -153,7 +156,7 @@ If you prefer to dive straight into the code:
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-    <Tab title="Commit">
+    <Tab title="3. Commit">
     ### Committing while the PDA is delegated
 
     The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
@@ -181,7 +184,7 @@ If you prefer to dive straight into the code:
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title="Undelegate">
+  <Tab title="4. Undelegate">
     ### Undelegating the PDA
 
     Undelegating the PDA is done by calling the `commit_and_undelegate_accounts` as part of some instruction.
@@ -208,6 +211,25 @@ If you prefer to dive straight into the code:
 
     <UndelegateCode />
     [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+</Tabs>
+
+---
+
+### Advanced Code Snippets
+
+<Tabs>
+  <Tab title="Resize PDA">
+    When resizing a delegated PDA:
+    - PDA must have enough lamports to remain rent-exempt for the new account size.
+    - If additional lamports are needed, the **payer account must be delegated** to provide the difference.
+    - PDA must be owned by the program, and the transaction must include any signer(s) required for transferring lamports.
+    - Use `system_instruction::allocate`
+
+    <AdvancedResize />
+    [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
 </Tabs>
