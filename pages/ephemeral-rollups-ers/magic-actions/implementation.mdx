@@ -9,10 +9,9 @@ Add dependencies in `Cargo.toml`:
 
 ```toml
 [dependencies]
-anchor-lang = { version = "0.31.1", features = ["init-if-needed"] }
-ephemeral-rollups-sdk = { version = "0.3.4", features = ["anchor"] }
+anchor-lang = { version = "0.32.1", features = ["init-if-needed"] }
+ephemeral-rollups-sdk = { version = "0.4.1", features = ["anchor"] }
 ```
-
 
 ### 1) Create the call handler instruction
 
@@ -50,11 +49,10 @@ pub struct YourHandler<'info> {
 ```
 
 <Note>
-- Use `discriminator = &EXTERNAL_CALL_HANDLER_DISCRIMINATOR`
-- Use `UncheckedAccount` for committed accounts and manual deserialization
-- First two accounts are injected: `escrow`, `escrow_auth`
+  - Use `discriminator = &EXTERNAL_CALL_HANDLER_DISCRIMINATOR` - Use
+  `UncheckedAccount` for committed accounts and manual deserialization - First
+  two accounts are injected: `escrow`, `escrow_auth`
 </Note>
-
 
 ### 2) Build the commit instruction with handler
 
@@ -126,5 +124,3 @@ magic_action: MagicAction::Commit(CommitType::WithHandler {
     Delegation, Commitment & Undelegation
   </Card>
 </CardGroup>
-
-
