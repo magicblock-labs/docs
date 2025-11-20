@@ -1,37 +1,37 @@
 ---
 title: Troubleshooting
-description: Diagnose common issues with Magic Actions commits and handlers
+description: Diagnose common issues with Magic Actions
 ---
 
 ### Handler not executing
 
-- Verify `discriminator = &EXTERNAL_CALL_HANDLER_DISCRIMINATOR`
+- Verify `instruction discriminator`
 - Allocate sufficient `compute_units`
 
 ### Deserialization errors
 
-- Use `UncheckedAccount` for committed accounts in handler context
+- Use `UncheckedAccount` for committed accounts in action context
 - Manually deserialize via `try_deserialize` on borrowed data
 - Check account discriminator matches expected type
 
 ### Transaction failures
 
-- Ensure all handler accounts are listed in `ShortAccountMeta`
+- Ensure all action accounts are listed in `ShortAccountMeta`
 - Match `is_writable` flags to actual usage
-- Increase compute budget for all handlers in the commit
+- Increase compute budget for all actions in the commit
 
 ### Limitations & considerations
 
 - Handlers execute on base layer and consume base-layer fees
 - Standard Solana limits apply (compute, account locks)
-- Atomicity: any handler failure reverts the commit
-- First two handler accounts are injected (`escrow`, `escrow_auth`)
+- Atomicity: any action failure reverts the commit
+- First two action accounts are injected (`escrow`, `escrow_auth`)
 
 ### Helpful links
 
 <CardGroup cols={2}>
   <Card
-    title="ER lifecycle"
+    title="Ephemeral Rollups"
     icon="bolt"
     href="/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
     iconType="duotone"

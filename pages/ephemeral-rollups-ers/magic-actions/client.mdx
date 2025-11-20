@@ -3,65 +3,15 @@ title: Client Implementation
 description: Client-side guide to building with Magic Actions
 ---
 
-### Setup
+import Web3jsCode from "/snippets/magic-router-code/web3js.mdx";
+import KitCode from "/snippets/magic-router-code/kit.mdx";
 
-Use Magic Router to route transactions to ER and base layer.
+---
 
-```ts
-import { Connection } from "@solana/web3.js";
-import { sendMagicTransaction } from "@magicblock-labs/ephemeral-rollups-sdk";
-
-const routerConnection = new Connection(
-  "https://devnet-router.magicblock.app",
-  { wsEndpoint: "wss://devnet-router.magicblock.app" }
-);
-```
-
-### Flow
-
-1) Delegate an account to ER
-
-```ts
-const delegateTx = await program.methods
-  .delegate()
-  .accounts({ payer: wallet.publicKey, pda: yourAccountPda })
-  .transaction();
-await sendMagicTransaction(routerConnection, delegateTx, [wallet.payer]);
-```
-
-2) Execute fast transactions on ER
-
-```ts
-const executeTx = await program.methods
-  .yourEphemeralInstruction()
-  .accounts({ /* your accounts */ })
-  .transaction();
-await sendMagicTransaction(routerConnection, executeTx, [wallet.payer]);
-```
-
-3) Commit with automatic handler execution
-
-```ts
-const commitTx = await program.methods
-  .commitWithAction()
-  .accounts({ payer: wallet.publicKey /* your accounts */ })
-  .transaction();
-await sendMagicTransaction(routerConnection, commitTx, [wallet.payer]);
-```
-
-### Examples
+### Quick Access
 
 <CardGroup cols={2}>
   <Card
-    title="ER Quickstart"
-    icon="play"
-    href="/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
-    iconType="duotone"
-  >
-    End-to-end walkthrough on ER usage
-  </Card>
-
-<Card
     title="Magic Actions Example"
     icon="code"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
@@ -69,7 +19,65 @@ await sendMagicTransaction(routerConnection, commitTx, [wallet.payer]);
   >
     Explore reference implementation on GitHub
   </Card>
-    <Card
+</CardGroup>
+
+---
+
+### Setup Router Connection
+
+Use Magic Router to route and send transactions to ER and base layer.
+
+<CodeGroup>
+  <KitCode />
+  <Web3jsCode />
+</CodeGroup>
+
+### Transaction Flow
+
+1. Delegate counter to ER
+
+```ts
+const delegateTx = await program.methods
+  .delegate()
+  .accounts({
+    payer: anchor.Wallet.local().publicKey,
+    pda: pda,
+  })
+  .transaction();
+```
+
+2. Increment counter on ER in real-time
+
+```ts
+const incrementTx = await program.methods
+  .increment()
+  .accounts({
+    counter: pda,
+  })
+  .transaction();
+```
+
+3. Commit with Magic Action
+
+```ts
+const commitTx = await program.methods
+  .commitAndUpdateLeaderboard()
+  .accounts({ payer: wallet.publicKey /* your accounts */ })
+  .transaction();
+```
+
+### Examples
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart Ephemeral Rollups"
+    icon="play"
+    href="/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    End-to-end walkthrough on ER usage
+  </Card>
+  <Card
     title="Magic Router"
     icon="route"
     href="/pages/ephemeral-rollups-ers/introduction/magic-router"
@@ -78,5 +86,3 @@ await sendMagicTransaction(routerConnection, commitTx, [wallet.payer]);
     Router overview and flow
   </Card>
 </CardGroup>
-
-
