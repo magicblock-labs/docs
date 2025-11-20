@@ -214,7 +214,7 @@ export const VRFCostSimulator = () => {
 
         {/* Price */}
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ fontSize: "14px" }}>Price: ${solPriceUSD} USD/SOL</span>
+          <span style={{ fontSize: "14px" }}>Price: {solPriceUSD} USD/SOL</span>
         </div>
       </div>
 
