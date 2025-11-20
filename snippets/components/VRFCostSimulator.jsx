@@ -5,7 +5,7 @@ export const VRFCostSimulator = () => {
   // Fees in SOL
   const alternativeVrfFeePerTx = 0.002; // SOL per transaction
   const magicblockVrfFeePerTx = 0.0005; // SOL per transaction for VRF without ER
-  const magicblockVrfFeePerTxDiscounted = 0.0002; // SOL per transaction for VRF with ER
+  const magicblockVrfFeePerTxDiscounted = 0.0; // SOL per transaction for VRF with ER
 
   const solPriceUSD = 200        // USD per SOL
 
