@@ -1,0 +1,90 @@
+```typescript web3.js
+// Create Assign instruction
+const assignKeys = [
+  {
+    pubkey: accountToDelegate,
+    isSigner: true,
+    isWritable: true,
+  },
+  {
+    pubkey: SystemProgram.programId,
+    isSigner: false,
+    isWritable: false,
+  },
+];
+const discriminator = Buffer.alloc(4);
+discriminator.writeUInt32LE(1, 0); // SystemInstruction.Assign = 1
+const assignInstructionData = Buffer.concat([
+  discriminator,
+  DELEGATION_PROGRAM_ID.toBuffer(),
+]); // Concatenate discriminator + new owner pubkey
+const assignIx = new TransactionInstruction({
+  keys: assignKeys,
+  programId: SystemProgram.programId,
+  data: assignInstructionData,
+});
+
+// Create Delegate instruction
+const delegateKeys = [
+  // Initializer
+  {
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
+  },
+  // System Program
+  {
+    pubkey: SystemProgram.programId,
+    isSigner: false,
+    isWritable: false,
+  },
+  // On-Curve Account To Delegate
+  {
+    pubkey: accountToDelegate,
+    isSigner: true,
+    isWritable: true,
+  },
+  // Owner Program
+  {
+    pubkey: SystemProgram.programId,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Delegation Buffer
+  {
+    pubkey: getDelegationBufferPda(accountToDelegate, SystemProgram.programId),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Record
+  {
+    pubkey: getDelegationRecordPda(accountToDelegate),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Metadata
+  {
+    pubkey: getDelegationMetadataPda(accountToDelegate),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Program
+  {
+    pubkey: DELEGATION_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // ER Validator
+  ...remainingAccounts,
+];
+const serializedInstructionData = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]);
+const delegateIx = new TransactionInstruction({
+  keys: delegateKeys,
+  programId: DELEGATION_PROGRAM_ID,
+  data: serializedInstructionData,
+});
+
+// Create transaction message with both instructions
+const tx = new Transaction();
+tx.add(assignIx, delegateIx);
+```
