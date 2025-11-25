@@ -551,6 +551,10 @@
                                                     "type": "boolean",
                                                     "description": "Whether the account is delegated"
                                                 },
+                                                "fqdn": {
+                                                        "type": "string",
+                                                        "description": "Fully qualified domain name"
+                                                },
                                                 "delegationRecord": {
                                                     "type": "object",
                                                     "properties": {
@@ -587,8 +591,9 @@
                                     "id": 1,
                                     "result": {
                                         "isDelegated": true,
+                                        "fqdn": "https://devnet-as.magicblock.app/",
                                         "delegationRecord": {
-                                            "authority": "11111111111111111111111111111111",
+                                            "authority": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
                                             "owner": "3JnJ727jWEmPVU8qfXwtH63sCNDX7nMgsLbg8qy8aaPX",
                                             "delegationSlot": 388473478,
                                             "lamports": 15144960
