@@ -14,8 +14,7 @@ import CommitCode from "/snippets/anchor-counter-code/commit.mdx";
 import UndelegateCode from "/snippets/anchor-counter-code/undelegate.mdx";
 import TestCode from "/snippets/anchor-counter-code/test.mdx";
 import ResizeCode from "/snippets/anchor-counter-code/resize.mdx";
-import DelegateOnCurveWeb3jsCode from "/snippets/delegate-oncurve-web3js-instructions.mdx";
-import DelegateOnCurveKitCode from "/snippets/delegate-oncurve-kit-instructions.mdx";
+import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
 import MagicRouterSDK from "/snippets/magic-router-sdk.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 import MagicActionExample from "/snippets/magic-action-example.mdx";
@@ -229,17 +228,9 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
-  <Tab title="Delegate On-Curve">
-    Two instructions are required to delegate an on-curve account:
-      1. Assign System Account to Delegation Program
-      2. Delegate to Delegation Program
-  
-    <Warning>Currently, on-curve accounts cannot be undelegated.</Warning>
-    <CodeGroup>
-      <DelegateOnCurveKitCode />
-      <DelegateOnCurveWeb3jsCode />
-    </CodeGroup>
-    
+  <Tab title="On-Curve Delegation">
+
+    <OncurveDelegation />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
