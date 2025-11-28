@@ -83,17 +83,20 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
         <WriteProgramCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
-    <Tab title="2. Delegate">
+    <Tab title="2. Restrict">
+        Define account-level permissions in two steps:
+        1. Create user group
+        2. Create permissions for state accounts and user group:
+        <RestrictCode />
+        [⬆️ Back to Top](#code-snippets)
+    </Tab>
+        <Tab title="3. Delegate">
+        Enforce privacy of accounts through delegation to validator in TEE: 
         <DelegateCode />
         <DelegationInfo />
         Specify your preferred delegation config such as auto commits and specific ER validator:
         <Validators />
 
-        [⬆️ Back to Top](#code-snippets)
-    </Tab>
-    <Tab title="3. Restrict">
-        Create groups of users and define permissions for state accounts to restrict access:
-        <RestrictCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="4. Deploy">
@@ -104,11 +107,22 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="5. Authorize">
-        Request an authorization token for user to interact with TEE endpoint:
+        Set up interaction with ER RPC in TEE:
+        1. Verify integrity of TEE RPC
+        2. Request an authorization token for user to interact with TEE endpoint:
         <AuthorizeCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="6. Test">
+        Test private payments program with 7 steps:
+        1. Initialize user deposit account (also for recipient)
+        2. Deposit tokens
+        3. Set permission for deposit
+        4. Delegate deposit
+        5. Transfer privately between delegated deposits
+        6. Undelegate deposit to Solana
+        7. Withdraw deposit
+
         <TestCode />
         <Validators />
         <QuickAccessPER />
