@@ -1,20 +1,7 @@
 ```rust
-/// ... other imports
-
-use magicblock_permission_client::instructions::{
-    CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
-};
-
-/// ... other constants
-
 #[ephemeral]
 #[program]
 pub mod private_payments {
-    use anchor_spl::token::{transfer_checked, TransferChecked};
-
-    use super::*;
-
-    /// ... other instructions
 
     /// Creates a permission group and permission for a deposit account using the external permission program.
     /// Calls out to the permission program to create a group and permission for the deposit account.
@@ -52,9 +39,9 @@ pub mod private_payments {
 
         Ok(())
     }
-}
 
-/// Other context and accounts ...
+    /// ... other instructions
+}
 
 #[derive(Accounts)]
 pub struct CreatePermission<'info> {
@@ -77,4 +64,6 @@ pub struct CreatePermission<'info> {
     pub permission_program: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }
+
+/// Other context and accounts ...
 ```

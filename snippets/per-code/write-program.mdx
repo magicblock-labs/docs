@@ -1,20 +1,6 @@
 ```rust
-use anchor_lang::prelude::*;
-use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{Mint, Token, TokenAccount};
-
-/// ... other imports for delegation and privacy
-
-declare_id!("EnhkomtzKms55jXi3ijn9XsMKYpMT4BJjmbuDQmPo3YS");
-
-pub const DEPOSIT_PDA_SEED: &[u8] = b"deposit";
-pub const VAULT_PDA_SEED: &[u8] = b"vault";
-
 #[program]
 pub mod private_payments {
-    use anchor_spl::token::{transfer_checked, TransferChecked};
-
-    use super::*;
 
     /// Initializes a deposit account for a user and token mint if it does not exist.
     ///
@@ -167,7 +153,6 @@ pub struct Deposit {
 pub struct Vault {
     _dummy: u8,
 }
-
 
 /// ... Other context and accounts for delegation and privacy
 

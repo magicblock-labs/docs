@@ -23,7 +23,7 @@ Writing programs for the MagicBlock TEE is similar to writing a standard Solana 
 Group-based abstractions allow modifying permissions for sets of users in a single transaction. The permissioning state is maintained on Solana L1.
 
 ```rust
-use magicblock_permission_client::instructions::{
+use ephemeral_rollups_sdk::access_control::{
     CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
 };
 

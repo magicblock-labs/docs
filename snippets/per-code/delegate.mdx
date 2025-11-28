@@ -1,33 +1,7 @@
 ```rust
-/// ... other imports
-
-use ephemeral_rollups_sdk::anchor::{commit, delegate, ephemeral};
-use ephemeral_rollups_sdk::cpi::DelegateConfig;
-use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
-use session_keys::{SessionError, SessionToken, session_auth_or, Session};
-
-/// ... other imports for privacy
-
-declare_id!("EnhkomtzKms55jXi3ijn9XsMKYpMT4BJjmbuDQmPo3YS");
-
-pub const DEPOSIT_PDA_SEED: &[u8] = b"deposit";
-pub const VAULT_PDA_SEED: &[u8] = b"vault";
-
-/// Error code for session keys
-#[error_code]
-pub enum ErrorCode {
-    #[msg("Unauthorized")]
-    Unauthorized,
-}
-
 #[ephemeral] // This adds undelegation instruction for ER validator
 #[program]
 pub mod private_payments {
-    use anchor_spl::token::{transfer_checked, TransferChecked};
-
-    use super::*;
-
-    /// ... other instructions
 
     /// Delegates the deposit account to the ephemeral rollups delegate program.
     /// Uses the ephemeral rollups delegate CPI to delegate the deposit account.
@@ -78,7 +52,7 @@ pub mod private_payments {
         Ok(())
     }
 
-
+    /// ... other instructions
 }
 
 /// Other context and accounts ...

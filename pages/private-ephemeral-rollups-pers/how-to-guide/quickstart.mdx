@@ -9,11 +9,11 @@ import Construction from "/snippets/construction.mdx";
 import Software from "/snippets/software.mdx";
 import SolanaResources from "/snippets/solana-resources.mdx";
 
-import WriteProgramCode from "/snippets/private-transfer-code/write-program.mdx";
-import DelegateCode from "/snippets/private-transfer-code/delegate.mdx";
-import RestrictCode from "/snippets/private-transfer-code/restrict.mdx";
-import AuthorizeCode from "/snippets/private-transfer-code/authorize.mdx";
-import TestCode from "/snippets/private-transfer-code/test.mdx";
+import WriteProgramCode from "/snippets/per-code/write-program.mdx";
+import DelegateCode from "/snippets/per-code/delegate.mdx";
+import RestrictCode from "/snippets/per-code/restrict.mdx";
+import AuthorizeCode from "/snippets/per-code/authorize.mdx";
+import TestCode from "/snippets/per-code/test.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 
 import QuickAccessPER from "/snippets/quick-access-per.mdx";
@@ -62,8 +62,8 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
 ## Private Transfer Example
 
 <img
-  src="/images/gifs/private-transfer-short-2x-420w.gif"
-  alt="Private Transfer GIF"
+  src="/images/gifs/per-short-2x-420w.gif"
+  alt="Private Payments GIF"
   style={{
     width: "100%",
     maxWidth: "420px",
@@ -84,10 +84,11 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="2. Delegate">
+        <DelegateCode />
         <DelegationInfo />
         Specify your preferred delegation config such as auto commits and specific ER validator:
         <Validators />
-        <DelegateCode />
+
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="3. Restrict">
@@ -108,7 +109,9 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="6. Test">
-        <Construction />
+        <TestCode />
+        <Validators />
+        <QuickAccessPER />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
 

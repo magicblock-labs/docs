@@ -1,0 +1,154 @@
+```typescript web3js
+import {
+  DELEGATION_PROGRAM_ID,
+  PERMISSION_PROGRAM_ID,
+  permissionPdaFromAccount,
+  groupPdaFromId,
+  waitUntilPermissionActive,
+  GetCommitmentSignature,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Initialize deposit account for user (also required for receiver)
+const deposit = PublicKey.findProgramAddressSync(
+  [Buffer.from(DEPOSIT_PDA_SEED), user.toBuffer(), tokenMint.toBuffer()],
+  program.programId
+)[0];
+const initHash = await program.methods
+  .initializeDeposit()
+  .accountsPartial({
+    payer: program.provider.publicKey,
+    user,
+    deposit,
+    tokenMint,
+    tokenProgram: TOKEN_PROGRAM_ID,
+  })
+  .rpc();
+
+// Modify deposit by using a central vault for token (WIP with Token Program)
+// User deposits tokens into vault and receives deposit PDA receipt / updates
+const vault = PublicKey.findProgramAddressSync(
+  [Buffer.from(VAULT_PDA_SEED), tokenMint.toBuffer()],
+  program.programId
+)[0];
+const depositHash = await program.methods
+  .modifyBalance({ amount: tokenAmount, increase: true })
+  .accountsPartial({
+    payer: program.provider.publicKey,
+    user: wallet.publicKey,
+    vault: vault,
+    deposit: deposit,
+    userTokenAccount: getAssociatedTokenAddressSync(
+      tokenMint,
+      wallet.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    ),
+    vaultTokenAccount: getAssociatedTokenAddressSync(
+      tokenMint,
+      vault,
+      true,
+      TOKEN_PROGRAM_ID
+    ),
+    tokenMint,
+    tokenProgram: TOKEN_PROGRAM_ID,
+  })
+  .rpc();
+
+// Set permission for deposit account with required PDAs, and wait when permission is active
+const id = Keypair.generate().publicKey;
+const permission = permissionPdaFromAccount(deposit);
+const group = groupPdaFromId(id);
+const createPermissionHash = await program.methods
+  .createPermission(id)
+  .accountsPartial({
+    payer: program.provider.publicKey,
+    user,
+    deposit,
+    permission,
+    group,
+    permissionProgram: PERMISSION_PROGRAM_ID,
+  })
+  .rpc();
+await waitUntilPermissionActive(ephemeralRpcEndpoint, deposit);
+
+// Delegate deposit account to TEE validator, and enforce privacy
+const teeValidator = new PublicKey(
+  FnE6VJT5QNZdedZPnCoLsARgBwoE6DeJNjBs2H1gySXA
+);
+const delegateHash = await program.methods
+  .delegate(user, tokenMint)
+  .accountsPartial({
+    payer: program.provider.publicKey,
+    teeValidator,
+    deposit,
+  })
+  .rpc();
+
+// Transfer deposit amounts
+// User transfers tokens by updating deposit accounts (initialized destination deposit is required)
+const sourceDeposit = PublicKey.findProgramAddressSync(
+  [Buffer.from(DEPOSIT_PDA_SEED), user.toBuffer(), tokenMint.toBuffer()],
+  program.programId
+)[0];
+const destinationDeposit = PublicKey.findProgramAddressSync(
+  [Buffer.from(DEPOSIT_PDA_SEED), receiver.toBuffer(), tokenMint.toBuffer()],
+  program.programId
+)[0];
+const ephemTransferHash = await programEphemeralRpcEndpointWithAuthToken.methods
+  .transferDeposit(new BN(amount * Math.pow(10, 6)))
+  .accountsPartial({
+    sessionToken: null,
+    payer: program.provider.publicKey,
+    user: program.provider.publicKey,
+    sourceDeposit,
+    destinationDeposit,
+    tokenMint,
+  })
+  .rpc();
+
+// Undelegate deposit account, and wait for commitment on Solana
+const ephemUndelegateHash =
+  await programEphemeralRpcEndpointWithAuthToken.methods
+    .undelegate()
+    .accountsPartial({
+      sessionToken,
+      payer: sessionKp.publicKey,
+      user: wallet.publicKey,
+      deposit: senderDepositPda,
+    })
+    .rpc();
+const txBase = await GetCommitmentSignature(
+  ephemUndelegateHash,
+  ephemeralRpcEndpointWithAuthToken
+);
+
+// Withdraw tokens from central vault with deposit account
+// User claims tokens from vault by updating deposit PDA
+const vault = PublicKey.findProgramAddressSync(
+  [Buffer.from(VAULT_PDA_SEED), tokenMint.toBuffer()],
+  program.programId
+)[0];
+const withdrawHash = await program.methods
+  .modifyBalance({ amount: tokenAmount, increase: false })
+  .accountsPartial({
+    payer: program.provider.publicKey,
+    user: wallet.publicKey,
+    vault: vault,
+    deposit: deposit,
+    userTokenAccount: getAssociatedTokenAddressSync(
+      tokenMint,
+      wallet.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    ),
+    vaultTokenAccount: getAssociatedTokenAddressSync(
+      tokenMint,
+      vault,
+      true,
+      TOKEN_PROGRAM_ID
+    ),
+    tokenMint,
+    tokenProgram: TOKEN_PROGRAM_ID,
+  })
+  .rpc();
+```
