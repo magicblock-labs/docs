@@ -108,12 +108,12 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
     </Tab>
     <Tab title="5. Authorize">
         Set up interaction with ER RPC in TEE:
-        1. Verify integrity of TEE RPC with `verifyTeeRpcIntegrity`
+        1. Verify integrity of TEE RPC `verifyTeeRpcIntegrity`
 
             a) Get quote: `https://tee.magicblock.app/quote?challenge=${challenge}`
 
             b) Verify quote: `https://pccs.phala.network/tdx/certification/v4`
-        2. Request an authorization token for user to interact with TEE endpoint with `getAuthToken`:
+        2. Request an authorization token for user to interact with TEE endpoint `getAuthToken`:
 
             a) Request challenge: `https://tee.magicblock.app/auth/challenge?pubkey=${pubkey}`
 
