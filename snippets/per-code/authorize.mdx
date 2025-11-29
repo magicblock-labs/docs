@@ -8,7 +8,10 @@ import {
 const isVerified = await verifyTeeRpcIntegrity(EPHEMERAL_RPC_URL);
 
 // Get AuthToken before making request to TEE
-await getAuthToken(EPHEMERAL_RPC_URL, wallet.publicKey, (message: Uint8Array) =>
-  Promise.resolve(nacl.sign.detached(message, wallet.secretKey))
+const token = await getAuthToken(
+  EPHEMERAL_RPC_URL,
+  wallet.publicKey,
+  (message: Uint8Array) =>
+    Promise.resolve(nacl.sign.detached(message, wallet.secretKey))
 );
 ```

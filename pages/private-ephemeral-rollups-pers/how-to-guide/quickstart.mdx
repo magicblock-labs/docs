@@ -30,19 +30,19 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
   <Step title={<a href="#1-write-program">Write your program</a>}>
     Write your Solana program as you normally.
   </Step>
-  <Step title={<a href="#2-delegate">Add delegation hooks in your program</a>}>
-    Add CPI hooks to delegate, commit and undelegate state accounts through
-    Ephemeral Rollup sessions.
-  </Step>
   <Step
     title={
-      <a href="#3-restrict">
+      <a href="#2-restrict">
         Add restrictions through permission hooks in your program.
       </a>
     }
   >
     Add CPI hooks that create groups and permissions that enable restrictions
     for specific delegated accounts.
+  </Step>
+  <Step title={<a href="#3-delegate">Add delegation hooks in your program</a>}>
+    Add CPI hooks to delegate, commit and undelegate state accounts through
+    Ephemeral Rollup sessions.
   </Step>
   <Step title={<a href="#4-deploy">Deploy your program on Solana</a>}>
     Deploy your Solana program using Anchor CLI.
@@ -108,13 +108,23 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
     </Tab>
     <Tab title="5. Authorize">
         Set up interaction with ER RPC in TEE:
-        1. Verify integrity of TEE RPC
-        2. Request an authorization token for user to interact with TEE endpoint:
+        1. Verify integrity of TEE RPC with `verifyTeeRpcIntegrity`
+
+            a) Get quote: `https://tee.magicblock.app/quote?challenge=${challenge}`
+
+            b) Verify quote: `https://pccs.phala.network/tdx/certification/v4`
+        2. Request an authorization token for user to interact with TEE endpoint with `getAuthToken`:
+
+            a) Request challenge: `https://tee.magicblock.app/auth/challenge?pubkey=${pubkey}`
+
+            b) Post authorization with signature: `https://tee.magicblock.app/auth/login`
         <AuthorizeCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="6. Test">
-        Test private payments program with 7 steps:
+        Test private payments program using the authToken:
+
+        `https://tee.magicblock.app?token=${token}`
         1. Initialize user deposit account (also for recipient)
         2. Deposit tokens
         3. Set permission for deposit
