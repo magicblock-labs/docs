@@ -226,6 +226,13 @@
             ]
           },
           {
+            "group": "Cranks",
+            "pages": [
+              "pages/tools/crank/introduction",
+              "pages/tools/crank/implementation"
+            ]
+          },
+          {
             "group": "BOLT Framework",
             "pages": [
               "pages/tools/bolt/introduction",

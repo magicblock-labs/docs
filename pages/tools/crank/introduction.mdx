@@ -1,0 +1,60 @@
+---
+title: "Introduction"
+description: "Automated, time-based execution of on-chain instructions"
+---
+
+## What Are Cranks?
+
+Cranks (scheduled tasks) enable **automated, time-based execution** of on-chain instructions without requiring manual user intervention. In traditional blockchain systems, every action requires a user to sign and submit a transaction, which limits automation capabilities.
+
+With MagicBlock's Ephemeral Rollups, you can schedule tasks that execute automatically at predetermined intervals, bringing powerful automation capabilities to your Solana programs.
+
+## Key Benefits
+
+- **Automated Execution**: Programs can execute instructions at predetermined intervals without user interaction
+- **Cost Efficiency**: Reduces the need for off-chain cron jobs or monitoring services
+- **Decentralization**: Execution happens on-chain, maintaining trustless guarantees
+- **Reliability**: Scheduled tasks execute reliably within the blockchain's consensus mechanism
+
+## Use Cases
+
+- **Periodic State Updates**: Update prices, clear expired data, or refresh game state
+- **Automated Workflows**: Recurring payments, vesting schedules, or subscription renewals
+- **Game Mechanics**: Periodic rewards, time-based events, or automated game progression
+- **DeFi Operations**: Rebalancing portfolios, liquidation checks, or yield compounding
+
+<CardGroup cols={2}>
+  <Card
+    title="Implementation"
+    icon="code"
+    href="/pages/tools/crank/implementation"
+    iconType="duotone"
+  >
+    Learn how to implement cranks in your program
+  </Card>
+  <Card
+    title="Code Example"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/crank-counter"
+    iconType="duotone"
+  >
+    Check out our GitHub repository
+  </Card>
+</CardGroup>
+
+## How It Works
+
+Cranks leverage MagicBlock's Ephemeral Rollups to provide scheduled execution:
+
+1. **Initialize** your program state on Solana base layer
+2. **Delegate** accounts to Ephemeral Rollup for faster execution
+3. **Schedule** a crank task that automatically executes instructions
+4. **Execute** automatically at specified intervals
+5. **Undelegate** accounts back to Solana base layer when done
+
+The scheduling happens through Cross-Program Invocation (CPI) to MagicBlock's scheduling program, which handles the actual execution timing and reliability.
+
+<Callout type="info">
+  Cranks execute within the Ephemeral Rollup's consensus mechanism, ensuring reliable and trustless execution. For detailed implementation steps, see the <a href="/pages/tools/crank/implementation">Implementation</a> guide.
+</Callout>
+
