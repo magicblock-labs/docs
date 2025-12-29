@@ -5,7 +5,7 @@
   "description": "With MagicBlock, anything you imagine is possible. Build unstoppable games, high-speed DeFi, and Web3 apps that run like Web2.",
   "errors": {
     "404": {
-      "redirect": true
+      "redirect": false
     }
   },
   "colors": {
@@ -23,6 +23,9 @@
       "source": "/pages/get-started/*",
       "destination": "/pages/overview/products"
     }
+  ],
+  "staticPages": [
+    "/status-widget.html"
   ],
   "logo": {
     "light": "/logo/MagicBlock-Logo-Black.png",
