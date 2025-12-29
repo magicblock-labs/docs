@@ -2,10 +2,124 @@
 title: Server Status
 ---
 
-import { ServerStatus } from '/snippets/server-status.mdx';
+<div className="status-widget-container" id="status-widget-container">
+  <iframe
+    src="/public/status-widget.html"
+    className="status-widget-iframe"
+    id="status-widget-iframe"
+    title="MagicBlock Server Status"
+    loading="lazy"
+  />
+</div>
 
+<script dangerouslySetInnerHTML={{
+  __html: `
+    // Function to resize iframe
+    function resizeStatusWidget(height) {
+      const container = document.getElementById('status-widget-container');
+      const iframe = document.getElementById('status-widget-iframe');
+      if (container && iframe) {
+        const newHeight = Math.max(height + 40, 400); // Add padding
+        container.style.height = newHeight + 'px';
+        iframe.style.height = newHeight + 'px';
+        console.log('Iframe resized to:', newHeight + 'px');
+      }
+    }
 
-<ServerStatus />
-<Note>
-  Think we're down? <a href="#">Report an outage</a>
-</Note>
+    // Listen for resize messages from iframe
+    window.addEventListener('message', function(event) {
+      console.log('Message received:', event.data);
+      if (event.data && event.data.type === 'resize') {
+        resizeStatusWidget(event.data.height);
+      }
+    });
+
+    // Also try to detect iframe load and resize
+    document.addEventListener('DOMContentLoaded', function() {
+      const iframe = document.getElementById('status-widget-iframe');
+      if (iframe) {
+        iframe.addEventListener('load', function() {
+          console.log('Iframe loaded');
+          // Try to get height after a delay
+          setTimeout(() => {
+            try {
+              const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+              if (iframeDoc) {
+                const height = Math.max(
+                  iframeDoc.body.scrollHeight,
+                  iframeDoc.documentElement.scrollHeight
+                );
+                console.log('Direct height calculation:', height);
+                if (height > 100) {
+                  resizeStatusWidget(height);
+                }
+              }
+            } catch (e) {
+              console.log('Cross-origin access failed, waiting for postMessage');
+              // Fallback: set a reasonable initial height
+              setTimeout(() => resizeStatusWidget(800), 1000);
+            }
+          }, 500);
+        });
+      }
+    });
+  `
+}} />
+
+<style jsx>{`
+  .status-widget-container {
+    position: relative;
+    width: 100%;
+    height: 600px; /* Initial height, will be adjusted */
+    max-width: 100%;
+    margin: 2rem 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgb(229, 231, 235);
+    transition: all 0.3s ease;
+    min-height: 400px; /* Minimum height for loading state */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .status-widget-container {
+      border-color: rgb(55, 65, 81);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .status-widget-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .status-widget-container:hover {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .status-widget-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    display: block;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .status-widget-container {
+      margin: 1.5rem 0;
+      border-radius: 12px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .status-widget-container {
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+  }
+`}</style>
