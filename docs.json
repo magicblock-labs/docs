@@ -136,7 +136,8 @@
             "pages": [
               "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
               "pages/private-ephemeral-rollups-pers/how-to-guide/program-implementation",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/client-implementation"
+              "pages/private-ephemeral-rollups-pers/how-to-guide/client-implementation",
+              "pages/private-ephemeral-rollups-pers/how-to-guide/PER-Compliance-Framework"
             ]
           },
           {
