@@ -3,9 +3,15 @@ title: "Client Implementation"
 description: "Enable privacy in any Solana program state account through MagicBlock's ER and Trusted Execution Environment on Intel TDX."
 ---
 
-import TeeCards from "/snippets/tee-cards.mdx";
+import PerCards from "/snippets/per-cards.mdx";
 
 import QuickAccessPER from "/snippets/quick-access-per.mdx";
+
+import CreateWeb3jsCode from "/snippets/per-web3js-code/create.mdx";
+import DelegateWeb3jsCode from "/snippets/per-web3js-code/delegate.mdx";
+import UpdateWeb3jsCode from "/snippets/per-web3js-code/update.mdx";
+import UndelegateWeb3jsCode from "/snippets/per-web3js-code/commit-and-undelegate.mdx";
+import CloseWeb3jsCode from "/snippets/per-web3js-code/close.mdx";
 
 ---
 
@@ -15,62 +21,84 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
 
 ### Client Implementation
 
-Frontends interface with the Private Ephemeral Rollup (PER) using three concepts: attestation, client challenges, and access tokens.
+Frontends interface with the Private Ephemeral Rollup (PER) using two concepts: Authorization and Permissions
 
-- **Attestation**: Verify the RPC is running on secure hardware by sending a challenge and validating the returned TDX quote.
-- **Client Challenges**: Prove ownership of a public key to obtain an authorization token for permissioned state.
-- **Access**: Provide the token as a query parameter when constructing a connection to query state.
+- **Authorization**: Verify RPC integrity, request authorization token and create connection.
+- **Permissions**: Manage permissions from the client and define members with fine-grained access to permissioned accounts.
 
-### Attestation
+### Authorization
 
-The frontend performs Intel TDX quote verification to attest that the ER server runs on genuine secure hardware. This is executed via `verifyTeeRpcIntegrity`.
+1. Verify the TEE RPC server runs on genuine Intel TDX hardware using its TDX quote and Intel-issued attestation certificates
+2. Request and sign challenge to receive an authorization token
+3. Create connection by passing the authorization token inside header or as query parameter
 
-- Generate a random 32-byte challenge and encode it as base64
-- Send the challenge to the TEE RPC server to receive a TDX quote
-- Fetch collateral (certificates) via PCCS for the quote
-- Verify the quote using the DCAP QVL WASM module against the collateral and current time
+```typescript
+import {
+  verifyTeeRpcIntegrity,
+  getAuthToken,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
 
-```ts
-import { verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
+// if not using wallet:
+// import * as nacl from "tweetnacl";
 
-const isIntegrityVerified = await verifyTeeRpcIntegrity(PRIVATE_ER_URL);
+const teeUrl = "https://tee.magicblock.app";
+const teeWsUrl = "wss://tee.magicblock.app";
+
+// 1. Verify the integrity of TEE RPC
+const isVerified = await verifyTeeRpcIntegrity(teeUrl);
+
+// 2. Get AuthToken before making request to TEE
+const token = await getAuthToken(
+  teeUrl,
+  wallet.publicKey,
+  signMessage
+  // if not using wallet:
+  // (message: Uint8Array) =>
+  //  Promise.resolve(nacl.sign.detached(message, wallet.secretKey))
+);
+
+// 3. Create connection with TEE
+const connection = new web3.Connection(`${teeUrl}?token=${authToken.token}`, {
+  wsEndpoint: `${teeWsUrl}?token=${authToken.token}`,
+});
 ```
 
-### Client Challenge Flow
+### Permissions
 
-- Request a challenge from the RPC, parameterized by the wallet public key
-- Sign the received challenge using the corresponding keypair
-- Submit the signed challenge and receive an authorization token on success
+Create permissions on Solana, manage and enforce them in the Private Ephemeral Rollup through delegation:
 
-```ts
-import { getAuthToken } from "@magicblock-labs/ephemeral-rollups-sdk";
+<Tabs>
+  <Tab title="1. Create">
+    Create permission for account through CPI call to Permission Program:
+    <CreateWeb3jsCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="2. Delegate">
+    Delegate permission and permissioned account to enforce privacy:
+    <DelegateWeb3jsCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="3. Update">
+    Make permissioned account visible in PER:
+    <UpdateWeb3jsCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="4. Undelegate">
+    Commit and undelegate permissions to Solana:
+    <UndelegateWeb3jsCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="5. Close">
+    Close permission to receive deposit back:
+    <CloseWeb3jsCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+</Tabs>
 
-const { publicKey, signMessage } = useWallet();
-const token = await getAuthToken(PRIVATE_ER_URL, publicKey, signMessage);
-```
+import PerEndpoint from "/snippets/per-endpoint.mdx";
 
-### Access
+<PerEndpoint />
 
-Pass the authorization token as a query parameter when creating a connection.
+---
 
-```ts
-function useEphemeralConnection() {
-  const { authToken } = usePrivateRollupAuth();
-  const ephemeralConnection = useMemo(() => {
-    if (authToken) {
-      return new Connection(
-        `${EPHEMERAL_RPC_URL}?token=${authToken}`,
-        "confirmed"
-      );
-    }
-    return null;
-  }, [authToken]);
-
-  return { ephemeralConnection };
-}
-```
-
-import TeeEndpoint from "/snippets/tee-endpoint.mdx";
-
-<TeeEndpoint />
-<TeeCards />
+<PerCards />

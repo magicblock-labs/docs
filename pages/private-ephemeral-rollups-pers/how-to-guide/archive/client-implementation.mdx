@@ -1,3 +1,18 @@
+---
+title: "Client Implementation"
+description: "Enable privacy in any Solana program state account through MagicBlock's ER and Trusted Execution Environment on Intel TDX."
+---
+
+import PerCards from "/snippets/per-cards.mdx";
+
+import QuickAccessPER from "/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
 ### Client Implementation
 
 Frontends interface with the Private Ephemeral Rollup (PER) using three concepts: attestation, client challenges, and access tokens.
@@ -58,29 +73,4 @@ function useEphemeralConnection() {
 import PerEndpoint from "/snippets/per-endpoint.mdx";
 
 <PerEndpoint />
-<CardGroup cols={2}>
-  <Card
-    title="Authorization"
-    icon="key"
-    href="/pages/tools/tee/authorization"
-    iconType="duotone"
-  >
-    Permission groups and access
-  </Card>
-  <Card
-    title="Program Implementation"
-    icon="code"
-    href="/pages/tools/tee/program-implementation"
-    iconType="duotone"
-  >
-    Add permissions via CPI
-  </Card>
-  <Card
-    title="Privacy Use Case"
-    icon="shield-check"
-    href="/pages/get-started/use-cases/privacy"
-    iconType="duotone"
-  >
-    Build private, verifiable applications
-  </Card>
-</CardGroup>
+<PerCards />

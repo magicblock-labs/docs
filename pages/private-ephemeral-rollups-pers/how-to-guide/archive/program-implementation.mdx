@@ -1,3 +1,17 @@
+---
+title: "Program Implementation"
+description: "Enable privacy in any Solana program state account through MagicBlock's ER and Trusted Execution Environment on Intel TDX."
+---
+
+import PerCards from "/snippets/per-cards.mdx";
+import QuickAccessPER from "/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
 ### Program Implementation Flow
 
 Writing programs for the MagicBlock TEE is similar to writing a standard Solana program, with the addition of a Permission Program used to manage privacy controls.
@@ -9,7 +23,7 @@ Writing programs for the MagicBlock TEE is similar to writing a standard Solana 
 Group-based abstractions allow modifying permissions for sets of users in a single transaction. The permissioning state is maintained on Solana L1.
 
 ```rust
-use magicblock_permission_client::instructions::{
+use ephemeral_rollups_sdk::access_control::{
     CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
 };
 
@@ -77,29 +91,4 @@ import PerEndpoint from "/snippets/per-endpoint.mdx";
 
 <PerEndpoint />
 
-<CardGroup cols={2}>
-  <Card
-    title="Authorization"
-    icon="key"
-    href="/pages/tools/tee/authorization"
-    iconType="duotone"
-  >
-    Permission groups and access
-  </Card>
-  <Card
-    title="Client Implementation"
-    icon="browser"
-    href="/pages/tools/tee/client-implementation"
-    iconType="duotone"
-  >
-    Attestation, challenge, and access
-  </Card>
-  <Card
-    title="Privacy Use Case"
-    icon="shield-check"
-    href="/pages/get-started/use-cases/privacy"
-    iconType="duotone"
-  >
-    Build private, verifiable applications
-  </Card>
-</CardGroup>
+<PerCards />

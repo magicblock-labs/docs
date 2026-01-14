@@ -9,14 +9,14 @@ import Construction from "/snippets/construction.mdx";
 import Software from "/snippets/software.mdx";
 import SolanaResources from "/snippets/solana-resources.mdx";
 
-import WriteProgramCode from "/snippets/per-rps-code/write-program.mdx";
-import DelegateCode from "/snippets/per-rps-code/delegate.mdx";
-import RestrictCode from "/snippets/per-rps-code/restrict.mdx";
-import AuthorizeCode from "/snippets/per-rps-code/authorize.mdx";
+import WriteProgramCode from "/snippets/per-code/write-program.mdx";
+import DelegateCode from "/snippets/per-code/delegate.mdx";
+import RestrictCode from "/snippets/per-code/restrict.mdx";
+import AuthorizeCode from "/snippets/per-code/authorize.mdx";
+import TestCode from "/snippets/per-code/test.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 
 import QuickAccessPER from "/snippets/quick-access-per.mdx";
-import PerCards from "/snippets/per-cards.mdx";
 
 ---
 
@@ -40,8 +40,8 @@ import PerCards from "/snippets/per-cards.mdx";
     Add CPI hooks that create and manage permissions.
   </Step>
   <Step title={<a href="#3-delegate">Add delegation hooks in your program</a>}>
-    Add delegation hooks for permissions and permissioned accounts to enforce
-    restrictions.
+    Add delegation hooks to enforce restrictions of permissions and permissioned
+    accounts.
   </Step>
   <Step title={<a href="#4-deploy">Deploy your program on Solana</a>}>
     Deploy your Solana program using Anchor CLI.
@@ -58,36 +58,47 @@ import PerCards from "/snippets/per-cards.mdx";
 
 ---
 
-## Rock-Paper-Scissor Example
+{/* Temporarily Disabled */}
+{/\*
+
+## Private Transfer Example
+
+<img
+  src="/images/gifs/per-short-2x-420w.gif"
+  alt="Private Payments GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+*/}
 
 <Software />
-<Note>
-  The latest Permission Program requires SDK version
-  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk). See
-  [migration
-  guide](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103) for
-  details.
-</Note>
 
 ### Code Snippets
 
 <Tabs>
     <Tab title="1. Write program">
-        A simple rock-paper-scissor program where player can make choices and reveal the outcome:
+        A simple transfer program where tokens are tracked through deposit accounts, and locked in a vault account:
         <WriteProgramCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="2. Restrict">
         Define account-level permissions in two steps:
-        2. Create permissions with members for state accounts:
+        1. Create user group
+        2. Create permissions for state accounts and user group:
         <RestrictCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
         <Tab title="3. Delegate">
-        Enforce privacy of accounts through delegation to TEE validator, both permission and permissioned_account must be delegated. 
-        This is the list of ER validator:
-        <Validators />
+        Enforce privacy of accounts through delegation to validator in TEE: 
         <DelegateCode />
+        <DelegationInfo />
+        Specify your preferred delegation config such as auto commits and specific ER validator:
+        <Validators />
 
         [⬆️ Back to Top](#code-snippets)
     </Tab>
@@ -106,20 +117,24 @@ import PerCards from "/snippets/per-cards.mdx";
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="6. Test">
-        Test your program with the Private Ephemeral Rollup connection:
+        Test private payments program using the authToken:
 
         `https://tee.magicblock.app?token=${token}`
+        1. Initialize user deposit account (also for recipient)
+        2. Deposit tokens
+        3. Set permission for deposit
+        4. Delegate deposit
+        5. Transfer privately between delegated deposits
+        6. Undelegate deposit to Solana
+        7. Withdraw deposit
 
+        <TestCode />
         <Validators />
         <QuickAccessPER />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
 
 </Tabs>
-
----
-
-<PerCards />
 
 ---
 

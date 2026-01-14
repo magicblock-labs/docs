@@ -3,8 +3,14 @@ title: "Program Implementation"
 description: "Enable privacy in any Solana program state account through MagicBlock's ER and Trusted Execution Environment on Intel TDX."
 ---
 
-import TeeCards from "/snippets/tee-cards.mdx";
+import PerCards from "/snippets/per-cards.mdx";
 import QuickAccessPER from "/snippets/quick-access-per.mdx";
+
+import CreateRustCode from "/snippets/per-rust-code/create.mdx";
+import DelegateRustCode from "/snippets/per-rust-code/delegate.mdx";
+import UpdateRustCode from "/snippets/per-rust-code/update.mdx";
+import UndelegateRustCode from "/snippets/per-rust-code/commit-and-undelegate.mdx";
+import CloseRustCode from "/snippets/per-rust-code/close.mdx";
 
 ---
 
@@ -14,81 +20,45 @@ import QuickAccessPER from "/snippets/quick-access-per.mdx";
 
 ### Program Implementation Flow
 
-Writing programs for the MagicBlock TEE is similar to writing a standard Solana program, with the addition of a Permission Program used to manage privacy controls.
+Writing programs for the MagicBlock TEE is similar to writing a standard Solana program, with the addition of a Permission Program used to manage your access control list.
 
-- **Create a Permission Group**: Perform a CPI into the Permission Program to create a group. You can define any number of groups, each with distinct members and permissions.
-- **Create Permissions**: Add permissions to the created group. Currently, a permission implies read access, with potential future distinction between read/write.
+- **Permissions**: Manage permission for any state account. Define permission and set members with fine-grained permission flags to set their specific program, transaction and account access for permissioned accounts.
 - **Access**: Clients authenticate their identity to access permissioned ER state. If successful, an access token is issued and used for queries.
 
-Group-based abstractions allow modifying permissions for sets of users in a single transaction. The permissioning state is maintained on Solana L1.
+### Code Snippets
 
-```rust
-use ephemeral_rollups_sdk::access_control::{
-    CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
-};
+<Tabs>
+  <Tab title="1. Create">
+    Create permission for account through CPI call to Permission Program:
+    <CreateRustCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="2. Delegate">
+    Delegate permission and permissioned account to enforce privacy:
+    <DelegateRustCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="3. Update">
+    Make permissioned account visible in PER:
+    <UpdateRustCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="4. Undelegate">
+    Commit and undelegate permissions to Solana:
+    <UndelegateRustCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="5. Close">
+    Close permission to receive deposit back:
+    <CloseRustCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+</Tabs>
 
-pub fn create_permission(ctx: Context<CreatePermission>, id: Pubkey) -> Result<()> {
-    let CreatePermission {
-        payer,
-        permission,
-        permission_program,
-        group,
-        deposit,
-        user,
-        system_program,
-    } = ctx.accounts;
+import PerEndpoint from "/snippets/per-endpoint.mdx";
 
-    // [1] Create a Permission Group
-    CreateGroupCpiBuilder::new(&permission_program)
-        .group(&group)
-        .id(id)
-        .members(vec![user.key()])
-        .payer(&payer)
-        .system_program(system_program)
-        .invoke()?;
+<PerEndpoint />
 
-    // [2] Create Permissions
-    CreatePermissionCpiBuilder::new(&permission_program)
-        .permission(&permission)
-        .delegated_account(&deposit.to_account_info())
-        .group(&group)
-        .payer(&payer)
-        .system_program(system_program)
-        .invoke_signed(&[&[
-            DEPOSIT_PDA_SEED,
-            user.key().as_ref(),
-            deposit.token_mint.as_ref(),
-            &[ctx.bumps.deposit],
-        ]] )?;
+---
 
-    Ok(())
-}
-
-#[derive(Accounts)]
-pub struct CreatePermission<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-    /// CHECK: Anyone can create the permission
-    pub user: UncheckedAccount<'info>,
-    #[account(
-        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), deposit.token_mint.as_ref()],
-        bump
-    )]
-    pub deposit: Account<'info, Deposit>,
-    /// CHECK: Checked by the permission program
-    #[account(mut)]
-    pub permission: UncheckedAccount<'info>,
-    /// CHECK: Checked by the permission program
-    #[account(mut)]
-    pub group: UncheckedAccount<'info>,
-    /// CHECK: Checked by the permission program
-    pub permission_program: UncheckedAccount<'info>,
-    pub system_program: Program<'info, System>,
-}
-```
-
-import TeeEndpoint from "/snippets/tee-endpoint.mdx";
-
-<TeeEndpoint />
-
-<TeeCards />
+<PerCards />
