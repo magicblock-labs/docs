@@ -1,0 +1,41 @@
+```rust
+use ephemeral_rollups_pinocchio::types::MemberFlags;
+
+// MemberFlags provides fine-grained permission control
+// Set flags individually or combine multiple flags
+
+pub const AUTHORITY: u8 = 1 << 0;              // Member can directly modify the permission
+pub const TX_LOGS: u8 = 1 << 1;                // Member can view transaction logs
+pub const TX_BALANCES: u8 = 1 << 2;            // Member can view account balances
+pub const TX_MESSAGE: u8 = 1 << 3;             // Member can view transaction messages
+pub const ACCOUNT_SIGNATURES: u8 = 1 << 4;    // Member can view account signatures
+
+// Create and set flags
+let mut flags = MemberFlags::new();
+flags.set(MemberFlags::AUTHORITY);
+flags.set(MemberFlags::TX_LOGS);
+
+// Check if a flag is set
+if flags.has(MemberFlags::AUTHORITY) {
+    // Member can modify permissions
+}
+
+// AUTHORITY flag allows a member to:
+// - Modify permission settings
+// - Add/remove other members
+// - Update member flags
+
+// TX_LOGS flag allows a member to:
+// - View transaction execution logs
+// - Access transaction details
+
+// TX_BALANCES flag allows a member to:
+// - View account balance changes
+// - Monitor token transfers
+
+// TX_MESSAGE flag allows a member to:
+// - View transaction message data
+
+// ACCOUNT_SIGNATURES flag allows a member to:
+// - View account signatures
+```

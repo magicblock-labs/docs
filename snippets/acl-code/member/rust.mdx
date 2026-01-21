@@ -1,0 +1,31 @@
+```rust
+use ephemeral_rollups_sdk::access_control::structs::{
+    AUTHORITY_FLAG,        // Member can directly modify the permission
+    TX_LOGS_FLAG,          // Member can view transaction logs
+    TX_BALANCES_FLAG,      // Member can view account balances
+    TX_MESSAGE_FLAG,       // Member can view transaction messages
+    ACCOUNT_SIGNATURES_FLAG, // Member can view account signatures
+};
+
+// Set multiple flags by combining them with bitwise OR
+let flags = AUTHORITY_FLAG | TX_LOGS_FLAG;
+
+// AUTHORITY_FLAG allows a member to:
+// - Modify permission settings
+// - Add/remove other members
+// - Update member flags
+
+// TX_LOGS_FLAG allows a member to:
+// - View transaction execution logs
+// - Access transaction details
+
+// TX_BALANCES_FLAG allows a member to:
+// - View account balance changes
+// - Monitor token transfers
+
+// TX_MESSAGE_FLAG allows a member to:
+// - View transaction message data
+
+// ACCOUNT_SIGNATURES_FLAG allows a member to:
+// - View account signatures
+```

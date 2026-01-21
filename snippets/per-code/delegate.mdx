@@ -12,17 +12,18 @@ pub mod private_payments {
             &[DEPOSIT_PDA_SEED, user.as_ref(), token_mint.as_ref()],
             DelegateConfig {
                 validator,
-                ..DelegateConfig::default()
+                commit_frequency_ms: 0,
+
             },
         )?;
         Ok(())
     }
 
     /// Commits and undelegates the deposit account from the ephemeral rollups program.
+    ///
     /// Uses the ephemeral rollups SDK to commit and undelegate the deposit account.
-    /// Use session keys for better UX
     #[session_auth_or(
-        ctx.accounts.user.key() == ctx.accounts.source_deposit.user,
+        ctx.accounts.user.key() == ctx.accounts.deposit.user,
         ErrorCode::Unauthorized
     )]
     pub fn undelegate(ctx: Context<UndelegateDeposit>) -> Result<()> {
@@ -36,8 +37,8 @@ pub mod private_payments {
     }
 
     /// Transfers a specified amount from one user's deposit account to another's for the same token mint.
+    ///
     /// Only updates the internal accounting; does not move actual tokens.
-    /// Use session keys for better UX
     #[session_auth_or(
         ctx.accounts.user.key() == ctx.accounts.source_deposit.user,
         ErrorCode::Unauthorized
@@ -96,7 +97,6 @@ pub struct UndelegateDeposit<'info> {
     )]
     pub deposit: Account<'info, Deposit>,
 }
-
 
 /// Context for TransferDeposit for ER
 #[derive(Accounts, Session)]

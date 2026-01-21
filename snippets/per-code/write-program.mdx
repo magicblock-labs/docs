@@ -2,8 +2,9 @@
 #[program]
 pub mod private_payments {
 
+    use super::*;
+
     /// Initializes a deposit account for a user and token mint if it does not exist.
-    ///
     /// Sets up a new deposit account with zero balance for the user and token mint.
     pub fn initialize_deposit(ctx: Context<InitializeDeposit>) -> Result<()> {
         let deposit = &mut ctx.accounts.deposit;
@@ -17,7 +18,6 @@ pub mod private_payments {
     }
 
     /// Modifies the balance of a user's deposit account by transferring tokens in or out.
-    ///
     /// If `args.increase` is true, tokens are transferred from the user's token account to the deposit account.
     /// If false, tokens are transferred from the deposit account back to the user's token account.
     pub fn modify_balance(ctx: Context<ModifyDeposit>, args: ModifyDepositArgs) -> Result<()> {
@@ -95,6 +95,7 @@ pub struct ModifyDepositArgs {
     pub increase: bool,
 }
 
+
 /// Context for ModifyDeposit
 #[derive(Accounts)]
 pub struct ModifyDeposit<'info> {
@@ -136,6 +137,7 @@ pub struct ModifyDeposit<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }
+
 
 /// A deposit account for a user and token mint.
 #[account]

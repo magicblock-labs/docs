@@ -1,0 +1,27 @@
+```rust
+use ephemeral_rollups_pinocchio::types::{
+    Member,
+    MemberFlags,
+    MembersArgs,
+};
+
+// Update permission with new member flags
+// Either authority or permissioned_account must sign based on AUTHORITY_FLAG
+let mut new_flags = MemberFlags::new();
+new_flags.set(MemberFlags::TX_LOGS);
+new_flags.set(MemberFlags::TX_BALANCES);
+
+let updated_member = Member {
+    flags: new_flags,
+    pubkey: user_address,
+};
+
+let members = vec![updated_member];
+let members_args = MembersArgs {
+    members: Some(&members),
+};
+
+// Setting members to None makes the permission public (temporarily visible)
+// This is useful for transitional states during delegation/undeligation
+// Pass members_args to update permission instruction
+```

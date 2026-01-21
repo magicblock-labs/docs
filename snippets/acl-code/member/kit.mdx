@@ -1,0 +1,49 @@
+```typescript
+import {
+  AUTHORITY_FLAG,        // Member can directly modify the permission
+  TX_LOGS_FLAG,          // Member can view transaction logs
+  TX_BALANCES_FLAG,      // Member can view account balances
+  TX_MESSAGE_FLAG,       // Member can view transaction messages
+  ACCOUNT_SIGNATURES_FLAG, // Member can view account signatures
+  isAuthority,
+  canSeeTxLogs,
+  canSeeTxBalances,
+  canSeeTxMessages,
+  canSeeAccountSignatures,
+  type Member,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Set multiple flags by combining them with bitwise OR
+const flags = AUTHORITY_FLAG | TX_LOGS_FLAG;
+
+// AUTHORITY_FLAG allows a member to:
+// - Modify permission settings
+// - Add/remove other members
+// - Update member flags
+
+// TX_LOGS_FLAG allows a member to:
+// - View transaction execution logs
+// - Access transaction details
+
+// TX_BALANCES_FLAG allows a member to:
+// - View account balance changes
+// - Monitor token transfers
+
+// TX_MESSAGE_FLAG allows a member to:
+// - View transaction message data
+
+// ACCOUNT_SIGNATURES_FLAG allows a member to:
+// - View account signatures
+
+// Helper functions to check permissions
+const member: Member = {
+  flags,
+  pubkey: userAddress,
+};
+
+const canModifyPermission = isAuthority(member, userAddress);
+const canViewLogs = canSeeTxLogs(member, userAddress);
+const canViewBalances = canSeeTxBalances(member, userAddress);
+const canViewMessages = canSeeTxMessages(member, userAddress);
+const canViewSignatures = canSeeAccountSignatures(member, userAddress);
+```

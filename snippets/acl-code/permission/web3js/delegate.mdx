@@ -1,0 +1,21 @@
+```typescript
+import {
+  PERMISSION_PROGRAM_ID,
+  createDelegatePermissionInstruction,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+
+// Delegate the permission to enable low-latency Ephemeral Rollup execution
+// Either authority (with AUTHORITY_FLAG) or permissioned_account can authorize
+const delegatePermissionIx = createDelegatePermissionInstruction({
+  payer: payer.publicKey,  // Pays for account creation
+  authority: [payer.publicKey, true],  // Authority signer (has AUTHORITY_FLAG)
+  permissionedAccount: [permissionedAccount.publicKey, false],  // or permissioned_account can sign
+  ownerProgram: PERMISSION_PROGRAM_ID,
+  validator,  // Validator that will execute the delegated state
+});
+
+const tx = new Transaction().add(delegatePermissionIx);
+const txSig = await sendAndConfirmTransaction(connection, tx, [payer]);
+console.log("TX:", txSig);
+```
