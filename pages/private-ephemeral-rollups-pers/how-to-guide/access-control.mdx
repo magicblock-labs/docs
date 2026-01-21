@@ -83,13 +83,13 @@ The typical lifecycle of a permissioned account:
   <Step title={<a href="#1-create">Create Permission</a>}>
     Initialize a new permission account with initial members and their flags.
   </Step>
-  <Step title={<a href="#2-update">Update Permission</a>}>
-    Add, remove, or modify member permissions as needed. Updates can be made in
-    real-time on Private Ephemeral Rollup.
-  </Step>
-  <Step title={<a href="#3-delegate">Delegate Permission</a>}>
+  <Step title={<a href="#2-delegate">Delegate Permission</a>}>
     Delegate the permission to Private Ephemeral Rollup to enable enforcement
     and real-time access control.
+  </Step>
+  <Step title={<a href="#3-update">Update Permission</a>}>
+    Add, remove, or modify member permissions as needed. Updates can be made in
+    real-time on Private Ephemeral Rollup.
   </Step>
   <Step title={<a href="#4-request">Make Request</a>}>
     Before making requests, verify TEE RPC integrity and obtain an authorization
@@ -134,40 +134,11 @@ The typical lifecycle of a permissioned account:
     - Set up authority members and their permissions
     - Define who can view transaction details
 
-    [⬆️ Back to Top](#permission-operations)
+    [⬆️ Back to Top](#permission-lifecycle)
 
   </Tab>
 
-  <Tab title="2. Update">
-    Modify existing members or their flags in a permission account.
-
-    <Tabs>
-      <Tab title="Rust SDK">
-        <UpdatePermissionRust />
-      </Tab>
-      <Tab title="Pinocchio">
-        <UpdatePermissionPinocchio />
-      </Tab>
-      <Tab title="Web3.js">
-        <UpdatePermissionWeb3js />
-      </Tab>
-      <Tab title="Kit">
-        <UpdatePermissionKit />
-      </Tab>
-    </Tabs>
-
-    **Use Cases:**
-
-    - Add new members to a permission group
-    - Revoke permissions by removing members
-    - Change member flags to grant/restrict access
-    - Set members to `None` to make account temporarily visible
-
-    [⬆️ Back to Top](#permission-operations)
-
-  </Tab>
-
-  <Tab title="3. Delegate">
+  <Tab title="2. Delegate">
     Delegate a permissioned account to enable low-latency Private Ephemeral Rollup execution.
 
     <Tabs>
@@ -198,7 +169,36 @@ The typical lifecycle of a permissioned account:
     - Commit frequency determines how often state syncs to Solana
     - **Once delegated to Private Ephemeral Rollup, the permission is enforced** - only members with appropriate flags can access or modify the account state
 
-    [⬆️ Back to Top](#permission-operations)
+    [⬆️ Back to Top](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="3. Update">
+    Modify existing members or their flags in a permission account.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <UpdatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdatePermissionPinocchio />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdatePermissionWeb3js />
+      </Tab>
+      <Tab title="Kit">
+        <UpdatePermissionKit />
+      </Tab>
+    </Tabs>
+
+    **Use Cases:**
+
+    - Add new members to a permission group
+    - Revoke permissions by removing members
+    - Change member flags to grant/restrict access
+    - Set members to `None` to make account temporarily visible
+
+    [⬆️ Back to Top](#permission-lifecycle)
 
   </Tab>
 
@@ -226,7 +226,7 @@ The typical lifecycle of a permissioned account:
     - Permissions can be updated dynamically during execution
     - Updates take effect immediately on the Private Ephemeral Rollup
 
-    [⬆️ Back to Top](#permission-operations)
+    [⬆️ Back to Top](#permission-lifecycle)
 
   </Tab>
 
@@ -254,7 +254,7 @@ The typical lifecycle of a permissioned account:
     - Finalize all pending state changes
     - Prepare account for closing or resuming normal operations
 
-    [⬆️ Back to Top](#permission-operations)
+    [⬆️ Back to Top](#permission-lifecycle)
 
   </Tab>
 
@@ -288,7 +288,7 @@ The typical lifecycle of a permissioned account:
     - If delegated, call `commit_and_undelegate` before closing
     - Lamports are returned to the payer
 
-    [⬆️ Back to Top](#permission-operations)
+    [⬆️ Back to Top](#permission-lifecycle)
 
   </Tab>
 </Tabs>
