@@ -91,6 +91,7 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
   <Step title={<a href="#2-delegate">Delegate Permission</a>}>
     Delegate the permission to Private Ephemeral Rollup to enable enforcement
     and real-time access control.
+    <Validators />
   </Step>
   <Step title={<a href="#3-update">Update Permission</a>}>
     Add, remove, or modify member permissions as needed. Updates can be made in
@@ -118,7 +119,7 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
   <Tab title="1. Create">
     Once you've created your program, you can add permission and delegation hooks to control access to your accounts. For example, see [Quickstart](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart).
     
-    Create a new permission account with initial members and their flags.
+    Create a new permission account with initial members and their flags via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`.
 
     <Tabs>
       <Tab title="Rust SDK">
@@ -147,7 +148,7 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
   </Tab>
 
   <Tab title="2. Delegate">
-    Delegate a permissioned account to enable low-latency Private Ephemeral Rollup execution.
+    Delegate a permissioned account to enable low-latency Private Ephemeral Rollup execution via MagicBlock's Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`.
 
     <Validators />
 
@@ -184,7 +185,7 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
   </Tab>
 
   <Tab title="3. Update">
-    Modify existing members or their flags in a permission account.
+    Modify existing members or their flags in a permission account via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`.
 
     <Tabs>
       <Tab title="Rust SDK">
@@ -250,7 +251,7 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
   </Tab>
 
   <Tab title="5. Commit & Undelegate">
-    Sync the final state to Solana and return the account to Base Layer control.
+    The latest permission state on Private Ephemeral Rollup enforces access control. For closing permission account, update permission members before undelegating permission to Solana.
 
     <Tabs>
       <Tab title="Rust SDK">
@@ -267,18 +268,12 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
       </Tab>
     </Tabs>
 
-    **Use Cases:**
-
-    - End an ER session and return control to Base Layer
-    - Finalize all pending state changes
-    - Prepare account for closing or resuming normal operations
-
     [⬆️ Back to Top](#permission-lifecycle)
 
   </Tab>
 
   <Tab title="6. Close">
-    Close a permissioned account and reclaim its lamports.
+    Close a permissioned account and reclaim its lamports on Solana.
 
     <Tabs>
       <Tab title="Rust SDK">
@@ -299,7 +294,6 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
 
     - Clean up unused permission accounts
     - Reclaim SOL from closed accounts
-    - Remove access control when no longer needed
 
     **Important:**
 

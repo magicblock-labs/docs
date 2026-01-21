@@ -26,6 +26,8 @@ import PerCards from "/snippets/per-cards.mdx";
 
 ## Step-By-Step Guide
 
+Build your program and upgrade it with permission and delegation hooks that utilize MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
+
 <Steps>
   <Step title={<a href="#1-write-program">Write your program</a>}>
     Write your Solana program as you normally.
@@ -37,11 +39,13 @@ import PerCards from "/snippets/per-cards.mdx";
       </a>
     }
   >
-    Add CPI hooks that create and manage permissions.
+    Add permission hooks that create and manage access control, [see
+    details](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control).
   </Step>
   <Step title={<a href="#3-delegate">Add delegation hooks in your program</a>}>
     Add delegation hooks for permissions and permissioned accounts to enforce
     restrictions.
+    <Validators />
   </Step>
   <Step title={<a href="#4-deploy">Deploy your program on Solana</a>}>
     Deploy your Solana program using Anchor CLI.
@@ -78,13 +82,13 @@ import PerCards from "/snippets/per-cards.mdx";
         [⬆️ Back to Top](#code-snippets)
     </Tab>
     <Tab title="2. Restrict">
-        Create and update account-level permissions with members through permission program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`:
+        Create and update account-level permissions with members through MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`, [see
+    details](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control):
         <RestrictCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
         <Tab title="3. Delegate">
-        Enforce privacy of accounts through delegation to TEE validator, both permission and permissioned_account must be delegated. 
-        This is the list of ER validator:
+        Enforce privacy of accounts through delegation to TEE validator via MagicBlock's Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`, both permission and permissioned_account must be delegated. 
         <Validators />
         <DelegateCode />
 
