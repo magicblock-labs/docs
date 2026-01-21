@@ -32,6 +32,9 @@ import MemberFlagsWeb3js from "/snippets/acl-code/member/web3js.mdx";
 import MemberFlagsKit from "/snippets/acl-code/member/kit.mdx";
 import MemberFlagsPinocchio from "/snippets/acl-code/member/pinocchio.mdx";
 
+import AuthorizationWeb3js from "/snippets/acl-code/authorization/web3js.mdx";
+import AuthorizationKit from "/snippets/acl-code/authorization/kit.mdx";
+
 import PerCards from "/snippets/per-cards.mdx";
 import AclCards from "/snippets/acl-cards.mdx";
 import PerEndpoint from "/snippets/per-endpoint.mdx";
@@ -44,7 +47,7 @@ import PerEndpoint from "/snippets/per-endpoint.mdx";
 
 ## Overview
 
-Access control in Private Ephemeral Rollups enables fine-grained permission over permissioned accounts. Each permission account maintains a list of members with specific flags that determine what actions they can perform.
+Private Ephemeral Rollups are [Ephemeral Rollups](/pages/ephemeral-rollups-ers/introduction/why) that enable fine-grained permission over permissioned accounts in a [Trusted Execution Environment](/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy). Each permission account maintains a list of members with specific flags that determine what actions they can perform.
 
 ### Key Concepts
 
@@ -112,6 +115,8 @@ The typical lifecycle of a permissioned account:
 
 <Tabs>
   <Tab title="1. Create">
+    Once you've created your program, you can add permission and delegation hooks to control access to your accounts. For example, see [Quickstart](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart).
+    
     Create a new permission account with initial members and their flags.
 
     <Tabs>
@@ -121,11 +126,11 @@ The typical lifecycle of a permissioned account:
       <Tab title="Pinocchio">
         <CreatePermissionPinocchio />
       </Tab>
-      <Tab title="Web3.js">
-        <CreatePermissionWeb3js />
-      </Tab>
       <Tab title="Kit">
         <CreatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreatePermissionWeb3js />
       </Tab>
     </Tabs>
 
@@ -134,6 +139,7 @@ The typical lifecycle of a permissioned account:
     - Initialize access control for a new delegated account
     - Set up authority members and their permissions
     - Define who can view transaction details
+
 
     [⬆️ Back to Top](#permission-lifecycle)
 
@@ -149,11 +155,11 @@ The typical lifecycle of a permissioned account:
       <Tab title="Pinocchio">
         <DelegatePermissionPinocchio />
       </Tab>
-      <Tab title="Web3.js">
-        <DelegatePermissionWeb3js />
-      </Tab>
       <Tab title="Kit">
         <DelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <DelegatePermissionWeb3js />
       </Tab>
     </Tabs>
 
@@ -184,11 +190,11 @@ The typical lifecycle of a permissioned account:
       <Tab title="Pinocchio">
         <UpdatePermissionPinocchio />
       </Tab>
-      <Tab title="Web3.js">
-        <UpdatePermissionWeb3js />
-      </Tab>
       <Tab title="Kit">
         <UpdatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdatePermissionWeb3js />
       </Tab>
     </Tabs>
 
@@ -205,6 +211,7 @@ The typical lifecycle of a permissioned account:
 
   <Tab title="4. Request">
     When making requests to Private Ephemeral Rollup, you must first establish authorization:
+
     <PerEndpoint />
 
     **Authorization Steps:**
@@ -213,7 +220,14 @@ The typical lifecycle of a permissioned account:
     2. **Request Authorization Token**: Sign a challenge message to receive an authorization token
     3. **Create Connection**: Pass the authorization token inside header or as query parameter
 
-    For detailed implementation, see [Client Implementation](/pages/private-ephemeral-rollups-pers/how-to-guide/client-implementation).
+    <Tabs>
+      <Tab title="Kit">
+        <AuthorizationKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <AuthorizationWeb3js />
+      </Tab>
+    </Tabs>
 
     **Account Visibility:**
 
@@ -242,11 +256,11 @@ The typical lifecycle of a permissioned account:
       <Tab title="Pinocchio">
         <CommitAndUndelegatePermissionPinocchio />
       </Tab>
-      <Tab title="Web3.js">
-        <CommitAndUndelegatePermissionWeb3js />
-      </Tab>
       <Tab title="Kit">
         <CommitAndUndelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CommitAndUndelegatePermissionWeb3js />
       </Tab>
     </Tabs>
 
@@ -270,11 +284,11 @@ The typical lifecycle of a permissioned account:
       <Tab title="Pinocchio">
         <ClosePermissionPinocchio />
       </Tab>
-      <Tab title="Web3.js">
-        <ClosePermissionWeb3js />
-      </Tab>
       <Tab title="Kit">
         <ClosePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <ClosePermissionWeb3js />
       </Tab>
     </Tabs>
 

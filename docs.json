@@ -135,17 +135,15 @@
             "group": "How-to-Guide",
             "pages": [
               "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/access-control",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/program-implementation",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/client-implementation",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/PER-Compliance-Framework"
+              "pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
             ]
           },
           {
             "group": "Reference Material",
             "pages": [
               "pages/private-ephemeral-rollups-pers/introduction/onchain-privacy",
-              "pages/private-ephemeral-rollups-pers/introduction/authorization"
+              "pages/private-ephemeral-rollups-pers/introduction/authorization",
+              "pages/private-ephemeral-rollups-pers/introduction/compliance-framework"
             ]
           }
 
