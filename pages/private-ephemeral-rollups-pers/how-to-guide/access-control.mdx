@@ -38,6 +38,7 @@ import AuthorizationKit from "/snippets/acl-code/authorization/kit.mdx";
 import PerCards from "/snippets/per-cards.mdx";
 import AclCards from "/snippets/acl-cards.mdx";
 import PerEndpoint from "/snippets/per-endpoint.mdx";
+import Validators from "/snippets/validators.mdx";
 
 ---
 
@@ -81,7 +82,7 @@ Member flags define fine-grained permissions for each member. Flags can be combi
 
 ## Permission Lifecycle
 
-The typical lifecycle of a permissioned account:
+The typical lifecycle of a permissioned account requires interaction with MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
 
 <Steps>
   <Step title={<a href="#1-create">Create Permission</a>}>
@@ -147,6 +148,8 @@ The typical lifecycle of a permissioned account:
 
   <Tab title="2. Delegate">
     Delegate a permissioned account to enable low-latency Private Ephemeral Rollup execution.
+
+    <Validators />
 
     <Tabs>
       <Tab title="Rust SDK">
