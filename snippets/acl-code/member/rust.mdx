@@ -1,31 +1,27 @@
 ```rust
 use ephemeral_rollups_sdk::access_control::structs::{
-    AUTHORITY_FLAG,        // Member can directly modify the permission
-    TX_LOGS_FLAG,          // Member can view transaction logs
-    TX_BALANCES_FLAG,      // Member can view account balances
-    TX_MESSAGE_FLAG,       // Member can view transaction messages
-    ACCOUNT_SIGNATURES_FLAG, // Member can view account signatures
+    Member,
+    AUTHORITY_FLAG,
+    TX_LOGS_FLAG,
+    TX_BALANCES_FLAG,
+    TX_MESSAGE_FLAG,
+    ACCOUNT_SIGNATURES_FLAG,
 };
 
-// Set multiple flags by combining them with bitwise OR
+// Set flags by combining them with bitwise OR
 let flags = AUTHORITY_FLAG | TX_LOGS_FLAG;
 
-// AUTHORITY_FLAG allows a member to:
-// - Modify permission settings
-// - Add/remove other members
-// - Update member flags
+// Create a member with combined flags
+let mut member = Member {
+    flags,
+    pubkey: user_pubkey,
+};
 
-// TX_LOGS_FLAG allows a member to:
-// - View transaction execution logs
-// - Access transaction details
+// Check if member has a specific flag using bitwise AND
+let is_authority = (member.flags & AUTHORITY_FLAG) != 0;
+let can_see_logs = (member.flags & TX_LOGS_FLAG) != 0;
 
-// TX_BALANCES_FLAG allows a member to:
-// - View account balance changes
-// - Monitor token transfers
-
-// TX_MESSAGE_FLAG allows a member to:
-// - View transaction message data
-
-// ACCOUNT_SIGNATURES_FLAG allows a member to:
-// - View account signatures
+// Use helper methods to set/remove flags
+member.set_flags(TX_BALANCES_FLAG); // Add a flag
+member.remove_flags(TX_LOGS_FLAG);  // Remove a flag
 ```

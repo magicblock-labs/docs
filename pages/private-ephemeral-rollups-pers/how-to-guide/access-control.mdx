@@ -63,6 +63,14 @@ Private Ephemeral Rollups are [Ephemeral Rollups](/pages/ephemeral-rollups-ers/i
 
 Member flags define fine-grained permissions for each member. Flags can be combined using bitwise OR to grant multiple permissions.
 
+**Flag Descriptions:**
+
+- **AUTHORITY**: Allows a member to update and delegate permission settings, add/remove other members, and update member flags.
+- **TX_LOGS**: Allows a member to view transaction execution logs.
+- **TX_BALANCES**: Allows a member to view account balance changes.
+- **TX_MESSAGE**: Allows a member to view transaction message data.
+- **ACCOUNT_SIGNATURES**: Allows a member to view account signatures
+
 <Tabs>
   <Tab title="Rust SDK">
     <MemberFlagsRust />
@@ -77,7 +85,6 @@ Member flags define fine-grained permissions for each member. Flags can be combi
     <MemberFlagsKit />
   </Tab>
 </Tabs>
-
 ---
 
 ## Permission Lifecycle
