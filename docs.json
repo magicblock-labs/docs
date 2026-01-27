@@ -54,6 +54,13 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "API Reference",
+        "openapi": [
+          "openapi.json",
+          "privacy-openapi.json"
+        ]
+      },
+      {
         "tab": "Overview",
         "pages" : [
           "pages/overview/products",
@@ -117,6 +124,7 @@
           {
             "group": "API",
             "pages": [
+              "api-reference/er-api/introduction",
               "api-reference/er-api/getRoutes",
               "api-reference/er-api/getIdentity",
               "api-reference/er-api/getBlockhashForAccounts",
@@ -135,7 +143,8 @@
             "group": "How-to-Guide",
             "pages": [
               "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
+              "pages/private-ephemeral-rollups-pers/how-to-guide/access-control",
+              "pages/private-ephemeral-rollups-pers/how-to-guide/private-spl-token-api"
             ]
           },
           {
@@ -145,8 +154,21 @@
               "pages/private-ephemeral-rollups-pers/introduction/authorization",
               "pages/private-ephemeral-rollups-pers/introduction/compliance-framework"
             ]
+          },
+          {
+            "group": "Private SPL API",
+            "pages": [
+              "api-reference/per-spl-api/introduction",
+              "api-reference/per-spl-api/root",
+              "api-reference/per-spl-api/get-config",
+              "api-reference/per-spl-api/initialize-ephemeral-ata",
+              "api-reference/per-spl-api/initialize-global-vault",
+              "api-reference/per-spl-api/deposit-spl-tokens",
+              "api-reference/per-spl-api/withdraw-spl-tokens",
+              "api-reference/per-spl-api/delegate-ephemeral-ata",
+              "api-reference/per-spl-api/undelegate-ephemeral-ata"
+            ]
           }
-
         ]
       },
       {

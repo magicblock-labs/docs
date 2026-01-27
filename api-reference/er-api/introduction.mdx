@@ -1,0 +1,41 @@
+---
+title: "Introduction"
+description: "Ephemeral Rollup API Documentation"
+---
+
+## Overview
+
+The Ephemeral Rollup (ER) API provides core functionality for interacting with MagicBlock's ephemeral rollup infrastructure. This API enables querying routes, identity information, account data, delegation status, and transaction signatures.
+
+**Base URL:** `https://api.magicblock.app`
+
+**API Version:** 1.0
+
+## Main Operations
+
+### Network Information
+- [**Get Routes**](/api-reference/er-api/getRoutes) - Query available routing information
+- [**Get Identity**](/api-reference/er-api/getIdentity) - Retrieve identity information
+
+### Account Operations
+- [**Get Account Info**](/api-reference/er-api/getAccountInfo) - Fetch account information
+- [**Get Blockhash For Accounts**](/api-reference/er-api/getBlockhashForAccounts) - Get blockhash for specific accounts
+
+### Status & Delegation
+- [**Get Signature Statuses**](/api-reference/er-api/getSignatureStatuses) - Check transaction signature statuses
+- [**Get Delegation Status**](/api-reference/er-api/getDelegationStatus) - Query delegation information
+- [**Get Permission**](/api-reference/er-api/getPermission) - Retrieve permission details
+
+## Key Features
+
+- **Fast Route Query** - Efficiently determine routing paths for transactions
+- **Account State** - Access current account information and balances
+- **Transaction Tracking** - Monitor transaction status and confirmation
+- **Delegation Management** - Query delegation relationships and permissions
+
+## Use Cases
+
+- Retrieve account balances and state
+- Check transaction confirmation status
+- Query route information for transaction routing
+- Verify delegation and permission configurations
