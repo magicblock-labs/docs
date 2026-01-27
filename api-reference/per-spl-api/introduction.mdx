@@ -27,7 +27,9 @@ The Private Ephemeral SPL Token API allows you to build transactions for the Mag
 
 ## Response Format
 
-All successful responses return a transaction object with the following structure:
+### Transaction Responses (POST endpoints)
+
+All successful POST responses return a transaction object with the following structure:
 
 ```json
 {
@@ -35,3 +37,7 @@ All successful responses return a transaction object with the following structur
   "message": "Transaction created successfully"
 }
 ```
+
+### Status Responses (GET endpoints)
+
+GET endpoints return configuration and status information specific to each endpoint.

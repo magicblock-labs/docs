@@ -21,7 +21,7 @@
                 "operationId": "root__get",
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "Get health status",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -61,7 +61,7 @@
                 "operationId": "get_config_config_get",
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "Get API configuration settings",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1015,8 +1015,7 @@
                 },
                 "additionalProperties": false,
                 "type": "object",
-                "title": "Settings",
-                "description": "API configuration settings."
+                "title": "Settings"
             },
             "TransactionResponse": {
                 "properties": {
