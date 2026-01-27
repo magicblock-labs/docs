@@ -149,7 +149,7 @@
             ]
           },
           {
-            "group": "Private SPL API",
+            "group": "Private SPL API (Alpha)",
             "pages": [
               "api-reference/per-spl-api/introduction",
               "api-reference/per-spl-api/root",
