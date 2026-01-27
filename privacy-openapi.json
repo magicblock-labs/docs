@@ -21,7 +21,7 @@
                 "operationId": "root__get",
                 "responses": {
                     "200": {
-                        "description": "Get health status",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -61,7 +61,7 @@
                 "operationId": "get_config_config_get",
                 "responses": {
                     "200": {
-                        "description": "Get API configuration settings",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -92,7 +92,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -133,7 +133,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -174,7 +174,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -215,7 +215,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -256,7 +256,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -297,7 +297,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -338,7 +338,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -379,7 +379,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -420,7 +420,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -461,7 +461,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
