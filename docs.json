@@ -20,7 +20,7 @@
   "favicon": "/logo/favicon.png",
   "redirects": [
     {
-      "source": "/*",
+      "source": "/pages/get-started/introduction/why-magicblock",
       "destination": "/pages/overview/products"
     }
   ],
