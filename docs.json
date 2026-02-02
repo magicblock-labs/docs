@@ -160,7 +160,7 @@
               "api-reference/per-spl-api/delegate-ephemeral-ata-permission",
               "api-reference/per-spl-api/deposit-spl-tokens",
               "api-reference/per-spl-api/delegate-ephemeral-ata",
-              "api-reference/per-spl-api/transfer-ephemeral-ata",
+              "api-reference/per-spl-api/checked-transfer",
               "api-reference/per-spl-api/undelegate-ephemeral-ata",
               "api-reference/per-spl-api/withdraw-spl-tokens",
               "api-reference/per-spl-api/reset-ephemeral-ata-permission",

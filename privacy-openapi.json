@@ -319,18 +319,18 @@
                 }
             }
         },
-        "/tx/transfer-ephemeral-ata": {
+        "/tx/checked-transfer": {
             "post": {
                 "tags": [
                     "Transactions"
                 ],
-                "summary": "Transfer Ephemeral ATA",
-                "operationId": "transfer_ephemeral_ata_tx_transfer_ephemeral_ata_post",
+                "summary": "Checked Transfer for SPL and Ephemeral ATA",
+                "operationId": "checked_transfer_tx_checked_transfer_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/TransferEphemeralAtaRequest"
+                                "$ref": "#/components/schemas/CheckedTransferRequest"
                             }
                         }
                     },
