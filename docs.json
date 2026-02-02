@@ -20,7 +20,7 @@
   "favicon": "/logo/favicon.png",
   "redirects": [
     {
-      "source": "/:slug*",
+      "source": "/*",
       "destination": "/pages/overview/products"
     }
   ],
