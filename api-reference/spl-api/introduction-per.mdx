@@ -7,8 +7,6 @@ description: "Private Ephemeral SPL Token API Documentation"
 
 The Private Ephemeral SPL Token API allows you to build transactions with SPL tokens on MagicBlock's Ephemeral Rollup. This API provides endpoints to manage ephemeral token accounts, deposits, withdrawals, and delegation operations.
 
-## Main Operations
-
 ### Health & Configuration
 
 - [**Root**](/api-reference/spl-api/root) - Check API health
@@ -35,6 +33,56 @@ The Private Ephemeral SPL Token API allows you to build transactions with SPL to
 - [**Delegate Ephemeral ATA Permission**](/api-reference/spl-api/delegate-ephemeral-ata-permission) - Delegate an ephemeral ATA's permission to a Delegation Program to enforce access control
 - [**Reset Ephemeral ATA Permission**](/api-reference/spl-api/reset-ephemeral-ata-permission) - Reset permission flags on an ephemeral ATA
 - [**Undelegate Ephemeral ATA Permission**](/api-reference/spl-api/undelegate-ephemeral-ata-permission) - Undelegate an ephemeral ATA's permission before closing account
+
+## Private SPL Token Flow
+
+The typical flow for private token transfers involves the following steps:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ Step 1: Initialize Infrastructure (if not exists)                   │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Initialize Global Vault for token mint                            │
+│ • Initialize Global Vault ATA                                       │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ Step 2: Initialize User Accounts (if not exists)                    │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Initialize Sender ATA                                             │
+│ • Initialize Receiver ATA                                           │
+│ • Initialize Sender Ephemeral ATA                                   │
+│ • Initialize Receiver Ephemeral ATA                                 │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ Step 3: Setup Permissions                                           │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Create Ephemeral ATA Permission accounts                          │
+│ • Delegate Ephemeral ATA Permissions to Delegation Program          │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ Step 4: Deposit & Delegate                                          │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Deposit SPL tokens to Global Vault                                │
+│ • Delegate Sender and Receiver Ephemeral ATA                        │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ Step 5: Private Transfer                                            │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Transfer tokens between Ephemeral ATAs (Sender → Receiver)        │
+│   using checked transfer with SPL Token Progra                      │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ Step 6: Undelegate & Withdraw                                       │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Undelegate Ephemeral ATA                                          │
+│ • Withdraw SPL tokens from Ephemeral ATA                            │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ## Response Format
 
