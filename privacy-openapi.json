@@ -114,6 +114,47 @@
                 }
             }
         },
+        "/tx/initialize-ata": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Initialize ATA",
+                "operationId": "initialize_ata_tx_initialize_ata_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InitializeAtaRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/tx/initialize-ephemeral-ata": {
             "post": {
                 "tags": [
@@ -820,6 +861,18 @@
                         "type": "string",
                         "title": "Vault",
                         "description": "Global vault PDA"
+                    },
+                    "token_program": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Token Program",
+                        "description": "Token program ID override (defaults to SPL Token)"
                     }
                 },
                 "type": "object",
@@ -900,7 +953,7 @@
                     "ephemeral_ata_bump"
                 ],
                 "title": "InitializeEphemeralAtaRequest",
-                "description": "Initialize an Ephemeral ATA for a user-mint pair."
+                "description": "Initialize an Ephemeral ATA for a user-mint pair with ephemeral SPL Token Program."
             },
             "InitializeGlobalVaultRequest": {
                 "properties": {
@@ -948,6 +1001,63 @@
                 ],
                 "title": "InitializeGlobalVaultRequest",
                 "description": "Initialize a Global Vault for a specific mint."
+            },
+            "InitializeAtaRequest": {
+                "properties": {
+                    "cluster_url": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Cluster Url",
+                        "description": "Solana cluster URL override"
+                    },
+                    "payer": {
+                        "type": "string",
+                        "title": "Payer",
+                        "description": "Payer pubkey (signer)"
+                    },
+                    "user": {
+                        "type": "string",
+                        "title": "User",
+                        "description": "Owner of the ATA"
+                    },
+                    "mint": {
+                        "type": "string",
+                        "title": "Mint",
+                        "description": "SPL token mint"
+                    },
+                    "ata": {
+                        "type": "string",
+                        "title": "ATA",
+                        "description": "Associated Token Account address"
+                    },
+                    "token_program": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Token Program",
+                        "description": "Token program ID override (defaults to SPL Token)"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "payer",
+                    "user",
+                    "mint",
+                    "ata"
+                ],
+                "title": "InitializeAtaRequest",
+                "description": "Initialize an Associated Token Account for a user-mint pair with SPL Token Program."
             },
             "ResetEphemeralAtaPermissionRequest": {
                 "properties": {
@@ -1193,7 +1303,7 @@
                 "title": "UndelegateEphemeralAtaRequest",
                 "description": "Undelegate an ephemeral ATA from a Delegation Program."
             },
-            "TransferEphemeralAtaRequest": {
+            "CheckedTransferRequest": {
                 "properties": {
                     "cluster_url": {
                         "anyOf": [
@@ -1239,6 +1349,18 @@
                         "minimum": 0.0,
                         "title": "Decimals",
                         "description": "Number of decimals for the mint"
+                    },
+                    "token_program": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Token Program",
+                        "description": "Token program ID override (defaults to SPL Token)"
                     }
                 },
                 "type": "object",
@@ -1342,6 +1464,18 @@
                         "minimum": 0.0,
                         "title": "Vault Bump",
                         "description": "Global vault bump"
+                    },
+                    "token_program": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Token Program",
+                        "description": "Token program ID override (defaults to SPL Token)"
                     }
                 },
                 "type": "object",

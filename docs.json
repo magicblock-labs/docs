@@ -154,6 +154,7 @@
               "api-reference/spl-api/root",
               "api-reference/spl-api/get-config",
               "api-reference/spl-api/initialize-global-vault",
+              "api-reference/spl-api/initialize-ata",
               "api-reference/spl-api/initialize-ephemeral-ata",
               "api-reference/spl-api/create-ephemeral-ata-permission",
               "api-reference/spl-api/delegate-ephemeral-ata-permission",
