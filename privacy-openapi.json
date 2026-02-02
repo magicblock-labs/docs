@@ -1162,6 +1162,11 @@
                         "type": "string",
                         "title": "Magic Program",
                         "default": "Magic11111111111111111111111111111111111111"
+                    },
+                    "ata_program": {
+                        "type": "string",
+                        "title": "ATA Program",
+                        "default": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
                     }
                 },
                 "additionalProperties": false,
