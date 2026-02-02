@@ -40,14 +40,14 @@ The typical flow for private token transfers involves the following steps:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│ Step 1: Initialize Infrastructure (if not exists)                   │
+│ Step 1: Initialize Infrastructure (if not exist)                   │
 ├─────────────────────────────────────────────────────────────────────┤
 │ • Initialize Global Vault for token mint                            │
 │ • Initialize Global Vault ATA                                       │
 └─────────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
-│ Step 2: Initialize User Accounts (if not exists)                    │
+│ Step 2: Initialize User Accounts (if not exist)                    │
 ├─────────────────────────────────────────────────────────────────────┤
 │ • Initialize Sender ATA                                             │
 │ • Initialize Receiver ATA                                           │
@@ -58,8 +58,8 @@ The typical flow for private token transfers involves the following steps:
 ┌─────────────────────────────────────────────────────────────────────┐
 │ Step 3: Setup Permissions                                           │
 ├─────────────────────────────────────────────────────────────────────┤
-│ • Create Ephemeral ATA Permission accounts                          │
-│ • Delegate Ephemeral ATA Permissions to Delegation Program          │
+│ • Create Permission(s) for Ephemeral ATA                            │
+│ • Delegate Permission(s)                                            │
 └─────────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
