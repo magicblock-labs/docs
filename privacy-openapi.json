@@ -324,7 +324,7 @@
                 "tags": [
                     "Transactions"
                 ],
-                "summary": "Checked Transfer for SPL and Ephemeral ATA",
+                "summary": "Checked Transfer for SPL Tokens",
                 "operationId": "checked_transfer_tx_checked_transfer_post",
                 "requestBody": {
                     "content": {
