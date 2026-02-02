@@ -1,0 +1,53 @@
+---
+title: "Introduction"
+description: "Private Ephemeral SPL Token API Documentation"
+---
+
+## Overview
+
+The Private Ephemeral SPL Token API allows you to build transactions with SPL tokens on MagicBlock's Ephemeral Rollup. This API provides endpoints to manage ephemeral token accounts, deposits, withdrawals, and delegation operations.
+
+## Main Operations
+
+### Health & Configuration
+
+- [**Root**](/api-reference/spl-api/root) - Check API health
+- [**Get Config**](/api-reference/spl-api/get-config) - Retrieve API configuration settings
+
+### Setup & Initialization
+
+- [**Initialize Global Vault**](/api-reference/spl-api/initialize-global-vault) - Set up the global vault for a token mint
+- [**Initialize Global Vault ATA**](/api-reference/spl-api/initialize-global-vault-ata) - Create a global vault ATA
+
+### Token Operations
+
+- [**Initialize Ephemeral ATA**](/api-reference/spl-api/initialize-ephemeral-ata) - Create a new ephemeral token account
+- [**Deposit SPL Tokens**](/api-reference/spl-api/deposit-spl-tokens) - Deposit tokens into an ephemeral account
+- [**Delegate Ephemeral ATA**](/api-reference/spl-api/delegate-ephemeral-ata) - Delegate an ephemeral account to a Delegation Program
+- [**Transfer SPL Tokens**](/api-reference/spl-api/transfer-ephemeral-ata) - Transfer tokens between accounts using SPL checked transfer (**Note:** Ephemeral ATA must be initialized and delegated before transfer)
+- [**Undelegate Ephemeral ATA**](/api-reference/spl-api/undelegate-ephemeral-ata) - Remove delegation from an ephemeral account
+- [**Withdraw SPL Tokens**](/api-reference/spl-api/withdraw-spl-tokens) - Withdraw tokens from an ephemeral account
+
+### Permission Management
+
+- [**Create Ephemeral ATA Permission**](/api-reference/spl-api/create-ephemeral-ata-permission) - Create a permission account for an ephemeral ATA
+- [**Delegate Ephemeral ATA Permission**](/api-reference/spl-api/delegate-ephemeral-ata-permission) - Delegate an ephemeral ATA's permission to a Delegation Program to enforce access control
+- [**Reset Ephemeral ATA Permission**](/api-reference/spl-api/reset-ephemeral-ata-permission) - Reset permission flags on an ephemeral ATA
+- [**Undelegate Ephemeral ATA Permission**](/api-reference/spl-api/undelegate-ephemeral-ata-permission) - Undelegate an ephemeral ATA's permission before closing account
+
+## Response Format
+
+### Transaction Responses (POST endpoints)
+
+All successful POST responses return a transaction object with the following structure:
+
+```json
+{
+  "transaction": "base64-encoded-transaction",
+  "message": "Transaction created successfully"
+}
+```
+
+### Status Responses (GET endpoints)
+
+GET endpoints return configuration and status information specific to each endpoint.

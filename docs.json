@@ -136,8 +136,7 @@
             "group": "How-to-Guide",
             "pages": [
               "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/access-control",
-              "pages/private-ephemeral-rollups-pers/how-to-guide/private-spl-token-api"
+              "pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
             ]
           },
           {
@@ -149,22 +148,22 @@
             ]
           },
           {
-            "group": "Private SPL API (Alpha)",
+            "group": "Private SPL API (Beta)",
             "pages": [
-              "api-reference/per-spl-api/introduction",
-              "api-reference/per-spl-api/root",
-              "api-reference/per-spl-api/get-config",
-              "api-reference/per-spl-api/initialize-global-vault",
-              "api-reference/per-spl-api/initialize-ephemeral-ata",
-              "api-reference/per-spl-api/create-ephemeral-ata-permission",
-              "api-reference/per-spl-api/delegate-ephemeral-ata-permission",
-              "api-reference/per-spl-api/deposit-spl-tokens",
-              "api-reference/per-spl-api/delegate-ephemeral-ata",
-              "api-reference/per-spl-api/checked-transfer",
-              "api-reference/per-spl-api/undelegate-ephemeral-ata",
-              "api-reference/per-spl-api/withdraw-spl-tokens",
-              "api-reference/per-spl-api/reset-ephemeral-ata-permission",
-              "api-reference/per-spl-api/undelegate-ephemeral-ata-permission"
+              "api-reference/spl-api/introduction-per",
+              "api-reference/spl-api/root",
+              "api-reference/spl-api/get-config",
+              "api-reference/spl-api/initialize-global-vault",
+              "api-reference/spl-api/initialize-ephemeral-ata",
+              "api-reference/spl-api/create-ephemeral-ata-permission",
+              "api-reference/spl-api/delegate-ephemeral-ata-permission",
+              "api-reference/spl-api/deposit-spl-tokens",
+              "api-reference/spl-api/delegate-ephemeral-ata",
+              "api-reference/spl-api/checked-transfer",
+              "api-reference/spl-api/undelegate-ephemeral-ata",
+              "api-reference/spl-api/withdraw-spl-tokens",
+              "api-reference/spl-api/reset-ephemeral-ata-permission",
+              "api-reference/spl-api/undelegate-ephemeral-ata-permission"
             ]
           }
         ]
