@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "https://privacy.magicblock.app",
+            "url": "https://api.docs.magicblock.app",
             "description": "Private Ephemeral Rollup"
         }
     ],
