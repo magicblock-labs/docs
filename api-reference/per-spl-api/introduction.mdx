@@ -18,14 +18,25 @@ The Private Ephemeral SPL Token API allows you to build transactions with MagicB
 - [**Root**](/api-reference/per-spl-api/root) - Check API health
 - [**Get Config**](/api-reference/per-spl-api/get-config) - Retrieve API configuration settings
 
-### Transactions
+### Setup & Initialization
+
+- [**Initialize Global Vault**](/api-reference/per-spl-api/initialize-global-vault) - Set up the global vault for a token mint
+
+### Token Operations
 
 - [**Initialize Ephemeral ATA**](/api-reference/per-spl-api/initialize-ephemeral-ata) - Create a new ephemeral token account
-- [**Initialize Global Vault**](/api-reference/per-spl-api/initialize-global-vault) - Set up the global vault
 - [**Deposit SPL Tokens**](/api-reference/per-spl-api/deposit-spl-tokens) - Deposit tokens into an ephemeral account
-- [**Withdraw SPL Tokens**](/api-reference/per-spl-api/withdraw-spl-tokens) - Withdraw tokens from an ephemeral account
-- [**Delegate Ephemeral ATA**](/api-reference/per-spl-api/delegate-ephemeral-ata) - Delegate an ephemeral account
+- [**Delegate Ephemeral ATA**](/api-reference/per-spl-api/delegate-ephemeral-ata) - Delegate an ephemeral account to a Delegation Program
+- [**Transfer Ephemeral ATA**](/api-reference/per-spl-api/transfer-ephemeral-ata) - Transfer tokens between accounts using SPL checked transfer (**Note:** Ephemeral ATA must be initialized and delegated before transfer)
 - [**Undelegate Ephemeral ATA**](/api-reference/per-spl-api/undelegate-ephemeral-ata) - Remove delegation from an ephemeral account
+- [**Withdraw SPL Tokens**](/api-reference/per-spl-api/withdraw-spl-tokens) - Withdraw tokens from an ephemeral account
+
+### Permission Management
+
+- [**Create Ephemeral ATA Permission**](/api-reference/per-spl-api/create-ephemeral-ata-permission) - Create a permission account for an ephemeral ATA
+- [**Delegate Ephemeral ATA Permission**](/api-reference/per-spl-api/delegate-ephemeral-ata-permission) - Delegate an ephemeral ATA's permission to a Delegation Program to enforce access control
+- [**Reset Ephemeral ATA Permission**](/api-reference/per-spl-api/reset-ephemeral-ata-permission) - Reset permission flags on an ephemeral ATA
+- [**Undelegate Ephemeral ATA Permission**](/api-reference/per-spl-api/undelegate-ephemeral-ata-permission) - Undelegate an ephemeral ATA's permission before closing account
 
 ## Response Format
 

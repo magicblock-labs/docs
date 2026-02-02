@@ -20,7 +20,7 @@
   "favicon": "/logo/favicon.png",
   "redirects": [
     {
-      "source": "/pages/get-started/*",
+      "source": "/:slug*",
       "destination": "/pages/overview/products"
     }
   ],
@@ -154,12 +154,17 @@
               "api-reference/per-spl-api/introduction",
               "api-reference/per-spl-api/root",
               "api-reference/per-spl-api/get-config",
-              "api-reference/per-spl-api/initialize-ephemeral-ata",
               "api-reference/per-spl-api/initialize-global-vault",
+              "api-reference/per-spl-api/initialize-ephemeral-ata",
+              "api-reference/per-spl-api/create-ephemeral-ata-permission",
+              "api-reference/per-spl-api/delegate-ephemeral-ata-permission",
               "api-reference/per-spl-api/deposit-spl-tokens",
-              "api-reference/per-spl-api/withdraw-spl-tokens",
               "api-reference/per-spl-api/delegate-ephemeral-ata",
-              "api-reference/per-spl-api/undelegate-ephemeral-ata"
+              "api-reference/per-spl-api/transfer-ephemeral-ata",
+              "api-reference/per-spl-api/undelegate-ephemeral-ata",
+              "api-reference/per-spl-api/withdraw-spl-tokens",
+              "api-reference/per-spl-api/reset-ephemeral-ata-permission",
+              "api-reference/per-spl-api/undelegate-ephemeral-ata-permission"
             ]
           }
         ]

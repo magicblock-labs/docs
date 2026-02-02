@@ -73,47 +73,6 @@
                 }
             }
         },
-        "/tx/initialize-ephemeral-ata": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Initialize Ephemeral Ata",
-                "operationId": "initialize_ephemeral_ata_tx_initialize_ephemeral_ata_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/InitializeEphemeralAtaRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/tx/initialize-global-vault": {
             "post": {
                 "tags": [
@@ -155,141 +114,18 @@
                 }
             }
         },
-        "/tx/deposit-spl-tokens": {
+        "/tx/initialize-ephemeral-ata": {
             "post": {
                 "tags": [
                     "Transactions"
                 ],
-                "summary": "Deposit Spl Tokens",
-                "operationId": "deposit_spl_tokens_tx_deposit_spl_tokens_post",
+                "summary": "Initialize Ephemeral ATA",
+                "operationId": "initialize_ephemeral_ata_tx_initialize_ephemeral_ata_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/DepositSplTokensRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/withdraw-spl-tokens": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Withdraw Spl Tokens",
-                "operationId": "withdraw_spl_tokens_tx_withdraw_spl_tokens_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/WithdrawSplTokensRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/delegate-ephemeral-ata": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Delegate Ephemeral Ata",
-                "operationId": "delegate_ephemeral_ata_tx_delegate_ephemeral_ata_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DelegateEphemeralAtaRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/undelegate-ephemeral-ata": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Undelegate Ephemeral Ata",
-                "operationId": "undelegate_ephemeral_ata_tx_undelegate_ephemeral_ata_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UndelegateEphemeralAtaRequest"
+                                "$ref": "#/components/schemas/InitializeEphemeralAtaRequest"
                             }
                         }
                     },
@@ -324,7 +160,7 @@
                 "tags": [
                     "Transactions"
                 ],
-                "summary": "Create Ephemeral Ata Permission",
+                "summary": "Create Ephemeral ATA Permission",
                 "operationId": "create_ephemeral_ata_permission_tx_create_ephemeral_ata_permission_post",
                 "requestBody": {
                     "content": {
@@ -401,18 +237,182 @@
                 }
             }
         },
-        "/tx/undelegate-ephemeral-ata-permission": {
+        "/tx/deposit-spl-tokens": {
             "post": {
                 "tags": [
                     "Transactions"
                 ],
-                "summary": "Undelegate Ephemeral ATA Permission",
-                "operationId": "undelegate_ephemeral_ata_permission_tx_undelegate_ephemeral_ata_permission_post",
+                "summary": "Deposit Spl Tokens",
+                "operationId": "deposit_spl_tokens_tx_deposit_spl_tokens_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UndelegateEphemeralAtaPermissionRequest"
+                                "$ref": "#/components/schemas/DepositSplTokensRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tx/delegate-ephemeral-ata": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Delegate Ephemeral ATA",
+                "operationId": "delegate_ephemeral_ata_tx_delegate_ephemeral_ata_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DelegateEphemeralAtaRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tx/transfer-ephemeral-ata": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Transfer Ephemeral ATA",
+                "operationId": "transfer_ephemeral_ata_tx_transfer_ephemeral_ata_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransferEphemeralAtaRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tx/undelegate-ephemeral-ata": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Undelegate Ephemeral ATA",
+                "operationId": "undelegate_ephemeral_ata_tx_undelegate_ephemeral_ata_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UndelegateEphemeralAtaRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tx/withdraw-spl-tokens": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Withdraw Spl Tokens",
+                "operationId": "withdraw_spl_tokens_tx_withdraw_spl_tokens_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawSplTokensRequest"
                             }
                         }
                     },
@@ -454,6 +454,47 @@
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/ResetEphemeralAtaPermissionRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tx/undelegate-ephemeral-ata-permission": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Undelegate Ephemeral ATA Permission",
+                "operationId": "undelegate_ephemeral_ata_permission_tx_undelegate_ephemeral_ata_permission_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UndelegateEphemeralAtaPermissionRequest"
                             }
                         }
                     },
@@ -524,14 +565,14 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "ephemeral_ata_bump": {
                         "type": "integer",
                         "maximum": 255.0,
                         "minimum": 0.0,
-                        "title": "Ephemeral Ata Bump",
+                        "title": "Ephemeral ATA Bump",
                         "description": "Ephemeral ATA bump"
                     },
                     "permission": {
@@ -604,14 +645,14 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "ephemeral_ata_bump": {
                         "type": "integer",
                         "maximum": 255.0,
                         "minimum": 0.0,
-                        "title": "Ephemeral Ata Bump",
+                        "title": "Ephemeral ATA Bump",
                         "description": "Ephemeral ATA bump"
                     },
                     "permission": {
@@ -634,7 +675,7 @@
                     "permission"
                 ],
                 "title": "DelegateEphemeralAtaPermissionRequest",
-                "description": "Delegate an ephemeral ATA's permission to a DLP."
+                "description": "Delegate an ephemeral ATA's permission to a Delegation Program."
             },
             "DelegateEphemeralAtaRequest": {
                 "properties": {
@@ -699,14 +740,14 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "ephemeral_ata_bump": {
                         "type": "integer",
                         "maximum": 255.0,
                         "minimum": 0.0,
-                        "title": "Ephemeral Ata Bump",
+                        "title": "Ephemeral ATA Bump",
                         "description": "Ephemeral ATA bump"
                     }
                 },
@@ -723,7 +764,7 @@
                     "ephemeral_ata_bump"
                 ],
                 "title": "DelegateEphemeralAtaRequest",
-                "description": "Delegate an ephemeral ATA to a DLP."
+                "description": "Delegate an ephemeral ATA to a Delegation Program."
             },
             "DepositSplTokensRequest": {
                 "properties": {
@@ -772,7 +813,7 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "vault": {
@@ -839,14 +880,14 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "ephemeral_ata_bump": {
                         "type": "integer",
                         "maximum": 255.0,
                         "minimum": 0.0,
-                        "title": "Ephemeral Ata Bump",
+                        "title": "Ephemeral ATA Bump",
                         "description": "Ephemeral ATA bump"
                     }
                 },
@@ -946,14 +987,14 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "ephemeral_ata_bump": {
                         "type": "integer",
                         "maximum": 255.0,
                         "minimum": 0.0,
-                        "title": "Ephemeral Ata Bump",
+                        "title": "Ephemeral ATA Bump",
                         "description": "Ephemeral ATA bump"
                     },
                     "permission": {
@@ -1015,7 +1056,8 @@
                 },
                 "additionalProperties": false,
                 "type": "object",
-                "title": "Settings"
+                "title": "Settings",
+                "description": "API configuration settings."
             },
             "TransactionResponse": {
                 "properties": {
@@ -1073,7 +1115,7 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "permission": {
@@ -1092,7 +1134,7 @@
                     "permission"
                 ],
                 "title": "UndelegateEphemeralAtaPermissionRequest",
-                "description": "Undelegate an ephemeral ATA's permission from a DLP."
+                "description": "Undelegate an ephemeral ATA's permission from a Delegation Program."
             },
             "UndelegateEphemeralAtaRequest": {
                 "properties": {
@@ -1135,7 +1177,7 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     }
                 },
@@ -1149,7 +1191,67 @@
                     "ephemeral_ata"
                 ],
                 "title": "UndelegateEphemeralAtaRequest",
-                "description": "Undelegate an ephemeral ATA from a DLP."
+                "description": "Undelegate an ephemeral ATA from a Delegation Program."
+            },
+            "TransferEphemeralAtaRequest": {
+                "properties": {
+                    "cluster_url": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Cluster Url",
+                        "description": "Solana cluster URL override"
+                    },
+                    "owner": {
+                        "type": "string",
+                        "title": "Owner",
+                        "description": "Owner of source ephemeral ATA (signer)"
+                    },
+                    "source_token": {
+                        "type": "string",
+                        "title": "Source Token",
+                        "description": "Source token account"
+                    },
+                    "destination_token": {
+                        "type": "string",
+                        "title": "Destination Token",
+                        "description": "Destination token account"
+                    },
+                    "mint": {
+                        "type": "string",
+                        "title": "Mint",
+                        "description": "SPL token mint"
+                    },
+                    "amount": {
+                        "type": "integer",
+                        "minimum": 0.0,
+                        "title": "Amount",
+                        "description": "Amount of tokens to transfer"
+                    },
+                    "decimals": {
+                        "type": "integer",
+                        "maximum": 255.0,
+                        "minimum": 0.0,
+                        "title": "Decimals",
+                        "description": "Number of decimals for the mint"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "owner",
+                    "source_token",
+                    "destination_token",
+                    "mint",
+                    "amount",
+                    "decimals"
+                ],
+                "title": "TransferEphemeralAtaRequest",
+                "description": "Transfer SPL tokens from one account to another using checked transfer."
             },
             "ValidationError": {
                 "properties": {
@@ -1226,7 +1328,7 @@
                     },
                     "ephemeral_ata": {
                         "type": "string",
-                        "title": "Ephemeral Ata",
+                        "title": "Ephemeral ATA",
                         "description": "Ephemeral ATA PDA"
                     },
                     "vault": {
