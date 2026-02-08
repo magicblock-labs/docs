@@ -150,21 +150,12 @@
           {
             "group": "Private SPL API (Beta)",
             "pages": [
-              "api-reference/spl-api/introduction-per",
-              "api-reference/spl-api/root",
-              "api-reference/spl-api/get-config",
-              "api-reference/spl-api/initialize-global-vault",
-              "api-reference/spl-api/initialize-ata",
-              "api-reference/spl-api/initialize-ephemeral-ata",
-              "api-reference/spl-api/create-ephemeral-ata-permission",
-              "api-reference/spl-api/delegate-ephemeral-ata-permission",
-              "api-reference/spl-api/deposit-spl-tokens",
-              "api-reference/spl-api/delegate-ephemeral-ata",
-              "api-reference/spl-api/checked-transfer",
-              "api-reference/spl-api/undelegate-ephemeral-ata",
-              "api-reference/spl-api/withdraw-spl-tokens",
-              "api-reference/spl-api/reset-ephemeral-ata-permission",
-              "api-reference/spl-api/undelegate-ephemeral-ata-permission"
+              "api-reference/per-api/introduction",
+              "api-reference/per-api/getConfig",
+              "api-reference/per-api/deposit",
+              "api-reference/per-api/transferAmount",
+              "api-reference/per-api/prepareWithdrawal",
+              "api-reference/per-api/withdraw"
             ]
           }
         ]

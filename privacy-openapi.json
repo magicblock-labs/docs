@@ -1,1502 +1,1107 @@
 {
-    "openapi": "3.1.0",
-    "info": {
-        "title": "Private Ephemeral SPL Token API",
-        "description": "Build transactions for the MagicBlock Private token program (https://docs.magicblock.gg/pages/private-ephemeral-rollups-pers)",
-        "version": "0.1.0"
-    },
-    "servers": [
-        {
-            "url": "https://api.docs.magicblock.app",
-            "description": "Private Ephemeral Rollup"
-        }
-    ],
-    "paths": {
-        "/": {
-            "get": {
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Root",
-                "operationId": "root__get",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "description": "API status"
-                                        },
-                                        "program_id": {
-                                            "type": "string",
-                                            "description": "SPL Token program ID"
-                                        },
-                                        "cluster_url": {
-                                            "type": "string",
-                                            "description": "Solana cluster RPC URL"
-                                        }
-                                    }
-                                },
-                                "example": {
-                                    "status": "ok",
-                                    "program_id": "SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2",
-                                    "cluster_url": "https://rpc.magicblock.app/mainnet"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/config": {
-            "get": {
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get Config",
-                "operationId": "get_config_config_get",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Settings"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/initialize-global-vault": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Initialize Global Vault",
-                "operationId": "initialize_global_vault_tx_initialize_global_vault_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/InitializeGlobalVaultRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/initialize-ata": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Initialize ATA",
-                "operationId": "initialize_ata_tx_initialize_ata_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/InitializeAtaRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/initialize-ephemeral-ata": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Initialize Ephemeral ATA",
-                "operationId": "initialize_ephemeral_ata_tx_initialize_ephemeral_ata_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/InitializeEphemeralAtaRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/create-ephemeral-ata-permission": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Create Ephemeral ATA Permission",
-                "operationId": "create_ephemeral_ata_permission_tx_create_ephemeral_ata_permission_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateEphemeralAtaPermissionRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/delegate-ephemeral-ata-permission": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Delegate Ephemeral ATA Permission",
-                "operationId": "delegate_ephemeral_ata_permission_tx_delegate_ephemeral_ata_permission_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DelegateEphemeralAtaPermissionRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/deposit-spl-tokens": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Deposit Spl Tokens",
-                "operationId": "deposit_spl_tokens_tx_deposit_spl_tokens_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DepositSplTokensRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/delegate-ephemeral-ata": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Delegate Ephemeral ATA",
-                "operationId": "delegate_ephemeral_ata_tx_delegate_ephemeral_ata_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DelegateEphemeralAtaRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/checked-transfer": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Checked Transfer for SPL Tokens",
-                "operationId": "checked_transfer_tx_checked_transfer_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CheckedTransferRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/undelegate-ephemeral-ata": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Undelegate Ephemeral ATA",
-                "operationId": "undelegate_ephemeral_ata_tx_undelegate_ephemeral_ata_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UndelegateEphemeralAtaRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/withdraw-spl-tokens": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Withdraw Spl Tokens",
-                "operationId": "withdraw_spl_tokens_tx_withdraw_spl_tokens_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/WithdrawSplTokensRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/reset-ephemeral-ata-permission": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Reset Ephemeral ATA Permission",
-                "operationId": "reset_ephemeral_ata_permission_tx_reset_ephemeral_ata_permission_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ResetEphemeralAtaPermissionRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tx/undelegate-ephemeral-ata-permission": {
-            "post": {
-                "tags": [
-                    "Transactions"
-                ],
-                "summary": "Undelegate Ephemeral ATA Permission",
-                "operationId": "undelegate_ephemeral_ata_permission_tx_undelegate_ephemeral_ata_permission_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UndelegateEphemeralAtaPermissionRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TransactionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "components": {
-        "schemas": {
-            "CreateEphemeralAtaPermissionRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer pubkey (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "flags": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Flags",
-                        "description": "Permission flags (MemberFlags bitfield)"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "ephemeral_ata_bump": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Ephemeral ATA Bump",
-                        "description": "Ephemeral ATA bump"
-                    },
-                    "permission": {
-                        "type": "string",
-                        "title": "Permission",
-                        "description": "Permission PDA"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "user",
-                    "mint",
-                    "flags",
-                    "ephemeral_ata",
-                    "ephemeral_ata_bump",
-                    "permission"
-                ],
-                "title": "CreateEphemeralAtaPermissionRequest",
-                "description": "Create a permission account for an ephemeral ATA."
-            },
-            "DelegateEphemeralAtaPermissionRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer pubkey (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "buffer": {
-                        "type": "string",
-                        "title": "Buffer",
-                        "description": "Delegation buffer account"
-                    },
-                    "record": {
-                        "type": "string",
-                        "title": "Record",
-                        "description": "Delegation record account"
-                    },
-                    "metadata": {
-                        "type": "string",
-                        "title": "Metadata",
-                        "description": "Delegation metadata account"
-                    },
-                    "validator": {
-                        "type": "string",
-                        "title": "Validator",
-                        "description": "Validator to restrict delegation"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "ephemeral_ata_bump": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Ephemeral ATA Bump",
-                        "description": "Ephemeral ATA bump"
-                    },
-                    "permission": {
-                        "type": "string",
-                        "title": "Permission",
-                        "description": "Permission PDA"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "user",
-                    "mint",
-                    "buffer",
-                    "record",
-                    "metadata",
-                    "validator",
-                    "ephemeral_ata",
-                    "ephemeral_ata_bump",
-                    "permission"
-                ],
-                "title": "DelegateEphemeralAtaPermissionRequest",
-                "description": "Delegate an ephemeral ATA's permission to a Delegation Program."
-            },
-            "DelegateEphemeralAtaRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer pubkey (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "owner_program": {
-                        "type": "string",
-                        "title": "Owner Program",
-                        "description": "Program that will own the delegated account"
-                    },
-                    "buffer": {
-                        "type": "string",
-                        "title": "Buffer",
-                        "description": "Delegation buffer account"
-                    },
-                    "delegation_record": {
-                        "type": "string",
-                        "title": "Delegation Record",
-                        "description": "Delegation record account"
-                    },
-                    "delegation_metadata": {
-                        "type": "string",
-                        "title": "Delegation Metadata",
-                        "description": "Delegation metadata account"
-                    },
-                    "validator": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Validator",
-                        "description": "Optional validator pubkey"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "ephemeral_ata_bump": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Ephemeral ATA Bump",
-                        "description": "Ephemeral ATA bump"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "user",
-                    "mint",
-                    "owner_program",
-                    "buffer",
-                    "delegation_record",
-                    "delegation_metadata",
-                    "ephemeral_ata",
-                    "ephemeral_ata_bump"
-                ],
-                "title": "DelegateEphemeralAtaRequest",
-                "description": "Delegate an ephemeral ATA to a Delegation Program."
-            },
-            "DepositSplTokensRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "authority": {
-                        "type": "string",
-                        "title": "Authority",
-                        "description": "Authority over source token account (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "source_token": {
-                        "type": "string",
-                        "title": "Source Token",
-                        "description": "User's source token account"
-                    },
-                    "vault_token": {
-                        "type": "string",
-                        "title": "Vault Token",
-                        "description": "Vault's token account"
-                    },
-                    "amount": {
-                        "type": "integer",
-                        "minimum": 0.0,
-                        "title": "Amount",
-                        "description": "Amount of tokens to deposit"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "vault": {
-                        "type": "string",
-                        "title": "Vault",
-                        "description": "Global vault PDA"
-                    },
-                    "token_program": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Token Program",
-                        "description": "Token program ID override (defaults to SPL Token)"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "authority",
-                    "user",
-                    "mint",
-                    "source_token",
-                    "vault_token",
-                    "amount",
-                    "ephemeral_ata",
-                    "vault"
-                ],
-                "title": "DepositSplTokensRequest",
-                "description": "Deposit SPL tokens into an ephemeral ATA."
-            },
-            "HTTPValidationError": {
-                "properties": {
-                    "detail": {
-                        "items": {
-                            "$ref": "#/components/schemas/ValidationError"
-                        },
-                        "type": "array",
-                        "title": "Detail"
-                    }
-                },
-                "type": "object",
-                "title": "HTTPValidationError"
-            },
-            "InitializeEphemeralAtaRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer pubkey (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "ephemeral_ata_bump": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Ephemeral ATA Bump",
-                        "description": "Ephemeral ATA bump"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "user",
-                    "mint",
-                    "ephemeral_ata",
-                    "ephemeral_ata_bump"
-                ],
-                "title": "InitializeEphemeralAtaRequest",
-                "description": "Initialize an Ephemeral ATA for a user-mint pair with ephemeral SPL Token Program."
-            },
-            "InitializeGlobalVaultRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer pubkey (signer)"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "vault": {
-                        "type": "string",
-                        "title": "Vault",
-                        "description": "Global vault PDA"
-                    },
-                    "vault_bump": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Vault Bump",
-                        "description": "Global vault bump"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "mint",
-                    "vault",
-                    "vault_bump"
-                ],
-                "title": "InitializeGlobalVaultRequest",
-                "description": "Initialize a Global Vault for a specific mint."
-            },
-            "InitializeAtaRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer pubkey (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "ata": {
-                        "type": "string",
-                        "title": "ATA",
-                        "description": "Associated Token Account address"
-                    },
-                    "token_program": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Token Program",
-                        "description": "Token program ID override (defaults to SPL Token)"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "user",
-                    "mint",
-                    "ata"
-                ],
-                "title": "InitializeAtaRequest",
-                "description": "Initialize an Associated Token Account for a user-mint pair with SPL Token Program."
-            },
-            "ResetEphemeralAtaPermissionRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "owner": {
-                        "type": "string",
-                        "title": "Owner",
-                        "description": "Owner of ephemeral ATA (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "flags": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Flags",
-                        "description": "New permission flags"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "ephemeral_ata_bump": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Ephemeral ATA Bump",
-                        "description": "Ephemeral ATA bump"
-                    },
-                    "permission": {
-                        "type": "string",
-                        "title": "Permission",
-                        "description": "Permission PDA"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "owner",
-                    "user",
-                    "mint",
-                    "flags",
-                    "ephemeral_ata",
-                    "ephemeral_ata_bump",
-                    "permission"
-                ],
-                "title": "ResetEphemeralAtaPermissionRequest",
-                "description": "Reset permission flags on an ephemeral ATA's permission."
-            },
-            "Settings": {
-                "properties": {
-                    "cluster_url": {
-                        "type": "string",
-                        "title": "Cluster Url",
-                        "default": "https://rpc.magicblock.app/mainnet"
-                    },
-                    "program_id": {
-                        "type": "string",
-                        "title": "Program Id",
-                        "default": "SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2"
-                    },
-                    "system_program": {
-                        "type": "string",
-                        "title": "System Program",
-                        "default": "11111111111111111111111111111111"
-                    },
-                    "token_program": {
-                        "type": "string",
-                        "title": "Token Program",
-                        "default": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-                    },
-                    "delegation_program": {
-                        "type": "string",
-                        "title": "Delegation Program",
-                        "default": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
-                    },
-                    "permission_program": {
-                        "type": "string",
-                        "title": "Permission Program",
-                        "default": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
-                    },
-                    "magic_program": {
-                        "type": "string",
-                        "title": "Magic Program",
-                        "default": "Magic11111111111111111111111111111111111111"
-                    },
-                    "ata_program": {
-                        "type": "string",
-                        "title": "ATA Program",
-                        "default": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
-                    }
-                },
-                "additionalProperties": false,
-                "type": "object",
-                "title": "Settings",
-                "description": "API configuration settings."
-            },
-            "TransactionResponse": {
-                "properties": {
-                    "transaction": {
-                        "type": "string",
-                        "title": "Transaction",
-                        "description": "Base64-encoded serialized transaction"
-                    },
-                    "message": {
-                        "type": "string",
-                        "title": "Message",
-                        "default": "Transaction created successfully"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "transaction"
-                ],
-                "title": "TransactionResponse",
-                "description": "Response containing a serialized transaction."
-            },
-            "UndelegateEphemeralAtaPermissionRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer/owner pubkey (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "magic_context": {
-                        "type": "string",
-                        "title": "Magic Context",
-                        "description": "Magic context account"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "permission": {
-                        "type": "string",
-                        "title": "Permission",
-                        "description": "Permission PDA"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "user",
-                    "mint",
-                    "magic_context",
-                    "ephemeral_ata",
-                    "permission"
-                ],
-                "title": "UndelegateEphemeralAtaPermissionRequest",
-                "description": "Undelegate an ephemeral ATA's permission from a Delegation Program."
-            },
-            "UndelegateEphemeralAtaRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "payer": {
-                        "type": "string",
-                        "title": "Payer",
-                        "description": "Payer/owner pubkey (signer)"
-                    },
-                    "user": {
-                        "type": "string",
-                        "title": "User",
-                        "description": "Owner of the ephemeral ATA"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "ata": {
-                        "type": "string",
-                        "title": "Ata",
-                        "description": "User's SPL token account"
-                    },
-                    "magic_context": {
-                        "type": "string",
-                        "title": "Magic Context",
-                        "description": "Magic context account"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "payer",
-                    "user",
-                    "mint",
-                    "ata",
-                    "magic_context",
-                    "ephemeral_ata"
-                ],
-                "title": "UndelegateEphemeralAtaRequest",
-                "description": "Undelegate an ephemeral ATA from a Delegation Program."
-            },
-            "CheckedTransferRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "owner": {
-                        "type": "string",
-                        "title": "Owner",
-                        "description": "Owner of source ephemeral ATA (signer)"
-                    },
-                    "source_token": {
-                        "type": "string",
-                        "title": "Source Token",
-                        "description": "Source token account"
-                    },
-                    "destination_token": {
-                        "type": "string",
-                        "title": "Destination Token",
-                        "description": "Destination token account"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "amount": {
-                        "type": "integer",
-                        "minimum": 0.0,
-                        "title": "Amount",
-                        "description": "Amount of tokens to transfer"
-                    },
-                    "decimals": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Decimals",
-                        "description": "Number of decimals for the mint"
-                    },
-                    "token_program": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Token Program",
-                        "description": "Token program ID override (defaults to SPL Token)"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "owner",
-                    "source_token",
-                    "destination_token",
-                    "mint",
-                    "amount",
-                    "decimals"
-                ],
-                "title": "TransferEphemeralAtaRequest",
-                "description": "Transfer SPL tokens from one account to another using checked transfer."
-            },
-            "ValidationError": {
-                "properties": {
-                    "loc": {
-                        "items": {
-                            "anyOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
-                        },
-                        "type": "array",
-                        "title": "Location"
-                    },
-                    "msg": {
-                        "type": "string",
-                        "title": "Message"
-                    },
-                    "type": {
-                        "type": "string",
-                        "title": "Error Type"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "loc",
-                    "msg",
-                    "type"
-                ],
-                "title": "ValidationError"
-            },
-            "WithdrawSplTokensRequest": {
-                "properties": {
-                    "cluster_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Cluster Url",
-                        "description": "Solana cluster URL override"
-                    },
-                    "owner": {
-                        "type": "string",
-                        "title": "Owner",
-                        "description": "Owner of ephemeral ATA (signer)"
-                    },
-                    "mint": {
-                        "type": "string",
-                        "title": "Mint",
-                        "description": "SPL token mint"
-                    },
-                    "vault_source": {
-                        "type": "string",
-                        "title": "Vault Source",
-                        "description": "Vault's source token account"
-                    },
-                    "user_dest": {
-                        "type": "string",
-                        "title": "User Dest",
-                        "description": "User's destination token account"
-                    },
-                    "amount": {
-                        "type": "integer",
-                        "minimum": 0.0,
-                        "title": "Amount",
-                        "description": "Amount of tokens to withdraw"
-                    },
-                    "ephemeral_ata": {
-                        "type": "string",
-                        "title": "Ephemeral ATA",
-                        "description": "Ephemeral ATA PDA"
-                    },
-                    "vault": {
-                        "type": "string",
-                        "title": "Vault",
-                        "description": "Global vault PDA"
-                    },
-                    "vault_bump": {
-                        "type": "integer",
-                        "maximum": 255.0,
-                        "minimum": 0.0,
-                        "title": "Vault Bump",
-                        "description": "Global vault bump"
-                    },
-                    "token_program": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Token Program",
-                        "description": "Token program ID override (defaults to SPL Token)"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "owner",
-                    "mint",
-                    "vault_source",
-                    "user_dest",
-                    "amount",
-                    "ephemeral_ata",
-                    "vault",
-                    "vault_bump"
-                ],
-                "title": "WithdrawSplTokensRequest",
-                "description": "Withdraw SPL tokens from an ephemeral ATA."
-            }
-        }
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Ephemeral SPL Token API",
+    "description": "Build transactions for the MagicBlock Private token program (https://docs.magicblock.gg/pages/private-ephemeral-rollups-pers)",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.docs.magicblock.app",
+      "description": "Private Transfer API (Beta)"
     }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/config": {
+      "get": {
+        "tags": [
+          "Config"
+        ],
+        "summary": "Get Config",
+        "description": "Get configuration settings for default endpoints, programs, and validator.",
+        "operationId": "get_config_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Settings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/initialize-ephemeral-ata": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Initialize Ephemeral Ata",
+        "operationId": "initialize_ephemeral_ata_tx_initialize_ephemeral_ata_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitializeEphemeralAtaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/initialize-global-vault": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Initialize Global Vault",
+        "operationId": "initialize_global_vault_tx_initialize_global_vault_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitializeGlobalVaultRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/deposit-spl-tokens": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Deposit Spl Tokens",
+        "operationId": "deposit_spl_tokens_tx_deposit_spl_tokens_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositSplTokensRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/withdraw-spl-tokens": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Withdraw Spl Tokens",
+        "operationId": "withdraw_spl_tokens_tx_withdraw_spl_tokens_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/delegate-ephemeral-ata": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Delegate Ephemeral Ata",
+        "operationId": "delegate_ephemeral_ata_tx_delegate_ephemeral_ata_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DelegateEphemeralAtaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/undelegate-ephemeral-ata": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Undelegate Ephemeral Ata",
+        "operationId": "undelegate_ephemeral_ata_tx_undelegate_ephemeral_ata_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UndelegateEphemeralAtaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/checked-transfer": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Checked Transfer",
+        "operationId": "checked_transfer_tx_checked_transfer_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferAmountRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx/initialize-ata": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Initialize Ata",
+        "operationId": "initialize_ata_tx_initialize_ata_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitializeAtaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/private/tx/deposit": {
+      "post": {
+        "tags": [
+          "Private Transactions"
+        ],
+        "summary": "Private Deposit",
+        "description": "Deposit SPL token account on Solana for private transfer.\n\nThis initialization process includes the following steps:\n- Initialize global vault (if not already initialized)\n- Initialize vault's ATA (if not already initialized)\n- Initialize user's ATA (if not already initialized)\n- Initialize ephemeral ATA (if not already initialized)\n- Delegate ephemeral ATA (if not already delegated)\n- Initialize ephemeral ATA's permission (if not already initialized)\n- Delegate ephemeral ATA's permission (if not already delegated)\n- Deposit SPL tokens (if amount \u003E 0)",
+        "operationId": "private_deposit_private_tx_deposit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/private/tx/transfer-amount": {
+      "post": {
+        "tags": [
+          "Private Transactions"
+        ],
+        "summary": "Private Transfer Amount",
+        "description": "Transfer SPL token amount (checked_transfer) privately.",
+        "operationId": "private_transfer_amount_private_tx_transfer_amount_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferAmountRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/private/tx/prepare-withdrawal": {
+      "post": {
+        "tags": [
+          "Private Transactions"
+        ],
+        "summary": "Private Prepare Withdrawal",
+        "description": "Undelegate ephemeral ATA from Private Ephemeral Rollup and prepare for withdrawal on Solana.",
+        "operationId": "private_prepare_withdrawal_private_tx_prepare_withdrawal_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareWithdrawalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/private/tx/withdraw": {
+      "post": {
+        "tags": [
+          "Private Transactions"
+        ],
+        "summary": "Private Withdraw",
+        "description": "Withdraw SPL tokens from an ephemeral ATA on Solana.",
+        "operationId": "private_withdraw_private_tx_withdraw_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DelegateEphemeralAtaRequest": {
+        "properties": {
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          },
+          "payer": {
+            "type": "string",
+            "title": "Payer",
+            "description": "Payer pubkey (signer)"
+          },
+          "user": {
+            "type": "string",
+            "title": "User",
+            "description": "Owner of the ephemeral ATA"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          },
+          "owner_program": {
+            "type": "string",
+            "title": "Owner Program",
+            "description": "Program that will own the delegated account"
+          },
+          "validator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validator",
+            "description": "Optional validator pubkey"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payer",
+          "user",
+          "mint",
+          "owner_program"
+        ],
+        "title": "DelegateEphemeralAtaRequest"
+      },
+      "DepositRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User",
+            "description": "User pubkey (owner of ephemeral ATA, source token account, and payer/signer)"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Amount",
+            "description": "Amount of tokens to deposit (defaults to 0 for initialization only)",
+            "default": 0
+          },
+          "validator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validator",
+            "description": "Optional validator pubkey (defaults to default_validator from settings)"
+          },
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "mint"
+        ],
+        "title": "DepositRequest"
+      },
+      "DepositSplTokensRequest": {
+        "properties": {
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "Owner of source token account (payer and signer)"
+          },
+          "user": {
+            "type": "string",
+            "title": "User",
+            "description": "Owner of the ephemeral ATA"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Amount",
+            "description": "Amount of tokens to deposit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "owner",
+          "user",
+          "mint",
+          "amount"
+        ],
+        "title": "DepositSplTokensRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InitializeAtaRequest": {
+        "properties": {
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          },
+          "payer": {
+            "type": "string",
+            "title": "Payer",
+            "description": "Payer pubkey (signer)"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "Owner of the ATA"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payer",
+          "owner",
+          "mint"
+        ],
+        "title": "InitializeAtaRequest"
+      },
+      "InitializeEphemeralAtaRequest": {
+        "properties": {
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          },
+          "payer": {
+            "type": "string",
+            "title": "Payer",
+            "description": "Payer pubkey (signer)"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "Owner of the ephemeral ATA"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payer",
+          "owner",
+          "mint"
+        ],
+        "title": "InitializeEphemeralAtaRequest"
+      },
+      "InitializeGlobalVaultRequest": {
+        "properties": {
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          },
+          "payer": {
+            "type": "string",
+            "title": "Payer",
+            "description": "Payer pubkey (signer)"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payer",
+          "mint"
+        ],
+        "title": "InitializeGlobalVaultRequest"
+      },
+      "PrepareWithdrawalRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User",
+            "description": "Owner of the ephemeral ATA"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          },
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "mint"
+        ],
+        "title": "PrepareWithdrawalRequest"
+      },
+      "Settings": {
+        "properties": {
+          "endpoint_url": {
+            "type": "string",
+            "title": "Endpoint Url",
+            "default": "https://rpc.magicblock.app/mainnet"
+          },
+          "tee_endpoint_url": {
+            "type": "string",
+            "title": "Tee Endpoint Url",
+            "default": "https://tee.magicblock.app"
+          },
+          "ephemeral_spl_token_program": {
+            "type": "string",
+            "title": "Ephemeral Spl Token Program",
+            "default": "SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2"
+          },
+          "system_program": {
+            "type": "string",
+            "title": "System Program",
+            "default": "11111111111111111111111111111111"
+          },
+          "token_program": {
+            "type": "string",
+            "title": "Token Program",
+            "default": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          },
+          "delegation_program": {
+            "type": "string",
+            "title": "Delegation Program",
+            "default": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+          },
+          "permission_program": {
+            "type": "string",
+            "title": "Permission Program",
+            "default": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+          },
+          "magic_program": {
+            "type": "string",
+            "title": "Magic Program",
+            "default": "Magic11111111111111111111111111111111111111"
+          },
+          "magic_context": {
+            "type": "string",
+            "title": "Magic Context",
+            "default": "MagicContext1111111111111111111111111111111"
+          },
+          "ata_program": {
+            "type": "string",
+            "title": "Ata Program",
+            "default": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+          },
+          "default_validator": {
+            "type": "string",
+            "title": "Default Validator",
+            "default": "FnE6VJT5QNZdedZPnCoLsARgBwoE6DeJNjBs2H1gySXA"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Settings",
+        "description": "API configuration settings."
+      },
+      "TransactionResponse": {
+        "properties": {
+          "transaction": {
+            "type": "string",
+            "title": "Transaction",
+            "description": "Base64-encoded serialized transaction"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Transaction created successfully"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction"
+        ],
+        "title": "TransactionResponse"
+      },
+      "TransferAmountRequest": {
+        "properties": {
+          "sender": {
+            "type": "string",
+            "title": "Sender",
+            "description": "Sender pubkey (signer, owner of source ATA)"
+          },
+          "recipient": {
+            "type": "string",
+            "title": "Recipient",
+            "description": "Recipient pubkey (owner of destination ATA)"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "Token mint (readonly)"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Amount",
+            "description": "Amount of tokens to transfer"
+          },
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sender",
+          "recipient",
+          "mint",
+          "amount"
+        ],
+        "title": "TransferAmountRequest"
+      },
+      "UndelegateEphemeralAtaRequest": {
+        "properties": {
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          },
+          "payer": {
+            "type": "string",
+            "title": "Payer",
+            "description": "Payer/owner pubkey (signer)"
+          },
+          "user": {
+            "type": "string",
+            "title": "User",
+            "description": "Owner of the ephemeral ATA"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payer",
+          "user",
+          "mint"
+        ],
+        "title": "UndelegateEphemeralAtaRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WithdrawRequest": {
+        "properties": {
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "description": "Owner of ephemeral ATA (payer and signer)"
+          },
+          "user": {
+            "type": "string",
+            "title": "User",
+            "description": "Owner of the ephemeral ATA"
+          },
+          "mint": {
+            "type": "string",
+            "title": "Mint",
+            "description": "SPL token mint"
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Amount",
+            "description": "Amount of tokens to withdraw"
+          },
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url",
+            "description": "Solana endpoint URL override"
+          }
+        },
+        "type": "object",
+        "required": [
+          "owner",
+          "user",
+          "mint",
+          "amount"
+        ],
+        "title": "WithdrawRequest"
+      }
+    }
+  }
 }
