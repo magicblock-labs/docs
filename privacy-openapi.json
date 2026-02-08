@@ -389,7 +389,7 @@
           "Private Transactions"
         ],
         "summary": "Private Deposit",
-        "description": "Deposit SPL token account on Solana for private transfer.\n\nThis initialization process includes the following steps:\n- Initialize global vault (if not already initialized)\n- Initialize vault's ATA (if not already initialized)\n- Initialize user's ATA (if not already initialized)\n- Initialize ephemeral ATA (if not already initialized)\n- Delegate ephemeral ATA (if not already delegated)\n- Initialize ephemeral ATA's permission (if not already initialized)\n- Delegate ephemeral ATA's permission (if not already delegated)\n- Deposit SPL tokens (if amount \u003E 0)",
+        "description": "Deposit SPL token account on Solana for private transfer.\n\nThis initialization process includes the following steps:\n- Initialize global vault (if not already initialized)\n- Initialize vault's ATA (if not already initialized)\n- Initialize user's ATA (if not already initialized)\n- Initialize ephemeral ATA (if not already initialized)\n- Deposit SPL tokens (if amount \u003E 0)\n- Delegate ephemeral ATA (if not already delegated)\n- Initialize ephemeral ATA's permission (if not already initialized)\n- Delegate ephemeral ATA's permission (if not already delegated)",
         "operationId": "private_deposit_private_tx_deposit_post",
         "requestBody": {
           "content": {
