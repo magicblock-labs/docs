@@ -620,7 +620,7 @@
           "user": {
             "type": "string",
             "title": "User",
-            "description": "User pubkey (owner of ephemeral ATA, source token account, and payer/signer)"
+            "description": "User pubkey (owner of source token account)"
           },
           "mint": {
             "type": "string",
