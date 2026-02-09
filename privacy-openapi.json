@@ -612,6 +612,11 @@
       },
       "DepositRequest": {
         "properties": {
+          "payer": {
+            "type": "string",
+            "title": "Payer",
+            "description": "Payer pubkey (signer)"
+          },
           "user": {
             "type": "string",
             "title": "User",
@@ -656,6 +661,7 @@
         },
         "type": "object",
         "required": [
+          "payer",
           "user",
           "mint"
         ],
