@@ -319,6 +319,11 @@
           "anchor": "Community",
           "href": "https://t.me/+78KHQkUsy0ViMzQ6",
           "icon": "telegram"
+        },
+        {
+          "anchor": "Hackathons & Events",
+          "href": "https://luma.com/magicblock-events",
+          "icon": "rocket"
         }
       ]
     }
