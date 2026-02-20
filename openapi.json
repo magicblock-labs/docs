@@ -1,9 +1,9 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "MagicBlock ER Validator API",
-        "description": "The MagicBlock RPC ER is an auxiliary service designed to interact with the MagicBlock Ephemeral Rollups (ER) infrastructure.",
-        "version": "1.0.0"
+        "title": "MagicBlock Router API",
+        "description": "JSON-RPC API for the MagicBlock Router.",
+        "version": "2.0.0"
     },
     "servers": [
         {
@@ -472,7 +472,7 @@
                 }
             }
         },
-        "/getDelegationStatus": {
+        "/": {
             "post": {
                 "summary": "getDelegationStatus",
                 "servers": [
@@ -516,11 +516,16 @@
                                 },
                                 "required": ["jsonrpc", "id", "method", "params"]
                             },
-                            "example": {
-                                "jsonrpc": "2.0",
-                                "id": 1,
-                                "method": "getDelegationStatus",
-                                "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                            "examples": {
+                                "default": {
+                                    "summary": "Default getDelegationStatus request",
+                                    "value": {
+                                        "jsonrpc": "2.0",
+                                        "id": 1,
+                                        "method": "getDelegationStatus",
+                                        "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                                    }
+                                }
                             }
                         }
                     }
