@@ -514,13 +514,7 @@
                                         "default": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
                                     }
                                 },
-                                "required": ["jsonrpc", "id", "method", "params"],
-                                "default": {
-                                    "jsonrpc": "2.0",
-                                    "id": 1,
-                                    "method": "getDelegationStatus",
-                                    "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
-                                }
+                                "required": ["jsonrpc", "id", "method", "params"]
                             },
                             "examples": {
                                 "default": {

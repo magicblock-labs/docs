@@ -15,12 +15,6 @@
     "/": {
       "post": {
         "summary": "getRoutes",
-        "servers": [
-          {
-            "url": "https://devnet-router.magicblock.app",
-            "description": "Devnet - RPC Magic Router"
-          }
-        ],
         "description": "Get available ephemeral rollup nodes from the Magic Router",
         "requestBody": {
           "required": true,
@@ -73,7 +67,14 @@
                       "default": "2.0"
                     },
                     "id": {
-                      "type": "integer",
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
                       "default": 1
                     },
                     "result": {

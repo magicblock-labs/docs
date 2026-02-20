@@ -64,18 +64,18 @@
                   "id",
                   "method",
                   "params"
-                ],
-                "example": {
-                  "jsonrpc": "2.0",
-                  "id": 1,
-                  "method": "getSignatureStatuses",
-                  "params": [
-                    [
-                      "9hXHgR18oj4eZMx6sxL7i93PYkqzUx9qC1ardVoGGc8WpzZnFWfs3iRDj2xu9GZWvbv5P5gba7hkrWucU6PqzbB",
-                      "2CR2mYhjyyMh1YBEwThy7p7ghSQeopaRgc9CB3UKiAApBm5xoj6CbuKgA3fwxAWawRU36uodVcRzJGeUztwwGTMU"
-                    ]
+                ]
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getSignatureStatuses",
+                "params": [
+                  [
+                    "9hXHgR18oj4eZMx6sxL7i93PYkqzUx9qC1ardVoGGc8WpzZnFWfs3iRDj2xu9GZWvbv5P5gba7hkrWucU6PqzbB",
+                    "2CR2mYhjyyMh1YBEwThy7p7ghSQeopaRgc9CB3UKiAApBm5xoj6CbuKgA3fwxAWawRU36uodVcRzJGeUztwwGTMU"
                   ]
-                }
+                ]
               }
             }
           }
@@ -230,13 +230,7 @@
               }
             }
           }
-        },
-        "servers": [
-          {
-            "url": "https://devnet-router.magicblock.app",
-            "description": "Devnet - RPC Magic Router"
-          }
-        ]
+        }
       }
     }
   }

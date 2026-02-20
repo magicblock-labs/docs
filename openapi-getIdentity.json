@@ -67,7 +67,14 @@
                       "default": "2.0"
                     },
                     "id": {
-                      "type": "integer",
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
                       "default": 1
                     },
                     "result": {

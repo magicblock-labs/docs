@@ -43,12 +43,32 @@
                   },
                   "params": {
                     "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "description": "Account public key"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "encoding": {
+                            "type": "string",
+                            "enum": [
+                              "base58",
+                              "base64",
+                              "base64+zstd",
+                              "jsonParsed"
+                            ]
+                          }
+                        },
+                        "additionalProperties": true,
+                        "description": "Optional config object"
+                      }
+                    ],
+                    "items": false,
                     "minItems": 1,
-                    "maxItems": 1,
-                    "description": "Single account address",
+                    "maxItems": 2,
+                    "description": "Account address and optional config object",
                     "default": [
                       "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
                     ]
@@ -138,7 +158,17 @@
                               "type": "string"
                             },
                             "rentEpoch": {
-                              "type": "integer"
+                              "oneOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                {
+                                  "type": "string",
+                                  "pattern": "^[0-9]+$"
+                                }
+                              ],
+                              "description": "Rent epoch. Rent-exempt accounts may return u64::MAX (18446744073709551615); treat as an unsigned 64-bit value and prefer string handling in JavaScript to avoid precision loss."
                             },
                             "space": {
                               "type": "integer"
@@ -181,7 +211,7 @@
                       "executable": false,
                       "lamports": 946560,
                       "owner": "2qgx11jg9RzZHT88FwwvwxKJmtJi5cPL8KgcCAH7yRda",
-                      "rentEpoch": 18446744073709552000,
+                      "rentEpoch": "18446744073709551615",
                       "space": 8
                     }
                   },
@@ -190,13 +220,7 @@
               }
             }
           }
-        },
-        "servers": [
-          {
-            "url": "https://devnet-router.magicblock.app",
-            "description": "Devnet - RPC Magic Router"
-          }
-        ]
+        }
       }
     }
   }

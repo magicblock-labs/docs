@@ -48,10 +48,13 @@
                       "items": {
                         "type": "string"
                       },
-                      "description": "Array of account addresses"
+                      "minItems": 1,
+                      "maxItems": 100,
+                      "description": "Array of account addresses (max 100)"
                     },
                     "minItems": 1,
-                    "description": "Array of account address arrays",
+                    "maxItems": 1,
+                    "description": "Single account-address array argument",
                     "default": [
                       [
                         "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
@@ -140,13 +143,7 @@
               }
             }
           }
-        },
-        "servers": [
-          {
-            "url": "https://devnet-router.magicblock.app",
-            "description": "Devnet - RPC Magic Router"
-          }
-        ]
+        }
       }
     }
   }
