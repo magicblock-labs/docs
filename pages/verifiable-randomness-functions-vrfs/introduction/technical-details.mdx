@@ -1,0 +1,39 @@
+---
+title: "Technical Details"
+description: "How MagicBlock integrates verifiable randomness"
+---
+
+Random numbers are generated via a VRF built on Curve25519's Ristretto group and proven using a Schnorr-like signature as described in [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381). The proof and output are returned to the rollup with a signed callback from the MagicBlock VRF signer PDA. Your program verifies the caller and then uses the randomness in gameplay logic.
+
+Helper utilities like `random_u32`, `random_u8_with_range`, and `random_bool` make it simple to convert the `[u8; 32]` output into usable values. Because the request and consume steps occur inside the ephemeral execution window, users get real-time results with verifiable fairness and without relying on external servers.
+
+## Flow
+
+<img class="w-full h-auto max-w-5xl" src="/images/vrf-flow.png" />
+
+The flow starts with a “Request for randomness”.
+
+1. Your program will CPI into the MagicBlock VRF program and append a request to the queue.
+2. Once your randomness request is in the queue, an oracle will release the request and perform the randomness computation.
+3. Upon completion, it returns the result and proof to the MagicBlock VRF program. After verifying the proof, the VRF program will callback into your program into a predefined function that will “consume” the randomness.
+
+<Note>MagicBlock's VRF Program is open-source and audited.</Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="Audit"
+    icon="certificate"
+    href="/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    Read the full audit report
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="book"
+    href="/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Learn how to add randomness capabilities
+  </Card>
+</CardGroup>

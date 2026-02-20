@@ -1,0 +1,204 @@
+---
+title: "Test Your Program"
+description: "Learn how to test a simple Rust program"
+---
+
+import Endpoints from "/snippets/endpoints.mdx";
+import Validators from "/snippets/validators.mdx";
+import SoftwareRust from "/snippets/software-rust.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
+
+import TestWeb3jsConnectionCode from "/snippets/rust-counter-code/test-web3js-connection.mdx";
+import TestWeb3jsDelegateCode from "/snippets/rust-counter-code/test-web3js-delegate.mdx";
+import TestWeb3jsCommitCode from "/snippets/rust-counter-code/test-web3js-commit.mdx";
+import TestWeb3jsUndelegateCode from "/snippets/rust-counter-code/test-web3js-undelegate.mdx";
+import TestKitConnectionCode from "/snippets/rust-counter-code/test-kit-connection.mdx";
+import TestKitDelegateCode from "/snippets/rust-counter-code/test-kit-delegate.mdx";
+import TestKitCommitCode from "/snippets/rust-counter-code/test-kit-commit.mdx";
+import TestKitUndelegateCode from "/snippets/rust-counter-code/test-kit-undelegate.mdx";
+import DelegationInfo from "/snippets/delegation-info.mdx";
+
+---
+
+### Quick Access
+
+If you prefer to dive straight into the code:
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
+    iconType="duotone"
+  >
+    Tests for Rust Counter
+  </Card>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/pinocchio-counter/tests"
+    iconType="duotone"
+  >
+    Tests for Pinocchio Counter
+  </Card>
+  <Card
+    title="Guide"
+    icon="computer"
+    href="/pages/ephemeral-rollups-ers/how-to-guide/local-development"
+    iconType="duotone"
+  >
+    Local Development
+  </Card>
+</CardGroup>
+
+---
+
+## Step-By-Step Guide
+
+Build valid transactions that calls your program instructions for delegation and undelegation.
+The complete test for this project can be found in the [Typescript Test Script](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests).
+
+<Steps>
+  <Step
+    title={<a href="#1-connection">Import SDK and initialize Connection</a>}
+  >
+    Set up connection and accounts
+  </Step>
+  <Step title={<a href="#2-delegate">Delegate PDA on Base Layer</a>}>
+    Test CPI hook to delegate state account on Base Layer
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-commit">Commit PDA on ER</a>}>
+    Test CPI hook to commit state account on ER
+  </Step>
+  <Step title={<a href="#4-undelegate">Undelegate PDA on ER</a>}>
+    Test CPI hook to undelegate state account on ER
+  </Step>
+</Steps>
+
+---
+
+## Counter Example
+
+<SoftwareRust />
+
+### Code Snippets
+
+<Tabs>
+  <Tab title="1. Connection">
+    ### Import SDK and create Connection
+
+    Import relevant libraries `@magicblock-labs/ephemeral-rollups-sdk` or `@magicblock-labs/ephemeral-rollups-kit`. Initialize connection before testing and sending transactions.
+
+    <CodeGroup>
+      ```bash kit
+      yarn add @magicblock-labs/ephemeral-rollups-kit@latest
+      ```
+      ```bash web3.js
+      yarn add @magicblock-labs/ephemeral-rollups-sdk@latest
+      ```
+    </CodeGroup>
+
+    <Endpoints />
+    <CodeGroup>
+      <TestKitConnectionCode />
+
+      <TestWeb3jsConnectionCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title="2. Delegate">
+    ### Test `delegation` transaction
+
+    Create a instruction with the right order and attributes of accounts, and the instruction discriminator for `delegation` of your program. Send the transaction with the instruction to Base Layer (Solana) network.
+
+    <Card
+      title="Transaction (Base Layer): Delegate"
+      icon="magnifying-glass"
+      href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+      iconType="duotone"
+    >
+      Inspect transactions details on Solana Explorer
+    </Card>
+
+    <CodeGroup>
+      <TestKitDelegateCode />
+      <TestWeb3jsDelegateCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+    <Tab title="3. Commit">
+    ### Test `commit` transaction
+
+    Create a instruction with the right order and attributes of accounts, and the instruction discriminator for `commit` of your program. Send the transaction with the instruction to ER network.
+
+    <CardGroup cols={2}>
+      <Card
+        title="Transaction (ER): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+      <Card
+        title="Transaction (Base layer): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitCommitCode />
+      <TestWeb3jsCommitCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="4. Undelegate">
+    ### Test `undelegation` transaction
+
+    Create a instruction with the right order and attributes of accounts, and the instruction discriminator for `undelegation` of your program. Send the transaction with the instruction to ER network.
+
+    <CardGroup cols={2}>
+      <Card
+        title="Transaction (ER): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+      <Card
+        title="Transaction (Base layer): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitUndelegateCode />
+      <TestWeb3jsUndelegateCode />
+    </CodeGroup>
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

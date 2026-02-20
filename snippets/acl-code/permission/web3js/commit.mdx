@@ -1,0 +1,13 @@
+```typescript
+import { createCommitPermissionInstruction } from "@magicblock-labs/ephemeral-rollups-sdk";
+import { Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+
+const commitPermissionIx = createCommitPermissionInstruction({
+  authority: [payer.publicKey, true],
+  permissionedAccount: [permissionedAccount.publicKey, false],
+});
+
+const tx = new Transaction().add(commitPermissionIx);
+const txSig = await sendAndConfirmTransaction(connection, tx, [payer]);
+console.log("TX:", txSig);
+```

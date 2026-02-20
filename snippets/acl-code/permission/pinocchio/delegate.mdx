@@ -1,0 +1,26 @@
+```rust
+use ephemeral_rollups_pinocchio::instruction::delegate_permission;
+use pinocchio::AccountView;
+
+pub fn process_delegate_permission(
+    accounts: &[&AccountView],
+    permission_program: &pinocchio::Address,
+    authority_is_signer: bool,
+    permissioned_account_is_signer: bool,
+) -> pinocchio::ProgramResult {
+    // Accounts: [payer, authority, permissioned_account, permission, system_program,
+    //           owner_program, delegation_buffer, delegation_record, 
+    //           delegation_metadata, delegation_program, validator (optional)]
+    
+    // Pass signer_seeds if permissioned_account is a PDA owned by your program
+    delegate_permission(
+        accounts,
+        permission_program,
+        authority_is_signer,
+        permissioned_account_is_signer,
+        signer_seeds, // Or None if permissioned_account is on-curve
+    )?;
+    
+    Ok(())
+}
+```

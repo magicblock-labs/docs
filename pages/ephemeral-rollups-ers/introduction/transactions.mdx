@@ -1,0 +1,96 @@
+---
+title: "Transaction Flow"
+description: "How Different Transactions Flow Through an Ephemeral Rollup"
+---
+
+Once deployed with delegation and undelgeation hooks, any instruction which is part of your program can be executed with ultra-low latency without changes.
+The **transaction will be processed** by Base Layer (Solana) or Ephemeral Rollup (ER) validators **depending on the account's delegation status**.
+
+<Columns cols={4}>
+  <Card
+    title="Standard Program Instruction"
+    icon="link"
+    href="#standard-program-instruction"
+  ></Card>
+  <Card
+    title="Delegate Transaction"
+    icon="link"
+    href="#delegate-transaction"
+  ></Card>
+  <Card
+    title="Undelegate Transaction"
+    icon="link"
+    href="#undelegate-transaction"
+  ></Card>
+  <Card
+    title="Commit Transaction"
+    icon="link"
+    href="#commit-transaction"
+  ></Card>
+</Columns>
+### Standard Program Instruction
+
+When executing any of your program instructions through a specialized RPC router, the transaction list of accounts is checked:
+
+- Ultra-low Latency: If **all writable accounts are delegated**, the transaction is executed with low-latency on ER.
+  - If **account is newly delegated**, the newly delegated account is cloned from Base Layer to ER with its original owner .
+  - If **account is delegated and already cloned from Base Layer to ER with its original owner**, existing delegated account on ER is utilized.
+  - If **account is undelegated and non-writable**, undelegated account is cloned from Base Layer to ER.
+- Normal: If **all writable accounts are undelegated**, the transaction is executed on Base Layer.
+- Error: If **writable accounts are delegated and undelegated**, the transaction fails.
+  <img class="w-full h-auto max-w-5xl" src="/images/interact.png" />
+
+### Delegate Transaction
+
+Before executing ultra-low latency transactions on ER, the state account must be delegated through the delegation hook of your program. This is what happens when delegating state account(s) from Base Layer to ER:
+
+- **Base Layer:** Account owner is locked and set to MagicBlock's Delegation Program.
+- **ER:** No account is created during delegation on ER yet, but afterwards upon any transaction to ER.
+
+Transaction fails if account is already delegated.
+
+<img class="w-full h-auto max-w-5xl" src="/images/delegate.png" />
+
+### Undelegate Transaction
+
+You can commit and undelegate the account from ER to Base Layer through the undelegation hook. This is what happens when undelegating state accounts:
+
+- **ER:** Commit for account(s) is scheduled. Account(s) are undelegated i.e. owner changes from original program to Delegation Program.
+- **Base Layer:** CPI callback is called to get, finalize and recreate account from ER to Base Layer with its original program as owner.
+
+Transaction fails if account is already undelegated.
+
+<img class="w-full h-auto max-w-5xl" src="/images/undelegate.png" />
+
+### Commit Transaction
+
+You can also sync the state from ER to Base Layer without changing delegation by committing the account state through a commit hook. This is what happens when committing states from ER to Base Layer:
+
+- **ER:** Commit for account(s) is scheduled.
+- **Base Layer:** CPI callback is called to get, finalize and update account from ER to Base Layer with Delegation Program as owner.
+
+Transaction fails if account is already undelegated.
+
+<img class="w-full h-auto max-w-5xl" src="/images/commit.png" />
+
+## Learn how to build with Native Rust and Anchor!
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  Integrate with an Anchor program
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  Integrate with an Native Rust program
+</Card>
+
+</CardGroup>

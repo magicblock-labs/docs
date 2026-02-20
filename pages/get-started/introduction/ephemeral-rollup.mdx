@@ -3,7 +3,7 @@ title: "Ephemeral Rollup"
 description: "Scaling solution for performant, composable applications"
 ---
 
-<img height="200" src="/images/architecture_overview.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
 
 Magicblock's core idea **leverages the Solana Virtual Machine (SVM)’s account-based structure and parallel execution** to optimize state management. By structuring the state into **clusters**, users can **lock one or multiple accounts** and temporarily shift state execution to a **dedicated auxiliary layer**—which we define as the **"ephemeral rollup" (ER)**.
 
@@ -37,7 +37,7 @@ The [white paper](https://arxiv.org/abs/2311.02650) describes the architecture a
 
 ## How are Transaction executed?
 
-<img height="200" src="/images/magic-router.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
 
 Once transactions are submitted via specialized RPCs, the provisioner detects delegation events and manages runtime provisioning based on configuration.Below is a high-level overview of the process of executing transactions in the ephemeral rollup:
 

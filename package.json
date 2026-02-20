@@ -1,0 +1,16 @@
+{
+  "name": "magicblock-docs",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "mintlify dev",
+    "build": "mintlify build",
+    "start": "mintlify serve"
+  },
+  "dependencies": {
+    "recharts": "^3.3.0"
+  },
+  "devDependencies": {
+    "@mintlify/cli": "^4.0.791"
+  }
+}

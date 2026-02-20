@@ -1,0 +1,49 @@
+```rust
+#[derive(BorshSerialize, BorshDeserialize, Debug)]
+pub struct Counter {
+    pub count: u64,
+}
+
+// Resize counter account
+pub fn resize_counter_account(
+    counter_acc: &AccountInfo,
+    payer: &AccountInfo,
+    program_id: &Pubkey,
+    new_size: usize,
+    bump: u8,
+) -> ProgramResult {
+    let rent = Rent::get()?;
+    let lamports_required = rent.minimum_balance(new_size);
+
+    let current_lamports = counter_acc.lamports();
+    if lamports_required > current_lamports {
+        let lamports_to_add = lamports_required - current_lamports;
+        invoke_signed(
+            &system_instruction::transfer(
+                &payer.key,
+                &counter_acc.key,
+                lamports_to_add,
+            ),
+            &[payer.clone(), counter_acc.clone()],
+            &[&[COUNTER_SEED, &[bump]]],
+        )?;
+    }
+
+    // Allocate new size
+    invoke_signed(
+        &system_instruction::allocate(&counter_acc.key, new_size as u64),
+        &[counter_acc.clone()],
+        &[&[COUNTER_SEED, &[bump]]],
+    )?;
+
+    // Assign back to program
+    invoke_signed(
+        &system_instruction::assign(&counter_acc.key, program_id),
+        &[counter_acc.clone()],
+        &[&[COUNTER_SEED, &[bump]]],
+    )?;
+
+    msg!("Counter account resized to {} bytes", new_size);
+    Ok(())
+}
+```

@@ -1,0 +1,35 @@
+```typescript Kit
+// Create assign instruction
+// The on-curve account must sign this instruction to change its owner
+const accountSigner = await cryptoKeyPairToTransactionSigner(userKeypair);
+const delegationProgramAddress = address(DELEGATION_PROGRAM_ID.toString());
+const assignInstruction = getAssignInstruction({
+  account: accountSigner,
+  programAddress: delegationProgramAddress,
+});
+
+// Create delegate instruction
+const delegateInstruction = await createDelegateInstruction({
+  payer: feePayerAddress,
+  delegatedAccount: userAddress,
+  ownerProgram: ownerProgramAddress,
+  validator: validatorAddress,
+});
+
+// Prepare transaction
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(feePayerAddress, tx),
+  (tx) =>
+    appendTransactionMessageInstructions(
+      [assignInstruction, delegateInstruction],
+      tx
+    )
+);
+// Send and confirm transaction (fee payer need to sign, on-curve account cannot be signer since delegated)
+const txHash = await connection.sendAndConfirmTransaction(
+  transactionMessage,
+  [userKeypair, feePayerKeypair],
+  { commitment: "confirmed", skipPreflight: true }
+);
+```

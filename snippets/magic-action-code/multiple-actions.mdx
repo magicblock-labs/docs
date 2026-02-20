@@ -1,0 +1,11 @@
+```rust
+let magic_builder = MagicInstructionBuilder {
+    payer: ctx.accounts.payer.to_account_info(),
+    magic_context: ctx.accounts.magic_context.to_account_info(),
+    magic_program: ctx.accounts.magic_program.to_account_info(),
+    magic_action: MagicAction::Commit(CommitType::WithHandler {
+        commited_accounts: vec![ctx.accounts.counter.to_account_info(), ...],
+        call_handlers: vec![call_handler, ...],
+    }),
+};
+```

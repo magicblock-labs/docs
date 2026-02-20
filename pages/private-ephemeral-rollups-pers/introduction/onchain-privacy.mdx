@@ -1,0 +1,66 @@
+---
+title: "Onchain Privacy"
+description: "The high-performance engine for real-time applications that require privacy and compliance on Solana"
+---
+
+import PerCards from "/snippets/per-cards.mdx";
+
+---
+
+### MagicBlock Private Ephemeral Rollup (PER)
+
+MagicBlock is bringing high-performance, general-purpose Trusted Execution Environments (TEEs) to Solana. We call this the Private Ephemeral Rollup (PER).
+
+By using the security guarantees of Intel Trust Domain Extension (TDX) architecture combined with MagicBlock’s Ephemeral Rollup (ER) technology, we’re making it possible to run sensitive logic inside of a hardware-secured environment, while inheriting the composability and speed of Solana.
+
+For the first time, builders can design applications that are simultaneously:
+
+- **Confidential**: state is protected from all unauthorized parties
+- **Scalable**: running inside an ER that can execute blocks at high throughput and low latency
+- **Composable**: still able to interoperate with other Solana programs
+- **Compliant**: easy-to-enforce compliance thanks to a fine-grained access control layer
+
+This enables use cases like confidential transfers, sealed-bid auctions, and secure identity flows on Solana.
+
+### Trusted Execution Environments on Intel TDX
+
+A trusted execution environment acts as a vault inside a CPU. Generally, when you run a program (e.g., a validator), the operating system can see and influence everything: the code, the state, and the memory. A TEE creates a hardware-secured space that prevents interference, even by the machine it’s running on.
+
+We use a TEE to protect the state of an Ephemeral Rollup. Normally, when you execute a smart contract onchain, every step of the process is visible: the program being called, the accounts, and the resulting state changes. Using the TEE, programs can selectively shield ER state.
+
+- Every account is public by default, like in Solana
+- Programs can explicitly define access rules for their accounts
+
+This means transfers, program calls, and interactions can avoid being broadcast publicly when desired.
+
+### Why TEE
+
+There are multiple privacy-preserving approaches used in blockchains. Each has different tradeoffs.
+
+| Solution                       | What is it?                                               | Pros                                                               | Cons                                                                                    |
+| ------------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| Trusted Execution Environments | Hardware-secured execution within a CPU                   | Near-native performance, run normal code                           | Trust assumption in vendor hardware                                                     |
+| Fully Homomorphic Encryption   | Compute directly on encrypted data                        | Data never decrypted                                               | Extremely slow, specialized tooling, difficult key management, bugs and vulnerabilities |
+| Zero Knowledge Proofs          | Prove something without revealing inputs                  | Efficient verification; strong for identity/compliance/correctness | Proving is heavy, bugs and vulnerabilities                                              |
+| Multi-party Computation        | Split a secret across multiple parties to compute jointly | Strong cryptographic guarantees                                    | Coordination overhead, high latency, specialized tooling, bugs and vulnerabilities      |
+
+- **ZK**: efficient verification, not optimized for general low-latency computation
+- **MPC**: shared trust, higher latency and coordination
+- **FHE**: powerful in theory, not ready for general usage today
+- **TEE**: practical confidentiality with real-time performance and familiar developer UX on Solana
+
+### Application Unlocks
+
+- **Confidential Transfers**: move assets privately without exposing balances or counterparties
+- **Sealed-Bid Auctions**: keep bids hidden until settlement for fair price discovery
+- **Private Games**: support games where revealing state undermines gameplay
+- **Enterprise and Compliance Flows**: run sensitive operations with blockchain guarantees while keeping data private
+- **Identity-Based Access**: verify group membership without revealing unnecessary account history
+
+import PerEndpoint from "/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+---
+
+<PerCards />

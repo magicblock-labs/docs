@@ -1,0 +1,237 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Router API",
+    "description": "JSON-RPC API for the MagicBlock Router.",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-router.magicblock.app",
+      "description": "Devnet - RPC Magic Router"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "getSignatureStatuses",
+        "description": "Returns the confirmation status for one or more signatures",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": [
+                      "2.0"
+                    ],
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "getSignatureStatuses"
+                    ],
+                    "default": "getSignatureStatuses"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "minItems": 1,
+                    "description": "Array of signature arrays",
+                    "default": [
+                      [
+                        "9hXHgR18oj4eZMx6sxL7i93PYkqzUx9qC1ardVoGGc8WpzZnFWfs3iRDj2xu9GZWvbv5P5gba7hkrWucU6PqzbB",
+                        "2CR2mYhjyyMh1YBEwThy7p7ghSQeopaRgc9CB3UKiAApBm5xoj6CbuKgA3fwxAWawRU36uodVcRzJGeUztwwGTMU"
+                      ]
+                    ]
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "id",
+                  "method",
+                  "params"
+                ]
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getSignatureStatuses",
+                "params": [
+                  [
+                    "9hXHgR18oj4eZMx6sxL7i93PYkqzUx9qC1ardVoGGc8WpzZnFWfs3iRDj2xu9GZWvbv5P5gba7hkrWucU6PqzbB",
+                    "2CR2mYhjyyMh1YBEwThy7p7ghSQeopaRgc9CB3UKiAApBm5xoj6CbuKgA3fwxAWawRU36uodVcRzJGeUztwwGTMU"
+                  ]
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": [
+                        "2.0"
+                      ],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "context": {
+                          "type": "object",
+                          "properties": {
+                            "apiVersion": {
+                              "type": "string"
+                            },
+                            "slot": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "apiVersion",
+                            "slot"
+                          ]
+                        },
+                        "value": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "confirmationStatus": {
+                                "type": "string",
+                                "enum": [
+                                  "finalized",
+                                  "confirmed",
+                                  "processed"
+                                ]
+                              },
+                              "confirmations": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "err": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
+                              },
+                              "slot": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "object",
+                                "properties": {
+                                  "Ok": {
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "Ok"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "confirmationStatus",
+                              "confirmations",
+                              "err",
+                              "slot",
+                              "status"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "context",
+                        "value"
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "default": null
+                    }
+                  },
+                  "required": [
+                    "jsonrpc",
+                    "id",
+                    "result",
+                    "error"
+                  ],
+                  "example": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "result": {
+                      "context": {
+                        "apiVersion": "2.2.1",
+                        "slot": 85828189
+                      },
+                      "value": [
+                        {
+                          "confirmationStatus": "finalized",
+                          "confirmations": null,
+                          "err": null,
+                          "slot": 85763743,
+                          "status": {
+                            "Ok": null
+                          }
+                        },
+                        {
+                          "confirmationStatus": "finalized",
+                          "confirmations": null,
+                          "err": null,
+                          "slot": 85763745,
+                          "status": {
+                            "Ok": null
+                          }
+                        }
+                      ]
+                    },
+                    "error": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

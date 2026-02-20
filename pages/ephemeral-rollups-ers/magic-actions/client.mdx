@@ -1,0 +1,88 @@
+---
+title: Client Implementation
+description: Client-side guide to building with Magic Actions
+---
+
+import Web3jsCode from "/snippets/magic-router-code/web3js.mdx";
+import KitCode from "/snippets/magic-router-code/kit.mdx";
+
+---
+
+### Quick Access
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+  >
+    Explore reference implementation on GitHub
+  </Card>
+</CardGroup>
+
+---
+
+### Setup Router Connection
+
+Use Magic Router to route and send transactions to ER and base layer.
+
+<CodeGroup>
+  <KitCode />
+  <Web3jsCode />
+</CodeGroup>
+
+### Transaction Flow
+
+1. Delegate counter to ER
+
+```ts
+const delegateTx = await program.methods
+  .delegate()
+  .accounts({
+    payer: anchor.Wallet.local().publicKey,
+    pda: pda,
+  })
+  .transaction();
+```
+
+2. Increment counter on ER in real-time
+
+```ts
+const incrementTx = await program.methods
+  .increment()
+  .accounts({
+    counter: pda,
+  })
+  .transaction();
+```
+
+3. Commit with Magic Action
+
+```ts
+const commitTx = await program.methods
+  .commitAndUpdateLeaderboard()
+  .accounts({ payer: wallet.publicKey /* your accounts */ })
+  .transaction();
+```
+
+### Examples
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart Ephemeral Rollups"
+    icon="play"
+    href="/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    End-to-end walkthrough on ER usage
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="route"
+    href="/pages/ephemeral-rollups-ers/introduction/magic-router"
+    iconType="duotone"
+  >
+    Router overview and flow
+  </Card>
+</CardGroup>

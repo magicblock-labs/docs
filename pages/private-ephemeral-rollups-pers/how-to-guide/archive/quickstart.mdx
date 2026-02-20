@@ -1,0 +1,148 @@
+---
+title: "Quickstart"
+description: "Enable privacy in any Solana program state account through MagicBlock's ER and Trusted Execution Environment on Intel TDX."
+---
+
+import Endpoints from "/snippets/endpoints.mdx";
+import Validators from "/snippets/validators.mdx";
+import Construction from "/snippets/construction.mdx";
+import Software from "/snippets/software.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/snippets/per-code/write-program.mdx";
+import DelegateCode from "/snippets/per-code/delegate.mdx";
+import RestrictCode from "/snippets/per-code/restrict.mdx";
+import AuthorizeCode from "/snippets/per-code/authorize.mdx";
+import TestCode from "/snippets/per-code/test.mdx";
+import DelegationInfo from "/snippets/delegation-info.mdx";
+
+import QuickAccessPER from "/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
+## Step-By-Step Guide
+
+<Steps>
+  <Step title={<a href="#1-write-program">Write your program</a>}>
+    Write your Solana program as you normally.
+  </Step>
+  <Step
+    title={
+      <a href="#2-restrict">
+        Add restrictions through permission hooks in your program.
+      </a>
+    }
+  >
+    Add CPI hooks that create groups and permissions that enable restrictions
+    for specific delegated accounts.
+  </Step>
+  <Step title={<a href="#3-delegate">Add delegation hooks in your program</a>}>
+    Add CPI hooks to delegate, commit and undelegate state accounts through
+    Ephemeral Rollup sessions.
+  </Step>
+  <Step title={<a href="#4-deploy">Deploy your program on Solana</a>}>
+    Deploy your Solana program using Anchor CLI.
+  </Step>
+  <Step
+    title={<a href="#5-authorize">Implement authorization in your client</a>}
+  >
+    Sign user message to retrieve authorization token from TEE endpoint.
+  </Step>
+  <Step title={<a href="#6-test">Execute transactions and test privacy</a>}>
+    Request for authorization token and send confidential transactions.
+  </Step>
+</Steps>
+
+---
+
+## Private Transfer Example
+
+<img
+  src="/images/gifs/per-short-2x-420w.gif"
+  alt="Private Payments GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+
+<Software />
+
+### Code Snippets
+
+<Tabs>
+    <Tab title="1. Write program">
+        A simple transfer program where tokens are tracked through deposit accounts, and locked in a vault account:
+        <WriteProgramCode />
+        [⬆️ Back to Top](#code-snippets)
+    </Tab>
+    <Tab title="2. Restrict">
+        Define account-level permissions in two steps:
+        1. Create user group
+        2. Create permissions for state accounts and user group:
+        <RestrictCode />
+        [⬆️ Back to Top](#code-snippets)
+    </Tab>
+        <Tab title="3. Delegate">
+        Enforce privacy of accounts through delegation to validator in TEE: 
+        <DelegateCode />
+        <DelegationInfo />
+        Specify your preferred delegation config such as auto commits and specific ER validator:
+        <Validators />
+
+        [⬆️ Back to Top](#code-snippets)
+    </Tab>
+    <Tab title="4. Deploy">
+        Now you’re program is upgraded and ready! Build and deploy to the desired cluster:
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ Back to Top](#code-snippets)
+    </Tab>
+    <Tab title="5. Authorize">
+        Set up interaction with ER RPC in TEE:
+        1. Verify integrity of TEE RPC via `https://pccs.phala.network/tdx/certification/v4`
+        2. Request an authorization token for user to interact with TEE endpoint
+        <AuthorizeCode />
+        [⬆️ Back to Top](#code-snippets)
+    </Tab>
+    <Tab title="6. Test">
+        Test private payments program using the authToken:
+
+        `https://tee.magicblock.app?token=${token}`
+        1. Initialize user deposit account (also for recipient)
+        2. Deposit tokens
+        3. Set permission for deposit
+        4. Delegate deposit
+        5. Transfer privately between delegated deposits
+        6. Undelegate deposit to Solana
+        7. Withdraw deposit
+
+        <TestCode />
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ Back to Top](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock Products
+
+import ProductCards from "/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

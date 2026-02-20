@@ -16,7 +16,7 @@ The frontend performs Intel TDX quote verification to attest that the ER server 
 - Verify the quote using the DCAP QVL WASM module against the collateral and current time
 
 ```ts
-import { verifyTeeRpcIntegrity } from '@magicblock-labs/ephemeral-rollups-sdk';
+import { verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
 
 const isIntegrityVerified = await verifyTeeRpcIntegrity(PRIVATE_ER_URL);
 ```
@@ -28,7 +28,7 @@ const isIntegrityVerified = await verifyTeeRpcIntegrity(PRIVATE_ER_URL);
 - Submit the signed challenge and receive an authorization token on success
 
 ```ts
-import { getAuthToken } from '@magicblock-labs/ephemeral-rollups-sdk';
+import { getAuthToken } from "@magicblock-labs/ephemeral-rollups-sdk";
 
 const { publicKey, signMessage } = useWallet();
 const token = await getAuthToken(PRIVATE_ER_URL, publicKey, signMessage);
@@ -43,7 +43,10 @@ function useEphemeralConnection() {
   const { authToken } = usePrivateRollupAuth();
   const ephemeralConnection = useMemo(() => {
     if (authToken) {
-      return new Connection(`${EPHEMERAL_RPC_URL}?token=${authToken}`, 'confirmed');
+      return new Connection(
+        `${EPHEMERAL_RPC_URL}?token=${authToken}`,
+        "confirmed"
+      );
     }
     return null;
   }, [authToken]);
@@ -51,9 +54,10 @@ function useEphemeralConnection() {
   return { ephemeralConnection };
 }
 ```
-import TeeEndpoint from '/snippets/tee-endpoint.mdx'
 
-<TeeEndpoint />
+import PerEndpoint from "/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
 <CardGroup cols={2}>
   <Card
     title="Authorization"

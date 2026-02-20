@@ -1,0 +1,267 @@
+---
+title: "Quickstart"
+description: "Any Solana program can be upgraded with Ephemeral Rollups by adding delegation capabilities."
+---
+
+import Endpoints from "/snippets/endpoints.mdx";
+import Validators from "/snippets/validators.mdx";
+import Software from "/snippets/software.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/snippets/anchor-counter-code/write-program.mdx";
+import DelegateCode from "/snippets/anchor-counter-code/delegate.mdx";
+import CommitCode from "/snippets/anchor-counter-code/commit.mdx";
+import UndelegateCode from "/snippets/anchor-counter-code/undelegate.mdx";
+import TestCode from "/snippets/anchor-counter-code/test.mdx";
+import ResizeCode from "/snippets/anchor-counter-code/resize.mdx";
+import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
+import MagicRouterSDK from "/snippets/magic-router-sdk.mdx";
+import DelegationInfo from "/snippets/delegation-info.mdx";
+import MagicActionExample from "/snippets/magic-action-example.mdx";
+
+import QuickAccesER from "/snippets/quick-access-er.mdx";
+import QuickAccessERFooter from "/snippets/quick-access-er-footer.mdx";
+
+---
+
+<QuickAccesER />
+
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Anchor Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## Step-By-Step Guide
+
+Build your program and upgrade it with delegation hooks with MagicBlock's Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
+
+<Steps>
+  <Step title={<a href="#1-write-program">Write your program</a>}>
+    Write your Solana program as you normally would.
+  </Step>
+  <Step
+    title={
+      <a href="#2-delegate">
+        Add delegation and undelegation hooks in your program
+      </a>
+    }
+  >
+    Add CPI hooks to delegate, commit and undelegate state accounts through
+    Ephemeral Rollup sessions.
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-deploy">Deploy your program on Solana.</a>}>
+    Deploy your program directly on Solana using Anchor or Solana CLI.
+  </Step>
+  <Step
+    title={
+      <a href="#4-test">
+        Ready to execute transactions for delegation and real-time speed
+      </a>
+    }
+  >
+    Send transactions without modifications on-chain and off-chain that also
+    comply with the SVM RPC specification.
+  </Step>
+</Steps>
+
+---
+
+## Counter Example
+
+<img
+  src="/images/gifs/counter-420w.gif"
+  alt="Counter GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+
+<Software />
+
+### Code Snippets
+
+<Tabs>
+  <Tab title="1. Write program">
+
+    The program implements two main instructions:
+
+    1. `initialize`: Sets the counter to 0
+    2. `increment`: Increments the counter by 1
+
+    The program implements specific instructions for delegating and undelegating the counter:
+
+    1. `Delegate`: Delegates counter from Base Layer to ER (called on Base Layer)
+    2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
+    3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
+    4. `Undelegate`:
+        - Schedules sync and undelegation of counter (called on ER)
+        - Undelegation triggered through callback instruction injected through #[ephemeral] (called on Base Layer through validator CPI)
+    <WriteProgramCode />
+
+    Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we're adding the `ephemeral` macro for undelegation and `delegate` macro to inject some useful logic to interact with the delegation program.
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="2. Delegate">
+      <Validators />
+    1. Add `ephemeral-rollups-sdk` with Anchor features to your program
+
+    ```bash
+    cargo add ephemeral-rollups-sdk --features anchor
+    ```
+
+    Import `delegate`, `commit`, `ephemeral`, `DelegateConfig`, `commit_accounts` and `commit_and_undelegate_accounts`:
+
+    ```rust
+    use ephemeral_rollups_sdk::anchor::{
+      commit,
+      delegate,
+      ephemeral
+    };
+    use ephemeral_rollups_sdk::cpi::DelegateConfig;
+    use ephemeral_rollups_sdk::ephem::{
+      commit_accounts,
+      commit_and_undelegate_accounts
+      };
+    ```
+
+    2.  Add `delegate` macro and instruction, `ephemeral` macro, and `undelegate` instruction to your program. Specify your preferred delegation config such as auto commits and specific ER validator:
+    <DelegateCode />
+    <CommitCode />
+    <UndelegateCode />
+
+    <DelegationInfo />
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title="3. Deploy">
+    Now you’re program is upgraded and ready! Build and deploy to the desired
+    cluster:
+
+    ```bash
+    anchor build && anchor deploy
+    ```
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title="4. Test">
+    Ready to execute transactions for delegation and real-time speed.
+    <Validators />
+
+    ```bash
+    anchor test --skip-build --skip-deploy --skip-local-validator
+    ```
+    Run the following test:
+    <TestCode />
+
+    To make it easier to integrate via the frontend, we created the [Magic Router](/pages/ephemeral-rollups-ers/introduction/magic-router). You send transactions directly to the magic router, and we can determine for you whether it should be routed to the [Ephemeral Rollup](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) or base layer.
+
+    <Endpoints />
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+</Tabs>
+
+---
+
+### Advanced Code Snippets
+
+<Tabs>
+  <Tab title="Resize PDA">
+    When resizing a delegated PDA:
+    - PDA must have enough lamports to remain rent-exempt for the new account size.
+    - If additional lamports are needed, the **payer account must be delegated** to provide the difference.
+    - PDA must be owned by the program, and the transaction must include any signer(s) required for transferring lamports.
+    - Use `system_instruction::allocate`
+
+    <ResizeCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Magic Router">
+
+    <MagicRouterSDK />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Magic Action">
+      ### Quick Access
+
+      <CardGroup cols={2}>
+        <Card
+          title="Magic Actions Example"
+          icon="code"
+          href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+          iconType="duotone"
+        >
+          Explore reference implementation on GitHub
+        </Card>
+      </CardGroup>
+    Attach one or more instructions that run automatically on the Solana base layer immediately after an Ephemeral Rollup
+    (ER) commit.
+    [Learn more about Magic Action](/pages/ephemeral-rollups-ers/magic-actions/overview.mdx)
+    <MagicActionExample />
+
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="On-Curve Delegation">
+    <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<QuickAccessERFooter />
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock Products
+
+import ProductCards from "/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

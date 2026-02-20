@@ -1,0 +1,28 @@
+import ActionCode from "/snippets/magic-action-code/action.mdx";
+import CommitWithActionCode from "/snippets/magic-action-code/commit-with-action.mdx";
+import MultipleActionCode from "/snippets/magic-action-code/multiple-actions.mdx";
+import OtherActionsCode from "/snippets/magic-action-code/other-actions-code.mdx";
+
+### 1) Create action instruction
+
+The instruction `update_leaderboard` runs on the base layer immediately after commit.
+
+<ActionCode />
+
+### 2) Build the commit instruction with the action
+
+The commit instruction `commit_and_update_leaderboard` runs on the ER and schedules the commit with action.
+
+<CommitWithActionCode />
+
+### Execute multiple actions
+
+You can commit multiple accounts and chain several actions. Actions execute sequentially.
+
+<MultipleActionCode />
+
+### Other actions
+
+Actions can be executed with undelegation and without any commits.
+
+<OtherActionsCode />

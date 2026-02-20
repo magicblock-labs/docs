@@ -1,0 +1,17 @@
+```rust
+use ephemeral_rollups_sdk::access_control::{
+    instructions::UpdatePermissionCpiBuilder,
+    structs::MembersArgs
+};
+
+// Update permission and modify members
+// Either authority or permissioned_account must sign based on AUTHORITY_FLAG
+UpdatePermissionCpiBuilder::new(&permission_program)
+    .authority(&payer, true)  // authority can sign if they have AUTHORITY_FLAG
+    .permissioned_account(&permissioned_account, true)  // or permissioned_account can sign
+    .permission(&permission)
+    // Setting members to None makes the permission public (temporarily visible)
+    // This is useful for transitional states during delegation/undeligation
+    .args(MembersArgs { members: None })
+    .invoke_signed(&[seed_refs.as_slice()])?;
+```

@@ -1,0 +1,335 @@
+---
+title: "Access Control"
+description: "Learn how to manage fine-grained access control and member permissions in Private Ephemeral Rollups."
+---
+
+import CreatePermissionRust from "/snippets/acl-code/permission/rust/create.mdx";
+import UpdatePermissionRust from "/snippets/acl-code/permission/rust/update.mdx";
+import DelegatePermissionRust from "/snippets/acl-code/permission/rust/delegate.mdx";
+import CommitAndUndelegatePermissionRust from "/snippets/acl-code/permission/rust/commit_and_undelegate.mdx";
+import ClosePermissionRust from "/snippets/acl-code/permission/rust/close.mdx";
+
+import CreatePermissionWeb3js from "/snippets/acl-code/permission/web3js/create.mdx";
+import UpdatePermissionWeb3js from "/snippets/acl-code/permission/web3js/update.mdx";
+import DelegatePermissionWeb3js from "/snippets/acl-code/permission/web3js/delegate.mdx";
+import CommitAndUndelegatePermissionWeb3js from "/snippets/acl-code/permission/web3js/commit_and_undelegate.mdx";
+import ClosePermissionWeb3js from "/snippets/acl-code/permission/web3js/close.mdx";
+
+import CreatePermissionKit from "/snippets/acl-code/permission/kit/create.mdx";
+import UpdatePermissionKit from "/snippets/acl-code/permission/kit/update.mdx";
+import DelegatePermissionKit from "/snippets/acl-code/permission/kit/delegate.mdx";
+import CommitAndUndelegatePermissionKit from "/snippets/acl-code/permission/kit/commit_and_undelegate.mdx";
+import ClosePermissionKit from "/snippets/acl-code/permission/kit/close.mdx";
+
+import CreatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/create.mdx";
+import UpdatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/update.mdx";
+import DelegatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/delegate.mdx";
+import CommitAndUndelegatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/commit_and_undelegate.mdx";
+import ClosePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/close.mdx";
+
+import MemberFlagsRust from "/snippets/acl-code/member/rust.mdx";
+import MemberFlagsWeb3js from "/snippets/acl-code/member/web3js.mdx";
+import MemberFlagsKit from "/snippets/acl-code/member/kit.mdx";
+import MemberFlagsPinocchio from "/snippets/acl-code/member/pinocchio.mdx";
+
+import AuthorizationWeb3js from "/snippets/acl-code/authorization/web3js.mdx";
+import AuthorizationKit from "/snippets/acl-code/authorization/kit.mdx";
+
+import PerCards from "/snippets/per-cards.mdx";
+import AclCards from "/snippets/acl-cards.mdx";
+import PerEndpoint from "/snippets/per-endpoint.mdx";
+import Validators from "/snippets/validators.mdx";
+
+---
+
+<AclCards />
+
+---
+
+## Overview
+
+Private Ephemeral Rollups are [Ephemeral Rollups](/pages/ephemeral-rollups-ers/introduction/why) that enable fine-grained permission over permissioned accounts in a [Trusted Execution Environment](/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) with [compliance](/pages/private-ephemeral-rollups-pers/introduction/compliance-framework) at its heart. Each permission account maintains a list of members with specific flags that determine what actions they can perform.
+
+### Key Concepts
+
+- **Permission Account**: A PDA that stores access control rules for a specific account
+- **Members**: Addresses granted specific permissions via flags
+- **Flags**: Bitmasks that define what a member can do (authority, view logs, view balances, etc.)
+- **Public Permissions**: When members are set to `None`, the permissioned account becomes temporarily visible
+
+---
+
+## Member Flags
+
+Member flags define fine-grained permissions for each member. Flags can be combined using bitwise OR to grant multiple permissions.
+
+**Flag Descriptions:**
+
+- **AUTHORITY**: Allows a member to update and delegate permission settings, add/remove other members, and update member flags.
+- **TX_LOGS**: Allows a member to view transaction execution logs.
+- **TX_BALANCES**: Allows a member to view account balance changes.
+- **TX_MESSAGE**: Allows a member to view transaction message data.
+- **ACCOUNT_SIGNATURES**: Allows a member to view account signatures
+
+<Tabs>
+  <Tab title="Rust SDK">
+    <MemberFlagsRust />
+  </Tab>
+  <Tab title="Pinocchio">
+    <MemberFlagsPinocchio />
+  </Tab>
+  <Tab title="Web3.js">
+    <MemberFlagsWeb3js />
+  </Tab>
+  <Tab title="Kit">
+    <MemberFlagsKit />
+  </Tab>
+</Tabs>
+---
+
+## Permission Lifecycle
+
+The typical lifecycle of a permissioned account requires interaction with MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
+
+<Steps>
+  <Step title={<a href="#1-create">Create Permission</a>}>
+    Initialize a new permission account with initial members and their flags.
+  </Step>
+  <Step title={<a href="#2-delegate">Delegate Permission</a>}>
+    Delegate the permission to Private Ephemeral Rollup to enable enforcement
+    and real-time access control.
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-update">Update Permission</a>}>
+    Add, remove, or modify member permissions as needed. Updates can be made in
+    real-time on Private Ephemeral Rollup.
+  </Step>
+  <Step title={<a href="#4-request">Make Request</a>}>
+    Before making requests, verify TEE RPC integrity and obtain an authorization
+    token. Only members with appropriate flags can access or modify the account
+    state.
+  </Step>
+  <Step title={<a href="#5-commit--undelegate">Commit and Undelegate</a>}>
+    Sync the final state back to Solana and return the account to Base Layer
+    control.
+  </Step>
+  <Step title={<a href="#6-close">Close Permission</a>}>
+    Close the permission account and reclaim its lamports when no longer needed.
+  </Step>
+</Steps>
+
+---
+
+## Permission Operations
+
+<Tabs>
+  <Tab title="1. Create">
+    Once you've created your program, you can add permission and delegation hooks to control access to your accounts. For example, see [Quickstart](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart).
+    
+    Create a new permission account with initial members and their flags via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <CreatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CreatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CreatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **Use Cases:**
+
+    - Initialize access control for a new delegated account
+    - Set up authority members and their permissions
+    - Define who can view transaction details
+
+
+    [⬆️ Back to Top](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="2. Delegate">
+    Delegate a permissioned account to enable low-latency Private Ephemeral Rollup execution via MagicBlock's Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`.
+
+    <Validators />
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <DelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <DelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <DelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <DelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **Use Cases:**
+
+    - Enable ER execution for a permissioned account
+    - Designate a specific validator to execute state changes
+    - Set up delegation for real-time transaction processing
+
+    **Important:**
+
+    - Either the authority or permissioned_account must sign based on AUTHORITY_FLAG
+    - The validator processes transactions at ER speed
+    - Commit frequency determines how often state syncs to Solana
+    - **Once delegated to Private Ephemeral Rollup, the permission is enforced** - only members with appropriate flags can access or modify the account state
+
+    [⬆️ Back to Top](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="3. Update">
+    Modify existing members or their flags in a permission account via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <UpdatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <UpdatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **Use Cases:**
+
+    - Add new members to a permission group
+    - Revoke permissions by removing members
+    - Change member flags to grant/restrict access
+    - Set members to `None` to make account temporarily visible
+
+    [⬆️ Back to Top](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="4. Request">
+    When making requests to Private Ephemeral Rollup, you must first establish authorization:
+
+    <PerEndpoint />
+
+    **Authorization Steps:**
+
+    1. **Verify TEE RPC Integrity**: Verify the TEE RPC server runs on genuine Intel TDX hardware using its TDX quote and Intel-issued attestation certificates
+    2. **Request Authorization Token**: Sign a challenge message to receive an authorization token
+    3. **Create Connection**: Pass the authorization token inside header or as query parameter
+
+    <Tabs>
+      <Tab title="Kit">
+        <AuthorizationKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <AuthorizationWeb3js />
+      </Tab>
+    </Tabs>
+
+    **Account Visibility:**
+
+    - **By default**: All accounts are transparent and accessible to any authorized user
+    - **With permissions**: Once an account is permissioned through the permission system, access control rules are enforced during every request
+    - Only members with appropriate flags can access or modify permissioned accounts and transactions
+
+    **Key Points:**
+
+    - Requests are executed in real-time on the validator
+    - Member flags determine what each user can do
+    - Permissions can be updated dynamically during execution
+    - Updates take effect immediately on the Private Ephemeral Rollup
+
+    [⬆️ Back to Top](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="5. Commit & Undelegate">
+    The latest permission state on Private Ephemeral Rollup enforces access control. For closing permission account, update permission members before undelegating permission to Solana.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <CommitAndUndelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CommitAndUndelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CommitAndUndelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CommitAndUndelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    [⬆️ Back to Top](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="6. Close">
+    Close a permissioned account and reclaim its lamports on Solana.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <ClosePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <ClosePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <ClosePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <ClosePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **Use Cases:**
+
+    - Clean up unused permission accounts
+    - Reclaim SOL from closed accounts
+
+    **Important:**
+
+    - The permission must be undelegated to Solana first
+    - If delegated, call `commit_and_undelegate` before closing
+    - Lamports are returned to the payer
+
+    [⬆️ Back to Top](#permission-lifecycle)
+
+  </Tab>
+</Tabs>
+
+---
+
+## Best Practices
+
+1. **Authority Management**: Always assign AUTHORITY_FLAG to at least one trusted member
+2. **Least Privilege**: Grant only necessary flags to each member
+3. **Real-time Updates**: Permissions can be updated in real-time on Private Ephemeral Rollup without undelegating, allowing dynamic access control adjustments
+4. **Cleanup**: Undelegate and close unused permission accounts to free SOL
+
+---
+
+## Security Considerations
+
+- **Signer Validation**: Only members with AUTHORITY_FLAG or program with permissioned account can authorize changes
+- **Public Accounts**: Setting members to `None` makes the account publicly visible
+- **Access Auditing**: Use member flags to audit and control access
+
+---
+
+<PerCards />

@@ -1,0 +1,56 @@
+---
+title: "Introduction"
+description: "Private Ephemeral SPL Token API Documentation"
+---
+
+## Overview
+
+The Private Ephemeral SPL Token API allows you to build transactions with SPL tokens on MagicBlock's Private Ephemeral Rollup. This API provides endpoints to manage ephemeral token accounts, deposits, withdrawals, and delegation operations.
+
+- [**Get Config**](/api-reference/per-api/getConfig) - Retrieve API configuration settings
+- [**Deposit**](/api-reference/per-api/deposit) - Initialize accounts, deposit tokens, and delegate in a single transaction
+- [**Transfer Amount**](/api-reference/per-api/transferAmount) - Transfer tokens between ephemeral ATAs privately
+- [**Prepare Withdrawal**](/api-reference/per-api/prepareWithdrawal) - Undelegate ephemeral ATA in preparation for withdrawal
+- [**Withdraw**](/api-reference/per-api/withdraw) - Withdraw tokens from an ephemeral ATA
+
+```
+┌──────────────────────────────────┐
+│ 1. Deposit (Solana)              │
+├──────────────────────────────────┤
+│ • Initializes relevant accounts  │
+│ • Deposits tokens (if any)       │
+│ • Delegates relevant accounts    │
+└──────────────────────────────────┘
+            ↓
+┌──────────────────────────────────┐
+│ 2. Transfer Amount (PER)         │
+├──────────────────────────────────┤
+│ • Transfers tokens privately     │
+│ • Sender → Receiver              │
+└──────────────────────────────────┘
+            ↓
+┌──────────────────────────────────┐
+│ 3. Prepare Withdrawal (PER)      │
+├──────────────────────────────────┤
+│ • Undelegates ephemeral ATA      │
+└──────────────────────────────────┘
+            ↓
+┌──────────────────────────────────┐
+│ 4. Withdraw (Solana)             │
+├──────────────────────────────────┤
+│ • Withdraws tokens to user ATA   │
+└──────────────────────────────────┘
+```
+
+## Response Format
+
+### Transaction Responses (POST endpoints)
+
+All successful POST responses return a transaction object with the following structure:
+
+```json
+{
+  "transaction": "base64-encoded-transaction",
+  "message": "Transaction created successfully"
+}
+```

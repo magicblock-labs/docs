@@ -1,0 +1,226 @@
+---
+title: "Solana Program"
+description: "Learn how to write a simple Rust program that delegates and increments a counter on Solana"
+---
+
+import Endpoints from "/snippets/endpoints.mdx";
+import Validators from "/snippets/validators.mdx";
+import SoftwareRust from "/snippets/software-rust.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
+
+import DelegateCode from "/snippets/rust-counter-code/delegate.mdx";
+import CommitCode from "/snippets/rust-counter-code/commit.mdx";
+import UndelegateCode from "/snippets/rust-counter-code/undelegate.mdx";
+import InstructionsCode from "/snippets/rust-counter-code/instructions.mdx";
+import ResizeCode from "/snippets/rust-counter-code/resize.mdx";
+import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
+
+import QuickAccesERRust from "/snippets/quick-access-er-rust.mdx";
+
+---
+
+<QuickAccesERRust />
+
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/b77bwSGDHK0?si=Oknc5f8CuC17WBnV&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Rust Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## Step-By-Step Guide
+
+Build your program and upgrade it with delegation hooks with MagicBlock’s Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
+
+<Steps>
+  <Step
+    title={
+      <a href="#1-write-program">
+        Write program and add delegation instructions
+      </a>
+    }
+  >
+    Write your Solana program as you normally would.
+  </Step>
+  <Step title={<a href="#2-delegate">Delegate PDA on Base Layer</a>}>
+    Add CPI hooks to delegate, commit and undelegate state accounts through
+    Ephemeral Rollup sessions.
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-commit">Commit PDA on ER</a>}>
+    Deploy your program directly on Solana using Solana CLI.
+  </Step>
+  <Step title={<a href="#4-undelegate">Undelegate PDA on ER</a>}>
+    Send transactions without modifications on-chain and off-chain that also
+    comply with the SVM RPC specification.
+  </Step>
+</Steps>
+
+---
+
+## Counter Example
+
+<SoftwareRust />
+
+### Code Snippets
+
+<Tabs>
+  <Tab title="1. Write Program">
+
+    The program implements two main instructions:
+
+    1. `InitializeCounter`: Initialize and sets the counter to 0 (called on Base Layer)
+    2. `IncreaseCounter`: Increments the initialized counter by X amount (called on Base Layer or ER)
+
+    The program implements specific instructions for delegating and undelegating the counter:
+
+    1. `Delegate`: Delegates counter from Base Layer to ER (called on Base Layer)
+    2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
+    3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
+    4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
+
+    Here's the core structure of our program:
+
+    {" "}
+    <InstructionsCode />
+    <Note>
+      Your "Undelegate" instruction must have the exact discriminator. It is never
+      called by you, instead the validator on the Base Layer will callback with a
+      CPI into your program after undelegating your account on ER.
+    </Note>
+
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="2. Delegate">
+    ### Delegating the Counter PDA
+
+    In order to delegate the counter PDA, and make it writable in an Ephemeral Rollup session, we need to add an instruction which
+    internally calls the `delegate_account` function. `delegate_account` will CPI to the delegation program, which upon validation will gain ownership of the account.
+    After this step, an ephemeral validator can start processing transactions on the counter PDA and propose state diff trough the delegation program.
+
+    <Card
+      title="Transaction (Base Layer): Delegate"
+      icon="magnifying-glass"
+      href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+      iconType="duotone"
+    >
+      Inspect transactions details on Solana Explorer
+    </Card>
+
+    <DelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+    <Tab title="3. Commit">
+    ### Committing while the PDA is delegated
+
+    The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
+
+    <CardGroup cols={2}>
+      <Card
+        title="Transaction (ER): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+      <Card
+        title="Transaction (Base layer): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+    </CardGroup>
+
+    <CommitCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="4. Undelegate">
+    ### Undelegating the PDA
+
+    Undelegating the PDA is done by calling the `commit_and_undelegate_accounts` as part of some instruction.
+    Undelegation commit the latest state and give back the ownership of the PDA to the owner program. After undelegating and finalizing the state, the validator will create a callback CPI into "undelegate" on the Base Layer.
+
+    <CardGroup cols={2}>
+      <Card
+        title="Transaction (ER): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+      <Card
+        title="Transaction (Base layer): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+        iconType="duotone"
+      >
+        Inspect transaction details on Solana Explorer
+      </Card>
+    </CardGroup>
+
+    <UndelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+</Tabs>
+
+---
+
+### Advanced Code Snippets
+
+<Tabs>
+  <Tab title="Resize PDA">
+    When resizing a delegated PDA:
+    - PDA must have enough lamports to remain rent-exempt for the new account size.
+    - If additional lamports are needed, the **payer account must be delegated** to provide the difference.
+    - PDA must be owned by the program, and the transaction must include any signer(s) required for transferring lamports.
+    - Use `system_instruction::allocate`
+
+    <ResizeCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="On-Curve Delegation">
+
+    <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

@@ -1,0 +1,150 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Router API",
+    "description": "JSON-RPC API for the MagicBlock Router.",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-router.magicblock.app",
+      "description": "Devnet - RPC Magic Router"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "getBlockhashForAccounts",
+        "description": "Get blockhash for multiple account addresses.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": [
+                      "2.0"
+                    ],
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "getBlockhashForAccounts"
+                    ],
+                    "default": "getBlockhashForAccounts"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "maxItems": 100,
+                      "description": "Array of account addresses (max 100)"
+                    },
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "description": "Single account-address array argument",
+                    "default": [
+                      [
+                        "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                      ]
+                    ]
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "id",
+                  "method",
+                  "params"
+                ]
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getBlockhashForAccounts",
+                "params": [
+                  [
+                    "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                    "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                  ]
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": [
+                        "2.0"
+                      ],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "blockhash": {
+                          "type": "string",
+                          "description": "The blockhash for the accounts"
+                        },
+                        "lastValidBlockHeight": {
+                          "type": "integer",
+                          "description": "The last valid block height"
+                        }
+                      },
+                      "required": [
+                        "blockhash",
+                        "lastValidBlockHeight"
+                      ]
+                    },
+                    "error": {
+                      "type": "object",
+                      "default": null
+                    }
+                  }
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {
+                    "blockhash": "9tJWqpCLuFZ8PWQZJaYqydTXzhTCNmrtGraG2wyZXrP7",
+                    "lastValidBlockHeight": 399468682
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

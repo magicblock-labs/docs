@@ -1,0 +1,27 @@
+```rust
+use ephemeral_rollups_pinocchio::instruction::close_permission;
+use pinocchio::AccountView;
+
+pub fn process_close_permission(
+    accounts: &[&AccountView],
+    permission_program: &pinocchio::Address,
+    authority_is_signer: bool,
+    permissioned_account_is_signer: bool,
+) -> pinocchio::ProgramResult {
+    // Accounts: [payer, authority, permissioned_account, permission]
+    // IMPORTANT: The permission must be undelegated to Solana first
+    // If the permission is still delegated, this operation will fail
+    
+    // Pass signer_seeds if permissioned_account is a PDA owned by your program
+    close_permission(
+        accounts,
+        permission_program,
+        authority_is_signer,
+        permissioned_account_is_signer,
+        signer_seeds, // Or None if permissioned_account is on-curve
+    )?;
+
+    // The permission account lamports are transferred to the payer
+    Ok(())
+}
+```

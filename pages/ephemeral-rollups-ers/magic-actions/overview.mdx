@@ -1,0 +1,58 @@
+---
+title: Introduction
+description: Automatically execute base-layer actions while Delegated
+---
+
+import DemoCards from "/snippets/demo-cards.mdx";
+
+---
+
+### Quick Access
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+  >
+    Explore reference implementation on GitHub
+  </Card>
+</CardGroup>
+
+---
+
+### What are Magic Actions?
+
+Magic Actions let you attach one or more call instructions that run automatically on the Solana base layer immediately after an Ephemeral Rollup
+(ER) commit. Use committed state as inputs to orchestrate multi-step workflows in
+a single transaction.
+
+- **State sync**: propagate ER changes to base-layer accounts
+- **Cross-program composition**: invoke other programs after commit
+- **Automated workflows**: chain complex operations from one commit
+- **Event-driven actions**: branch logic based on committed state
+
+### How it works
+
+1. Delegate accounts to an Ephemeral Rollup
+2. Execute low-latency transactions on Ephemeral Rollup
+3. Commit to base layer with attached instruction actions while staying delegated
+4. Handlers execute automatically using the freshly committed state
+
+---
+
+### See also
+
+Magic Action work along with Ephemeral Rollups.
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollups"
+    icon="bolt"
+    href="/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Delegation, Commitment & Undelegation
+  </Card>
+</CardGroup>

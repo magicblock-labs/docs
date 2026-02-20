@@ -1,0 +1,54 @@
+---
+title: "Delegation, Commitment & Undelegation"
+description: "Execute Transactions, Synchronize States, all in real-time."
+---
+
+import Validators from "/snippets/validators.mdx";
+
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
+
+[Magicblock's Ephemeral Rollup](/pages/overview/additional-information/whitepaper) **leverages the Solana Virtual Machine (SVM)’s account-based structure and parallel execution** to optimize state management. By structuring the state into **clusters**, users can **lock one or multiple accounts** and temporarily shift state execution to a **dedicated auxiliary layer**— "Ephemeral Rollup (ER)". A dynamic fraud-proof mechanism enables fast state finalization through a decentralized Security Committee, see [whitepaper](/public/Ephemeral_Rollups_Fraud_Proof.pdf).
+
+---
+
+## Account Lifecyle for executing transactions in real-time with ER:
+
+<img
+  class="w-full h-auto max-w-5xl"
+  src="/images/magicblock-delegation-lifecycle.png"
+/>
+
+<Steps>
+  <Step title="Delegate Account">
+    State accounts must be delegated to an specific ER validator first by
+    changing the account owner to the [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` and specifying parameters
+    like ER validator, account lifetime and synchronization frequency.
+    <Validators />
+
+  </Step>
+  <Step title="Execute Transaction in real-time">
+    Delegated state accounts are updated in real-time with transactions on the
+    ER directly or via [Magic
+    Router](/pages/ephemeral-rollups-ers/introduction/magic-router). The
+    **initial transaction on ER clones the delegated account** from base layer
+    to the ephemeral rollup.
+  </Step>
+  <Step title="Commit State">
+    The operator commits the ephemeral state to the base layer **periodically or
+    on-demand**, including new state and relevant pointers. The account state is
+    finalized using a fraud-proof mechanism as detailed in the paper.
+  </Step>
+  <Step title="Execute Transaction in real-time continuously">
+    Delegated account states can continuously be updated in real-time on the ER
+    directly or via [Magic
+    Router](/pages/ephemeral-rollups-ers/introduction/magic-router).
+  </Step>
+  <Step title="Undelegate Account">
+    Delegated account states are committed through ER validator to the base
+    layer and the account owner are reversed from the [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` to the original owner.
+  </Step>
+</Steps>
