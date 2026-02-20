@@ -1,0 +1,37 @@
+import OncurveDelegationWeb3jsCode from "/snippets/oncurve-delegation-web3js.mdx";
+import OncurveDelegationKitCode from "/snippets/oncurve-delegation-kit.mdx";
+import OncurveUndelegationWeb3jsCode from "/snippets/oncurve-undelegation-web3js.mdx";
+import OncurveUndelegationKitCode from "/snippets/oncurve-undelegation-kit.mdx";
+
+### Quick Access
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="wallet"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/oncurve-delegation"
+    iconType="duotone"
+  >
+    On-Curve Delegation
+  </Card>
+</CardGroup>
+
+    Required signers for delegating an on-curve account:
+      1. On-curve account to be delegated
+      2. Fee payer
+
+    Required instructions for delegating on-curve accounts:
+      1. Assign System Account to Delegation Program
+      2. Delegate to Delegation Program
+
+    <CodeGroup>
+      <OncurveDelegationKitCode />
+      <OncurveDelegationWeb3jsCode />
+    </CodeGroup>
+
+    Direct commit and undelegate through Magic Program only.
+
+    <CodeGroup>
+      <OncurveUndelegationKitCode />
+      <OncurveUndelegationWeb3jsCode />
+    </CodeGroup>

@@ -1,21 +1,39 @@
 {
-    "openapi": "3.0.0",
+    "openapi": "3.1.0",
     "info": {
-        "title": "MagicBlock RPC Router API",
-        "description": "The MagicBlock RPC Router is an auxiliary service designed to provide dynamic request routing capabilities within the MagicBlock Ephemeral Rollups (ER) infrastructure.",
-        "version": "1.0.0"
+        "title": "MagicBlock Router API",
+        "description": "JSON-RPC API for the MagicBlock Router.",
+        "version": "2.0.0"
     },
     "servers": [
         {
-            "url": "https://devnet-router.magicblock.app",
-            "description": "MagicBlock Router RPC Router"
+        "url": "https://devnet-router.magicblock.app",
+        "description": "Devnet - RPC Magic Router"
+        },
+        {
+        "url": "https://devnet-as.magicblock.app",
+        "description": "Devnet - Asia ER Validator"
+        },
+        {
+        "url": "https://devnet-eu.magicblock.app",
+        "description": "Devnet - EU ER Validator"
+        },
+        {
+        "url": "https://devnet-us.magicblock.app",
+        "description": "Devnet - US ER Validator"
         }
     ],
     "paths": {
         "/getRoutes": {
             "post": {
                 "summary": "getRoutes",
-                "description": "Get available ephemeral rollup nodes",
+                "servers": [
+                    {
+                    "url": "https://devnet-router.magicblock.app",
+                    "description": "Devnet - RPC Magic Router"
+                    }
+                ],
+                "description": "Get available ephemeral rollup nodes from the Magic Router",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -100,18 +118,25 @@
                                     "id": 1,
                                     "result": [
                                         {
-                                            "identity": "validator_pubkey",
-                                            "fqdn": "validator_fqdn",
-                                            "baseFee": 5000,
-                                            "blockTimeMs": 400,
-                                            "countryCode": "US"
+                                        "identity": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                                        "fqdn": "https://devnet-as.magicblock.app",
+                                        "baseFee": 0,
+                                        "blockTimeMs": 50,
+                                        "countryCode": "SGP"
                                         },
                                         {
-                                            "identity": "validator_pubkey",
-                                            "fqdn": "validator_fqdn",
-                                            "baseFee": 3000,
-                                            "blockTimeMs": 350,
-                                            "countryCode": "EU"
+                                        "identity": "MEUGGrYPxKk17hCr7wpT6s8dtNokZj5U2L57vjYMS8e",
+                                        "fqdn": "https://devnet-eu.magicblock.app",
+                                        "baseFee": 0,
+                                        "blockTimeMs": 50,
+                                        "countryCode": "DEU"
+                                        },
+                                        {
+                                        "identity": "MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd",
+                                        "fqdn": "https://devnet-us.magicblock.app",
+                                        "baseFee": 0,
+                                        "blockTimeMs": 50,
+                                        "countryCode": "USA"
                                         }
                                     ]
                                 }
@@ -124,7 +149,7 @@
         "/getIdentity": {
             "post": {
                 "summary": "getIdentity",
-                "description": "Get the identity information of the current router node",
+                "description": "Get the identity information of the current ER Validator",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -174,11 +199,11 @@
                                             "properties": {
                                                 "identity": {
                                                     "type": "string",
-                                                    "description": "The public key identity of the router node"
+                                                    "description": "The public key identity of the ER node"
                                                 },
                                                 "fqdn": {
                                                     "type": "string",
-                                                    "description": "The fully qualified domain name of the router node"
+                                                    "description": "The fully qualified domain name of the ER node"
                                                 }
                                             },
                                             "required": ["identity", "fqdn"]
@@ -193,8 +218,8 @@
                                     "jsonrpc": "2.0",
                                     "id": 1,
                                     "result": {
-                                        "identity": "validator_pubkey",
-                                        "fqdn": "validator_fqdn"
+                                        "identity": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                                        "fqdn": "https://devnet-as.magicblock.app/"
                                     }
                                 }
                             }
@@ -306,8 +331,8 @@
                                     "jsonrpc": "2.0",
                                     "id": 1,
                                     "result": {
-                                        "blockhash": "example_blockhash",
-                                        "lastValidBlockHeight": 123456789
+                                        "blockhash": "9tJWqpCLuFZ8PWQZJaYqydTXzhTCNmrtGraG2wyZXrP7",
+                                        "lastValidBlockHeight": 399468682
                                     }
                                 }
                             }
@@ -316,10 +341,147 @@
                 }
             }
         },
-        "/getDelegationStatus": {
+        "/getAccountInfo": {
+            "post": {
+                "summary": "getAccountInfo",
+                "description": "Get AccountInfo for a single account.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "jsonrpc": {
+                                        "type": "string",
+                                        "enum": ["2.0"],
+                                        "default": "2.0"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "enum": ["getAccountInfo"],
+                                        "default": "getAccountInfo"
+                                    },
+                                    "params": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 1,
+                                        "description": "Single account address",
+                                        "default": [
+                                            "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+                                        ]
+                                    }
+                                },
+                                "required": ["jsonrpc", "id", "method", "params"]
+                            },
+                            "example": {
+                                "jsonrpc": "2.0",
+                                "id": 1,
+                                "method": "getAccountInfo",
+                                "params": [
+                                            "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                                            { "encoding": "base64+zstd" }
+                                        ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "jsonrpc": {
+                                        "type": "string",
+                                        "enum": ["2.0"],
+                                        "default": "2.0"
+                                        },
+                                        "id": {
+                                        "oneOf": [
+                                            { "type": "integer" },
+                                            { "type": "string" }
+                                        ]
+                                        },
+                                        "result": {
+                                        "type": "object",
+                                        "properties": {
+                                            "context": {
+                                            "type": "object",
+                                            "properties": {
+                                                "apiVersion": { "type": "string" },
+                                                "slot": { "type": "integer" }
+                                            },
+                                            "required": ["apiVersion", "slot"]
+                                            },
+                                            "value": {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                "type": "array",
+                                                "items": { "type": "string" },
+                                                "description": "Account data as base64 string with optional encoding info"
+                                                },
+                                                "executable": { "type": "boolean" },
+                                                "lamports": { "type": "integer" },
+                                                "owner": { "type": "string" },
+                                                "rentEpoch": { "type": "integer" },
+                                                "space": { "type": "integer" }
+                                            },
+                                            "required": ["data", "executable", "lamports", "owner", "rentEpoch", "space"]
+                                            }
+                                        },
+                                        "required": ["context", "value"]
+                                        }
+                                    },
+                                    "required": ["jsonrpc", "id", "result"]
+                                },
+                                "example": {
+                                    "jsonrpc": "2.0",
+                                    "result": {
+                                        "context": {
+                                            "apiVersion": "2.2.1",
+                                            "slot": 85838062
+                                        },
+                                        "value": {
+                                            "data": [
+                                                "KLUv/QBYQQAAAgAAAAAAAAA=",
+                                                "base64+zstd"
+                                            ],
+                                            "executable": false,
+                                            "lamports": 946560,
+                                            "owner": "2qgx11jg9RzZHT88FwwvwxKJmtJi5cPL8KgcCAH7yRda",
+                                            "rentEpoch": 18446744073709551615,
+                                            "space": 8
+                                        }
+                                    },
+                                    "id": 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
             "post": {
                 "summary": "getDelegationStatus",
-                "description": "Get delegation status for a single account.",
+                "servers": [
+                    {
+                    "url": "https://devnet-router.magicblock.app",
+                    "description": "Devnet - RPC Magic Router"
+                    }
+                ],
+                "description": "Get delegation status for a single account from Magic Router.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -354,11 +516,16 @@
                                 },
                                 "required": ["jsonrpc", "id", "method", "params"]
                             },
-                            "example": {
-                                "jsonrpc": "2.0",
-                                "id": 1,
-                                "method": "getDelegationStatus",
-                                "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                            "examples": {
+                                "default": {
+                                    "summary": "Default getDelegationStatus request",
+                                    "value": {
+                                        "jsonrpc": "2.0",
+                                        "id": 1,
+                                        "method": "getDelegationStatus",
+                                        "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                                    }
+                                }
                             }
                         }
                     }
@@ -388,6 +555,10 @@
                                                 "isDelegated": {
                                                     "type": "boolean",
                                                     "description": "Whether the account is delegated"
+                                                },
+                                                "fqdn": {
+                                                        "type": "string",
+                                                        "description": "Fully qualified domain name"
                                                 },
                                                 "delegationRecord": {
                                                     "type": "object",
@@ -425,8 +596,9 @@
                                     "id": 1,
                                     "result": {
                                         "isDelegated": true,
+                                        "fqdn": "https://devnet-as.magicblock.app/",
                                         "delegationRecord": {
-                                            "authority": "11111111111111111111111111111111",
+                                            "authority": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
                                             "owner": "3JnJ727jWEmPVU8qfXwtH63sCNDX7nMgsLbg8qy8aaPX",
                                             "delegationSlot": 388473478,
                                             "lamports": 15144960
@@ -438,6 +610,130 @@
                     }
                 }
             }
+        },
+        "/getSignatureStatuses": {
+        "post": {
+            "summary": "getSignatureStatuses",
+            "description": "Returns the confirmation status for one or more signatures",
+            "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                    "jsonrpc": { "type": "string", "enum": ["2.0"], "default": "2.0" },
+                    "id": { "type": "integer", "default": 1 },
+                    "method": { "type": "string", "enum": ["getSignatureStatuses"], "default": "getSignatureStatuses" },
+                    "params": {
+                        "type": "array",
+                        "items": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                        },
+                        "minItems": 1,
+                        "description": "Array of signature arrays",
+                        "default": [
+                            [
+                                "9hXHgR18oj4eZMx6sxL7i93PYkqzUx9qC1ardVoGGc8WpzZnFWfs3iRDj2xu9GZWvbv5P5gba7hkrWucU6PqzbB",
+                                "2CR2mYhjyyMh1YBEwThy7p7ghSQeopaRgc9CB3UKiAApBm5xoj6CbuKgA3fwxAWawRU36uodVcRzJGeUztwwGTMU"
+                            ]
+                        ]
+                    }
+                    },
+                    "required": ["jsonrpc", "id", "method", "params"],
+                    "example": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "getSignatureStatuses",
+                    "params": [
+                        [
+                        "9hXHgR18oj4eZMx6sxL7i93PYkqzUx9qC1ardVoGGc8WpzZnFWfs3iRDj2xu9GZWvbv5P5gba7hkrWucU6PqzbB",
+                        "2CR2mYhjyyMh1YBEwThy7p7ghSQeopaRgc9CB3UKiAApBm5xoj6CbuKgA3fwxAWawRU36uodVcRzJGeUztwwGTMU"
+                        ]
+                    ]
+                    }
+                }
+                }
+            }
+            },
+            "responses": {
+            "200": {
+                "description": "Successful response",
+                "content": {
+                "application/json": {
+                    "schema": {
+                    "type": "object",
+                    "properties": {
+                        "jsonrpc": { "type": "string", "enum": ["2.0"], "default": "2.0" },
+                        "id": { "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+                        "result": {
+                        "type": "object",
+                        "properties": {
+                            "context": {
+                            "type": "object",
+                            "properties": {
+                                "apiVersion": { "type": "string" },
+                                "slot": { "type": "integer" }
+                            },
+                            "required": ["apiVersion", "slot"]
+                            },
+                            "value": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                "confirmationStatus": { "type": "string", "enum": ["finalized", "confirmed", "processed"] },
+                                "confirmations": { "type": ["integer", "null"] },
+                                "err": { "type": ["object", "null"] },
+                                "slot": { "type": "integer" },
+                                "status": {
+                                    "type": "object",
+                                    "properties": {
+                                    "Ok": { "type": ["object", "null"] }
+                                    },
+                                    "required": ["Ok"]
+                                }
+                                },
+                                "required": ["confirmationStatus", "confirmations", "err", "slot", "status"]
+                            }
+                            }
+                        },
+                        "required": ["context", "value"]
+                        },
+                        "error": { "type": ["object", "null"], "default": null }
+                    },
+                    "required": ["jsonrpc", "id", "result", "error"],
+                    "example": {
+                        "jsonrpc": "2.0",
+                        "id": 1,
+                        "result": {
+                        "context": { "apiVersion": "2.2.1", "slot": 85828189 },
+                        "value": [
+                            {
+                            "confirmationStatus": "finalized",
+                            "confirmations": null,
+                            "err": null,
+                            "slot": 85763743,
+                            "status": { "Ok": null }
+                            },
+                            {
+                            "confirmationStatus": "finalized",
+                            "confirmations": null,
+                            "err": null,
+                            "slot": 85763745,
+                            "status": { "Ok": null }
+                            }
+                        ]
+                        },
+                        "error": null
+                    }
+                    }
+                }
+                }
+            }
+            }
+        }
         }
     }
 }

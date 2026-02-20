@@ -1,0 +1,31 @@
+```typescript
+import {
+  verifyTeeRpcIntegrity,
+  getAuthToken,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { Connection } from "@magicblock-labs/ephemeral-rollups-kit";
+import * as nacl from "tweetnacl";
+
+const teeUrl = "https://tee.magicblock.app";
+const teeWsUrl = "wss://tee.magicblock.app";
+
+// 1. Verify the integrity of TEE RPC
+const isVerified = await verifyTeeRpcIntegrity(teeUrl);
+
+// 2. Get AuthToken before making request to TEE
+const authToken = await getAuthToken(
+  teeUrl,
+  userPubkey,
+  (message: Uint8Array) =>
+    Promise.resolve(nacl.sign.detached(message, userSecretKey))
+);
+
+// 3. Create connection with TEE using authorization token
+const teeUserUrl = `${teeUrl}?token=${authToken.token}`;
+const teeUserWsUrl = `${teeWsUrl}?token=${authToken.token}`;
+
+const ephemeralConnection = await Connection.create(
+  teeUserUrl,
+  teeUserWsUrl
+);
+```

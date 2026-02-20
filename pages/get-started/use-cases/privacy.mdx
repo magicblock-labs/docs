@@ -1,0 +1,69 @@
+---
+title: "Privacy"
+description: "Unlock private, verifiable computation"
+---
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="/images/TEE.mp4"
+  controls
+></video>
+
+#### 🔴 Problems with Privacy
+
+- **Data Exposure** – Sensitive information is on the public ledger.
+- **Centralized Trust** – Users must trust third parties with their private data.
+- **Lack of Verifiability** – No way to prove computations were performed correctly without revealing data.
+
+#### ⛓️ Current Blockchain Limitations
+
+- **Public Execution** – All transactions and smart contract state are visible on-chain.
+- **MEV Exploitation** – Front-running and sandwich attacks exploit transaction visibility.
+- **Compliance Barriers** – Regulatory requirements often conflict with public transparency.
+
+#### ⚡ MagicBlock's Solution
+
+- **Trusted Execution Environments (TEEs)** on Intel TDX – Secure, isolated computing environments that protect data during processing.
+- **Private State Execution** – Run computations on sensitive data without exposing it to the network.
+- **Verifiable Privacy** – Cryptographic proofs ensure correct execution while maintaining confidentiality.
+
+## Explore TEE Docs
+
+<CardGroup cols={2}>
+  <Card
+    title="TEE Introduction"
+    icon="shield"
+    href="/pages/tools/tee/introduction"
+    iconType="duotone"
+  >
+    What PER is and why TEEs
+  </Card>
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    Permission groups and access
+  </Card>
+  <Card
+    title="Program Implementation"
+    icon="code"
+    href="/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    Add permissions via CPI
+  </Card>
+  <Card
+    title="Client Implementation"
+    icon="browser"
+    href="/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    Attestation, challenge, and access
+  </Card>
+</CardGroup>

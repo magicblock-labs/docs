@@ -29,6 +29,14 @@ const handleCreateSession = async () => {
     expiryInMinutes
   );
 
+  // you can also specify the amount you want to topUp the session wallet.
+  //This will top up the amount specified, and when revoked, send back to the authority
+  const session = await sessionWallet.createSession(
+    targetProgramPublicKey,
+    topUp ? 10000000 : 0, // 0.01 SOL
+    expiryInMinutes
+  );
+
   if (session) {
     console.log("Session created:", session);
   } else {
@@ -61,10 +69,11 @@ The `signAndSendTransaction` method provides an extra layer of security by ensur
 
 ### Revoking a Session
 
-To revoke a session, call the `revokeSession` method from the `sessionWallet`. This method performs two actions:
+To revoke a session, call the `revokeSession` method from the `sessionWallet`. This method performs three actions:
 
 1. It removes the ephemeral key pair and the session token from the client-side storage.
 2. It revokes the session from the contract.
+3. Returns the lamports to the authority and closes the session token pda
 
 ```typescript
 const handleRevokeSession = async () => {

@@ -3,7 +3,7 @@ title: "Rust Example"
 description: "Learn how to write a simple Rust program that delegates and increments a counter on Solana"
 ---
 
-import Endpoints from '/snippets/endpoints.mdx'
+import Endpoints from "/snippets/endpoints.mdx";
 
 <div
   style={{
@@ -55,7 +55,7 @@ If you prefer to dive straight into the code:
   <Card
     title="Source Code: Typescript Test Script"
     icon="js"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests/rust-counter.ts"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
     iconType="duotone"
   ></Card>
 </CardGroup>
@@ -158,6 +158,7 @@ use solana_program::{
 use ephemeral_rollups_sdk::cpi::{delegate_account, DelegateAccounts, DelegateConfig};
 
 // For Base Layer only
+// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
 pub fn process_delegate(
 \_program_id: &Pubkey,
 accounts: &[AccountInfo],
@@ -192,7 +193,7 @@ accounts: &[AccountInfo],
 
     let delegate_config = DelegateConfig {
         commit_frequency_ms: 30_000,
-        validator: None,
+        validator: Some(pubkey!("MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57")), // Asia ER, please set based on ER validator.
     };
 
     delegate_account(delegate_accounts, pda_seeds, delegate_config)?;
@@ -358,7 +359,7 @@ let system_program = next_account_info(account_info_iter)?;
 ## Testing the program
 
 Build valid transactions that calls your program instructions for delegation and undelegation.
-The complete test for this project can be found in the [Typescript Test Script](https://github.com/jonasXchen/magicblock-rust-counter/tree/main/tests).
+The complete test for this project can be found in the [Typescript Test Script](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests).
 
 ### Test `delegation` transaction
 
@@ -601,7 +602,7 @@ commitment: "confirmed",
 }
 )
 
-````
+```
 
 ### Ephemeral Endpoint Configuration
 
@@ -613,18 +614,7 @@ To interact with the Ephemeral Rollup session, you need to configure the appropr
 
 - For mainnet, please reach out to the MagicBlock team to receive the appropriate endpoint.
 
-- For localhost, download, install, and run the ephemeral validator locally with the appropriate environment variables:
-```bash
-# 1. Install the Local Validator
-npm install -g @magicblock-labs/ephemeral-validator
-
-# 2. Start the Local Validator
-ACCOUNTS_REMOTE=https://rpc.magicblock.app/devnet ACCOUNTS_LIFECYCLE=ephemeral ephemeral-validator
-
-# 3. Run the Tests with the Local Validator
-PROVIDER_ENDPOINT=http://localhost:8899 WS_ENDPOINT=ws://localhost:8900 yarn test
-
-````
+- For <a href="/pages/get-started/how-integrate-your-program/local-setup">localhost</a>, download, install, and run the ephemeral validator locally with the appropriate environment variables.
 
 Make sure to update your client configuration to use the correct endpoint based on your development or production environment.
 
@@ -640,7 +630,8 @@ Make sure to update your client configuration to use the correct endpoint based 
   <Card
     title="Source Code: Typescript Test Script"
     icon="js"
-    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests/rust-counter.ts"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
     iconType="duotone"
   ></Card>
 </CardGroup>
+```

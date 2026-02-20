@@ -1,0 +1,140 @@
+```rust
+#[ephemeral] // This adds undelegation instruction for ER validator
+#[program]
+pub mod private_payments {
+
+    /// Delegates the deposit account to the ephemeral rollups delegate program.
+    /// Uses the ephemeral rollups delegate CPI to delegate the deposit account.
+    pub fn delegate(ctx: Context<DelegateDeposit>, user: Pubkey, token_mint: Pubkey) -> Result<()> {
+        let validator = ctx.accounts.validator.as_ref().map(|v| v.key());
+        ctx.accounts.delegate_deposit(
+            &ctx.accounts.payer,
+            &[DEPOSIT_PDA_SEED, user.as_ref(), token_mint.as_ref()],
+            DelegateConfig {
+                validator,
+                commit_frequency_ms: 0,
+
+            },
+        )?;
+        Ok(())
+    }
+
+    /// Commits and undelegates the deposit account from the ephemeral rollups program.
+    ///
+    /// Uses the ephemeral rollups SDK to commit and undelegate the deposit account.
+    #[session_auth_or(
+        ctx.accounts.user.key() == ctx.accounts.deposit.user,
+        ErrorCode::Unauthorized
+    )]
+    pub fn undelegate(ctx: Context<UndelegateDeposit>) -> Result<()> {
+        commit_and_undelegate_accounts(
+            &ctx.accounts.payer,
+            vec![&ctx.accounts.deposit.to_account_info()],
+            &ctx.accounts.magic_context,
+            &ctx.accounts.magic_program,
+        )?;
+        Ok(())
+    }
+
+    /// Transfers a specified amount from one user's deposit account to another's for the same token mint.
+    ///
+    /// Only updates the internal accounting; does not move actual tokens.
+    #[session_auth_or(
+        ctx.accounts.user.key() == ctx.accounts.source_deposit.user,
+        ErrorCode::Unauthorized
+    )]
+    pub fn transfer_deposit(ctx: Context<TransferDeposit>, amount: u64) -> Result<()> {
+        let source_deposit = &mut ctx.accounts.source_deposit;
+        let destination_deposit = &mut ctx.accounts.destination_deposit;
+
+        source_deposit.amount -= amount;
+        destination_deposit.amount += amount;
+
+        Ok(())
+    }
+
+    /// ... other instructions
+}
+
+/// Other context and accounts ...
+
+/// Context for DelegateDeposit
+#[delegate]
+#[derive(Accounts)]
+#[instruction(user: Pubkey, token_mint: Pubkey)]
+pub struct DelegateDeposit<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Checked by the delegate program
+    pub validator: Option<AccountInfo<'info>>,
+    /// CHECK: Checked counter accountby the delegate program
+    #[account(
+        mut,
+        del,
+        seeds = [DEPOSIT_PDA_SEED, user.as_ref(), token_mint.as_ref()],
+        bump,
+    )]
+    pub deposit: AccountInfo<'info>,
+}
+
+/// Context for UndelegateDeposit
+#[commit]
+#[derive(Accounts, Session)]
+pub struct UndelegateDeposit<'info> {
+    /// CHECK: Matched against the deposit account
+    pub user: AccountInfo<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[session(
+        signer = payer,
+        authority = user.key()
+    )]
+    pub session_token: Option<Account<'info, SessionToken>>,
+    #[account(
+        mut,
+        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), deposit.token_mint.as_ref()],
+        bump
+    )]
+    pub deposit: Account<'info, Deposit>,
+}
+
+/// Context for TransferDeposit for ER
+#[derive(Accounts, Session)]
+pub struct TransferDeposit<'info> {
+    /// CHECK: Matched against the deposit account
+    pub user: AccountInfo<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[session(
+        signer = payer,
+        authority = user.key()
+    )]
+    pub session_token: Option<Account<'info, SessionToken>>,
+    #[account(
+        mut,
+        seeds = [
+            DEPOSIT_PDA_SEED,
+            source_deposit.user.as_ref(),
+            source_deposit.token_mint.as_ref()
+        ],
+        bump,
+        has_one = user,
+        has_one = token_mint,
+        constraint = source_deposit.user != destination_deposit.user,
+    )]
+    pub source_deposit: Account<'info, Deposit>,
+    #[account(
+        mut,
+        seeds = [
+            DEPOSIT_PDA_SEED,
+            destination_deposit.user.as_ref(),
+            destination_deposit.token_mint.as_ref()
+        ],
+        bump,
+        has_one = token_mint,
+    )]
+    pub destination_deposit: Account<'info, Deposit>,
+    pub token_mint: Account<'info, Mint>,
+    pub system_program: Program<'info, System>,
+}
+```

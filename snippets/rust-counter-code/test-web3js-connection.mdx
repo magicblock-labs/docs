@@ -1,0 +1,44 @@
+```typescript Web3.js
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  TransactionInstruction,
+  Connection,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+
+import {
+  DELEGATION_PROGRAM_ID,
+  delegationRecordPdaFromDelegatedAccount,
+  delegationMetadataPdaFromDelegatedAccount,
+  delegateBufferPdaFromDelegatedAccountAndOwnerProgram,
+  MAGIC_CONTEXT_ID,
+  MAGIC_PROGRAM_ID,
+  GetCommitmentSignature,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Set up a base and ephemeral connection (alternatively use router, see Magic Router)
+const connectionBaseLayer = new Connection(
+  process.env.PROVIDER_ENDPOINT || "https://api.devnet.solana.com",
+  { wsEndpoint: process.env.WS_ENDPOINT || "wss://api.devnet.solana.com" }
+);
+const connectionEphemeralRollup = new Connection(
+  process.env.EPHEMERAL_PROVIDER_ENDPOINT ||
+    "https://devnet-as.magicblock.app/",
+  {
+    wsEndpoint:
+      process.env.EPHEMERAL_WS_ENDPOINT || "wss://devnet-as.magicblock.app/",
+  }
+);
+
+// Create user keypair and airdrop SOL if needed
+const userKeypair = initializeSolSignerKeypair();
+
+// Get pda
+let [counterPda, bump] = PublicKey.findProgramAddressSync(
+  [Buffer.from("counter_account"), userKeypair.publicKey.toBuffer()],
+  PROGRAM_ID
+);
+```

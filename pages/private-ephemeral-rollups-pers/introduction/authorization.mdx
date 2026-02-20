@@ -1,0 +1,28 @@
+---
+title: "Authorization"
+description: "Customize authorized access through onchain restrictions on account level for user groups."
+---
+
+import PerCards from "/snippets/per-cards.mdx";
+
+---
+
+### Authorization Model
+
+<img class="w-full h-auto max-w-5xl" src="/images/TEE_permission.png" />
+
+Private Ephemeral Rollups use a Permission Program to manage fine-grained privacy controls for accounts and account groups. This runs on Solana L1 and can be updated on the fly.
+
+- **Permission Groups**: Define groups with arbitrary membership and IDs via CPI. A group aggregates users and the accounts governed by its permissions.
+- **Permissions**: Add permissions to groups. Today a permission implies read access for the delegated account; read/write splits may be added in the future.
+- **Access**: Client access to permissioned ER state requires authenticating ownership of a specified public key. Successful authentication yields a token used to query the ER.
+
+import PerEndpoint from "/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+This abstraction into groups lets you modify the permissions for many users/accounts atomically in a single transaction.
+
+---
+
+<PerCards />

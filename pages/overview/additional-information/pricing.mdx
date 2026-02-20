@@ -1,0 +1,61 @@
+---
+title: "Pricing"
+description: "MagicBlock’s pricing is modeled after decentralized cloud infrastructure. The goal is to keep computing costs **predictable for developers**, while still providing **flexibility for enterprises** that need priority access or dedicated resources."
+---
+
+import { ERCostSimulator } from "/snippets/components/ERCostSimulator.jsx";
+import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
+
+import QuickAccesER from "/snippets/quick-access-er.mdx";
+import QuickAccessVRF from "/snippets/quick-access-vrf.mdx";
+
+---
+
+## Ephemeral Rollup (ER) Nodes
+
+**Public nodes** make it simple to start building on MagicBlock with free transactions and zero friction. Fees are only charged when you close a session or commit data back to Solana.
+
+| **Fee type**    | **Amount (SOL)** | **Description**                  |
+| :-------------- | :--------------- | :------------------------------- |
+| **Base fee**    | 0                | Per transaction (Tx)             |
+| **Session fee** | 0.0003           | Per ER session (at undelegation) |
+| **Commit fee**  | 0.0001           | Per commit to Solana             |
+
+**Dedicated nodes** are ideal for enterprises and high-scale teams. They provide maximum reliability, predictable costs, and MEV protection with your own dedicated infrastructure.
+
+| **Fee type**    | **Amount (SOL)** | **Description**      |
+| :-------------- | :--------------- | :------------------- |
+| **Base fee**    | 0.0000005        | Per transaction (Tx) |
+| **Session fee** | 0.0003           | Per ER session       |
+| **Commit fee**  | 0.0001           | Per commit to Solana |
+
+[Learn more about ER →](/pages/ephemeral-rollups-ers/how-to-guide/quickstart)
+
+### ER Cost Simulator: 30-Days
+
+<ERCostSimulator />
+
+---
+
+## Verifiable Randomness Function (VRF)
+
+The VRF service provides **provably fair randomness on-chain**. Fees cover proof generation + posting on-chain.
+
+> ⚠️ Note: Costs do not include the transaction fee to request randomness.
+
+| **Fee type**                 | **Amount (SOL)** | **Description**        |
+| :--------------------------- | :--------------- | :--------------------- |
+| **Solana (within 1 second)** | 0.0005           | Per randomness request |
+| **With ER (within 100 ms)**  | Free             | Per randomness request |
+
+[Learn more about VRF →](/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)
+
+### VRF Cost Simulator: 30-Days
+
+<VRFCostSimulator />
+
+---
+
+For support to **run your own nodes**, reach out:
+
+📧 [development@magicblock.xyz](mailto:development@magicblock.xyz)

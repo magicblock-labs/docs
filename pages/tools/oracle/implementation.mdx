@@ -1,0 +1,55 @@
+---
+title: "Implementation"
+description: "Derive the Pyth Lazer price feed account and decode its bytes"
+---
+
+## Deriving the Price Feed Account
+
+We derive the PDA of the price account using the following seeds:
+
+- **"price feed"** (buffer)
+- **"pyth-lazer"** (buffer)
+- **feedID** (buffer) — the asset you want. Find the supported feeds [here](https://github.com/magicblock-labs/real-time-pricing-oracle/blob/main/pyth_lazer_list.json).
+- **price program id** — `PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd`
+
+```ts
+// seeds: ["price_feed", "pyth-lazer", feed_id_as_string]
+function deriveFeedAddress (feedId: string) {
+  const [addr] = web3.PublicKey.findProgramAddressSync(
+  [Buffer.from('price_feed'), Buffer.from('pyth-lazer'), Buffer.from(feedId)],
+  PROGRAM ID
+  );
+  return addr
+}
+```
+
+## Parsing the Account
+
+The on‑chain account stores a header and fields for price data. We read raw bytes and decode.
+
+- **Price offset**: 73 bytes from start
+- **Type**: signed 64‑bit integer (`i64`)
+- **Apply exponent**: scale the raw price using the account's exponent
+
+```ts
+const addr = deriveFeedAddress(feed.id);
+const PRICE_OFFSET = 73;
+
+const dv = new DataView(ai.data.buffer, ai.data.byteOffset, ai.data.byteLength);
+const raw = dv.getBigUint64(PRICE_OFFSET, true);
+const price = Number(raw) * Math.pow(10, feed.exponent);
+```
+
+<CardGroup cols={3}>
+  <Card title="Live Demo" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
+    Real‑time price stream
+  </Card>
+  <Card title="Implementation" icon="book" href="/pages/tools/oracle/implementation" iconType="duotone">
+    Learn how to access our oracles onchain
+  </Card>
+  <Card title="Code Example" icon="code" href="https://github.com/magicblock-labs/real-time-pricing-oracle
+" iconType="duotone">
+    Check out our Github Repo
+  </Card>
+</CardGroup>
+

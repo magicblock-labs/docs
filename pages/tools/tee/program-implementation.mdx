@@ -1,0 +1,105 @@
+### Program Implementation Flow
+
+Writing programs for the MagicBlock TEE is similar to writing a standard Solana program, with the addition of a Permission Program used to manage privacy controls.
+
+- **Create a Permission Group**: Perform a CPI into the Permission Program to create a group. You can define any number of groups, each with distinct members and permissions.
+- **Create Permissions**: Add permissions to the created group. Currently, a permission implies read access, with potential future distinction between read/write.
+- **Access**: Clients authenticate their identity to access permissioned ER state. If successful, an access token is issued and used for queries.
+
+Group-based abstractions allow modifying permissions for sets of users in a single transaction. The permissioning state is maintained on Solana L1.
+
+```rust
+use magicblock_permission_client::instructions::{
+    CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
+};
+
+pub fn create_permission(ctx: Context<CreatePermission>, id: Pubkey) -> Result<()> {
+    let CreatePermission {
+        payer,
+        permission,
+        permission_program,
+        group,
+        deposit,
+        user,
+        system_program,
+    } = ctx.accounts;
+
+    // [1] Create a Permission Group
+    CreateGroupCpiBuilder::new(&permission_program)
+        .group(&group)
+        .id(id)
+        .members(vec![user.key()])
+        .payer(&payer)
+        .system_program(system_program)
+        .invoke()?;
+
+    // [2] Create Permissions
+    CreatePermissionCpiBuilder::new(&permission_program)
+        .permission(&permission)
+        .delegated_account(&deposit.to_account_info())
+        .group(&group)
+        .payer(&payer)
+        .system_program(system_program)
+        .invoke_signed(&[&[
+            DEPOSIT_PDA_SEED,
+            user.key().as_ref(),
+            deposit.token_mint.as_ref(),
+            &[ctx.bumps.deposit],
+        ]] )?;
+
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct CreatePermission<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Anyone can create the permission
+    pub user: UncheckedAccount<'info>,
+    #[account(
+        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), deposit.token_mint.as_ref()],
+        bump
+    )]
+    pub deposit: Account<'info, Deposit>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub group: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    pub permission_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+import PerEndpoint from "/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+<CardGroup cols={2}>
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    Permission groups and access
+  </Card>
+  <Card
+    title="Client Implementation"
+    icon="browser"
+    href="/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    Attestation, challenge, and access
+  </Card>
+  <Card
+    title="Privacy Use Case"
+    icon="shield-check"
+    href="/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    Build private, verifiable applications
+  </Card>
+</CardGroup>

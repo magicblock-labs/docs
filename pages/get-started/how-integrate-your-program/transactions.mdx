@@ -7,10 +7,26 @@ Once deployed with delegation and undelgeation hooks, any instruction which is p
 The **transaction will be processed** by Base Layer (Solana) or Ephemeral Rollup (ER) validators **depending on the account's delegation status**.
 
 <Columns cols={4}>
-<Card title="Standard Program Instruction" icon="link" href="#standard-program-instruction"></Card>
-<Card title="Delegate Transaction" icon="link" href="#delegate-transaction"></Card>
-<Card title="Undelegate Transaction" icon="link" href="#undelegate-transaction"></Card>
-<Card title="Commit Transaction" icon="link" href="#commit-transaction"></Card>
+  <Card
+    title="Standard Program Instruction"
+    icon="link"
+    href="#standard-program-instruction"
+  ></Card>
+  <Card
+    title="Delegate Transaction"
+    icon="link"
+    href="#delegate-transaction"
+  ></Card>
+  <Card
+    title="Undelegate Transaction"
+    icon="link"
+    href="#undelegate-transaction"
+  ></Card>
+  <Card
+    title="Commit Transaction"
+    icon="link"
+    href="#commit-transaction"
+  ></Card>
 </Columns>
 ### Standard Program Instruction
 
@@ -22,7 +38,7 @@ When executing any of your program instructions through a specialized RPC router
   - If **account is undelegated and non-writable**, undelegated account is cloned from Base Layer to ER.
 - Normal: If **all writable accounts are undelegated**, the transaction is executed on Base Layer.
 - Error: If **writable accounts are delegated and undelegated**, the transaction fails.
-  <img height="200" src="/images/interact.png" />
+  <img class="w-full h-auto max-w-5xl" src="/images/interact.png" />
 
 ### Delegate Transaction
 
@@ -33,7 +49,7 @@ Before executing ultra-low latency transactions on ER, the state account must be
 
 Transaction fails if account is already delegated.
 
-<img height="200" src="/images/delegate.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/delegate.png" />
 
 ### Undelegate Transaction
 
@@ -44,7 +60,7 @@ You can commit and undelegate the account from ER to Base Layer through the unde
 
 Transaction fails if account is already undelegated.
 
-<img height="200" src="/images/undelegate.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/undelegate.png" />
 
 ### Commit Transaction
 
@@ -55,7 +71,7 @@ You can also sync the state from ER to Base Layer without changing delegation by
 
 Transaction fails if account is already undelegated.
 
-<img height="200" src="/images/commit.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/commit.png" />
 
 ## Learn how to build with Native Rust and Anchor!
 

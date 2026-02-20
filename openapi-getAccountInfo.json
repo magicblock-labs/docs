@@ -1,0 +1,227 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Router API",
+    "description": "JSON-RPC API for the MagicBlock Router.",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-router.magicblock.app",
+      "description": "Devnet - RPC Magic Router"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "getAccountInfo",
+        "description": "Get AccountInfo for a single account.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": [
+                      "2.0"
+                    ],
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "getAccountInfo"
+                    ],
+                    "default": "getAccountInfo"
+                  },
+                  "params": {
+                    "type": "array",
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "description": "Account public key"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "encoding": {
+                            "type": "string",
+                            "enum": [
+                              "base58",
+                              "base64",
+                              "base64+zstd",
+                              "jsonParsed"
+                            ]
+                          }
+                        },
+                        "additionalProperties": true,
+                        "description": "Optional config object"
+                      }
+                    ],
+                    "items": false,
+                    "minItems": 1,
+                    "maxItems": 2,
+                    "description": "Account address and optional config object",
+                    "default": [
+                      "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+                    ]
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "id",
+                  "method",
+                  "params"
+                ]
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getAccountInfo",
+                "params": [
+                  "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                  {
+                    "encoding": "base64+zstd"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": [
+                        "2.0"
+                      ],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "context": {
+                          "type": "object",
+                          "properties": {
+                            "apiVersion": {
+                              "type": "string"
+                            },
+                            "slot": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "apiVersion",
+                            "slot"
+                          ]
+                        },
+                        "value": {
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Account data as base64 string with optional encoding info"
+                            },
+                            "executable": {
+                              "type": "boolean"
+                            },
+                            "lamports": {
+                              "type": "integer"
+                            },
+                            "owner": {
+                              "type": "string"
+                            },
+                            "rentEpoch": {
+                              "oneOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                {
+                                  "type": "string",
+                                  "pattern": "^[0-9]+$"
+                                }
+                              ],
+                              "description": "Rent epoch. Rent-exempt accounts may return u64::MAX (18446744073709551615); treat as an unsigned 64-bit value and prefer string handling in JavaScript to avoid precision loss."
+                            },
+                            "space": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "data",
+                            "executable",
+                            "lamports",
+                            "owner",
+                            "rentEpoch",
+                            "space"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "context",
+                        "value"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "jsonrpc",
+                    "id",
+                    "result"
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "result": {
+                    "context": {
+                      "apiVersion": "2.2.1",
+                      "slot": 85838062
+                    },
+                    "value": {
+                      "data": [
+                        "KLUv/QBYQQAAAgAAAAAAAAA=",
+                        "base64+zstd"
+                      ],
+                      "executable": false,
+                      "lamports": 946560,
+                      "owner": "2qgx11jg9RzZHT88FwwvwxKJmtJi5cPL8KgcCAH7yRda",
+                      "rentEpoch": "18446744073709551615",
+                      "space": 8
+                    }
+                  },
+                  "id": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

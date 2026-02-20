@@ -1,0 +1,37 @@
+```typescript
+import {
+  AUTHORITY_FLAG,
+  TX_LOGS_FLAG,
+  TX_BALANCES_FLAG,
+  TX_MESSAGE_FLAG,
+  ACCOUNT_SIGNATURES_FLAG,
+  isAuthority,
+  canSeeTxLogs,
+  canSeeTxBalances,
+  canSeeTxMessages,
+  canSeeAccountSignatures,
+  type Member,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Set flags by combining them with bitwise OR
+const flags = AUTHORITY_FLAG | TX_LOGS_FLAG | TX_BALANCES_FLAG;
+
+// Create a member with combined flags
+const member: Member = {
+  flags,
+  pubkey: userAddress,
+};
+
+// Use helper functions to check specific permissions
+const canModifyPermission = isAuthority(member, userAddress);
+const canViewLogs = canSeeTxLogs(member, userAddress);
+const canViewBalances = canSeeTxBalances(member, userAddress);
+const canViewMessages = canSeeTxMessages(member, userAddress);
+const canViewSignatures = canSeeAccountSignatures(member, userAddress);
+
+// Add a flag to existing member
+const updatedFlags = member.flags | TX_MESSAGE_FLAG;
+
+// Remove a flag from existing member
+const removedFlags = member.flags & ~TX_LOGS_FLAG;
+```

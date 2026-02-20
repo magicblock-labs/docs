@@ -1,0 +1,48 @@
+---
+title: "Introduction"
+description: "MagicBlock Router API documentation"
+---
+
+## Overview
+
+The MagicBlock Router API is a JSON-RPC API that implements almost all standard Solana RPC methods and adds router-specific methods. It simplifies multi-node setups by handling node selection and routing behind a single endpoint.
+
+It can be used to retrieve delegation status for accounts and identify the closest node for request execution. For example, `getBlockhashForAccounts` returns a blockhash from the appropriate node based on the provided accounts and their delegation status.
+
+**Mainnet URL:** `https://router.magicblock.app`
+
+**Devnet URL:** `https://devnet-router.magicblock.app`
+
+**API Version:** 2.0
+
+## Main Operations
+
+### Network Information
+- [**Get Routes**](/api-reference/er-api/getRoutes) - Query available routing information
+- [**Get Identity**](/api-reference/er-api/getIdentity) - Retrieve identity information
+
+### Account Operations
+- [**Get Account Info**](/api-reference/er-api/getAccountInfo) - Fetch account information
+- [**Get Blockhash For Accounts**](/api-reference/er-api/getBlockhashForAccounts) - Get blockhash for specific accounts
+
+### Status & Delegation
+- [**Get Signature Statuses**](/api-reference/er-api/getSignatureStatuses) - Check transaction signature statuses
+- [**Get Delegation Status**](/api-reference/er-api/getDelegationStatus) - Query delegation information
+
+## Key Features
+
+- **Solana RPC Coverage** - Implements almost all standard Solana RPC methods through the router
+- **Router-Specific Methods** - Adds methods such as `getBlockhashForAccounts` and `getDelegationStatus`
+- **Simplified Multi-Node Setup** - Use one router endpoint instead of manually managing multiple node endpoints
+- **Fast Route Query** - Efficiently determine routing paths for transactions
+- **Account State** - Access current account information and balances
+- **Transaction Tracking** - Monitor transaction status and confirmation
+- **Delegation Queries** - Check delegation relationships through the router
+
+## Use Cases
+
+- Retrieve account balances and state
+- Check transaction confirmation status
+- Query route information for transaction routing
+- Verify delegation configurations
+- Avoid manual multi-node endpoint management

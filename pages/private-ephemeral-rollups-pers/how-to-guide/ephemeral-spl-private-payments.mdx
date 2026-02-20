@@ -1,0 +1,256 @@
+
+---
+title: Private Payments with Ephemeral SPL Tokens
+description: Guide to using ephemeral SPL tokens for private deposits, transfers, and withdrawals
+---
+
+## Overview
+
+This guide explains how to use **ephemeral SPL tokens** to enable **private deposits, transfers, and withdrawals**
+in the context of the MagicBlock private-payments example.
+
+Ephemeral tokens are short-lived, program-controlled SPL token accounts or mints that:
+- Exist only for the duration of a specific workflow
+- Minimize on-chain linkage between users
+- Reduce long-term metadata and balance traceability
+
+The goal is **privacy by design**, not anonymity by default.
+
+---
+
+## Core Concepts
+
+### What Is an Ephemeral SPL Token?
+
+An ephemeral SPL token typically means:
+
+- A **temporary token account** (and sometimes a temporary mint)
+- Owned or controlled by a program-derived address (PDA)
+- Created just-in-time for a transaction or session
+- Closed (and rent reclaimed) after use
+
+This pattern limits the lifetime of balances and makes it harder to correlate activity across transactions.
+
+---
+
+### Privacy Model
+
+Private payments here rely on:
+
+- Short-lived token accounts
+- Program-mediated custody
+- Controlled account closure
+- Optional use of fresh user keypairs per session
+
+⚠️ This does **not** fully hide activity from validators or RPC providers.
+It reduces *linkability*, not *observability*.
+
+---
+
+## Architecture Flow
+
+```
+User Wallet
+   |
+   | 1. Deposit
+   v
+Ephemeral Token Account (PDA-controlled)
+   |
+   | 2. Transfer (internal)
+   v
+Another Ephemeral Account
+   |
+   | 3. Withdrawal
+   v
+Destination Token Account
+```
+
+---
+
+## Deposits
+
+### How Deposits Work
+
+1. User approves a transfer from their standard SPL token account
+2. Program creates an ephemeral token account (PDA)
+3. Tokens are transferred into the ephemeral account
+4. The account is registered internally for later actions
+
+### Key Properties
+
+- The user never directly owns the ephemeral account
+- Authority is a PDA derived from:
+  - Program ID
+  - Session or deposit seed
+- Deposit metadata is kept minimal
+
+### Best Practices
+
+- Use unique seeds per deposit
+- Avoid reusing ephemeral accounts
+- Immediately revoke user authority after transfer
+
+---
+
+## Private Transfers
+
+### Internal Transfers
+
+Private transfers occur **inside program-controlled accounts**:
+
+- No user wallet signature required after deposit
+- Balances move between ephemeral accounts
+- Transfers can represent:
+  - Internal payments
+  - Escrow-like flows
+  - Conditional releases
+
+### Why This Improves Privacy
+
+- No direct sender → receiver token transfer
+- On-chain history shows only PDA-to-PDA movement
+- Users are abstracted from SPL token ownership
+
+---
+
+## Withdrawals
+
+### Withdrawal Flow
+
+1. User requests withdrawal
+2. Program verifies:
+   - Authorization
+   - Balance
+   - Withdrawal constraints
+3. Program transfers tokens to the user’s destination account
+4. Ephemeral account is **closed**
+
+### Account Closure
+
+Always close ephemeral accounts after withdrawal:
+
+- Reclaim rent
+- Reduce on-chain footprint
+- Prevent balance probing
+
+---
+
+## Example Pseudocode
+
+```ts
+// Create ephemeral token account
+const ephemeralAccount = derivePDA(
+  programId,
+  ["ephemeral", user.publicKey, sessionId]
+);
+
+// Deposit
+token.transfer(
+  userTokenAccount,
+  ephemeralAccount,
+  userAuthority,
+  amount
+);
+
+// Withdraw
+token.transfer(
+  ephemeralAccount,
+  destinationAccount,
+  programPDA,
+  amount
+);
+
+token.closeAccount(ephemeralAccount);
+```
+
+---
+
+## IMPORTANT: Developer Notes ⚠️
+
+### 1. Privacy Is a Spectrum
+
+Ephemeral tokens **do not guarantee anonymity**.
+
+They:
+- Reduce linkability
+- Limit long-lived balances
+- Improve default privacy hygiene
+
+They do **not**:
+- Hide transaction amounts
+- Obfuscate timing
+- Protect against RPC-level analysis
+
+---
+
+### 2. Seed Design Matters
+
+Bad PDA seeds can destroy privacy.
+
+Avoid:
+- Static seeds
+- Reused user public keys
+- Predictable counters
+
+Prefer:
+- Session-based randomness
+- Hashes of user + nonce
+- One-time identifiers
+
+---
+
+### 3. Always Close Accounts
+
+Leaving ephemeral accounts open:
+- Leaks historical balances
+- Wastes rent
+- Enables state probing
+
+Make closure mandatory in your program logic.
+
+---
+
+### 4. Do Not Log Sensitive Metadata
+
+Avoid emitting:
+- User public keys
+- Amounts
+- Session identifiers
+
+Especially in program logs or events.
+
+---
+
+### 5. Wallet UX Still Matters
+
+Even with ephemeral tokens:
+- Wallet approvals reveal intent
+- Poor UX can re-link identities
+- Reused destination accounts leak patterns
+
+Encourage:
+- Fresh token accounts
+- Optional burner wallets
+- Clear user education
+
+---
+
+## Summary
+
+Ephemeral SPL tokens are a powerful primitive for building **privacy-aware payment flows** on Solana.
+
+When combined with:
+- Program-controlled custody
+- Account lifecycle discipline
+- Careful seed design
+
+They enable private deposits, internal transfers, and clean withdrawals — without modifying the SPL token standard.
+
+---
+
+## Next Steps
+
+- Review the private-payments example code
+- Audit PDA derivation logic
+- Threat-model your privacy assumptions
+- Test account closure paths thoroughly

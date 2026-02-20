@@ -1,0 +1,20 @@
+---
+title: "FAQ"
+description: "Execute Transactions, Synchronize States, all in real-time."
+---
+
+<AccordionGroup>
+    <Accordion title="Can delegated accounts be created on ER?">
+        **No.** Delegated account must exist on Solana beforehand. Delegated accounts are cloned after requesting the account on ER or submitting a transaction with the delegated account.     
+    </Accordion>
+    <Accordion title="Can programs be delegated to ER?">
+        **No.** Program accounts are never delegated. Only state accounts can be delegated, while **program accounts are cloned** when a transaction is submitted on ER and subscribed for updates thereafter.
+    </Accordion>
+    <Accordion title="Can delegated accounts compose with all programs on Solana?">
+        **Yes.** Delegated accounts can benefit from all Solana programs and accounts. Every account on Solana is readable on ER, while only delegated account can be changed on ER within an atomic transaction. 
+    </Accordion>
+    <Accordion title="Should developers use slot time as a reliable timing mechanism?">
+        **No.** As of 2025-11-20, Solana uses a **400 ms slot time**, while MagicBlock’s Execution Runtime (ER) operates with a **50 ms slot time**. Developers may be tempted to rely on slot time as a fixed-duration measure; however, **slot times are not guaranteed and may change over time**. Code or logic that depends on a specific slot duration should therefore be written with caution.
+    </Accordion>
+
+</AccordionGroup>

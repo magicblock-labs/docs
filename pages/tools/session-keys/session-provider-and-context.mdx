@@ -17,7 +17,10 @@ Here's an example of how to use the `SessionWalletProvider`:
 // The SessionProvider component initializes the SessionKeyManager and provides it to its children via context.
 // Wrap any component that needs access to the SessionKeyManager with this provider.
 
-import { SessionWalletProvider, useSessionKeyManager } from "@gumhq/react-sdk";
+import {
+  SessionWalletProvider,
+  useSessionKeyManager,
+} from "@magicblock-labs/gum-react-sdk";
 import {
   AnchorWallet,
   useAnchorWallet,
@@ -32,6 +35,7 @@ const SessionProvider: React.FC<SessionProviderProps> = ({ children }) => {
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet() as AnchorWallet;
   const cluster = "devnet"; // or "mainnet-beta", "testnet", "localnet"
+  //here the useSessionKeyManager takes in 3 properties
   const sessionWallet = useSessionKeyManager(anchorWallet, connection, cluster);
 
   return (
@@ -100,16 +104,79 @@ _**Note: Ensure that all your Solana wallet adapter contexts are the parent of t
 
 `useSessionWallet` is a custom hook that provides access to the session wallet context value. Use this hook in any component wrapped by the SessionWalletProvider.
 
+To properly understand what the `useSessionWallet` hook provides, we need to examine the `SessionWalletInterface`. This is what `useSessionKeyManager` returns, providing the methods needed to utilize session keys as well as transaction signing and sending capabilities.
+
 ```typescript
-import { useSessionWallet } from '@gumhq/react-sdk';
+interface SessionWalletInterface {
+  publicKey: PublicKey | null; // Public key associated with the session wallet
+  ownerPublicKey: PublicKey | null; // The Publickey of the session token authority(The creator of the session token)
+  isLoading: boolean; // Indicates whether the session wallet is loading
+  error: string | null; // An error message, if any
+  sessionToken: string | null; // Session token for the current session
+  signTransaction:
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T>)
+    | undefined; // Sign a single transaction
+  signAllTransactions:
+    | (<T extends Transaction>(
+        transactions: T[],
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T[]>)
+    | undefined; // Sign multiple transactions
+  signMessage: ((message: Uint8Array) => Promise<Uint8Array>) | undefined; // Sign a message
+  sendTransaction:
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string>)
+    | undefined; // Send a signed transaction
+  signAndSendTransaction:
+    | (<T extends Transaction>(
+        transactions: T | T[],
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string[]>)
+    | undefined; // Sign and send transactions
+  createSession: (
+    targetProgram: PublicKey, // Target Solana program
+    topUpLamports?: number, // Top up session wallet with lamports or not
+    validUntil?: number, // Duration of session token before expiration
+    sessionCreatedCallback?: (sessionInfo: {
+      sessionToken: string;
+      publicKey: string;
+    }) => void
+  ) => Promise<SessionWalletInterface | undefined>; // Create a new session
+  revokeSession: () => Promise<void>; // Revoke the current session
+  getSessionToken: () => Promise<string | null>; // Retrieve the current session token
+}
+```
+
+This will help us understand how to use the sessionWallet in our code for creating session tokens as well as revoking them when no longer needed.
+
+```typescript
+import { useSessionWallet } from "@magicblock-labs/gum-react-sdk";
 
 function YourComponent() {
   const sessionWallet = useSessionWallet();
 
-  // Access session wallet properties and methods here
-  // Example: sessionWallet.publicKey
-  // Example: sessionWallet.sessionToken
-  // Example: sessionWallet.createSession
+  //create session token
+  const session = await sessionWallet.createSession(
+  // pass needed params here
+  );
+
+  //Revoke Session Wallet
+   const result = await sessionWallet.revokeSession();
+
+   //Access the session signer Publickey
+   sessionWallet.publicKey,
+
+   //To access the session token
+   sessionWallet.sessionToken
 
   return (
     // Your component JSX

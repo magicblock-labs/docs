@@ -40,6 +40,7 @@ While blockchain technology is revolutionizing decentralized applications, it st
 - **Latency** – Blockchain transaction speeds are too slow for real-time applications.
 - **Cost** – Even "low-fee" blockchains can become expensive at scale.
 - **Scalability** – Current architectures struggle to handle high-throughput applications.
+- **Privacy** – Blockchains are by default public, meaning all data onchain can be read.
 
 MagicBlock solves these issues with an **ephemeral rollup**, enabling developers to build dApps that require **10 ms state transitions**, **gasless transactions**, and **horizontal scaling**. Here's how:
 
@@ -47,7 +48,7 @@ MagicBlock solves these issues with an **ephemeral rollup**, enabling developers
 
 MagicBlock operates as a specialized **Solana Virtual Machine (SVM) runtime**, seamlessly integrating with Solana’s base layer. Developers deploying programs on Solana are fully compatible with the ephemeral rollup down to the bytecode, benefiting from the SVM’s high performance and robust ecosystem.
 
-<img height="200" src="/images/magicblock-solana.png" />
+<img class="w-full h-auto max-w-5xl" src="/images/magicblock-solana.png" />
 
 #### Overcoming Limitations in Scaling and Cost
 
@@ -100,5 +101,13 @@ Traditional rollups and Solana’s current execution model have inherent constra
     iconType="duotone"
   >
     Dive into Frameworks and SDKs
+  </Card>
+  <Card
+    title="Privacy"
+    icon="shield-check"
+    href="/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    Build private, verifiable applications with TEEs
   </Card>
 </CardGroup>

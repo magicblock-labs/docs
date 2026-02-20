@@ -1,0 +1,24 @@
+```rust
+use ephemeral_rollups_pinocchio::instruction::commit_and_undelegate_permission;
+use pinocchio::AccountView;
+
+pub fn process_commit_and_undelegate_permission(
+    accounts: &[&AccountView],
+    permission_program: &pinocchio::Address,
+    authority_is_signer: bool,
+    permissioned_account_is_signer: bool,
+) -> pinocchio::ProgramResult {
+    // Accounts: [authority, permissioned_account, permission, magic_program, magic_context]
+    
+    // Pass signer_seeds if permissioned_account is a PDA owned by your program
+    commit_and_undelegate_permission(
+        accounts,
+        permission_program,
+        authority_is_signer,
+        permissioned_account_is_signer,
+        signer_seeds, // Or None if permissioned_account is on-curve
+    )?;
+
+    Ok(())
+}
+```

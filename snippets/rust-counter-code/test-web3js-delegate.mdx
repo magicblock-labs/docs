@@ -1,0 +1,91 @@
+```typescript Web3.js
+// "Delegate" transaction
+
+// Add local validator identity to the remaining accounts if running on localnet
+const remainingAccounts =
+  connectionEphemeralRollup.rpcEndpoint.includes("localhost") ||
+  connectionEphemeralRollup.rpcEndpoint.includes("127.0.0.1")
+    ? [
+        {
+          pubkey: new PublicKey("mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev"),
+          isSigner: false,
+          isWritable: false,
+        },
+      ]
+    : [];
+
+const tx = new web3.Transaction();
+const keys = [
+  // Initializer
+  {
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
+  },
+  // System Program
+  {
+    pubkey: web3.SystemProgram.programId,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Counter Account
+  {
+    pubkey: counterPda,
+    isSigner: false,
+    isWritable: true,
+  },
+  // Owner Program
+  {
+    pubkey: PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Delegation Buffer
+  {
+    pubkey: getDelegationBufferPda(counterPda, PROGRAM_ID),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Record
+  {
+    pubkey: getDelegationRecordPda(counterPda),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Metadata
+  {
+    pubkey: getDelegationMetadataPda(counterPda),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Program
+  {
+    pubkey: DELEGATION_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // ER Validator
+  ...remainingAccounts,
+];
+const serializedInstructionData = Buffer.from(
+  CounterInstruction.Delegate,
+  "hex"
+);
+const delegateIx = new web3.TransactionInstruction({
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
+});
+tx.add(delegateIx);
+
+// Send and confirm transaction to Base Layer
+const txHash = await sendAndConfirmTransaction(
+  connectionBaseLayer,
+  tx,
+  [userKeypair],
+  {
+    skipPreflight: true,
+    commitment: "confirmed",
+  }
+);
+```

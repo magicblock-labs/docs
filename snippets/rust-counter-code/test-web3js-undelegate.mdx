@@ -1,0 +1,52 @@
+```typescript Web3.js
+// "Undelegate" transaction
+
+const tx = new web3.Transaction();
+const keys = [
+  // Initializer
+  {
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
+  },
+  // Counter Account
+  {
+    pubkey: counterPda,
+    isSigner: false,
+    isWritable: true,
+  },
+  // Magic Program
+  {
+    pubkey: MAGIC_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Magic Context
+  {
+    pubkey: MAGIC_CONTEXT_ID,
+    isSigner: false,
+    isWritable: true,
+  },
+];
+const serializedInstructionData = Buffer.from(
+  CounterInstruction.CommitAndUndelegate,
+  "hex"
+);
+const undelegateIx = new web3.TransactionInstruction({
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
+});
+tx.add(undelegateIx);
+
+// Send and confirm transaction to ER. Afterwards CPI callback will be triggered to "Undelegate" instruction of your program on the Base Layer.
+const txHash = await sendAndConfirmTransaction(
+  connectionEphemeralRollup,
+  tx,
+  [userKeypair],
+  {
+    skipPreflight: true,
+    commitment: "confirmed",
+  }
+);
+```

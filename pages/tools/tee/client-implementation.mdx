@@ -1,0 +1,86 @@
+### Client Implementation
+
+Frontends interface with the Private Ephemeral Rollup (PER) using three concepts: attestation, client challenges, and access tokens.
+
+- **Attestation**: Verify the RPC is running on secure hardware by sending a challenge and validating the returned TDX quote.
+- **Client Challenges**: Prove ownership of a public key to obtain an authorization token for permissioned state.
+- **Access**: Provide the token as a query parameter when constructing a connection to query state.
+
+### Attestation
+
+The frontend performs Intel TDX quote verification to attest that the ER server runs on genuine secure hardware. This is executed via `verifyTeeRpcIntegrity`.
+
+- Generate a random 32-byte challenge and encode it as base64
+- Send the challenge to the TEE RPC server to receive a TDX quote
+- Fetch collateral (certificates) via PCCS for the quote
+- Verify the quote using the DCAP QVL WASM module against the collateral and current time
+
+```ts
+import { verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const isIntegrityVerified = await verifyTeeRpcIntegrity(PRIVATE_ER_URL);
+```
+
+### Client Challenge Flow
+
+- Request a challenge from the RPC, parameterized by the wallet public key
+- Sign the received challenge using the corresponding keypair
+- Submit the signed challenge and receive an authorization token on success
+
+```ts
+import { getAuthToken } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const { publicKey, signMessage } = useWallet();
+const token = await getAuthToken(PRIVATE_ER_URL, publicKey, signMessage);
+```
+
+### Access
+
+Pass the authorization token as a query parameter when creating a connection.
+
+```ts
+function useEphemeralConnection() {
+  const { authToken } = usePrivateRollupAuth();
+  const ephemeralConnection = useMemo(() => {
+    if (authToken) {
+      return new Connection(
+        `${EPHEMERAL_RPC_URL}?token=${authToken}`,
+        "confirmed"
+      );
+    }
+    return null;
+  }, [authToken]);
+
+  return { ephemeralConnection };
+}
+```
+
+import PerEndpoint from "/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+<CardGroup cols={2}>
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    Permission groups and access
+  </Card>
+  <Card
+    title="Program Implementation"
+    icon="code"
+    href="/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    Add permissions via CPI
+  </Card>
+  <Card
+    title="Privacy Use Case"
+    icon="shield-check"
+    href="/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    Build private, verifiable applications
+  </Card>
+</CardGroup>
