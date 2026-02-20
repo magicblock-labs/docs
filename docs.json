@@ -51,6 +51,11 @@
       "measurementId": "G-M3W08J15Y9"
     }
   },
+  "api": {
+    "examples": {
+      "prefill": true
+    }
+  },
   "navigation": {
     "tabs": [
       {
@@ -115,7 +120,7 @@
             ]
           },
           {
-            "group": "API",
+            "group": "ROUTER API",
             "pages": [
               "api-reference/er-api/introduction",
               "api-reference/er-api/getRoutes",
