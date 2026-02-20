@@ -522,12 +522,6 @@
                                     "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
                                 }
                             },
-                            "example": {
-                                "jsonrpc": "2.0",
-                                "id": 1,
-                                "method": "getDelegationStatus",
-                                "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
-                            },
                             "examples": {
                                 "default": {
                                     "summary": "Default getDelegationStatus request",
