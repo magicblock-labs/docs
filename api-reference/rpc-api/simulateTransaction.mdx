@@ -1,0 +1,25 @@
+---
+title: "simulateTransaction"
+openapi: /openapi-rpc-simulateTransaction.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "simulateTransaction",
+  "params": [
+    "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEEjNmKiZGiOtSZ+g0//wH5kEQo3+UzictY+KlLV8hjXcs44M/Xnr+1SlZsqS6cFMQc46yj9PIsxqkycxJmXT+veJjIvefX4nhY9rY+B5qreeqTHu4mG6Xtxr5udn4MN8PnBt324e51j94YQl285GzN2rYa/E2DuQ0n/r35KNihi/zamQ6EeyeeVDvPVgUO2W3Lgt9hT+CfyqHvIa11egFPCgEDAwIBAAkDZAAAAAAAAAA=",
+    {
+      "commitment": "confirmed",
+      "encoding": "base64",
+      "replaceRecentBlockhash": true
+    }
+  ]
+}'
+```
+</RequestExample>

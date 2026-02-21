@@ -1,0 +1,171 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Solana RPC API",
+    "description": "Solana JSON-RPC method getIdentity on MagicBlock devnet RPC endpoints.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-as.magicblock.app/",
+      "description": "Devnet AS - RPC"
+    },
+    {
+      "url": "https://devnet-us.magicblock.app/",
+      "description": "Devnet US - RPC"
+    },
+    {
+      "url": "https://devnet-eu.magicblock.app/",
+      "description": "Devnet EU - RPC"
+    },
+    {
+      "url": "https://as.magicblock.app/",
+      "description": "Mainnet AS - RPC"
+    },
+    {
+      "url": "https://us.magicblock.app/",
+      "description": "Mainnet US - RPC"
+    },
+    {
+      "url": "https://eu.magicblock.app/",
+      "description": "Mainnet EU - RPC"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "getIdentity",
+        "description": "Solana JSON-RPC method getIdentity.",
+        "externalDocs": {
+          "description": "Official Solana RPC documentation",
+          "url": "https://solana.com/docs/rpc/http/getidentity"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": [
+                      "2.0"
+                    ],
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "oneOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "default": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "getIdentity"
+                    ],
+                    "default": "getIdentity"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {},
+                    "description": "Method-specific parameters. See Solana RPC docs for exact shape.",
+                    "default": []
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "id",
+                  "method"
+                ]
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getIdentity",
+                "params": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": [
+                        "2.0"
+                      ],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "result": {
+                      "description": "Method-specific result payload.",
+                      "oneOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "array"
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "default": null
+                    }
+                  },
+                  "required": [
+                    "jsonrpc",
+                    "id"
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": null,
+                  "error": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

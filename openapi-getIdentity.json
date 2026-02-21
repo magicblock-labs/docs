@@ -9,6 +9,10 @@
     {
       "url": "https://devnet-router.magicblock.app",
       "description": "Devnet - RPC Magic Router"
+    },
+    {
+      "url": "https://router.magicblock.app",
+      "description": "Mainnet - RPC Magic Router"
     }
   ],
   "paths": {
@@ -111,13 +115,7 @@
               }
             }
           }
-        },
-        "servers": [
-          {
-            "url": "https://devnet-router.magicblock.app",
-            "description": "Devnet - RPC Magic Router"
-          }
-        ]
+        }
       }
     }
   }

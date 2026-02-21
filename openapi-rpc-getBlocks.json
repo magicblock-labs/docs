@@ -1,0 +1,208 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Solana RPC API",
+    "description": "Solana JSON-RPC method getBlocks on MagicBlock devnet RPC endpoints.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-as.magicblock.app/",
+      "description": "Devnet AS - RPC"
+    },
+    {
+      "url": "https://devnet-us.magicblock.app/",
+      "description": "Devnet US - RPC"
+    },
+    {
+      "url": "https://devnet-eu.magicblock.app/",
+      "description": "Devnet EU - RPC"
+    },
+    {
+      "url": "https://as.magicblock.app/",
+      "description": "Mainnet AS - RPC"
+    },
+    {
+      "url": "https://us.magicblock.app/",
+      "description": "Mainnet US - RPC"
+    },
+    {
+      "url": "https://eu.magicblock.app/",
+      "description": "Mainnet EU - RPC"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "getBlocks",
+        "description": "Returns a list of confirmed blocks between two slots.",
+        "externalDocs": {
+          "description": "Official Solana RPC documentation",
+          "url": "https://solana.com/docs/rpc/http/getblocks"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": [
+                      "2.0"
+                    ],
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "getBlocks"
+                    ],
+                    "default": "getBlocks"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "string",
+                        "object"
+                      ]
+                    },
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "description": "Start slot, optional end slot, and optional config object.",
+                    "default": [
+                      "5",
+                      "10",
+                      {
+                        "commitment": "finalized"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "id",
+                  "method",
+                  "params"
+                ],
+                "default": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "method": "getBlocks",
+                  "params": [
+                    "5",
+                    "10",
+                    {
+                      "commitment": "finalized"
+                    }
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "method": "getBlocks",
+                  "params": [
+                    "5",
+                    "10",
+                    {
+                      "commitment": "finalized"
+                    }
+                  ]
+                }
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getBlocks",
+                "params": [
+                  "5",
+                  "10",
+                  {
+                    "commitment": "finalized"
+                  }
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Default getBlocks request",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "getBlocks",
+                    "params": [
+                      "5",
+                      "10",
+                      {
+                        "commitment": "finalized"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": [
+                        "2.0"
+                      ],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "Array of confirmed slot numbers between start_slot and end_slot."
+                    }
+                  },
+                  "required": [
+                    "jsonrpc",
+                    "id"
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "result": [
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                  ],
+                  "id": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+---
+title: "getTransaction"
+openapi: /openapi-rpc-getTransaction.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getTransaction",
+  "params": [
+    "4ReKprwf3WdLHRrzp4ctPWNBsQDPL3VZz3zMmoZfcGJMJCHh5Vq937mPdyxhCbw54wNnA6hZ7KfNpQdpt13yY7A9",
+    {
+      "commitment": "confirmed",
+      "maxSupportedTransactionVersion": 0,
+      "encoding": "json"
+    }
+  ]
+}'
+```
+</RequestExample>

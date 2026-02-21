@@ -1,0 +1,27 @@
+---
+title: "getTokenAccountsByOwner"
+openapi: /openapi-rpc-getTokenAccountsByOwner.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getTokenAccountsByOwner",
+  "params": [
+    "A1TMhSGzQxMr1TboBKtgixKz1sS6REASMxPo1qsyTSJd",
+    {
+      "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    },
+    {
+      "commitment": "finalized",
+      "encoding": "jsonParsed"
+    }
+  ]
+}'
+```
+</RequestExample>
