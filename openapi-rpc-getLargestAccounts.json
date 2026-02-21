@@ -1,0 +1,213 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Solana RPC API",
+    "description": "Solana JSON-RPC method getLargestAccounts on MagicBlock devnet RPC endpoints.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-as.magicblock.app/",
+      "description": "Devnet AS - RPC"
+    },
+    {
+      "url": "https://devnet-us.magicblock.app/",
+      "description": "Devnet US - RPC"
+    },
+    {
+      "url": "https://devnet-eu.magicblock.app/",
+      "description": "Devnet EU - RPC"
+    },
+    {
+      "url": "https://as.magicblock.app/",
+      "description": "Mainnet AS - RPC"
+    },
+    {
+      "url": "https://us.magicblock.app/",
+      "description": "Mainnet US - RPC"
+    },
+    {
+      "url": "https://eu.magicblock.app/",
+      "description": "Mainnet EU - RPC"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "getLargestAccounts",
+        "description": "Returns the 20 largest accounts, by lamport balance.",
+        "externalDocs": {
+          "description": "Official Solana RPC documentation",
+          "url": "https://solana.com/docs/rpc/http/getlargestaccounts"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": [
+                      "2.0"
+                    ],
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "getLargestAccounts"
+                    ],
+                    "default": "getLargestAccounts"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "string",
+                        "object"
+                      ]
+                    },
+                    "description": "Method-specific parameters.",
+                    "default": [
+                      {
+                        "commitment": "finalized"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "id",
+                  "method",
+                  "params"
+                ],
+                "default": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "method": "getLargestAccounts",
+                  "params": [
+                    {
+                      "commitment": "finalized"
+                    }
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "method": "getLargestAccounts",
+                  "params": [
+                    {
+                      "commitment": "finalized"
+                    }
+                  ]
+                }
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getLargestAccounts",
+                "params": [
+                  {
+                    "commitment": "finalized"
+                  }
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Default getLargestAccounts request",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "getLargestAccounts",
+                    "params": [
+                      {
+                        "commitment": "finalized"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": [
+                        "2.0"
+                      ],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "result": {
+                      "description": "Method-specific result payload.",
+                      "oneOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "array"
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "error": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "default": null
+                    }
+                  },
+                  "required": [
+                    "jsonrpc",
+                    "id"
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": null,
+                  "error": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

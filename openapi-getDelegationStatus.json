@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "MagicBlock Router API",
-    "description": "JSON-RPC API for the MagicBlock Router.",
+    "description": "JSON-RPC method getDelegationStatus on MagicBlock Router endpoints.",
     "version": "2.0.0"
   },
   "servers": [
@@ -18,8 +18,8 @@
   "paths": {
     "/": {
       "post": {
-        "summary": "getBlockhashForAccounts",
-        "description": "Get blockhash for multiple account addresses.",
+        "summary": "getDelegationStatus",
+        "description": "Get delegation status for a single account from Magic Router.",
         "requestBody": {
           "required": true,
           "content": {
@@ -41,29 +41,20 @@
                   "method": {
                     "type": "string",
                     "enum": [
-                      "getBlockhashForAccounts"
+                      "getDelegationStatus"
                     ],
-                    "default": "getBlockhashForAccounts"
+                    "default": "getDelegationStatus"
                   },
                   "params": {
                     "type": "array",
                     "items": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "minItems": 1,
-                      "maxItems": 100,
-                      "description": "Array of account addresses (max 100)"
+                      "type": "string"
                     },
                     "minItems": 1,
                     "maxItems": 1,
-                    "description": "Single account-address array argument",
+                    "description": "Single account address",
                     "default": [
-                      [
-                        "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
-                        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
-                      ]
+                      "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb"
                     ]
                   }
                 },
@@ -74,16 +65,18 @@
                   "params"
                 ]
               },
-              "example": {
-                "jsonrpc": "2.0",
-                "id": 1,
-                "method": "getBlockhashForAccounts",
-                "params": [
-                  [
-                    "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
-                    "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
-                  ]
-                ]
+              "examples": {
+                "default": {
+                  "summary": "Default getDelegationStatus request",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "getDelegationStatus",
+                    "params": [
+                      "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -116,18 +109,45 @@
                     "result": {
                       "type": "object",
                       "properties": {
-                        "blockhash": {
-                          "type": "string",
-                          "description": "The blockhash for the accounts"
+                        "isDelegated": {
+                          "type": "boolean",
+                          "description": "Whether the account is delegated"
                         },
-                        "lastValidBlockHeight": {
-                          "type": "integer",
-                          "description": "The last valid block height"
+                        "fqdn": {
+                          "type": "string",
+                          "description": "Fully qualified domain name"
+                        },
+                        "delegationRecord": {
+                          "type": "object",
+                          "properties": {
+                            "authority": {
+                              "type": "string",
+                              "description": "The authority address"
+                            },
+                            "owner": {
+                              "type": "string",
+                              "description": "The owner address"
+                            },
+                            "delegationSlot": {
+                              "type": "integer",
+                              "description": "The delegation slot"
+                            },
+                            "lamports": {
+                              "type": "integer",
+                              "description": "The amount in lamports"
+                            }
+                          },
+                          "required": [
+                            "authority",
+                            "owner",
+                            "delegationSlot",
+                            "lamports"
+                          ]
                         }
                       },
                       "required": [
-                        "blockhash",
-                        "lastValidBlockHeight"
+                        "isDelegated",
+                        "delegationRecord"
                       ]
                     },
                     "error": {
@@ -140,8 +160,14 @@
                   "jsonrpc": "2.0",
                   "id": 1,
                   "result": {
-                    "blockhash": "9tJWqpCLuFZ8PWQZJaYqydTXzhTCNmrtGraG2wyZXrP7",
-                    "lastValidBlockHeight": 399468682
+                    "isDelegated": true,
+                    "fqdn": "https://devnet-as.magicblock.app/",
+                    "delegationRecord": {
+                      "authority": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                      "owner": "3JnJ727jWEmPVU8qfXwtH63sCNDX7nMgsLbg8qy8aaPX",
+                      "delegationSlot": 388473478,
+                      "lamports": 15144960
+                    }
                   }
                 }
               }

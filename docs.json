@@ -130,6 +130,51 @@
               "api-reference/er-api/getAccountInfo",
               "api-reference/er-api/getDelegationStatus"
             ]
+          },
+          {
+            "group": "RPC API",
+            "pages": [
+              "api-reference/rpc-api/introduction",
+              {
+                "group": "Methods",
+                "expanded": false,
+                "pages": [
+                  "api-reference/rpc-api/getAccountInfo",
+                  "api-reference/rpc-api/getBalance",
+                  "api-reference/rpc-api/getBlock",
+                  "api-reference/rpc-api/getBlockCommitment",
+                  "api-reference/rpc-api/getBlockHeight",
+                  "api-reference/rpc-api/getBlocks",
+                  "api-reference/rpc-api/getBlocksWithLimit",
+                  "api-reference/rpc-api/getBlockTime",
+                  "api-reference/rpc-api/getFirstAvailableBlock",
+                  "api-reference/rpc-api/getGenesisHash",
+                  "api-reference/rpc-api/getHealth",
+                  "api-reference/rpc-api/getIdentity",
+                  "api-reference/rpc-api/getLargestAccounts",
+                  "api-reference/rpc-api/getLatestBlockhash",
+                  "api-reference/rpc-api/getLeaderSchedule",
+                  "api-reference/rpc-api/getMinimumBalanceForRentExemption",
+                  "api-reference/rpc-api/getMultipleAccounts",
+                  "api-reference/rpc-api/getProgramAccounts",
+                  "api-reference/rpc-api/getRecentPerformanceSamples",
+                  "api-reference/rpc-api/getSignaturesForAddress",
+                  "api-reference/rpc-api/getSignatureStatuses",
+                  "api-reference/rpc-api/getSlot",
+                  "api-reference/rpc-api/getTokenAccountBalance",
+                  "api-reference/rpc-api/getTokenAccountsByDelegate",
+                  "api-reference/rpc-api/getTokenAccountsByOwner",
+                  "api-reference/rpc-api/getTokenLargestAccounts",
+                  "api-reference/rpc-api/getTokenSupply",
+                  "api-reference/rpc-api/getTransaction",
+                  "api-reference/rpc-api/getTransactionCount",
+                  "api-reference/rpc-api/getVersion",
+                  "api-reference/rpc-api/isBlockhashValid",
+                  "api-reference/rpc-api/sendTransaction",
+                  "api-reference/rpc-api/simulateTransaction"
+                ]
+              }
+            ]
           }
         ]
       },

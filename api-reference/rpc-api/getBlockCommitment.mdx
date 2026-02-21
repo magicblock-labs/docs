@@ -1,0 +1,20 @@
+---
+title: "getBlockCommitment"
+openapi: /openapi-rpc-getBlockCommitment.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getBlockCommitment",
+  "params": [
+    5
+  ]
+}'
+```
+</RequestExample>

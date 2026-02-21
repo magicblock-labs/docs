@@ -1,0 +1,34 @@
+---
+title: "getProgramAccounts"
+openapi: /openapi-rpc-getProgramAccounts.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getProgramAccounts",
+  "params": [
+    "4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T",
+    {
+      "commitment": "finalized",
+      "filters": [
+        {
+          "dataSize": 17
+        },
+        {
+          "memcmp": {
+            "offset": 4,
+            "bytes": "3Mc6vR"
+          }
+        }
+      ]
+    }
+  ]
+}'
+```
+</RequestExample>

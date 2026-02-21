@@ -1,0 +1,218 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Solana RPC API",
+    "description": "Solana JSON-RPC method getBlock on MagicBlock devnet RPC endpoints.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-as.magicblock.app/",
+      "description": "Devnet AS - RPC"
+    },
+    {
+      "url": "https://devnet-us.magicblock.app/",
+      "description": "Devnet US - RPC"
+    },
+    {
+      "url": "https://devnet-eu.magicblock.app/",
+      "description": "Devnet EU - RPC"
+    },
+    {
+      "url": "https://as.magicblock.app/",
+      "description": "Mainnet AS - RPC"
+    },
+    {
+      "url": "https://us.magicblock.app/",
+      "description": "Mainnet US - RPC"
+    },
+    {
+      "url": "https://eu.magicblock.app/",
+      "description": "Mainnet EU - RPC"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "getBlockRpc",
+        "summary": "getBlock",
+        "description": "Returns identity and transaction information about a confirmed block in the ledger.",
+        "externalDocs": {
+          "description": "Official Solana RPC documentation",
+          "url": "https://solana.com/docs/rpc/http/getblock"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": ["getBlock"],
+                    "default": "getBlock"
+                  },
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": ["2.0"],
+                    "default": "2.0"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "description": "Slot number (u64).",
+                    "default": [378967388]
+                  },
+                  "id": {
+                    "oneOf": [
+                      { "type": "integer" },
+                      { "type": "string" }
+                    ],
+                    "default": 1
+                  },
+                  "commitment": {
+                    "type": "string",
+                    "description": "Commitment level (passed in params config object).",
+                    "default": "finalized"
+                  },
+                  "encoding": {
+                    "type": "string",
+                    "description": "Encoding format for account data.",
+                    "default": "json"
+                  },
+                  "transactionDetails": {
+                    "type": "string",
+                    "description": "Level of transaction detail to return.",
+                    "default": "full"
+                  },
+                  "maxSupportedTransactionVersion": {
+                    "type": "integer",
+                    "description": "Max transaction version to return in responses.",
+                    "default": 0
+                  },
+                  "rewards": {
+                    "type": "boolean",
+                    "description": "Whether to populate the rewards array.",
+                    "default": false
+                  }
+                },
+                "required": ["jsonrpc", "id", "method", "params"],
+                "default": {
+                  "method": "getBlock",
+                  "jsonrpc": "2.0",
+                  "params": [378967388],
+                  "id": 1,
+                  "commitment": "finalized",
+                  "encoding": "json",
+                  "transactionDetails": "full",
+                  "maxSupportedTransactionVersion": 0,
+                  "rewards": false
+                }
+              },
+              "example": {
+                "method": "getBlock",
+                "jsonrpc": "2.0",
+                "params": [
+                  378967388,
+                  {
+                    "commitment": "finalized",
+                    "encoding": "json",
+                    "transactionDetails": "full",
+                    "maxSupportedTransactionVersion": 0,
+                    "rewards": false
+                  }
+                ],
+                "id": 1
+              },
+              "examples": {
+                "default": {
+                  "summary": "Default getBlock request",
+                  "value": {
+                    "method": "getBlock",
+                    "jsonrpc": "2.0",
+                    "params": [
+                      378967388,
+                      {
+                        "commitment": "finalized",
+                        "encoding": "json",
+                        "transactionDetails": "full",
+                        "maxSupportedTransactionVersion": 0,
+                        "rewards": false
+                      }
+                    ],
+                    "id": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": ["2.0"],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        { "type": "integer" },
+                        { "type": "string" }
+                      ]
+                    },
+                    "result": {
+                      "type": ["object", "null"],
+                      "description": "Block information or null if block is not confirmed.",
+                      "properties": {
+                        "blockhash": {
+                          "type": "string",
+                          "description": "Blockhash of this block."
+                        },
+                        "previousBlockhash": {
+                          "type": "string",
+                          "description": "Blockhash of the previous block."
+                        },
+                        "parentSlot": {
+                          "type": "integer",
+                          "description": "Slot index of the parent block."
+                        },
+                        "blockHeight": {
+                          "type": ["integer", "null"],
+                          "description": "Estimated block height."
+                        },
+                        "blockTime": {
+                          "type": ["integer", "null"],
+                          "description": "Estimated production time as Unix timestamp."
+                        },
+                        "transactions": {
+                          "type": "array",
+                          "description": "Array of transaction objects."
+                        },
+                        "rewards": {
+                          "type": "array",
+                          "description": "Array of reward objects."
+                        }
+                      }
+                    }
+                  },
+                  "required": ["jsonrpc", "id"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

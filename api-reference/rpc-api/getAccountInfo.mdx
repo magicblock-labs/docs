@@ -1,0 +1,23 @@
+---
+title: "getAccountInfo"
+openapi: /openapi-rpc-getAccountInfo.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "method": "getAccountInfo",
+  "jsonrpc": "2.0",
+  "params": [
+    "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+    {
+      "encoding": "base64"
+    }
+  ],
+  "id": 0
+}'
+```
+</RequestExample>

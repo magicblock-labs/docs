@@ -1,0 +1,23 @@
+---
+title: "getTokenAccountBalance"
+openapi: /openapi-rpc-getTokenAccountBalance.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getTokenAccountBalance",
+  "params": [
+    "7fUAJdStEuGbc3sM84cKRL6yYaaSstyLSU4ve5oovLS7",
+    {
+      "commitment": "finalized"
+    }
+  ]
+}'
+```
+</RequestExample>

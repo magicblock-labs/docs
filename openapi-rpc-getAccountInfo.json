@@ -1,25 +1,46 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "MagicBlock Router API",
-    "description": "JSON-RPC API for the MagicBlock Router.",
-    "version": "2.0.0"
+    "title": "MagicBlock Solana RPC API",
+    "description": "Solana JSON-RPC method getAccountInfo on MagicBlock devnet RPC endpoints.",
+    "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "https://devnet-router.magicblock.app",
-      "description": "Devnet - RPC Magic Router"
+      "url": "https://devnet-as.magicblock.app/",
+      "description": "Devnet AS - RPC"
     },
     {
-      "url": "https://router.magicblock.app",
-      "description": "Mainnet - RPC Magic Router"
+      "url": "https://devnet-us.magicblock.app/",
+      "description": "Devnet US - RPC"
+    },
+    {
+      "url": "https://devnet-eu.magicblock.app/",
+      "description": "Devnet EU - RPC"
+    },
+    {
+      "url": "https://as.magicblock.app/",
+      "description": "Mainnet AS - RPC"
+    },
+    {
+      "url": "https://us.magicblock.app/",
+      "description": "Mainnet US - RPC"
+    },
+    {
+      "url": "https://eu.magicblock.app/",
+      "description": "Mainnet EU - RPC"
     }
   ],
   "paths": {
     "/": {
       "post": {
+        "operationId": "getAccountInfoRpc",
         "summary": "getAccountInfo",
-        "description": "Get AccountInfo for a single account.",
+        "description": "Returns all information associated with an account of provided Pubkey.",
+        "externalDocs": {
+          "description": "Official Solana RPC documentation",
+          "url": "https://solana.com/docs/rpc/http/getaccountinfo"
+        },
         "requestBody": {
           "required": true,
           "content": {
@@ -48,46 +69,9 @@
                   "params": {
                     "type": "array",
                     "items": {
-                      "oneOf": [
-                        {
-                          "type": "string",
-                          "description": "Account public key to query."
-                        },
-                        {
-                          "type": "object",
-                          "description": "Request options.",
-                          "properties": {
-                            "encoding": {
-                              "type": "string",
-                              "enum": [
-                                "base64",
-                                "base64+zstd"
-                              ],
-                              "default": "base64"
-                            },
-                            "commitment": {
-                              "type": "string"
-                            },
-                            "dataSlice": {
-                              "type": "object",
-                              "properties": {
-                                "offset": {
-                                  "type": "integer"
-                                },
-                                "length": {
-                                  "type": "integer"
-                                }
-                              },
-                              "required": [
-                                "offset",
-                                "length"
-                              ]
-                            }
-                          },
-                          "required": [
-                            "encoding"
-                          ]
-                        }
+                      "type": [
+                        "string",
+                        "object"
                       ]
                     },
                     "minItems": 2,
@@ -252,7 +236,7 @@
                                   "pattern": "^[0-9]+$"
                                 }
                               ],
-                              "description": "Rent epoch. Rent-exempt accounts may return u64::MAX (18446744073709551615); treat as an unsigned 64-bit value and prefer string handling in JavaScript to avoid precision loss."
+                              "description": "Rent epoch."
                             },
                             "space": {
                               "type": "integer"
@@ -294,7 +278,7 @@
                       ],
                       "executable": false,
                       "lamports": 946560,
-                      "owner": "2qgx11jg9RzZHT88FwwvwxKJmtJi5cPL8KgcCAH7yRda",
+                      "owner": "11111111111111111111111111111111",
                       "rentEpoch": "18446744073709551615",
                       "space": 8
                     }

@@ -1,0 +1,27 @@
+---
+title: "getTokenAccountsByDelegate"
+openapi: /openapi-rpc-getTokenAccountsByDelegate.json POST /
+---
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://devnet-as.magicblock.app/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getTokenAccountsByDelegate",
+  "params": [
+    "4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T",
+    {
+      "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    },
+    {
+      "commitment": "finalized",
+      "encoding": "jsonParsed"
+    }
+  ]
+}'
+```
+</RequestExample>

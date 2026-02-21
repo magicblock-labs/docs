@@ -369,15 +369,66 @@
                                     "params": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "description": "Account public key to query."
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "description": "Request options.",
+                                                    "properties": {
+                                                        "encoding": {
+                                                            "type": "string",
+                                                            "enum": ["base64", "base64+zstd"],
+                                                            "default": "base64"
+                                                        },
+                                                        "commitment": {
+                                                            "type": "string"
+                                                        },
+                                                        "dataSlice": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "offset": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "length": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "offset",
+                                                                "length"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "encoding"
+                                                    ]
+                                                }
+                                            ]
                                         },
-                                        "minItems": 1,
-                                        "maxItems": 1,
+                                        "minItems": 2,
+                                        "maxItems": 2,
                                         "description": "Single account address",
                                         "default": [
-                                            "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+                                            "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                                            {
+                                                "encoding": "base64"
+                                            }
                                         ]
                                     }
+                                },
+                                "default": {
+                                    "jsonrpc": "2.0",
+                                    "id": 0,
+                                    "method": "getAccountInfo",
+                                    "params": [
+                                        "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                                        {
+                                            "encoding": "base64"
+                                        }
+                                    ]
                                 },
                                 "required": ["jsonrpc", "id", "method", "params"]
                             },
@@ -386,8 +437,8 @@
                                 "id": 1,
                                 "method": "getAccountInfo",
                                 "params": [
-                                            "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
-                                            { "encoding": "base64+zstd" }
+                                            "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                                            { "encoding": "base64" }
                                         ]
                             }
                         }
@@ -455,7 +506,7 @@
                                         "value": {
                                             "data": [
                                                 "KLUv/QBYQQAAAgAAAAAAAAA=",
-                                                "base64+zstd"
+                                                "base64"
                                             ],
                                             "executable": false,
                                             "lamports": 946560,
@@ -511,7 +562,7 @@
                                         "minItems": 1,
                                         "maxItems": 1,
                                         "description": "Single account address",
-                                        "default": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                                        "default": ["5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb"]
                                     }
                                 },
                                 "required": ["jsonrpc", "id", "method", "params"]
@@ -523,7 +574,7 @@
                                         "jsonrpc": "2.0",
                                         "id": 1,
                                         "method": "getDelegationStatus",
-                                        "params": ["7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"]
+                                        "params": ["5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb"]
                                     }
                                 }
                             }
