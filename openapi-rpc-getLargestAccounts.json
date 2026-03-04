@@ -19,6 +19,10 @@
       "description": "Devnet EU - RPC"
     },
     {
+      "url": "https://tee.magicblock.app/",
+      "description": "Devnet TEE - RPC"
+    },
+    {
       "url": "https://as.magicblock.app/",
       "description": "Mainnet AS - RPC"
     },
@@ -29,6 +33,10 @@
     {
       "url": "https://eu.magicblock.app/",
       "description": "Mainnet EU - RPC"
+    },
+    {
+      "url": "https://mainnet-tee.magicblock.app/",
+      "description": "Mainnet TEE - RPC"
     }
   ],
   "paths": {

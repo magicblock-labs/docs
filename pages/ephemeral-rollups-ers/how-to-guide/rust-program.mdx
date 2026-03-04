@@ -4,7 +4,7 @@ description: "Learn how to write a simple Rust program that delegates and increm
 ---
 
 import Endpoints from "/snippets/endpoints.mdx";
-import Validators from "/snippets/validators.mdx";
+import Validators from "/snippets/notes/validators.mdx";
 import SoftwareRust from "/snippets/software-rust.mdx";
 import SolanaResources from "/snippets/solana-resources.mdx";
 
@@ -14,6 +14,8 @@ import UndelegateCode from "/snippets/rust-counter-code/undelegate.mdx";
 import InstructionsCode from "/snippets/rust-counter-code/instructions.mdx";
 import ResizeCode from "/snippets/rust-counter-code/resize.mdx";
 import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
+
+import UndelegationCallbackNote from "/snippets/notes/undelegation-callback-note.mdx";
 
 import QuickAccesERRust from "/snippets/quick-access-er-rust.mdx";
 
@@ -100,6 +102,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
     2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
     3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
     4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
+    <UndelegationCallbackNote />
 
     Here's the core structure of our program:
 

@@ -4,7 +4,7 @@ description: "Any Solana program can be upgraded with Ephemeral Rollups by addin
 ---
 
 import Endpoints from "/snippets/endpoints.mdx";
-import Validators from "/snippets/validators.mdx";
+import Validators from "/snippets/notes/validators.mdx";
 import Software from "/snippets/software.mdx";
 import SolanaResources from "/snippets/solana-resources.mdx";
 
@@ -18,6 +18,8 @@ import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
 import MagicRouterSDK from "/snippets/magic-router-sdk.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 import MagicActionExample from "/snippets/magic-action-example.mdx";
+
+import UndelegationCallbackNote from "/snippets/notes/undelegation-callback-note.mdx";
 
 import QuickAccesER from "/snippets/quick-access-er.mdx";
 import QuickAccessERFooter from "/snippets/quick-access-er-footer.mdx";
@@ -125,6 +127,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
     4. `Undelegate`:
         - Schedules sync and undelegation of counter (called on ER)
         - Undelegation triggered through callback instruction injected through #[ephemeral] (called on Base Layer through validator CPI)
+    <UndelegationCallbackNote />
     <WriteProgramCode />
 
     Nothing special here, just a simple Anchor program that increments a counter. The only difference is that we're adding the `ephemeral` macro for undelegation and `delegate` macro to inject some useful logic to interact with the delegation program.
