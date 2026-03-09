@@ -328,6 +328,8 @@ The typical lifecycle of a permissioned account requires interaction with MagicB
 
 - **Signer Validation**: Only members with AUTHORITY_FLAG or program with permissioned account can authorize changes
 - **Public Accounts**: Setting members to `None` makes the account publicly visible
+- **Default Authority**: By default, the owner of the permissioned account is added as permission authority to members of permission account.
+- **Empty Member List**: If members field is set to empty list, the permissioned account is fully restricted and private. Only the owner of permissioned account can modify the permission.
 - **Access Auditing**: Use member flags to audit and control access
 
 ---
