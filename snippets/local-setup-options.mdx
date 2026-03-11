@@ -165,7 +165,7 @@ When using a local ER validator, connect it to the base layer where the accounts
 
         ```bash
         RUST_LOG=info ephemeral-validator \
-          --accounts-lifecycle ephemeral \
+          --lifecycle ephemeral \
           --remote-url "https://rpc.magicblock.app/devnet" \
           --rpc-port 7799
         ```
@@ -216,7 +216,7 @@ If you also need to test VRF end to end, run a local `vrf-oracle` against a loca
 
   <Step title="Start the ephemeral validator">
     ```bash
-    ephemeral-validator --remote-url "http://localhost:8899" --rpc-port 7799 --accounts-lifecycle ephemeral
+    ephemeral-validator --remote-url "http://localhost:8899" --rpc-port 7799 --lifecycle ephemeral
     ```
   </Step>
 
