@@ -23,11 +23,9 @@ import QuickAccessVRF from "/snippets/quick-access-vrf.mdx";
 
 **Dedicated nodes** are ideal for enterprises and high-scale teams. They provide maximum reliability, predictable costs, and MEV protection with your own dedicated infrastructure.
 
-| **Fee type**    | **Amount (SOL)** | **Description**      |
-| :-------------- | :--------------- | :------------------- |
-| **Base fee**    | 0.0000005        | Per transaction (Tx) |
-| **Session fee** | 0.0003           | Per ER session       |
-| **Commit fee**  | 0.0001           | Per commit to Solana |
+For support to **run your own nodes**, reach out to:
+
+📧 [development@magicblock.xyz](mailto:development@magicblock.xyz)
 
 [Learn more about ER →](/pages/ephemeral-rollups-ers/how-to-guide/quickstart)
 
@@ -41,21 +39,16 @@ import QuickAccessVRF from "/snippets/quick-access-vrf.mdx";
 
 The VRF service provides **provably fair randomness on-chain**. Fees cover proof generation + posting on-chain.
 
-> ⚠️ Note: Costs do not include the transaction fee to request randomness.
+> ⚠️ Note: Costs do not include the transaction to request randomness. On ER transactions are free, on Solana transactions may vary based on your priority fees. 
 
-| **Fee type**                 | **Amount (SOL)** | **Description**        |
-| :--------------------------- | :--------------- | :--------------------- |
-| **Solana (within 1 second)** | 0.0005           | Per randomness request |
-| **With ER (within 100 ms)**  | Free             | Per randomness request |
-
-[Learn more about VRF →](/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)
+| **VRF type**             | **Amount (SOL)** | **Description**        |
+| :----------------------- | :--------------- | :--------------------- |
+| **ER (\<50 ms)**         | Free             | Per randomness request |
+| **Solana (\<500 ms)**    | 0.0008           | Per randomness request |
+| **Solana (1/2 seconds)** | 0.0005           | Per randomness request |
 
 ### VRF Cost Simulator: 30-Days
 
 <VRFCostSimulator />
 
----
-
-For support to **run your own nodes**, reach out:
-
-📧 [development@magicblock.xyz](mailto:development@magicblock.xyz)
+[Learn more about VRF →](/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)
