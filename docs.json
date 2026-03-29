@@ -22,6 +22,18 @@
     {
       "source": "/pages/get-started/introduction/why-magicblock",
       "destination": "/pages/overview/products"
+    },
+    {
+      "source": "/api-reference/per-api/getConfig",
+      "destination": "/api-reference/per-api/introduction"
+    },
+    {
+      "source": "/api-reference/per-api/prepareWithdrawal",
+      "destination": "/api-reference/per-api/introduction"
+    },
+    {
+      "source": "/api-reference/per-api/transferAmount",
+      "destination": "/api-reference/per-api/transfer"
     }
   ],
   "staticPages": [
@@ -198,14 +210,18 @@
             ]
           },
           {
-            "group": "Private SPL API (Beta)",
+            "group": "Private Payments API",
             "pages": [
               "api-reference/per-api/introduction",
-              "api-reference/per-api/getConfig",
+              "api-reference/per-api/health",
               "api-reference/per-api/deposit",
-              "api-reference/per-api/transferAmount",
-              "api-reference/per-api/prepareWithdrawal",
-              "api-reference/per-api/withdraw"
+              "api-reference/per-api/transfer",
+              "api-reference/per-api/withdraw",
+              "api-reference/per-api/initialize-mint",
+              "api-reference/per-api/balance",
+              "api-reference/per-api/private-balance",
+              "api-reference/per-api/is-mint-initialized",
+              "api-reference/per-api/mcp"
             ]
           }
         ]
