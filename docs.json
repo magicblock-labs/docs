@@ -217,8 +217,10 @@
               "api-reference/per-api/deposit",
               "api-reference/per-api/transfer",
               "api-reference/per-api/withdraw",
+              "api-reference/per-api/initialize-mint",
               "api-reference/per-api/balance",
               "api-reference/per-api/private-balance",
+              "api-reference/per-api/is-mint-initialized",
               "api-reference/per-api/mcp"
             ]
           }

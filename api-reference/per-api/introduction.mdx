@@ -14,7 +14,7 @@ description: "SPL Private Payments API documentation"
 
 ## Overview
 
-The SPL Private Payments API builds unsigned SPL token transactions for deposits, transfers, and withdrawals across Solana and MagicBlock ephemeral rollups. The canonical public reference is available at [payments.magicblock.app/reference](https://payments.magicblock.app/reference).
+The SPL Private Payments API builds unsigned SPL token transactions for deposits, transfers, withdrawals, and mint initialization across Solana and MagicBlock ephemeral rollups. It also exposes balance and mint-initialization status queries. The canonical public reference is available at [payments.magicblock.app/reference](https://payments.magicblock.app/reference).
 
 ### Meta
 
@@ -25,8 +25,10 @@ The SPL Private Payments API builds unsigned SPL token transactions for deposits
 - [**Deposit SPL Tokens**](/api-reference/per-api/deposit) - Build an unsigned deposit transaction from Solana into an ephemeral rollup
 - [**Transfer SPL Tokens**](/api-reference/per-api/transfer) - Build an unsigned public or private SPL transfer
 - [**Withdraw SPL Tokens**](/api-reference/per-api/withdraw) - Build an unsigned withdrawal transaction back to Solana
+- [**Initialize Mint**](/api-reference/per-api/initialize-mint) - Build an unsigned transaction that initializes a validator-scoped transfer queue for a mint
 - [**Balance**](/api-reference/per-api/balance) - Get the base-chain SPL token balance for an address
 - [**Private Balance**](/api-reference/per-api/private-balance) - Get the ephemeral-rollup SPL token balance for an address
+- [**Is Mint Initialized**](/api-reference/per-api/is-mint-initialized) - Check whether a mint has a validator-scoped transfer queue on the ephemeral RPC
 
 ### MCP
 

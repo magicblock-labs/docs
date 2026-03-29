@@ -5,6 +5,12 @@
     "version": "0.1.0",
     "description": "REST API for building private SPL token transactions on Solana and MagicBlock ephemeral rollups.\n\nDocumentation: https://docs.magicblock.gg/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart"
   },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - SPL Private Payments API"
+    }
+  ],
   "components": {
     "schemas": {
       "HealthResponse": {
@@ -297,6 +303,80 @@
           "idempotent": true
         }
       },
+      "InitializeMintResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UnsignedTransactionResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "initializeMint"
+                ]
+              },
+              "transferQueue": {
+                "type": "string",
+                "example": "So11111111111111111111111111111111111111112"
+              },
+              "rentPda": {
+                "type": "string",
+                "example": "So11111111111111111111111111111111111111112"
+              }
+            },
+            "required": [
+              "validator",
+              "transferQueue",
+              "rentPda"
+            ]
+          }
+        ]
+      },
+      "InitializeMintRequest": {
+        "type": "object",
+        "properties": {
+          "payer": {
+            "type": "string",
+            "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+          },
+          "mint": {
+            "type": "string",
+            "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+          },
+          "cluster": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mainnet",
+                  "devnet"
+                ]
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "example": "mainnet",
+            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+          },
+          "validator": {
+            "type": "string",
+            "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+            "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
+          }
+        },
+        "required": [
+          "payer",
+          "mint"
+        ],
+        "example": {
+          "payer": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
+        }
+      },
       "TransferRequest": {
         "type": "object",
         "properties": {
@@ -443,6 +523,32 @@
           "ata",
           "location",
           "balance"
+        ]
+      },
+      "MintInitializationResponse": {
+        "type": "object",
+        "properties": {
+          "mint": {
+            "type": "string",
+            "example": "So11111111111111111111111111111111111111112"
+          },
+          "validator": {
+            "type": "string",
+            "example": "So11111111111111111111111111111111111111112"
+          },
+          "transferQueue": {
+            "type": "string",
+            "example": "So11111111111111111111111111111111111111112"
+          },
+          "initialized": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "mint",
+          "validator",
+          "transferQueue",
+          "initialized"
         ]
       },
       "McpResponse": {
@@ -666,6 +772,72 @@
         }
       }
     },
+    "/v1/spl/initialize-mint": {
+      "post": {
+        "tags": [
+          "SPL"
+        ],
+        "description": "Build an unsigned base-chain transaction that initializes and delegates a validator-scoped transfer queue for a mint.",
+        "requestBody": {
+          "required": true,
+          "description": "Initialize mint request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitializeMintRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unsigned serialized transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitializeMintResponse"
+                },
+                "example": {
+                  "kind": "initializeMint",
+                  "version": "legacy",
+                  "transactionBase64": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAIDKmcfsS5XfSOLaLlaBHJry50iH2Ufk2TMz4STC2fHzIcFKkerg3q2DD3Yn8TISmGeKoxSLz+BiP7iQ4pYqXYXsgu8D8C7R8ovdMQRLpSrE8+jxjTl3BfqywPNGiPNfnh8eS+smowIxqKDcCjw5liNXQkkCbBSDCBDFwtrgCKqoQ0DAgEBBAECAwQCAQEEAgIDBAIBAQQDAgME",
+                  "sendTo": "base",
+                  "recentBlockhash": "9A4VhP8M8fQZxP4h7rB6mP6eM8w2pJkYh7QdZk7V4r2x",
+                  "lastValidBlockHeight": 284512337,
+                  "instructionCount": 4,
+                  "requiredSigners": [
+                    "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+                  ],
+                  "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                  "transferQueue": "BuBHLbaPmYmgvMiZ8uZb96RjBtmWzJY52u7Di5urNf6M",
+                  "rentPda": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Build error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/spl/transfer": {
       "post": {
         "tags": [
@@ -727,6 +899,7 @@
           {
             "schema": {
               "type": "string",
+              "default": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
               "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
             },
             "required": true,
@@ -758,6 +931,7 @@
           {
             "schema": {
               "type": "string",
+              "default": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
               "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
             },
             "required": true,
@@ -816,6 +990,7 @@
           {
             "schema": {
               "type": "string",
+              "default": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
               "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
             },
             "required": true,
@@ -847,6 +1022,7 @@
           {
             "schema": {
               "type": "string",
+              "default": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
               "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
             },
             "required": true,
@@ -868,6 +1044,96 @@
                   "ata": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
                   "location": "ephemeral",
                   "balance": "1000000"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/spl/is-mint-initialized": {
+      "get": {
+        "tags": [
+          "SPL"
+        ],
+        "description": "Check whether the validator-scoped transfer queue exists for a mint on the ephemeral RPC.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            },
+            "required": true,
+            "name": "mint",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "mainnet",
+                    "devnet"
+                  ]
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "example": "mainnet",
+              "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+            },
+            "required": false,
+            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC.",
+            "name": "cluster",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+              "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
+            },
+            "required": false,
+            "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`.",
+            "name": "validator",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mint transfer queue initialization status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MintInitializationResponse"
+                },
+                "example": {
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                  "transferQueue": "BuBHLbaPmYmgvMiZ8uZb96RjBtmWzJY52u7Di5urNf6M",
+                  "initialized": true
                 }
               }
             }
