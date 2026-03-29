@@ -843,7 +843,7 @@
         "tags": [
           "SPL"
         ],
-        "description": "Transfer SPL tokens publicly or privately trough an ephemeral rollup.",
+        "description": "Transfer SPL tokens publicly or privately through an ephemeral rollup.",
         "requestBody": {
           "required": true,
           "description": "Transfer request",
