@@ -25,15 +25,335 @@
     },
     {
       "source": "/api-reference/per-api/getConfig",
-      "destination": "/api-reference/per-api/introduction"
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
     },
     {
       "source": "/api-reference/per-api/prepareWithdrawal",
-      "destination": "/api-reference/per-api/introduction"
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
     },
     {
       "source": "/api-reference/per-api/transferAmount",
-      "destination": "/api-reference/per-api/transfer"
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer"
+    },
+    {
+      "source": "/api-reference/er-api/introduction",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/introduction"
+    },
+    {
+      "source": "/api-reference/er-api/getRoutes",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getRoutes"
+    },
+    {
+      "source": "/api-reference/er-api/getIdentity",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getIdentity"
+    },
+    {
+      "source": "/api-reference/er-api/getBlockhashForAccounts",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts"
+    },
+    {
+      "source": "/api-reference/er-api/getSignatureStatuses",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses"
+    },
+    {
+      "source": "/api-reference/er-api/getAccountInfo",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo"
+    },
+    {
+      "source": "/api-reference/er-api/getDelegationStatus",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus"
+    },
+    {
+      "source": "/api-reference/er-api/getPermission",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getPermission"
+    },
+    {
+      "source": "/api-reference/per-api/introduction",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
+    },
+    {
+      "source": "/api-reference/per-api/health",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/health"
+    },
+    {
+      "source": "/api-reference/per-api/deposit",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/deposit"
+    },
+    {
+      "source": "/api-reference/per-api/transfer",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer"
+    },
+    {
+      "source": "/api-reference/per-api/withdraw",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw"
+    },
+    {
+      "source": "/api-reference/per-api/initialize-mint",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint"
+    },
+    {
+      "source": "/api-reference/per-api/balance",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/balance"
+    },
+    {
+      "source": "/api-reference/per-api/private-balance",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance"
+    },
+    {
+      "source": "/api-reference/per-api/is-mint-initialized",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized"
+    },
+    {
+      "source": "/api-reference/per-api/mcp",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/mcp"
+    },
+    {
+      "source": "/api-reference/per/introduction",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
+    },
+    {
+      "source": "/api-reference/per/health",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/health"
+    },
+    {
+      "source": "/api-reference/per/deposit",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/deposit"
+    },
+    {
+      "source": "/api-reference/per/transfer",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer"
+    },
+    {
+      "source": "/api-reference/per/withdraw",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw"
+    },
+    {
+      "source": "/api-reference/per/initialize-mint",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint"
+    },
+    {
+      "source": "/api-reference/per/balance",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/balance"
+    },
+    {
+      "source": "/api-reference/per/private-balance",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance"
+    },
+    {
+      "source": "/api-reference/per/is-mint-initialized",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized"
+    },
+    {
+      "source": "/api-reference/per/mcp",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/mcp"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/introduction",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/introduction"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/getRoutes",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getRoutes"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/getIdentity",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getIdentity"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/getBlockhashForAccounts",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/getSignatureStatuses",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/getAccountInfo",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/getDelegationStatus",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus"
+    },
+    {
+      "source": "/pages/ephemeral-rollups-ers/api-reference/getPermission",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getPermission"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/introduction",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/health",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/health"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/deposit",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/deposit"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/transfer",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/withdraw",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/initialize-mint",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/balance",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/balance"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/private-balance",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/is-mint-initialized",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized"
+    },
+    {
+      "source": "/pages/private-ephemeral-rollups-pers/api-reference/mcp",
+      "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/mcp"
+    },
+    {
+      "source": "/api-reference/rpc-api/introduction",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/introduction"
+    },
+    {
+      "source": "/api-reference/rpc-api/getAccountInfo",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getAccountInfo"
+    },
+    {
+      "source": "/api-reference/rpc-api/getBalance",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBalance"
+    },
+    {
+      "source": "/api-reference/rpc-api/getBlock",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBlock"
+    },
+    {
+      "source": "/api-reference/rpc-api/getBlockCommitment",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBlockCommitment"
+    },
+    {
+      "source": "/api-reference/rpc-api/getBlockHeight",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBlockHeight"
+    },
+    {
+      "source": "/api-reference/rpc-api/getBlocks",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBlocks"
+    },
+    {
+      "source": "/api-reference/rpc-api/getBlocksWithLimit",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBlocksWithLimit"
+    },
+    {
+      "source": "/api-reference/rpc-api/getBlockTime",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBlockTime"
+    },
+    {
+      "source": "/api-reference/rpc-api/getFirstAvailableBlock",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getFirstAvailableBlock"
+    },
+    {
+      "source": "/api-reference/rpc-api/getGenesisHash",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getGenesisHash"
+    },
+    {
+      "source": "/api-reference/rpc-api/getHealth",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getHealth"
+    },
+    {
+      "source": "/api-reference/rpc-api/getIdentity",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getIdentity"
+    },
+    {
+      "source": "/api-reference/rpc-api/getLargestAccounts",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getLargestAccounts"
+    },
+    {
+      "source": "/api-reference/rpc-api/getLatestBlockhash",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getLatestBlockhash"
+    },
+    {
+      "source": "/api-reference/rpc-api/getLeaderSchedule",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getLeaderSchedule"
+    },
+    {
+      "source": "/api-reference/rpc-api/getMinimumBalanceForRentExemption",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getMinimumBalanceForRentExemption"
+    },
+    {
+      "source": "/api-reference/rpc-api/getMultipleAccounts",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getMultipleAccounts"
+    },
+    {
+      "source": "/api-reference/rpc-api/getProgramAccounts",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getProgramAccounts"
+    },
+    {
+      "source": "/api-reference/rpc-api/getRecentPerformanceSamples",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getRecentPerformanceSamples"
+    },
+    {
+      "source": "/api-reference/rpc-api/getSignaturesForAddress",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getSignaturesForAddress"
+    },
+    {
+      "source": "/api-reference/rpc-api/getSignatureStatuses",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getSignatureStatuses"
+    },
+    {
+      "source": "/api-reference/rpc-api/getSlot",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getSlot"
+    },
+    {
+      "source": "/api-reference/rpc-api/getTokenAccountBalance",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getTokenAccountBalance"
+    },
+    {
+      "source": "/api-reference/rpc-api/getTokenAccountsByDelegate",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getTokenAccountsByDelegate"
+    },
+    {
+      "source": "/api-reference/rpc-api/getTokenAccountsByOwner",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getTokenAccountsByOwner"
+    },
+    {
+      "source": "/api-reference/rpc-api/getTokenLargestAccounts",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getTokenLargestAccounts"
+    },
+    {
+      "source": "/api-reference/rpc-api/getTokenSupply",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getTokenSupply"
+    },
+    {
+      "source": "/api-reference/rpc-api/getTransaction",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getTransaction"
+    },
+    {
+      "source": "/api-reference/rpc-api/getTransactionCount",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getTransactionCount"
+    },
+    {
+      "source": "/api-reference/rpc-api/getVersion",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getVersion"
+    },
+    {
+      "source": "/api-reference/rpc-api/isBlockhashValid",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/isBlockhashValid"
+    },
+    {
+      "source": "/api-reference/rpc-api/sendTransaction",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/sendTransaction"
+    },
+    {
+      "source": "/api-reference/rpc-api/simulateTransaction",
+      "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/simulateTransaction"
     }
   ],
   "staticPages": [
@@ -134,56 +454,56 @@
           {
             "group": "ROUTER API",
             "pages": [
-              "api-reference/er-api/introduction",
-              "api-reference/er-api/getRoutes",
-              "api-reference/er-api/getIdentity",
-              "api-reference/er-api/getBlockhashForAccounts",
-              "api-reference/er-api/getSignatureStatuses",
-              "api-reference/er-api/getAccountInfo",
-              "api-reference/er-api/getDelegationStatus"
+              "pages/ephemeral-rollups-ers/api-reference/er/introduction",
+              "pages/ephemeral-rollups-ers/api-reference/er/getRoutes",
+              "pages/ephemeral-rollups-ers/api-reference/er/getIdentity",
+              "pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts",
+              "pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses",
+              "pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo",
+              "pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus"
             ]
           },
           {
             "group": "RPC API",
             "pages": [
-              "api-reference/rpc-api/introduction",
+              "pages/ephemeral-rollups-ers/api-reference/rpc/introduction",
               {
                 "group": "Methods",
                 "expanded": false,
                 "pages": [
-                  "api-reference/rpc-api/getAccountInfo",
-                  "api-reference/rpc-api/getBalance",
-                  "api-reference/rpc-api/getBlock",
-                  "api-reference/rpc-api/getBlockCommitment",
-                  "api-reference/rpc-api/getBlockHeight",
-                  "api-reference/rpc-api/getBlocks",
-                  "api-reference/rpc-api/getBlocksWithLimit",
-                  "api-reference/rpc-api/getBlockTime",
-                  "api-reference/rpc-api/getFirstAvailableBlock",
-                  "api-reference/rpc-api/getGenesisHash",
-                  "api-reference/rpc-api/getHealth",
-                  "api-reference/rpc-api/getIdentity",
-                  "api-reference/rpc-api/getLargestAccounts",
-                  "api-reference/rpc-api/getLatestBlockhash",
-                  "api-reference/rpc-api/getLeaderSchedule",
-                  "api-reference/rpc-api/getMinimumBalanceForRentExemption",
-                  "api-reference/rpc-api/getMultipleAccounts",
-                  "api-reference/rpc-api/getProgramAccounts",
-                  "api-reference/rpc-api/getRecentPerformanceSamples",
-                  "api-reference/rpc-api/getSignaturesForAddress",
-                  "api-reference/rpc-api/getSignatureStatuses",
-                  "api-reference/rpc-api/getSlot",
-                  "api-reference/rpc-api/getTokenAccountBalance",
-                  "api-reference/rpc-api/getTokenAccountsByDelegate",
-                  "api-reference/rpc-api/getTokenAccountsByOwner",
-                  "api-reference/rpc-api/getTokenLargestAccounts",
-                  "api-reference/rpc-api/getTokenSupply",
-                  "api-reference/rpc-api/getTransaction",
-                  "api-reference/rpc-api/getTransactionCount",
-                  "api-reference/rpc-api/getVersion",
-                  "api-reference/rpc-api/isBlockhashValid",
-                  "api-reference/rpc-api/sendTransaction",
-                  "api-reference/rpc-api/simulateTransaction"
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getAccountInfo",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getBalance",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getBlock",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getBlockCommitment",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getBlockHeight",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getBlocks",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getBlocksWithLimit",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getBlockTime",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getFirstAvailableBlock",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getGenesisHash",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getHealth",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getIdentity",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getLargestAccounts",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getLatestBlockhash",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getLeaderSchedule",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getMinimumBalanceForRentExemption",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getMultipleAccounts",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getProgramAccounts",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getRecentPerformanceSamples",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getSignaturesForAddress",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getSignatureStatuses",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getSlot",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getTokenAccountBalance",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getTokenAccountsByDelegate",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getTokenAccountsByOwner",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getTokenLargestAccounts",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getTokenSupply",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getTransaction",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getTransactionCount",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/getVersion",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/isBlockhashValid",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/sendTransaction",
+                  "pages/ephemeral-rollups-ers/api-reference/rpc/simulateTransaction"
                 ]
               }
             ]
@@ -212,16 +532,16 @@
           {
             "group": "Private Payments API",
             "pages": [
-              "api-reference/per-api/introduction",
-              "api-reference/per-api/health",
-              "api-reference/per-api/deposit",
-              "api-reference/per-api/transfer",
-              "api-reference/per-api/withdraw",
-              "api-reference/per-api/initialize-mint",
-              "api-reference/per-api/balance",
-              "api-reference/per-api/private-balance",
-              "api-reference/per-api/is-mint-initialized",
-              "api-reference/per-api/mcp"
+              "pages/private-ephemeral-rollups-pers/api-reference/per/introduction",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/health",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/deposit",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/transfer",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/withdraw",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/balance",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/private-balance",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized",
+              "pages/private-ephemeral-rollups-pers/api-reference/per/mcp"
             ]
           }
         ]

@@ -1,0 +1,75 @@
+---
+title: "Introduction"
+description: "Private Payments API documentation"
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token Program"
+    icon="coin"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
+
+## Overview
+
+The Private Payments API builds unsigned SPL token transactions for deposits, transfers, withdrawals, and mint initialization across Solana and MagicBlock ephemeral rollups. It also exposes balance and mint-initialization status queries. The canonical public reference is available at [payments.magicblock.app/reference](https://payments.magicblock.app/reference).
+
+### Meta
+
+- [**Health**](/pages/private-ephemeral-rollups-pers/api-reference/per/health) - Check API health and availability
+
+### SPL
+
+- [**Deposit SPL Tokens**](/pages/private-ephemeral-rollups-pers/api-reference/per/deposit) - Build an unsigned deposit transaction from Solana into an ephemeral rollup
+- [**Transfer SPL Tokens**](/pages/private-ephemeral-rollups-pers/api-reference/per/transfer) - Build an unsigned public or private SPL transfer
+- [**Withdraw SPL Tokens**](/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - Build an unsigned withdrawal transaction back to Solana
+- [**Initialize Mint**](/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - Build an unsigned transaction that initializes a validator-scoped transfer queue for a mint
+- [**Balance**](/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - Get the base-chain SPL token balance for an address
+- [**Private Balance**](/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - Get the ephemeral-rollup SPL token balance for an address
+- [**Is Mint Initialized**](/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - Check whether a mint has a validator-scoped transfer queue on the ephemeral RPC
+
+### MCP
+
+- [**MCP**](/pages/private-ephemeral-rollups-pers/api-reference/per/mcp) - Access the stateless Streamable HTTP MCP endpoint
+
+```
+┌────────────────────────────────────────────┐
+│ 1. Deposit                                │
+├────────────────────────────────────────────┤
+│ • Build an unsigned deposit transaction   │
+│ • Solana base balance → ephemeral rollup  │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 2. Transfer                               │
+├────────────────────────────────────────────┤
+│ • Build SPL transfer                      │
+│ • base/ephemeral → base/ephemeral         │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 3. Withdraw                               │
+├────────────────────────────────────────────┤
+│ • Build an unsigned withdrawal            │
+│ • ephemeral rollup → Solana base balance  │
+└────────────────────────────────────────────┘
+```
+
+## Response Format
+
+Successful transaction-building endpoints return an unsigned transaction payload:
+
+```json
+{
+  "kind": "deposit",
+  "version": "legacy",
+  "transactionBase64": "base64-encoded-transaction",
+  "sendTo": "base",
+  "recentBlockhash": "blockhash",
+  "lastValidBlockHeight": 284512337,
+  "instructionCount": 3,
+  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
+}
+```
