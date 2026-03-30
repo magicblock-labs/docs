@@ -1,14 +1,14 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SPL Private Payments API",
+    "title": "Private Payments API",
     "version": "0.1.0",
     "description": "REST API for building private SPL token transactions on Solana and MagicBlock ephemeral rollups.\n\nDocumentation: https://docs.magicblock.gg/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart"
   },
   "servers": [
     {
       "url": "https://payments.magicblock.app",
-      "description": "Mainnet - SPL Private Payments API"
+      "description": "Mainnet - Private Payments API"
     }
   ],
   "components": {
