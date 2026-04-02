@@ -434,6 +434,7 @@
                 "group": "How it Works",
                 "pages": [
                   "pages/ephemeral-rollups-ers/introduction/ephemeral-rollup",
+                  "pages/ephemeral-rollups-ers/introduction/ephemeral-accounts",
                   "pages/ephemeral-rollups-ers/introduction/magic-router",
                   {
                     "group": "Magic Actions",
