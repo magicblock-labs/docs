@@ -6,7 +6,7 @@ import {
 import { Connection, Keypair } from "@solana/web3.js";
 import * as nacl from "tweetnacl";
 
-const teeUrl = "https://tee.magicblock.app";
+const teeUrl = "https://devnet-tee.magicblock.app";
 const teeWsUrl = "wss://tee.magicblock.app";
 
 // 1. Verify the integrity of TEE RPC
@@ -17,17 +17,14 @@ const authToken = await getAuthToken(
   teeUrl,
   userKeypair.publicKey,
   (message: Uint8Array) =>
-    Promise.resolve(nacl.sign.detached(message, userKeypair.secretKey))
+    Promise.resolve(nacl.sign.detached(message, userKeypair.secretKey)),
 );
 
 // 3. Create connection with TEE
 const teeUserUrl = `${teeUrl}?token=${authToken.token}`;
 const teeUserWsUrl = `${teeWsUrl}?token=${authToken.token}`;
 
-const connection = new Connection(
-  teeUserUrl,
-  {
-    wsEndpoint: teeUserWsUrl,
-  }
-);
+const connection = new Connection(teeUserUrl, {
+  wsEndpoint: teeUserWsUrl,
+});
 ```
