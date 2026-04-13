@@ -81,38 +81,38 @@ import PerCards from "/cn/snippets/per-cards.mdx";
 ### 代码片段
 
 <Tabs>
-    <Tab title={<span id="1-write-program">1. 编写程序</span>}>
+    <Tab title="1. 编写程序">
         一个简单的石头剪刀布程序，玩家可以做出选择并揭示结果：
         <WriteProgramCode />
         [⬆️ 返回顶部](#code-snippets)
     </Tab>
-    <Tab title={<span id="2-restrict">2. 添加限制</span>}>
+    <Tab title="2. 添加限制">
         通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 创建和更新带成员的账户级权限，[查看详情](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)：
         <RestrictCode />
         [⬆️ 返回顶部](#code-snippets)
     </Tab>
-        <Tab title={<span id="3-delegate">3. 委托</span>}>
+    <Tab title="3. 委托">
         通过 MagicBlock 的 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 将账户委托给 TEE 验证器来强制执行隐私，`permission` 和 `permissioned_account` 都必须被委托。
         <Validators />
         <DelegateCode />
 
         [⬆️ 返回顶部](#code-snippets)
     </Tab>
-    <Tab title={<span id="4-deploy">4. 部署</span>}>
+    <Tab title="4. 部署">
         现在你的程序已经升级完成并准备就绪！将其构建并部署到目标集群：
         ```bash
           anchor build && anchor deploy
         ```
         [⬆️ 返回顶部](#code-snippets)
     </Tab>
-    <Tab title={<span id="5-authorize">5. 授权</span>}>
+    <Tab title="5. 授权">
         在 TEE 中设置与 ER RPC 的交互：
         1. 通过 `https://pccs.phala.network/tdx/certification/v4` 验证 TEE RPC 的完整性
         2. 请求一个授权令牌，以便用户与 TEE 端点交互
         <AuthorizeCode />
         [⬆️ 返回顶部](#code-snippets)
     </Tab>
-    <Tab title={<span id="6-test">6. 测试</span>}>
+    <Tab title="6. 测试">
         使用 Private Ephemeral Rollup 连接测试你的程序：
 
         `https://devnet-tee.magicblock.app?token=${token}`

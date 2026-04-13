@@ -88,7 +88,7 @@ import QuickAccesERRust from "/cn/snippets/quick-access-er-rust.mdx";
 ### 代码片段
 
 <Tabs>
-  <Tab title={<span id="1-write-program">1. Write Program</span>}>
+  <Tab title="1. Write Program">
 
     该程序实现了两个主要 instruction：
 
@@ -117,7 +117,7 @@ import QuickAccesERRust from "/cn/snippets/quick-access-er-rust.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="2-delegate">2. Delegate</span>}>
+  <Tab title="2. Delegate">
     ### 委托 Counter PDA
 
     为了委托 counter PDA，并使其在 Ephemeral Rollup 会话中可写，我们需要添加一个 instruction，
@@ -138,7 +138,7 @@ import QuickAccesERRust from "/cn/snippets/quick-access-er-rust.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-    <Tab title={<span id="3-commit">3. Commit</span>}>
+  <Tab title="3. Commit">
     ### 在 PDA 已委托时进行提交
 
     ephemeral runtime 允许在 PDA 已委托时提交其状态。这通过调用 `commit_accounts` 函数来完成。
@@ -166,7 +166,7 @@ import QuickAccesERRust from "/cn/snippets/quick-access-er-rust.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="4-undelegate">4. Undelegate</span>}>
+  <Tab title="4. Undelegate">
     ### 取消委托 PDA
 
     取消委托 PDA 是通过在某个 instruction 中调用 `commit_and_undelegate_accounts` 来完成的。

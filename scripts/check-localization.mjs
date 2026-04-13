@@ -22,7 +22,7 @@ async function walk(dir, files = []) {
     const relativePath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       await walk(relativePath, files);
-    } else if (entry.isFile() && entry.name.endsWith(".mdx")) {
+    } else if (entry.isFile() && (entry.name.endsWith(".mdx") || entry.name.endsWith(".json"))) {
       files.push(relativePath);
     }
   }

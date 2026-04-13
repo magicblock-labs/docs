@@ -274,9 +274,38 @@ async function collectSourceFiles() {
   return files.sort();
 }
 
-async function prepareLocalizedTrees(langs) {
-  const files = await collectSourceFiles();
+// Collect static files (JSON, etc.) that must be mirrored into locale dirs as-is.
+async function collectStaticFiles() {
+  const files = [];
+  const STATIC_EXTENSIONS = [".json"];
 
+  async function walk(dir) {
+    const entries = await fs.readdir(path.join(ROOT, dir), { withFileTypes: true });
+    for (const entry of entries) {
+      const relativePath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(relativePath);
+      } else if (
+        entry.isFile() &&
+        STATIC_EXTENSIONS.some((ext) => entry.name.endsWith(ext))
+      ) {
+        files.push(relativePath);
+      }
+    }
+  }
+
+  for (const dir of SOURCE_DIRS) {
+    if (await exists(path.join(ROOT, dir))) {
+      await walk(dir);
+    }
+  }
+
+  return files.sort();
+}
+
+async function prepareLocalizedTrees(langs) {
+  // Copy and rewrite .mdx files
+  const files = await collectSourceFiles();
   for (const lang of langs) {
     for (const relativeFile of files) {
       const sourcePath = path.join(ROOT, relativeFile);
@@ -286,6 +315,19 @@ async function prepareLocalizedTrees(langs) {
       const rewritten = rewriteInternalPaths(source, lang);
       await fs.mkdir(targetDir, { recursive: true });
       await fs.writeFile(targetPath, rewritten);
+    }
+  }
+
+  // Copy static files (JSON OpenAPI specs, etc.) verbatim — no path rewriting needed
+  const staticFiles = await collectStaticFiles();
+  for (const lang of langs) {
+    for (const relativeFile of staticFiles) {
+      const sourcePath = path.join(ROOT, relativeFile);
+      const targetPath = path.join(ROOT, lang, relativeFile);
+      const targetDir = path.dirname(targetPath);
+      const content = await fs.readFile(sourcePath);
+      await fs.mkdir(targetDir, { recursive: true });
+      await fs.writeFile(targetPath, content);
     }
   }
 
@@ -308,8 +350,13 @@ function splitFrontmatter(content) {
   };
 }
 
+// FIX: use a sequential counter instead of the match offset position as the placeholder ID.
+// The original code used `(block, index) => \`__CODE_BLOCK_${index}__\`` where `index` is
+// the character offset in the string, not a sequential array index — so restoreCodeBlocks
+// could never find the matching block (blocks[500] is undefined when there are only 5 blocks).
 function stripCodeBlocks(content) {
-  return content.replace(/```[\s\S]*?```/g, (block, index) => `__CODE_BLOCK_${index}__`);
+  let i = 0;
+  return content.replace(/```[\s\S]*?```/g, () => `__CODE_BLOCK_${i++}__`);
 }
 
 function restoreCodeBlocks(content, original) {

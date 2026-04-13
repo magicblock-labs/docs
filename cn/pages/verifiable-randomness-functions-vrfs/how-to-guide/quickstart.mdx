@@ -80,7 +80,7 @@ import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
 ### 代码片段
 
 <Tabs>
-  <Tab title={<span id="1-write-program">1. 编写程序</span>}>
+  <Tab title="1. 编写程序">
     一个简单的掷骰子程序，玩家初始化状态账户来存储、请求并消费随机数：
     
     <InitializeCode />
@@ -88,7 +88,7 @@ import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
     [⬆️ 返回顶部](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="2-request-%26-consume-randomnness">2. 请求并消费随机数</span>}>
+  <Tab title="2. 请求并消费随机数">
 
     1. 将带有 Anchor 特性的 `ephemeral_vrf_sdk` 添加到你的程序中
 
@@ -115,7 +115,7 @@ import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
     [⬆️ 返回顶部](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="3-deploy">3. 部署</span>}>
+  <Tab title="3. 部署">
     现在你的程序已经升级完成并准备就绪！将其构建并部署到目标集群：
     ```bash
     anchor build && anchor deploy
@@ -123,7 +123,7 @@ import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
     [⬆️ 返回顶部](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="4-test">4. 测试</span>}>
+  <Tab title="4. 测试">
     准备好执行链上随机数交易吧！
     ```bash
     anchor test --skip-build --skip-deploy --skip-local-validator

@@ -86,7 +86,7 @@ import DelegationInfo from "/cn/snippets/delegation-info.mdx";
 ### 代码片段
 
 <Tabs>
-  <Tab title={<span id="1-connection">1. Connection</span>}>
+  <Tab title="1. Connection">
     ### 导入 SDK 并创建 Connection
 
     导入相关库 `@magicblock-labs/ephemeral-rollups-sdk` 或 `@magicblock-labs/ephemeral-rollups-kit`。在测试和发送交易之前先初始化 connection。
@@ -111,7 +111,7 @@ import DelegationInfo from "/cn/snippets/delegation-info.mdx";
 
   </Tab>
 
-  <Tab title={<span id="2-delegate">2. Delegate</span>}>
+  <Tab title="2. Delegate">
     ### 测试 `delegation` 交易
 
     创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `delegation` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 Base Layer（Solana）网络。
@@ -133,7 +133,7 @@ import DelegationInfo from "/cn/snippets/delegation-info.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-    <Tab title={<span id="3-commit">3. Commit</span>}>
+  <Tab title="3. Commit">
     ### 测试 `commit` 交易
 
     创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `commit` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 ER 网络。
@@ -165,7 +165,7 @@ import DelegationInfo from "/cn/snippets/delegation-info.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="4-undelegate">4. Undelegate</span>}>
+  <Tab title="4. Undelegate">
     ### 测试 `undelegation` 交易
 
     创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `undelegation` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 ER 网络。

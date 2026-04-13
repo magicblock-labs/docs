@@ -82,38 +82,38 @@ MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 
 ### 코드 스니펫
 
 <Tabs>
-    <Tab title={<span id="1-write-program">1. 프로그램 작성</span>}>
+    <Tab title="1. 프로그램 작성">
         플레이어가 선택을 하고 결과를 공개하는 간단한 가위바위보 프로그램:
         <WriteProgramCode />
         [⬆️ 맨 위로](#code-snippets)
     </Tab>
-    <Tab title={<span id="2-restrict">2. 제한 추가</span>}>
+    <Tab title="2. 제한 추가">
         MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`을 통해 멤버가 포함된 계정 수준 권한을 생성하고 업데이트합니다. [자세히 보기](/ko/pages/private-ephemeral-rollups-pers/how-to-guide/access-control):
         <RestrictCode />
         [⬆️ 맨 위로](#code-snippets)
     </Tab>
-        <Tab title={<span id="3-delegate">3. 위임</span>}>
+    <Tab title="3. 위임">
         MagicBlock의 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`을 통해 TEE 검증기에 위임하여 계정의 프라이버시를 강제합니다. `permission`과 `permissioned_account` 모두 위임되어야 합니다.
         <Validators />
         <DelegateCode />
 
         [⬆️ 맨 위로](#code-snippets)
     </Tab>
-    <Tab title={<span id="4-deploy">4. 배포</span>}>
+    <Tab title="4. 배포">
         이제 프로그램 업그레이드가 완료되었습니다. 원하는 클러스터에 빌드하고 배포하세요:
         ```bash
           anchor build && anchor deploy
         ```
         [⬆️ 맨 위로](#code-snippets)
     </Tab>
-    <Tab title={<span id="5-authorize">5. 인가</span>}>
+    <Tab title="5. 인가">
         TEE 내부의 ER RPC와 상호작용을 설정합니다:
         1. `https://pccs.phala.network/tdx/certification/v4`를 통해 TEE RPC 무결성을 검증합니다
         2. 사용자가 TEE 엔드포인트와 상호작용할 수 있도록 인가 토큰을 요청합니다
         <AuthorizeCode />
         [⬆️ 맨 위로](#code-snippets)
     </Tab>
-    <Tab title={<span id="6-test">6. 테스트</span>}>
+    <Tab title="6. 테스트">
         Private Ephemeral Rollup 연결로 프로그램을 테스트합니다:
 
         `https://devnet-tee.magicblock.app?token=${token}`

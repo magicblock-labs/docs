@@ -88,7 +88,7 @@ import QuickAccesERRust from "/jp/snippets/quick-access-er-rust.mdx";
 ### コードスニペット
 
 <Tabs>
-  <Tab title={<span id="1-write-program">1. Write Program</span>}>
+  <Tab title="1. Write Program">
 
     このプログラムは 2 つの主要 instruction を実装しています。
 
@@ -117,7 +117,7 @@ import QuickAccesERRust from "/jp/snippets/quick-access-er-rust.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="2-delegate">2. Delegate</span>}>
+  <Tab title="2. Delegate">
     ### Counter PDA を委任する
 
     counter PDA を委任し、Ephemeral Rollup セッション内で writable にするには、内部で `delegate_account` 関数を呼ぶ instruction を追加する必要があります。`delegate_account` は delegation program に CPI し、検証が通るとそのアカウントの所有権を得ます。
@@ -136,7 +136,7 @@ import QuickAccesERRust from "/jp/snippets/quick-access-er-rust.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-    <Tab title={<span id="3-commit">3. Commit</span>}>
+  <Tab title="3. Commit">
     ### PDA が委任中のままコミットする
 
     ephemeral runtime では、PDA が委任されたままでもその状態をコミットできます。これは `commit_accounts` 関数を呼び出して行います。
@@ -164,7 +164,7 @@ import QuickAccesERRust from "/jp/snippets/quick-access-er-rust.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title={<span id="4-undelegate">4. Undelegate</span>}>
+  <Tab title="4. Undelegate">
     ### PDA の委任解除
 
     PDA の委任解除は、ある instruction の一部として `commit_and_undelegate_accounts` を呼ぶことで行います。
