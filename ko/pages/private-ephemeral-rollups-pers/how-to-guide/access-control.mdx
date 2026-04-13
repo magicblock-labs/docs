@@ -93,23 +93,23 @@ Private Ephemeral Rollups는 [컴플라이언스](/ko/pages/private-ephemeral-ro
 permissioned account의 일반적인 라이프사이클은 MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 및 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`과의 상호작용을 필요로 합니다.
 
 <Steps>
-  <Step title={<a href="#1-create">Permission 생성</a>}>
+  <Step title={<a href="#1-생성">Permission 생성</a>}>
     초기 멤버와 그 플래그를 포함한 새 permission account를 초기화합니다.
   </Step>
-  <Step title={<a href="#2-delegate">Permission 위임</a>}>
+  <Step title={<a href="#2-위임">Permission 위임</a>}>
     Private Ephemeral Rollup에 permission을 위임해 강제력 있는 실시간 접근 제어를 활성화합니다.
     <Validators />
   </Step>
-  <Step title={<a href="#3-update">Permission 업데이트</a>}>
+  <Step title={<a href="#3-업데이트">Permission 업데이트</a>}>
     필요에 따라 멤버 권한을 추가, 제거, 수정합니다. 업데이트는 Private Ephemeral Rollup에서 실시간으로 수행할 수 있습니다.
   </Step>
-  <Step title={<a href="#4-request">요청 수행</a>}>
+  <Step title={<a href="#4-요청">요청 수행</a>}>
     요청을 수행하기 전에 TEE RPC 무결성을 검증하고 인가 토큰을 받아야 합니다. 적절한 플래그를 가진 멤버만 계정 상태에 접근하거나 수정할 수 있습니다.
   </Step>
-  <Step title={<a href="#5-commit-%26-undelegate">커밋 및 위임 해제</a>}>
+  <Step title={<a href="#5-커밋-및-위임-해제">커밋 및 위임 해제</a>}>
     최종 상태를 Solana로 동기화하고 계정을 Base Layer 제어로 되돌립니다.
   </Step>
-  <Step title={<a href="#6-close">Permission 닫기</a>}>
+  <Step title={<a href="#6-닫기">Permission 닫기</a>}>
     더 이상 필요하지 않으면 permission account를 닫고 lamports를 회수합니다.
   </Step>
 </Steps>

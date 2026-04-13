@@ -93,23 +93,23 @@ Private Ephemeral Rollups は、[コンプライアンス](/jp/pages/private-eph
 permissioned account の典型的なライフサイクルでは、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` との連携が必要です。
 
 <Steps>
-  <Step title={<a href="#1-create">Permission を作成する</a>}>
+  <Step title={<a href="#1-作成">Permission を作成する</a>}>
     初期メンバーとそのフラグを持つ新しい permission account を初期化します。
   </Step>
-  <Step title={<a href="#2-delegate">Permission を委任する</a>}>
+  <Step title={<a href="#2-委任">Permission を委任する</a>}>
     Private Ephemeral Rollup に permission を委任し、強制力のあるリアルタイムアクセス制御を有効にします。
     <Validators />
   </Step>
-  <Step title={<a href="#3-update">Permission を更新する</a>}>
+  <Step title={<a href="#3-更新">Permission を更新する</a>}>
     必要に応じてメンバー権限を追加、削除、変更します。更新は Private Ephemeral Rollup 上でリアルタイムに行えます。
   </Step>
-  <Step title={<a href="#4-request">リクエストを行う</a>}>
+  <Step title={<a href="#4-リクエスト">リクエストを行う</a>}>
     リクエストを行う前に、TEE RPC の完全性を検証し、認可トークンを取得します。適切なフラグを持つメンバーのみがアカウント状態へアクセスまたは変更できます。
   </Step>
-  <Step title={<a href="#5-commit-%26-undelegate">コミットして委任解除する</a>}>
+  <Step title={<a href="#5-コミットと委任解除">コミットして委任解除する</a>}>
     最終状態を Solana に同期し、アカウントを Base Layer の制御に戻します。
   </Step>
-  <Step title={<a href="#6-close">Permission を閉じる</a>}>
+  <Step title={<a href="#6-閉じる">Permission を閉じる</a>}>
     不要になった permission account を閉じて lamports を回収します。
   </Step>
 </Steps>

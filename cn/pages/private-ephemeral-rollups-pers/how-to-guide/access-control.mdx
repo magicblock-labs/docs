@@ -93,23 +93,23 @@ Private Ephemeral Rollups 是 [Ephemeral Rollups](/cn/pages/ephemeral-rollups-er
 一个受权限控制账户的典型生命周期需要与 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 以及 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 交互：
 
 <Steps>
-  <Step title={<a href="#1-create">创建权限</a>}>
+  <Step title={<a href="#1-创建">创建权限</a>}>
     使用初始成员及其标志初始化一个新的权限账户。
   </Step>
-  <Step title={<a href="#2-delegate">委托权限</a>}>
+  <Step title={<a href="#2-委托">委托权限</a>}>
     将权限委托给 Private Ephemeral Rollup，以启用强制执行和实时访问控制。
     <Validators />
   </Step>
-  <Step title={<a href="#3-update">更新权限</a>}>
+  <Step title={<a href="#3-更新">更新权限</a>}>
     根据需要添加、移除或修改成员权限。更新可以在 Private Ephemeral Rollup 上实时完成。
   </Step>
-  <Step title={<a href="#4-request">发起请求</a>}>
+  <Step title={<a href="#4-请求">发起请求</a>}>
     在发起请求之前，先验证 TEE RPC 的完整性并获取授权令牌。只有拥有相应标志的成员才能访问或修改账户状态。
   </Step>
-  <Step title={<a href="#5-commit-%26-undelegate">提交并取消委托</a>}>
+  <Step title={<a href="#5-提交并取消委托">提交并取消委托</a>}>
     将最终状态同步回 Solana，并把账户归还给 Base Layer 控制。
   </Step>
-  <Step title={<a href="#6-close">关闭权限</a>}>
+  <Step title={<a href="#6-关闭">关闭权限</a>}>
     当不再需要时关闭权限账户，并回收其中的 lamports。
   </Step>
 </Steps>
