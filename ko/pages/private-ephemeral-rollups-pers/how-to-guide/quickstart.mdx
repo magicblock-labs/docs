@@ -36,31 +36,31 @@ import PerCards from "/ko/snippets/per-cards.mdx";
 MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 및 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`을 활용하는 권한 및 위임 훅으로 프로그램을 확장하세요.
 
 <Steps>
-  <Step title={<a href="#1-write-program">프로그램 작성</a>}>
+  <Step title={<a href="#1-프로그램-작성">프로그램 작성</a>}>
     평소처럼 Solana 프로그램을 작성합니다.
   </Step>
   <Step
     title={
-      <a href="#2-restrict">
+      <a href="#2-제한-추가">
         프로그램의 권한 훅을 통해 제한 추가
       </a>
     }
   >
     접근 제어를 생성하고 관리하는 권한 훅을 추가합니다. [자세히 보기](/ko/pages/private-ephemeral-rollups-pers/how-to-guide/access-control).
   </Step>
-  <Step title={<a href="#3-delegate">프로그램에 위임 훅 추가</a>}>
+  <Step title={<a href="#3-위임">프로그램에 위임 훅 추가</a>}>
     권한과 permissioned accounts에 대한 위임 훅을 추가해 제한을 강제합니다.
     <Validators />
   </Step>
-  <Step title={<a href="#4-deploy">Solana에 프로그램 배포</a>}>
+  <Step title={<a href="#4-배포">Solana에 프로그램 배포</a>}>
     Anchor CLI를 사용해 Solana 프로그램을 배포합니다.
   </Step>
   <Step
-    title={<a href="#5-authorize">클라이언트에 인가 구현</a>}
+    title={<a href="#5-인가">클라이언트에 인가 구현</a>}
   >
     사용자 메시지에 서명해 TEE 엔드포인트에서 인가 토큰을 가져옵니다.
   </Step>
-  <Step title={<a href="#6-test">트랜잭션 실행 및 프라이버시 테스트</a>}>
+  <Step title={<a href="#6-테스트">트랜잭션 실행 및 프라이버시 테스트</a>}>
     인가 토큰을 요청하고 기밀 트랜잭션을 전송합니다.
   </Step>
 </Steps>

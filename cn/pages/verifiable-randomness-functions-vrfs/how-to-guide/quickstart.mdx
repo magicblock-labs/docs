@@ -35,23 +35,23 @@ import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
 任何 Solana 程序都可以使用 MagicBlock VRF SDK 在数秒内请求并消费链上可验证随机数。完成本指南后，你将得到一个使用可验证随机数掷骰子的可运行示例。
 
 <Steps>
-  <Step title={<a href="#1-write-program">编写你的程序</a>}>
+  <Step title={<a href="#1-编写程序">编写你的程序</a>}>
     像平常一样编写你的 Solana 程序。
   </Step>
   <Step
     title={
-      <a href="#2-request-%26-consume-randomnness">
+      <a href="#2-请求并消费随机数">
         添加请求和消费随机数的指令。
       </a>
     }
   >
     添加 CPI 钩子，通过已验证预言机的回调来请求并消费随机数。
   </Step>
-  <Step title={<a href="#3-deploy">将程序部署到 Solana</a>}>
+  <Step title={<a href="#3-部署">将程序部署到 Solana</a>}>
     使用 Anchor CLI 部署你的 Solana 程序。
   </Step>
   <Step
-    title={<a href="#4-test">执行链上随机数交易。</a>}
+    title={<a href="#4-测试">执行链上随机数交易。</a>}
   >
     发送交易以在链上生成并消费随机数。
   </Step>

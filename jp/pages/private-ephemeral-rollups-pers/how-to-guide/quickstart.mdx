@@ -36,31 +36,31 @@ import PerCards from "/jp/snippets/per-cards.mdx";
 プログラムを構築し、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を利用する権限および委任フックで拡張します。
 
 <Steps>
-  <Step title={<a href="#1-write-program">プログラムを書く</a>}>
+  <Step title={<a href="#1-プログラムを書く">プログラムを書く</a>}>
     いつもどおりに Solana プログラムを書きます。
   </Step>
   <Step
     title={
-      <a href="#2-restrict">
+      <a href="#2-制限を追加する">
         プログラム内の権限フックを通じて制限を追加する
       </a>
     }
   >
     アクセス制御を作成・管理する権限フックを追加します。[詳細を見る](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
   </Step>
-  <Step title={<a href="#3-delegate">プログラムに委任フックを追加する</a>}>
+  <Step title={<a href="#3-委任する">プログラムに委任フックを追加する</a>}>
     権限と permissioned accounts に対する委任フックを追加し、制限を強制します。
     <Validators />
   </Step>
-  <Step title={<a href="#4-deploy">Solana にプログラムをデプロイする</a>}>
+  <Step title={<a href="#4-デプロイする">Solana にプログラムをデプロイする</a>}>
     Anchor CLI を使って Solana プログラムをデプロイします。
   </Step>
   <Step
-    title={<a href="#5-authorize">クライアントに認可を実装する</a>}
+    title={<a href="#5-認可する">クライアントに認可を実装する</a>}
   >
     ユーザーメッセージに署名し、TEE エンドポイントから認可トークンを取得します。
   </Step>
-  <Step title={<a href="#6-test">トランザクションを実行してプライバシーを検証する</a>}>
+  <Step title={<a href="#6-テストする">トランザクションを実行してプライバシーを検証する</a>}>
     認可トークンを取得し、機密トランザクションを送信します。
   </Step>
 </Steps>

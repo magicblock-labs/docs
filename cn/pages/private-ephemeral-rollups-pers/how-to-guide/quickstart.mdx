@@ -35,31 +35,31 @@ import PerCards from "/cn/snippets/per-cards.mdx";
 构建你的程序，并通过权限与委托钩子进行升级，以使用 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 和 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`：
 
 <Steps>
-  <Step title={<a href="#1-write-program">编写你的程序</a>}>
+  <Step title={<a href="#1-编写程序">编写你的程序</a>}>
     像平常一样编写你的 Solana 程序。
   </Step>
   <Step
     title={
-      <a href="#2-restrict">
+      <a href="#2-添加限制">
         通过程序中的权限钩子添加限制。
       </a>
     }
   >
     添加用于创建和管理访问控制的权限钩子，[查看详情](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
   </Step>
-  <Step title={<a href="#3-delegate">在程序中添加委托钩子</a>}>
+  <Step title={<a href="#3-委托">在程序中添加委托钩子</a>}>
     为权限账户和受权限控制的账户添加委托钩子以执行限制。
     <Validators />
   </Step>
-  <Step title={<a href="#4-deploy">在 Solana 上部署程序</a>}>
+  <Step title={<a href="#4-部署">在 Solana 上部署程序</a>}>
     使用 Anchor CLI 部署你的 Solana 程序。
   </Step>
   <Step
-    title={<a href="#5-authorize">在客户端中实现授权</a>}
+    title={<a href="#5-授权">在客户端中实现授权</a>}
   >
     对用户消息进行签名，以从 TEE 端点获取授权令牌。
   </Step>
-  <Step title={<a href="#6-test">执行交易并测试隐私</a>}>
+  <Step title={<a href="#6-测试">执行交易并测试隐私</a>}>
     请求授权令牌并发送机密交易。
   </Step>
 </Steps>
