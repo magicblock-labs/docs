@@ -13,7 +13,8 @@ The SDK supports a veriety of wallets, including
 | In-game (Web3auth)       | ✅      | In-app   |
 | Wallet Adapter           | ✅      | External |
 | Mobile Wallet Adapter    | ✅      | External |
-| Seed Vault               | 🏗       | In-app   |
+| WalletConnect            | ✅      | External |
+| Seed Vault               | 🏗      | In-app   |
 
 ## Interface
 
@@ -50,6 +51,15 @@ To configure a wallet following the [Wallet Adapter](https://solana-mobile.githu
 ```csharp
 WalletBase wallet = new SolanaWalletAdapterWebGL(walletAdapterOptions, RpcCluster.DevNet, ...);
 ```
+
+## WalletConnect
+
+[WalletConnect](https://walletconnect.network/) enables your game to connect with a wide range of Solana wallets — including Binance Wallet, Jupiter Mobile, Trust, OKX Wallet, and many more — through a single integration.
+On mobile, users can connect any supported wallet installed on their device. On desktop, they pair with their wallet by scanning a QR code. See the [full list of supported Solana wallets](https://walletguide.walletconnect.network/?chains=solana%3A5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp).
+
+The integration is powered by [Reown AppKit for Unity](https://docs.reown.com/appkit/unity/core/usage#appkit-with-solana-unity-sdk), which provides an adapter package that plugs directly into the Solana Unity SDK. Once set up, all signing and session management go through AppKit while you continue using the same `Web3` APIs from `Solana.Unity.SDK`.
+
+For installation and setup instructions, see the [Reown AppKit documentation](https://docs.reown.com/appkit/unity/core/usage#appkit-with-solana-unity-sdk).
 
 ## SMS
 
