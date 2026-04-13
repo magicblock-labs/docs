@@ -1,0 +1,20 @@
+---
+title: "よくある質問"
+description: "トランザクション実行も状態同期も、すべてリアルタイム。"
+---
+
+<AccordionGroup>
+    <Accordion title="委任済みアカウントは ER 上で作成できますか？">
+        **いいえ。** 委任済みアカウントは事前に Solana 上に存在している必要があります。ER 上でそのアカウントを要求するか、その委任済みアカウントを含むトランザクションを送信した後にクローンされます。     
+    </Accordion>
+    <Accordion title="プログラムを ER に委任できますか？">
+        **いいえ。** Program accounts が委任されることはありません。委任できるのは state accounts のみで、**program accounts は ER にトランザクションが送信されたときにクローン** され、その後は更新を購読します。
+    </Accordion>
+    <Accordion title="委任済みアカウントは Solana 上のすべてのプログラムと composable ですか？">
+        **はい。** 委任済みアカウントはすべての Solana programs と accounts の恩恵を受けられます。Solana 上のあらゆるアカウントは ER から読み取り可能で、ER 上の atomic transaction 内で変更できるのは委任済みアカウントだけです。 
+    </Accordion>
+    <Accordion title="開発者は slot time を信頼できるタイミング手段として使うべきですか？">
+        **いいえ。** **2025 年 11 月 20 日時点** で、Solana は **400 ms の slot time** を使っており、MagicBlock の Execution Runtime (ER) は **50 ms の slot time** で動作しています。開発者は slot time を固定の時間単位として扱いたくなるかもしれませんが、**slot time は保証された値ではなく、将来的に変わる可能性があります**。したがって、特定の slot duration に依存するコードやロジックは慎重に書く必要があります。
+    </Accordion>
+
+</AccordionGroup>

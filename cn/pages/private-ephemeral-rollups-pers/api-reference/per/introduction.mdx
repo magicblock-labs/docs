@@ -1,0 +1,81 @@
+---
+title: "介绍"
+description: "Private Payments API 文档"
+---
+
+import PrivatePaymentApiCard from "/cn/snippets/private-payment-api-card.mdx";
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token Program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    私密 SPL token 流程的参考程序
+  </Card>
+
+  <PrivatePaymentApiCard />
+</CardGroup>
+
+## 概述
+
+Private Payments API 用于在 Solana 与 MagicBlock ephemeral rollups 之间构建未签名的 SPL token 入金、转账、提现与 mint 初始化交易。它还提供余额查询以及 mint 初始化状态查询。官方公开参考可见 [payments.magicblock.app/reference](https://payments.magicblock.app/reference)。
+
+### 元信息
+
+- [**Health**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/health) - 检查 API 健康状态与可用性
+
+### SPL
+
+- [**Deposit SPL Tokens**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/deposit) - 构建从 Solana 进入 ephemeral rollup 的未签名入金交易
+- [**Transfer SPL Tokens**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/transfer) - 构建未签名的公开或私密 SPL 转账
+- [**Withdraw SPL Tokens**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - 构建返回 Solana 的未签名提现交易
+- [**Initialize Mint**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - 构建用于初始化某个 mint 的 validator-scoped transfer queue 的未签名交易
+- [**Balance**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - 获取某地址在基础链上的 SPL token 余额
+- [**Private Balance**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - 获取某地址在 ephemeral rollup 上的 SPL token 余额
+- [**Is Mint Initialized**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - 检查某个 mint 是否已在 ephemeral RPC 上拥有 validator-scoped transfer queue
+
+### MCP
+
+- [**MCP**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/mcp) - 访问无状态的 Streamable HTTP MCP 端点
+
+```
+┌────────────────────────────────────────────┐
+│ 1. Deposit                                │
+├────────────────────────────────────────────┤
+│ • 构建未签名入金交易                       │
+│ • Solana base balance → ephemeral rollup  │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 2. Transfer                               │
+├────────────────────────────────────────────┤
+│ • 构建 SPL 转账                           │
+│ • base/ephemeral → base/ephemeral         │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 3. Withdraw                               │
+├────────────────────────────────────────────┤
+│ • 构建未签名提现交易                       │
+│ • ephemeral rollup → Solana base balance  │
+└────────────────────────────────────────────┘
+```
+
+## 响应格式
+
+交易构建端点成功时会返回一个未签名交易载荷：
+
+```json
+{
+  "kind": "deposit",
+  "version": "legacy",
+  "transactionBase64": "base64-encoded-transaction",
+  "sendTo": "base",
+  "recentBlockhash": "blockhash",
+  "lastValidBlockHeight": 284512337,
+  "instructionCount": 3,
+  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
+}
+```

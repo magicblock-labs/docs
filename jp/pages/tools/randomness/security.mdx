@@ -1,0 +1,18 @@
+---
+title: "セキュリティ"
+description: "ランダム性の proof がどのように検証されるか"
+---
+
+ランダム性の proof は、入力 `caller_seed` と MagicBlock の VRF signer identity に暗号学的に結び付けられています。callback では次のようにこれを強制します。
+
+```rust
+#[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
+pub vrf_program_identity: Signer<'info>,
+```
+
+この callback を発火できるのは公式の MagicBlock oracle だけであり、偽造や操作された結果を防ぎます。無効な proof は自動的に失敗し、他の programs がこのリクエストを front-run することもできません。
+
+EphemeralVrf は `InvalidProof` や `Unauthorized` のような条件を検査するため、不正な署名や未承認 caller はゲームロジックの実行前に拒否されます。この実装はまだ監査されていないため、本番公開前には staging で callback を必ず監視してください。
+
+ユーザーに `caller_seed` 全体をそのまま与えさせるのは避け、seed grinding を防ぐためにゲーム状態やタイムスタンプと組み合わせてください。すべてが決定論的 rollup 内で実行されるため、ランダム値を再利用したり遅延させたりすることはできません。
+この強制検証は、ゲームロジックを実行するのと同じ [ephemeral rollup](/jp/pages/get-started/introduction/ephemeral-rollup) 内で行われます。

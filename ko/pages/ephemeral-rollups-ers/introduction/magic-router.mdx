@@ -1,0 +1,98 @@
+---
+title: Magic Router
+description: MagicBlock의 Magic Router가 거래를 올바른 실행 환경으로 라우팅해 어떻게 가속하는지 알아보세요.
+---
+
+import MagicRouterSDK from "/ko/snippets/magic-router-sdk.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/Wc2XMAKtEug?si=bjitIDG7w5fY5zmK&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## 동적 거래 라우팅
+
+**MagicBlock의 Magic Router** 는 거래 메타데이터를 바탕으로 거래를 **Ephemeral Rollups** 또는 **Solana** 중 어디에서 실행할지 지능적으로 결정하여 거래를 가속하는 동적 거래 라우팅 엔진입니다.
+
+이렇게 하면 개발자가 수동으로 라우팅 로직을 작성할 필요가 없어지고, 거래 속도와 개발 경험 모두에서 큰 이점을 얻을 수 있습니다.
+
+- ✅ **단일 엔드포인트로 간단한 통합**: 하나의 RPC 엔드포인트만 연결하면 됩니다
+- ✅ **매끄러운 지갑 경험**: 연결, 서명, 제출만 하면 되고 내부 동작을 알 필요가 없습니다
+- ✅ **더 빠른 확인**: Magic Router가 가장 빠른 사용 가능한 엔드포인트로 라우팅합니다
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
+---
+
+## 빠른 접근
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  >
+    Anchor 프로그램과 통합하기
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
+    iconType="duotone"
+  >
+    Native Rust 프로그램과 통합하기
+  </Card>
+  <Card
+    title="API"
+    icon="server"
+    href="/ko/pages/ephemeral-rollups-ers/api-reference/er/getRoutes"
+    iconType="duotone"
+  >
+    Magic Router API 체험하기
+  </Card>
+</CardGroup>
+
+---
+
+## 코드 스니펫
+
+<MagicRouterSDK />
+
+Magic Router는 각 거래의 메타데이터(writable accounts, owner, signer 등)를 분석하고 가장 적합한 전용 엔드포인트로 자동 라우팅합니다.
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router-scenarios.png" />
+1. **클라이언트 - 거래 제출** dApp 또는 사용자가 거래를 Magic Router RPC 엔드포인트로 보냅니다.
+
+2. **RPC - 메타데이터 검사**
+   Magic Router는 거래 메타데이터를 검사하고 writable accounts의 owner를 확인합니다.
+
+3. **Validator - 스마트 라우팅 및 실행**
+   메타데이터에 따라 라우터는 다음 중 어디로 보낼지 결정합니다。
+
+   - **Ephemeral Rollup**: 빠르고 저지연이며 무비용인 실행을 위해
+   - **Solana**: 영속적이고 높은 처리량의 실행을 위해
+
+---

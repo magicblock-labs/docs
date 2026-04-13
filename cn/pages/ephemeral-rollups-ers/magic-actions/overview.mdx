@@ -1,0 +1,58 @@
+---
+title: 介绍
+description: 在委托期间自动执行基础层操作
+---
+
+import DemoCards from "/cn/snippets/demo-cards.mdx";
+
+---
+
+### 快速访问
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+  >
+    在 GitHub 上查看参考实现
+  </Card>
+</CardGroup>
+
+---
+
+### 什么是 Magic Actions？
+
+Magic Actions 允许你附加一个或多个调用指令，它们会在 Ephemeral Rollup
+（ER）提交后立即在 Solana 基础层自动执行。你可以将已提交的状态作为输入，在
+单笔交易中编排多步骤工作流。
+
+- **状态同步**：将 ER 变更传播到基础层账户
+- **跨程序组合**：在提交后调用其他程序
+- **自动化工作流**：从一次提交串联复杂操作
+- **事件驱动操作**：基于已提交状态执行分支逻辑
+
+### 工作原理
+
+1. 将账户委托给 Ephemeral Rollup
+2. 在 Ephemeral Rollup 上执行低延迟交易
+3. 在保持委托状态的同时，附带指令操作提交到基础层
+4. 处理器会使用刚提交的状态自动执行
+
+---
+
+### 另请参阅
+
+Magic Actions 与 Ephemeral Rollups 配合使用。
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollups"
+    icon="bolt"
+    href="/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    委托、提交与取消委托
+  </Card>
+</CardGroup>

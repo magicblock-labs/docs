@@ -1,0 +1,23 @@
+---
+title: "什么是可验证随机性？"
+description: "为链上逻辑提供可证明公平的随机性"
+---
+
+可验证随机性为链上程序提供了一个不可篡改的随机来源。
+与基于时间戳或区块哈希生成的伪随机值不同，它在链下生成，并会附带任何人都可在链上验证的密码学证明。
+
+MagicBlock 通过 **EphemeralVrf** 提供这项能力。这是一个 Solana VRF 实现，使用预言机网络来计算并验证随机值。该协议遵循 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)，并利用 Curve25519 的 Ristretto 群和 Schnorr 风格签名生成证明。有关集成细节，请参阅[技术细节](./technical-details)页面。
+
+MagicBlock rollup 通过 `ephemeral_vrf_sdk` 获取这类随机性，
+它完全运行在 [ephemeral rollup](/cn/pages/get-started/introduction/ephemeral-rollup)
+的执行窗口内。
+
+这使程序能够在无需信任单一参与方的情况下，实现掉落、抽卡或匹配等机制。返回的凭证可以证明该随机数是公平生成且不可操纵的。
+
+#### 示例用例
+
+- 可证明公平的盲盒或宝箱掉落
+- 安全的抽卡系统
+- 随机出生点或资源生成
+- 由链上验证的 PvP 匹配
+- 无需信任的抽奖或赠送活动

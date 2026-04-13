@@ -1,0 +1,186 @@
+```rust
+#[ephemeral] // This adds undelegation instruction for ER validator
+#[program]
+pub mod anchor_rock_paper_scissor {
+
+    use super::*;
+
+    // Other instructions
+
+    // 4️⃣ Reveal and record the winner
+    pub fn reveal_winner(ctx: Context<RevealWinner>) -> Result<()> {
+        let game = &mut ctx.accounts.game;
+        let player1_choice = &ctx.accounts.player1_choice;
+        let player2_choice = &ctx.accounts.player2_choice;
+        let permission_program = &ctx.accounts.permission_program.to_account_info();
+        let permission_game = &ctx.accounts.permission_game.to_account_info();
+        let permission1 = &ctx.accounts.permission1.to_account_info();
+        let permission2 = &ctx.accounts.permission2.to_account_info();
+        let magic_program = &ctx.accounts.magic_program.to_account_info();
+        let magic_context = &ctx.accounts.magic_context.to_account_info();
+
+        // 1️⃣ Clone choices into game
+        game.player1_choice = player1_choice.choice.clone().into();
+        game.player2_choice = player2_choice.choice.clone().into();
+
+        // 2️⃣ Ensure both players exist
+        let player1 = game.player1.ok_or(GameError::MissingOpponent)?;
+        let player2 = game.player2.ok_or(GameError::MissingOpponent)?;
+
+        // 3️⃣ Ensure both players made a choice
+        let choice1 = game
+            .player1_choice
+            .clone()
+            .ok_or(GameError::MissingChoice)?;
+        let choice2 = game
+            .player2_choice
+            .clone()
+            .ok_or(GameError::MissingChoice)?;
+
+        // 4️⃣ Determine winner based on choices
+        game.result = match (choice1, choice2) {
+            (Choice::Rock, Choice::Scissors)
+            | (Choice::Paper, Choice::Rock)
+            | (Choice::Scissors, Choice::Paper) => GameResult::Winner(player1),
+
+            (Choice::Rock, Choice::Paper)
+            | (Choice::Paper, Choice::Scissors)
+            | (Choice::Scissors, Choice::Rock) => GameResult::Winner(player2),
+
+            _ => GameResult::Tie,
+        };
+
+        UpdatePermissionCpiBuilder::new(&permission_program)
+            .permissioned_account(&game.to_account_info(), true)
+            .authority(&game.to_account_info(), false)
+            .permission(&permission_game.to_account_info())
+            .args(MembersArgs { members: None })
+            .invoke_signed(&[&[GAME_SEED, &game.game_id.to_le_bytes(), &[ctx.bumps.game]]])?;
+        UpdatePermissionCpiBuilder::new(&permission_program)
+            .permissioned_account(&player1_choice.to_account_info(), true)
+            .authority(&player1_choice.to_account_info(), false)
+            .permission(&permission1.to_account_info())
+            .args(MembersArgs { members: None })
+            .invoke_signed(&[&[
+                PLAYER_CHOICE_SEED,
+                &player1_choice.game_id.to_le_bytes(),
+                &player1_choice.player.as_ref(),
+                &[ctx.bumps.player1_choice],
+            ]])?;
+        UpdatePermissionCpiBuilder::new(&permission_program)
+            .permissioned_account(&player2_choice.to_account_info(), true)
+            .authority(&player2_choice.to_account_info(), false)
+            .permission(&permission2.to_account_info())
+            .args(MembersArgs { members: None })
+            .invoke_signed(&[&[
+                PLAYER_CHOICE_SEED,
+                &player2_choice.game_id.to_le_bytes(),
+                &player2_choice.player.as_ref(),
+                &[ctx.bumps.player2_choice],
+            ]])?;
+
+        msg!("Result: {:?}", &game.result);
+
+        game.exit(&crate::ID)?;
+
+        commit_and_undelegate_accounts(
+            &ctx.accounts.payer,
+            vec![&game.to_account_info()],
+            magic_context,
+            magic_program,
+        )?;
+
+        Ok(())
+    }
+
+    /// Delegate account to the delegation program based on account type
+    /// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
+    pub fn delegate_pda(ctx: Context<DelegatePda>, account_type: AccountType) -> Result<()> {
+        let seed_data = derive_seeds_from_account_type(&account_type);
+        let seeds_refs: Vec<&[u8]> = seed_data.iter().map(|s| s.as_slice()).collect();
+
+        let validator = ctx.accounts.validator.as_ref().map(|v| v.key());
+        ctx.accounts.delegate_pda(
+            &ctx.accounts.payer,
+            &seeds_refs,
+            DelegateConfig {
+                validator,
+                ..Default::default()
+            },
+        )?;
+        Ok(())
+    }
+}
+
+#[commit] // adding magic_context and magic_program accounts to context
+#[derive(Accounts)]
+pub struct RevealWinner<'info> {
+    #[account(mut, seeds = [GAME_SEED, &game.game_id.to_le_bytes()], bump)]
+    pub game: Account<'info, Game>,
+
+    /// Player1's choice PDA (derived automatically)
+    #[account(
+        mut,
+        seeds = [PLAYER_CHOICE_SEED, &game.game_id.to_le_bytes(), game.player1.unwrap().as_ref()],
+        bump
+    )]
+    pub player1_choice: Account<'info, PlayerChoice>,
+
+    /// Player2's choice PDA (derived automatically)
+    #[account(
+        mut,
+        seeds = [PLAYER_CHOICE_SEED, &game.game_id.to_le_bytes(), game.player2.unwrap().as_ref()],
+        bump
+    )]
+    pub player2_choice: Account<'info, PlayerChoice>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission_game: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission1: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission2: UncheckedAccount<'info>,
+    /// Anyone can trigger this
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: PERMISSION PROGRAM
+    #[account(address = PERMISSION_PROGRAM_ID)]
+    pub permission_program: UncheckedAccount<'info>,
+}
+
+/// Unified delegate PDA context
+#[delegate] // enable delegation
+#[derive(Accounts)]
+pub struct DelegatePda<'info> {
+    /// CHECK: The PDA to delegate
+    #[account(mut, del)]
+    pub pda: AccountInfo<'info>,
+    pub payer: Signer<'info>,
+    /// CHECK: Checked by the delegate program
+    pub validator: Option<AccountInfo<'info>>,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub enum AccountType {
+    Game { game_id: u64 },
+    PlayerChoice { game_id: u64, player: Pubkey },
+}
+
+fn derive_seeds_from_account_type(account_type: &AccountType) -> Vec<Vec<u8>> {
+    match account_type {
+        AccountType::Game { game_id } => {
+            vec![GAME_SEED.to_vec(), game_id.to_le_bytes().to_vec()]
+        }
+        AccountType::PlayerChoice { game_id, player } => {
+            vec![
+                PLAYER_CHOICE_SEED.to_vec(),
+                game_id.to_le_bytes().to_vec(),
+                player.to_bytes().to_vec(),
+            ]
+        }
+    }
+}
+
+```

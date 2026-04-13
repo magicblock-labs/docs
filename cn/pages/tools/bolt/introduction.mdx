@@ -1,0 +1,40 @@
+---
+title: "框架"
+description: "在链上构建你的游戏逻辑"
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="Installation"
+    icon="bolt"
+    href="/cn/pages/tools/bolt/getting-started/installation"
+    iconType="duotone"
+  >
+    设置你的开发环境并安装 BOLT CLI。
+  </Card>
+  <Card
+    title="ECS"
+    icon="block"
+    href="/cn/pages/tools/bolt/getting-started/create-component"
+    iconType="duotone"
+  >
+    探索适用于链上游戏的 ECS 模式。
+  </Card>
+</CardGroup>
+
+## 状态与逻辑
+
+要在链上构建游戏或应用程序，你需要先熟悉 Solana programs（智能合约）。
+你可能已经了解过 [Anchor](https://www.anchor-lang.com/)，它是 Solana 上最常用的智能合约开发工具之一。
+
+BOLT 是一个**对 Anchor 功能进行扩展**的框架，它引入了使用 Entity Component System（ECS）模式来标准化建模游戏逻辑的方式。
+
+ECS 是一种模块化模式，它将逻辑与状态解耦，有助于提升代码复用性、可扩展性以及大型项目中的性能。Solana Virtual Machine（SVM）本身也采用了类似 ECS 的理念，因为状态（accounts）与逻辑（programs）在架构上天然是分离的。
+
+在 Entity Component System 中：
+
+- **Entities** 是由唯一标识符表示的通用对象。它们本身不包含数据或行为，而是作为一组 components 的标识。
+- **Components** 是原始数据结构。例如，一个 Position Component 可能包含 x、y、z 坐标。这个概念在本质上等同于 Solana 上的 accounts。
+- **Systems** 通过作用于具有特定 components 的 entities 来执行游戏逻辑。Systems 本质上就是 Solana 上的 programs，它们只定义逻辑以及所操作的 accounts。
+
+虽然 BOLT 支持 Anchor 的全部功能，但如果你希望复用现有 components/systems，或者让游戏更容易实现 mods 与扩展，那么采用 ECS 模式会非常有帮助。

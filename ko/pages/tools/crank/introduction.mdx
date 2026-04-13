@@ -1,0 +1,59 @@
+---
+title: "소개"
+description: "시간 기반으로 자동 실행되는 온체인 명령"
+---
+
+## Crank란 무엇인가요?
+
+Crank(예약 작업)은 사용자가 직접 개입하지 않아도 온체인 명령을 **시간 기반으로 자동 실행**할 수 있게 해줍니다. 기존 블록체인 시스템에서는 모든 작업마다 사용자가 트랜잭션에 서명하고 제출해야 하므로 자동화에 한계가 있습니다.
+
+MagicBlock의 Ephemeral Rollups를 사용하면 미리 정한 간격에 따라 자동으로 실행되는 작업을 예약할 수 있어, Solana 프로그램에 강력한 자동화 기능을 더할 수 있습니다.
+
+## 주요 장점
+
+- **자동 실행**: 프로그램이 사용자 상호작용 없이 정해진 간격으로 명령을 실행할 수 있습니다
+- **비용 효율성**: 오프체인 cron 작업이나 모니터링 서비스 의존도를 줄입니다
+- **탈중앙화**: 실행이 온체인에서 이뤄져 신뢰 불필요 보장이 유지됩니다
+- **신뢰성**: 예약 작업이 블록체인 합의 메커니즘 안에서 안정적으로 실행됩니다
+
+## 사용 사례
+
+- **주기적인 상태 업데이트**: 가격 업데이트, 만료 데이터 정리, 게임 상태 새로고침
+- **자동화 워크플로**: 정기 결제, 베스팅 일정, 구독 갱신
+- **게임 메커니즘**: 주기적 보상, 시간 기반 이벤트, 자동 게임 진행
+- **DeFi 작업**: 포트폴리오 리밸런싱, 청산 점검, 수익 복리화
+
+<CardGroup cols={2}>
+  <Card
+    title="구현"
+    icon="code"
+    href="/ko/pages/tools/crank/implementation"
+    iconType="duotone"
+  >
+    프로그램에 crank를 구현하는 방법 알아보기
+  </Card>
+  <Card
+    title="코드 예시"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/crank-counter"
+    iconType="duotone"
+  >
+    GitHub 저장소 보기
+  </Card>
+</CardGroup>
+
+## 작동 방식
+
+Crank는 MagicBlock의 Ephemeral Rollups를 활용해 예약 실행을 제공합니다.
+
+1. Solana 베이스 레이어에서 프로그램 상태를 **초기화**
+2. 더 빠른 실행을 위해 계정을 Ephemeral Rollup에 **위임**
+3. 명령을 자동으로 실행하는 crank 작업을 **예약**
+4. 지정된 간격에 따라 자동으로 **실행**
+5. 완료되면 계정을 Solana 베이스 레이어로 **위임 해제**
+
+스케줄링은 MagicBlock의 스케줄링 프로그램에 대한 Cross-Program Invocation(CPI)을 통해 이뤄지며, 실제 실행 시점과 신뢰성은 이 프로그램이 담당합니다.
+
+<Callout type="info">
+  Crank는 Ephemeral Rollup의 합의 메커니즘 안에서 실행되므로 신뢰 불필요하면서도 안정적입니다. 자세한 구현 단계는 <a href="/ko/pages/tools/crank/implementation">구현</a> 가이드를 참고하세요.
+</Callout>

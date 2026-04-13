@@ -1,0 +1,28 @@
+---
+title: "기술 세부 사항"
+description: "MagicBlock이 검증 가능한 랜덤니스를 어떻게 통합하는지"
+---
+
+런타임 개요는 [Ephemeral Rollup 문서](/ko/pages/get-started/introduction/ephemeral-rollup)를 참고하세요.
+
+MagicBlock은 `ephemeral_vrf_sdk` 를 통해 랜덤니스를 일급 프리미티브로 제공합니다. Rollup 프로그램은 `caller_seed` 와 `consume_randomness` 같은 콜백을 사용해 `create_request_randomness_ix`(`RequestRandomness` 명령)을 호출합니다. 이후 EphemeralVrf 네트워크의 오라클이 `ProvideRandomness` 명령을 실행해 결과를 전달합니다.
+
+난수는 Curve25519의 Ristretto 그룹 위에 구축된 VRF로 생성되며, RFC&nbsp;9381에 설명된 Schnorr 유사 서명으로 증명됩니다. 증명과 출력은 MagicBlock VRF signer PDA의 서명된 콜백과 함께 rollup에 반환됩니다. 여러분의 프로그램은 호출자를 검증한 뒤 게임 로직에서 이 랜덤니스를 사용합니다.
+
+`random_u32`, `random_u8_with_range`, `random_bool` 같은 헬퍼 유틸리티를 사용하면 `[u8; 32]` 출력을 쉽게 활용 가능한 값으로 변환할 수 있습니다. 요청과 소비 단계가 모두 ephemeral 실행 구간 안에서 이뤄지므로, 사용자는 외부 서버에 의존하지 않고도 검증 가능한 공정성을 갖춘 실시간 결과를 얻을 수 있습니다.
+
+## 흐름
+
+<img class="w-full h-auto max-w-5xl" src="/images/vrf-flow.png" />
+
+흐름은 “랜덤니스 요청”에서 시작됩니다.
+
+1. 여러분의 프로그램은 CPI로 MagicBlock VRF 프로그램을 호출하고 요청을 큐에 추가합니다.
+2. 랜덤니스 요청이 큐에 들어가면 오라클이 요청을 꺼내 랜덤니스 계산을 수행합니다.
+3. 완료되면 결과와 증명이 MagicBlock VRF 프로그램으로 반환됩니다.
+4. 증명이 검증되면 VRF 프로그램이 미리 정의된 함수로 여러분의 프로그램을 다시 호출해 랜덤니스를 “소비”하게 합니다.
+
+<Note>
+  EphemeralVrf 코드베이스는 아직 활발히 개발 중이며 감사를 받지 않았습니다.
+  프로덕션 rollup에 통합하기 전에 충분히 테스트하세요.
+</Note>

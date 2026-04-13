@@ -1,0 +1,43 @@
+---
+title: "로컬 검증자 설정"
+description: "완전한 로컬 Ephemeral Rollup 스택, Surfpool, 또는 로컬 VRF 오라클을 사용해 Native Rust 또는 Anchor 프로그램을 실행하고 테스트하세요."
+---
+
+import LocalSetupOptions from "/ko/snippets/local-setup-options.mdx";
+
+## 왜 로컬 환경을 사용하나요?
+
+Solana 프로그램의 delegation과 실시간 동작을 테스트할 때는 **빠른 피드백 루프** 가 매우 중요합니다.
+
+**로컬 Ephemeral Rollup Validator** 를 실행하면 다음이 가능합니다.
+
+- 네트워크 지연이나 rate limit 없이 delegation과 동작을 빠르게 테스트
+- Solana runtime 트랜잭션을 로컬에서 시뮬레이션
+- 자신의 필요에 맞게 검증자 구성을 커스터마이즈
+
+---
+
+## 빠른 시작: 로컬 Ephemeral Validator
+
+Anchor와 Native Rust 모두에 대한 delegation 및 테스트 스크립트를 확인해 보세요.
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="/ko/pages/get-started/how-integrate-your-program/anchor"
+    iconType="duotone"
+  >
+    Anchor 프로그램과 통합하기
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="/ko/pages/get-started/how-integrate-your-program/rust"
+    iconType="duotone"
+  >
+    Native Rust 프로그램과 통합하기
+  </Card>
+</CardGroup>
+
+<LocalSetupOptions />

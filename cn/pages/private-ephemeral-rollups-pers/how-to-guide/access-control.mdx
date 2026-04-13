@@ -1,0 +1,333 @@
+---
+title: "访问控制"
+description: "了解如何在 Private Ephemeral Rollups 中管理细粒度访问控制和成员权限。"
+---
+
+import CreatePermissionRust from "/cn/snippets/acl-code/permission/rust/create.mdx";
+import UpdatePermissionRust from "/cn/snippets/acl-code/permission/rust/update.mdx";
+import DelegatePermissionRust from "/cn/snippets/acl-code/permission/rust/delegate.mdx";
+import CommitAndUndelegatePermissionRust from "/cn/snippets/acl-code/permission/rust/commit_and_undelegate.mdx";
+import ClosePermissionRust from "/cn/snippets/acl-code/permission/rust/close.mdx";
+
+import CreatePermissionWeb3js from "/cn/snippets/acl-code/permission/web3js/create.mdx";
+import UpdatePermissionWeb3js from "/cn/snippets/acl-code/permission/web3js/update.mdx";
+import DelegatePermissionWeb3js from "/cn/snippets/acl-code/permission/web3js/delegate.mdx";
+import CommitAndUndelegatePermissionWeb3js from "/cn/snippets/acl-code/permission/web3js/commit_and_undelegate.mdx";
+import ClosePermissionWeb3js from "/cn/snippets/acl-code/permission/web3js/close.mdx";
+
+import CreatePermissionKit from "/cn/snippets/acl-code/permission/kit/create.mdx";
+import UpdatePermissionKit from "/cn/snippets/acl-code/permission/kit/update.mdx";
+import DelegatePermissionKit from "/cn/snippets/acl-code/permission/kit/delegate.mdx";
+import CommitAndUndelegatePermissionKit from "/cn/snippets/acl-code/permission/kit/commit_and_undelegate.mdx";
+import ClosePermissionKit from "/cn/snippets/acl-code/permission/kit/close.mdx";
+
+import CreatePermissionPinocchio from "/cn/snippets/acl-code/permission/pinocchio/create.mdx";
+import UpdatePermissionPinocchio from "/cn/snippets/acl-code/permission/pinocchio/update.mdx";
+import DelegatePermissionPinocchio from "/cn/snippets/acl-code/permission/pinocchio/delegate.mdx";
+import CommitAndUndelegatePermissionPinocchio from "/cn/snippets/acl-code/permission/pinocchio/commit_and_undelegate.mdx";
+import ClosePermissionPinocchio from "/cn/snippets/acl-code/permission/pinocchio/close.mdx";
+
+import MemberFlagsRust from "/cn/snippets/acl-code/member/rust.mdx";
+import MemberFlagsWeb3js from "/cn/snippets/acl-code/member/web3js.mdx";
+import MemberFlagsKit from "/cn/snippets/acl-code/member/kit.mdx";
+import MemberFlagsPinocchio from "/cn/snippets/acl-code/member/pinocchio.mdx";
+
+import AuthorizationWeb3js from "/cn/snippets/acl-code/authorization/web3js.mdx";
+import AuthorizationKit from "/cn/snippets/acl-code/authorization/kit.mdx";
+
+import PerCards from "/cn/snippets/per-cards.mdx";
+import AclCards from "/cn/snippets/acl-cards.mdx";
+import PerEndpoint from "/cn/snippets/per-endpoint.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+
+---
+
+<AclCards />
+
+---
+
+## 概述
+
+Private Ephemeral Rollups 是 [Ephemeral Rollups](/cn/pages/ephemeral-rollups-ers/introduction/why) 的一种形式，它在以[合规](/cn/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)为核心的 [Trusted Execution Environment](/cn/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) 中，为受权限控制的账户提供细粒度权限管理。每个权限账户都会维护一份成员列表，并通过特定标志来决定这些成员可以执行哪些操作。
+
+### 核心概念
+
+- **Permission Account**：用于存储特定账户访问控制规则的 PDA
+- **Members**：通过标志授予特定权限的地址
+- **Flags**：用于定义成员可执行操作的位掩码（authority、查看日志、查看余额等）
+- **Public Permissions**：当成员被设置为 `None` 时，受权限控制的账户会暂时变为可见
+
+---
+
+## 成员标志
+
+成员标志为每位成员定义细粒度权限。你可以通过按位 OR 组合多个标志，以授予多个权限。
+
+**标志说明：**
+
+- **AUTHORITY**：允许成员更新和委托权限设置、添加或移除其他成员，以及更新成员标志。
+- **TX_LOGS**：允许成员查看交易执行日志。
+- **TX_BALANCES**：允许成员查看账户余额变更。
+- **TX_MESSAGE**：允许成员查看交易消息数据。
+- **ACCOUNT_SIGNATURES**：允许成员查看账户签名
+
+<Tabs>
+  <Tab title="Rust SDK">
+    <MemberFlagsRust />
+  </Tab>
+  <Tab title="Pinocchio">
+    <MemberFlagsPinocchio />
+  </Tab>
+  <Tab title="Web3.js">
+    <MemberFlagsWeb3js />
+  </Tab>
+  <Tab title="Kit">
+    <MemberFlagsKit />
+  </Tab>
+</Tabs>
+---
+
+<div id="permission-lifecycle" />
+## 权限生命周期
+
+一个受权限控制账户的典型生命周期需要与 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 以及 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 交互：
+
+<Steps>
+  <Step title={<a href="#1-create">创建权限</a>}>
+    使用初始成员及其标志初始化一个新的权限账户。
+  </Step>
+  <Step title={<a href="#2-delegate">委托权限</a>}>
+    将权限委托给 Private Ephemeral Rollup，以启用强制执行和实时访问控制。
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-update">更新权限</a>}>
+    根据需要添加、移除或修改成员权限。更新可以在 Private Ephemeral Rollup 上实时完成。
+  </Step>
+  <Step title={<a href="#4-request">发起请求</a>}>
+    在发起请求之前，先验证 TEE RPC 的完整性并获取授权令牌。只有拥有相应标志的成员才能访问或修改账户状态。
+  </Step>
+  <Step title={<a href="#5-commit-%26-undelegate">提交并取消委托</a>}>
+    将最终状态同步回 Solana，并把账户归还给 Base Layer 控制。
+  </Step>
+  <Step title={<a href="#6-close">关闭权限</a>}>
+    当不再需要时关闭权限账户，并回收其中的 lamports。
+  </Step>
+</Steps>
+
+---
+
+## 权限操作
+
+<Tabs>
+  <Tab title="1. 创建">
+    创建好程序后，你可以添加权限和委托钩子来控制对账户的访问。例如可参考[快速开始](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart)。
+    
+    通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 创建一个带有初始成员及其标志的新权限账户。
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <CreatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CreatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CreatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **使用场景：**
+
+    - 为新的委托账户初始化访问控制
+    - 设置 authority 成员及其权限
+    - 定义谁可以查看交易详情
+
+
+    [⬆️ 返回顶部](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="2. 委托">
+    通过 MagicBlock 的 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 委托受权限控制的账户，以启用低延迟的 Private Ephemeral Rollup 执行。
+
+    <Validators />
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <DelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <DelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <DelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <DelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **使用场景：**
+
+    - 为受权限控制的账户启用 ER 执行
+    - 指定特定验证器来执行状态变更
+    - 为实时交易处理设置委托
+
+    **重要说明：**
+
+    - 根据 `AUTHORITY_FLAG`，必须由 authority 或 `permissioned_account` 之一进行签名
+    - 验证器会以 ER 速度处理交易
+    - 提交频率决定状态同步回 Solana 的频率
+    - **一旦委托到 Private Ephemeral Rollup，权限就会被强制执行**，只有拥有相应标志的成员才能访问或修改账户状态
+
+    [⬆️ 返回顶部](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="3. 更新">
+    通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 修改权限账户中的现有成员或其标志。
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <UpdatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <UpdatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **使用场景：**
+
+    - 向权限组添加新成员
+    - 通过移除成员来撤销权限
+    - 修改成员标志以授予或限制访问
+    - 将成员设置为 `None` 以使账户暂时可见
+
+    [⬆️ 返回顶部](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="4. 请求">
+    向 Private Ephemeral Rollup 发起请求时，你必须先完成授权：
+
+    <PerEndpoint />
+
+    **授权步骤：**
+
+    1. **验证 TEE RPC 完整性**：使用 TDX quote 和 Intel 签发的证明证书，验证 TEE RPC 服务器运行在真实的 Intel TDX 硬件上
+    2. **请求授权令牌**：对挑战消息进行签名，以获取授权令牌
+    3. **创建连接**：将授权令牌放在 header 中或作为查询参数传入
+
+    <Tabs>
+      <Tab title="Kit">
+        <AuthorizationKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <AuthorizationWeb3js />
+      </Tab>
+    </Tabs>
+
+    **账户可见性：**
+
+    - **默认情况下**：所有账户都是透明的，任何已授权用户都可以访问
+    - **启用权限后**：一旦账户通过权限系统受到控制，访问控制规则会在每次请求中被强制执行
+    - 只有拥有相应标志的成员才能访问或修改受权限控制的账户和交易
+
+    **要点：**
+
+    - 请求会在验证器上实时执行
+    - 成员标志决定每位用户可以执行哪些操作
+    - 权限可以在执行过程中动态更新
+    - 更新会立即在 Private Ephemeral Rollup 上生效
+
+    [⬆️ 返回顶部](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="5. 提交并取消委托">
+    Private Ephemeral Rollup 上的最新权限状态会强制执行访问控制。若要关闭权限账户，请先更新权限成员，再将权限取消委托回 Solana。
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <CommitAndUndelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CommitAndUndelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CommitAndUndelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CommitAndUndelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    [⬆️ 返回顶部](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="6. 关闭">
+    关闭一个受权限控制的账户，并在 Solana 上回收其中的 lamports。
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <ClosePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <ClosePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <ClosePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <ClosePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **使用场景：**
+
+    - 清理未使用的权限账户
+    - 从已关闭账户中回收 SOL
+
+    **重要说明：**
+
+    - 必须先将权限取消委托回 Solana
+    - 如果账户仍处于委托状态，请在关闭前调用 `commit_and_undelegate`
+    - Lamports 会退还给付款账户
+
+    [⬆️ 返回顶部](#permission-lifecycle)
+
+  </Tab>
+</Tabs>
+
+---
+
+## 最佳实践
+
+1. **Authority 管理**：始终至少为一位可信成员分配 `AUTHORITY_FLAG`
+2. **最小权限原则**：仅向每位成员授予必要的标志
+3. **实时更新**：权限可以在不取消委托的情况下于 Private Ephemeral Rollup 上实时更新，从而实现动态访问控制调整
+4. **清理**：取消委托并关闭未使用的权限账户，以释放 SOL
+
+---
+
+## 安全注意事项
+
+- **签名者验证**：只有拥有 `AUTHORITY_FLAG` 的成员或带有受权限控制账户的程序才能授权变更
+- **公开账户**：将成员设置为 `None` 会使账户对外公开可见
+- **默认 Authority**：默认情况下，受权限控制账户的所有者会被添加为权限账户成员中的 permission authority
+- **空成员列表**：如果 `members` 字段被设置为空列表，则受权限控制账户将完全受限且保持私密。只有该账户所有者才能修改权限
+- **访问审计**：使用成员标志来审计和控制访问
+
+---
+
+<PerCards />

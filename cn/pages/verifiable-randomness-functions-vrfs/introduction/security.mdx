@@ -1,0 +1,35 @@
+---
+title: "安全性"
+description: "MagicBlock 的 VRF 程序经过审计，并生成可验证的随机数"
+---
+
+MagicBlock 通过 [**VRF Program**](https://github.com/magicblock-labs/ephemeral-vrf/) 提供随机数能力。这是一个 Solana VRF 实现，使用一组预言机网络来计算和验证随机值。该协议遵循 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)，利用 Curve25519 的 Ristretto group 和 Schnorr 风格签名来生成证明。集成细节请参阅[技术细节](./technical-details)页面。
+
+在请求随机数时，VRF 程序会基于多种输入计算一个[唯一 hashId](https://github.com/magicblock-labs/ephemeral-vrf/blob/main/program/src/request_randomness.rs#L71)，并将其存储在链上 oracle queue 中：
+
+```rust
+    let combined_hash = hashv(&[
+        &args.caller_seed,
+        &slot.to_le_bytes(),
+        &slothash,
+        &args.callback_discriminator,
+        &args.callback_program_id.to_bytes(),
+        &time.to_le_bytes(),
+        &idx.to_le_bytes(),
+    ]);
+```
+
+已验证的预言机会用其私钥对这些唯一队列项进行签名，生成的签名或 `randomness proof` 可在链上验证：
+
+<img height="300" src="/images/vrf-proof.png" />
+
+`randomness proof` 会在密码学上绑定到输入 `caller_seed` 以及 MagicBlock 的 VRF signer identity。你的 callback 会通过以下方式强制执行这一点：
+
+```rust
+#[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
+pub vrf_program_identity: Signer<'info>,
+```
+
+只有 MagicBlock 官方预言机才能触发 callback，从而防止伪造或被操纵的结果。无效证明会自动失败，其他程序也无法抢跑该请求。
+
+EphemeralVrf 会检查诸如 `InvalidProof` 和 `Unauthorized` 等条件，因此错误签名或未经授权的调用者会在你的游戏逻辑执行之前被拒绝。

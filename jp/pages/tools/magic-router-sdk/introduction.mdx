@@ -1,0 +1,69 @@
+---
+title: 紹介
+description: MagicBlock の Magic Router SDK を使って複雑さを抽象化する
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="はじめに"
+    icon="rocket"
+    href="/jp/pages/tools/magic-router-sdk/getting-started"
+    iconType="duotone"
+  >
+    SDK をインストールし、トランザクションルーティングの基本概念を学びましょう。
+  </Card>
+  <Card
+    title="Magic Router 概要"
+    icon="route"
+    href="/jp/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    Magic Router がインテリジェントなルーティングで取引を高速化する仕組みを学びましょう。
+  </Card>
+</CardGroup>
+
+## Magic Router SDK
+
+Magic Router SDK は、MagicBlock の Ephemeral Rollups 基盤におけるトランザクション準備とルーティングを簡素化する TypeScript ライブラリです。トランザクションを Solana メインネットで実行するのか、Ephemeral Rollup で実行するのかを手動で判断する代わりに、SDK がメタデータを解析して自動的に処理します。
+
+## 目的と利点
+
+Magic Router SDK は、MagicBlock の二層実行環境にある複雑さを抽象化します。
+
+- **自動ルーティング**: アカウントメタデータに基づいて、取引を Ephemeral Rollups または Solana に賢く振り分けます
+- **統合の簡素化**: 単一エンドポイントへの接続だけで済み、手動のルーティングロジックは不要です
+- **最適化された性能**: 取引は最も高速な利用可能レイヤーで実行され、即時確認を目指します
+- **シームレスなウォレット体験**: 標準的な Solana トランザクション署名を維持しつつ、強化されたルーティング機能を提供します
+
+## 主な機能
+
+<CardGroup cols={2}>
+  <Card
+    title="スマートな取引準備"
+    icon="brain"
+    iconType="duotone"
+  >
+    SDK は、取引内の書き込み可能アカウントに対して正しい blockhash を自動取得し、Ephemeral Rollups と Solana メインネットの両方との互換性を確保します。
+  </Card>
+  <Card
+    title="バリデータ検出"
+    icon="radar"
+    iconType="duotone"
+  >
+    最適なトランザクション性能のために、最寄りの利用可能なバリデータを自動検出して接続します。
+  </Card>
+  <Card
+    title="柔軟な署名オプション"
+    icon="signature"
+    iconType="duotone"
+  >
+    ブラウザウォレット統合と、ローカル署名者または session keys を使ったプログラム的な署名の両方をサポートします。
+  </Card>
+  <Card
+    title="アカウント分析"
+    icon="magnifying-glass-chart"
+    iconType="duotone"
+  >
+    取引から書き込み可能アカウントを抽出・分析する組み込みユーティリティにより、賢いルーティング判断を行えます。
+  </Card>
+</CardGroup>

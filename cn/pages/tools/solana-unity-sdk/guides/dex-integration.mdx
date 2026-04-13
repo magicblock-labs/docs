@@ -1,0 +1,101 @@
+---
+title: "与 Orca 的 DEX 集成"
+description: "SDK 原生支持 Orca，并提供便捷的工具方法来构建交换、开仓、资金管理和与 Whirlpools 交互所需的交易。"
+---
+
+## Orca
+
+Orca 是 Solana 区块链上最易用的加密货币交易平台之一。更详细的介绍请参阅官方 [Orca 文档](https://docs.orca.so/orca-for-traders/master) 和 [Orca Developer Portal](https://orca-so.gitbook.io/orca-developer-portal/orca/welcome)。
+
+## 执行一次交换
+
+- 创建一个 IDex 实例，并传入默认账户和 RPC 客户端实例：
+
+```csharp
+IDex dex = new OrcaDex(
+    WalletH.Account,
+    WalletH.Rpc
+)
+```
+
+- 获取 token 信息：
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("USDC");
+TokenData tokenB = await dex.GetTokenBySymbol("ORCA");
+```
+
+- 查找 whirlpool：
+
+```csharp
+Pool whirlpool = await dex.FindWhirlpoolAddress(tokenA.MintAddress, tokenB.MintAddress)
+```
+
+- 获取 1 USDC 的交换报价：
+
+```csharp
+SwapQuote swapQuote = await dex.GetSwapQuoteFromWhirlpool(
+    whirlpool.Address,
+    DecimalUtil.ToUlong(1, tokenA.Decimals),
+    tokenA.MintAddress,
+    slippageTolerance: 0.1,
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.EstimatedAmountOut, tokenB.Decimals);
+Debug.Log(quote); // 预期收到的 Orca token 数量
+```
+
+- 创建交换交易：
+
+```csharp
+Transaction tx = await dex.SwapWithQuote(
+    whirlpool,
+    swapQuote
+);
+```
+
+- 签名并发送交换交易：
+
+```csharp
+await WalletH.Base.SignAndSendTransaction(tx);
+```
+
+## 打开仓位并增加 ORCA/USDC whirlpool 的流动性
+
+下面的示例会向池中增加 5 ORCA 和 5 USDC 的流动性，并铸造一个代表该仓位的 metaplex NFT。
+
+```csharp
+OrcaDex dex = new OrcaDex(
+    WalletH.Account,
+    WalletH.Rpc
+);
+
+var orcaToken = await dex.GetTokenBySymbol("ORCA");
+var usdcToken = await dex.GetTokenBySymbol("USDC");
+
+var whirlpool = await dex.FindWhirlpoolAddress(
+  usdcToken.MintAddress,
+  orcaToken.MintAddress
+);
+
+Account mint = new Account();
+
+Transaction tx = await dex.OpenPositionWithLiquidity(
+    whirlpool,
+    mint,
+    -1792,
+    1152,
+    DecimalUtil.ToUlong(5, tokenA.Decimals),
+    DecimalUtil.ToUlong(5, tokenB.Decimals),
+    commitment: Commitment.Confirmed
+);
+
+var txSer = tx.Build(new List<Account>() {
+  WalletH.Account,
+  mint
+});
+
+await WalletH.Base.SignAndSendTransaction(tx);
+```

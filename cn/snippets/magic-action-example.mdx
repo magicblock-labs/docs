@@ -1,0 +1,28 @@
+import ActionCode from "/cn/snippets/magic-action-code/action.mdx";
+import CommitWithActionCode from "/cn/snippets/magic-action-code/commit-with-action.mdx";
+import MultipleActionCode from "/cn/snippets/magic-action-code/multiple-actions.mdx";
+import OtherActionsCode from "/cn/snippets/magic-action-code/other-actions-code.mdx";
+
+### 1) 创建 action 指令
+
+`update_leaderboard` 指令会在提交后立即于基础层执行。
+
+<ActionCode />
+
+### 2) 构建带有 action 的提交指令
+
+`commit_and_update_leaderboard` 提交指令在 ER 上执行，并安排带 action 的提交。
+
+<CommitWithActionCode />
+
+### 执行多个 action
+
+你可以提交多个账户并串联多个 action。各个 action 会按顺序执行。
+
+<MultipleActionCode />
+
+### 其他 action
+
+Actions 也可以在取消委托时执行，或者在没有任何提交的情况下执行。
+
+<OtherActionsCode />

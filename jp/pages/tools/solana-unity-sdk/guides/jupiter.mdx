@@ -1,0 +1,106 @@
+---
+title: Jupiter V6 統合
+description: ゲームに Jupiter v6 API を統合する
+---
+
+## Jupiter
+
+SDK は Jupiter V6 をネイティブにサポートしており、スワップ見積もりの取得、取引の構築、スワップ実行に必要なトランザクション送信を簡単に行えるユーティリティメソッドが用意されています。
+Jupiter は Solana における主要な流動性アグリゲーターであり、幅広いトークン対応と、あらゆるトークンペア間での最適なルート探索を提供します。詳しくは公式の [Jupiter ドキュメント](https://station.jup.ag/) を参照してください。
+
+---
+
+## スワップを実行する
+
+デフォルトアカウントを渡して `IDex` インスタンスを作成します。
+
+```csharp
+IDexAggregator dex = new JupiterDexAg(Web3.Account);
+```
+
+トークン情報を取得します。
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("SOL");
+TokenData tokenB = await dex.GetTokenBySymbol("USDC");
+```
+
+1 SOL のスワップ見積もりを取得します。
+
+```csharp
+SwapQuoteAg swapQuote = await dex.GetSwapQuote(
+    tokenA.MintAddress,
+    tokenB.MintAddress,
+    DecimalUtil.ToUlong(1, tokenA.Decimals)
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.OutputAmount, tokenB.Decimals);
+Debug.Log(quote); // 受け取る予定の USDC 数量
+```
+
+ルートパスを表示します。
+
+```csharp
+Debug.Log(string.Join(" -> ", swapQuote.RoutePlan.Select(p => p.SwapInfo.Label)));
+
+// Lifinity V2 -> Whirlpool
+```
+
+スワップトランザクションを作成します。
+
+```csharp
+Transaction tx = await dex.Swap(swapQuote);
+```
+
+スワップトランザクションに署名して送信します。
+
+```csharp
+await Web3.Wallet.SignAndSendTransaction(tx);
+```
+
+## Jupiter Payments API を使う
+
+Jupiter Payments API も利用可能で、Jupiter と SolanaPay を組み合わせることで、任意の SPL トークンによるユーザー支払いを実現し、USDC やその他のトークン建てで価格設定できます。
+
+デフォルトアカウントを渡して `IDex` インスタンスを作成します。
+
+```csharp
+IDexAggregator dex = new JupiterDexAg(Web3.Account);
+```
+
+トークン情報を取得します。
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("SOL");
+TokenData tokenB = await dex.GetTokenBySymbol("USDC");
+```
+
+5 USDC を得るために必要な SOL 数量のスワップ見積もりを取得します。
+
+```csharp
+SwapQuoteAg swapQuote = await dex.GetSwapQuote(
+    tokenA.MintAddress,
+    tokenB.MintAddress,
+    DecimalUtil.ToUlong(5, tokenB.Decimals),
+    SwapMode.ExactOut
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.InputAmount, tokenA.Decimals);
+Debug.Log(quote); // 支払う予定の SOL 数量
+```
+
+スワップトランザクションを作成します。
+
+```csharp
+Transaction tx = await dex.Swap(swapQuote);
+```
+
+スワップトランザクションに署名して送信します。
+
+```csharp
+await Web3.Wallet.SignAndSendTransaction(tx);
+```

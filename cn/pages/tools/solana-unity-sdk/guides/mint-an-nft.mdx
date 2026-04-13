@@ -1,0 +1,99 @@
+---
+title: "铸造 NFT"
+description: "要铸造 NFT，我们将与 [Token Metadata](https://docs.metaplex.com/programs/token-metadata/) 程序交互。完整概览请参阅 metaplex [文档](https://docs.metaplex.com/)。"
+---
+
+首先，我们需要为要铸造的 NFT 创建一个新的 mint 账户，以及一个用于持有它的关联代币账户。
+
+```csharp
+var mint = new Account();
+var associatedTokenAccount = AssociatedTokenAccountProgram
+    .DeriveAssociatedTokenAccount(Web3.Account, mint.PublicKey);
+```
+
+接下来，定义 NFT 的元数据。
+
+```csharp
+var metadata = new Metadata()
+{
+    name = "Test",
+    symbol = "TST",
+    uri = "https://y5fi7acw5f5r4gu6ixcsnxs6bhceujz4ijihcebjly3zv3lcoqkq.arweave.net/x0qPgFbpex4ankXFJt5eCcRKJzxCUHEQKV43mu1idBU",
+    sellerFeeBasisPoints = 0,
+    creators = new List<Creator> { new(Web3.Account.PublicKey, 100, true)}
+};
+```
+
+现在我们可以构建交易，它由 6 条指令组成：
+
+- 创建 Mint 账户
+- 初始化 Mint 账户
+- 创建 Associated Token Account
+- 铸造 NFT
+- 创建 Metadata 账户
+- 创建 Master Edition
+
+```csharp
+var transaction = new TransactionBuilder()
+    .SetRecentBlockHash(blockHash)
+    .SetFeePayer(Web3.Account)
+    .AddInstruction(
+        SystemProgram.CreateAccount(
+            Web3.Account,
+            mint.PublicKey,
+            minimumRent.Result,
+            TokenProgram.MintAccountDataSize,
+            TokenProgram.ProgramIdKey))
+    .AddInstruction(
+        TokenProgram.InitializeMint(
+            mint.PublicKey,
+            0,
+            Web3.Account,
+            Web3.Account))
+    .AddInstruction(
+        AssociatedTokenAccountProgram.CreateAssociatedTokenAccount(
+            Web3.Account,
+            Web3.Account,
+            mint.PublicKey))
+    .AddInstruction(
+        TokenProgram.MintTo(
+            mint.PublicKey,
+            associatedTokenAccount,
+            1,
+            Web3.Account))
+    .AddInstruction(MetadataProgram.CreateMetadataAccount(
+        PDALookup.FindMetadataPDA(mint),
+        mint.PublicKey,
+        Web3.Account,
+        Web3.Account,
+        Web3.Account.PublicKey,
+        metadata,
+        TokenStandard.NonFungible,
+        true,
+        true,
+        null,
+        metadataVersion: MetadataVersion.V3))
+    .AddInstruction(MetadataProgram.CreateMasterEdition(
+        maxSupply: null,
+        masterEditionKey: PDALookup.FindMasterEditionPDA(mint),
+        mintKey: mint,
+        updateAuthorityKey: Web3.Account,
+        mintAuthority: Web3.Account,
+        payer: Web3.Account,
+        metadataKey: PDALookup.FindMetadataPDA(mint),
+        version: CreateMasterEditionVersion.V3
+    )
+);
+```
+
+最后，对交易进行签名并发送：
+
+```csharp
+var tx = Transaction.Deserialize(transaction.Build(new List<Account> {Web3.Account, mint}));
+var res = await Web3.Wallet.SignAndSendTransaction(tx);
+Debug.Log(res.Result);
+```
+
+控制台会输出交易签名。你可以在浏览器中查看它，结果应与这笔[交易](https://explorer.solana.com/tx/TPSviDzpzTFEyfJkYwmQzqaPJTTsGMZTuPuG9q1LiKrhZnwg5WWHH7ARR8eYAdoB8rt8qcjKwqbcZj43b84Ls5C?cluster=devnet)类似。
+
+你也可以在浏览器中查找该 mint 地址，其结果应类似于这个 [NFT](https://explorer.solana.com/address/4X199VtLKVJUeLMXzwXzSsFgapVQcrYx9vnqxNDkH2Xa?cluster=devnet)。

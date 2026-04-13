@@ -1,0 +1,147 @@
+---
+title: "快速开始"
+description: "如何在你的 Solana 程序中集成 Ephemeral Rollups"
+---
+
+import Endpoints from '/cn/snippets/endpoints.mdx'
+
+从集成角度看，使用 Ephemeral Rollups 类似于编写多线程程序。程序可以将工作卸载到 Ephemeral Rollup 会话中，在一个低延迟、高吞吐量的 SVM runtime 中处理交易。这个 SVM runtime 会按需即时配置，交易则由去中心化 ephemeral validators 网络中的节点进行处理。
+
+Ephemeral Rollups 可与任何面向 Solana 区块链的程序配合使用。我们维护了一组常见集成示例：
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/cn/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  与 Anchor 程序集成
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/cn/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  与 Native Rust 程序集成
+</Card>
+
+</CardGroup>
+
+## 集成生命周期
+
+在程序中集成 Ephemeral Rollups 的流程如下：
+
+<Steps>
+  <Step title="编写程序">
+    按照你平常的方式编写 Solana 程序，可以使用 Anchor、native Rust、
+    Bolt、C，甚至汇编。
+  </Step>
+  <Step title="添加 delegation 和 undelegation hooks">
+    被委托的账户可以在 Ephemeral Rollup 会话中作为可写账户使用。
+  </Step>
+  <Step title="将程序部署到 Solana">
+    直接将程序部署到 Solana 上。
+  </Step>
+  <Step title="执行交易">
+    使用任何符合 SVM RPC 规范的 SDK（web3.js、Solana Rust SDK、Unity SDK
+    等）在链上或链下执行交易。
+  </Step>
+</Steps>
+
+## 添加 delegation 和 undelegation hooks
+
+通过添加 delegation 和 undelegation hooks，你的程序就能支持超低延迟交易。只需把 native Rust SDK 中的两个函数加入程序即可。
+
+### Delegation
+
+`Delegation` 是将程序中一个或多个 `PDA` 的所有权转移给 delegation program 的过程。之后 Ephemeral Validators 就可以在 SVM runtime 中使用这些 `PDA` 执行交易并提交状态。
+
+在 Rust 程序中，你可以使用 `ephemeral_rollups_sdk` crate 来委托账户。
+
+安装方式如下：
+
+```bash
+cargo add ephemeral_rollups_sdk
+```
+
+然后使用 `delegate_account` 函数把账户委托给 delegation program。
+
+```rust Delegation
+use ephemeral_rollups_sdk::cpi::delegate_account;
+
+delegate_account(
+    &ctx.accounts.payer, // The account that will pay for opening the session
+    &ctx.accounts.pda, // The PDA to delegate
+    &ctx.accounts.owner_program, // Owner program of the PDA
+    ...
+    pda_seeds, // Seeds to make the PDA signer
+    0, // 0 means no time limit for the delegation
+    3_000, // Update frequency on the base layer in milliseconds
+)?;
+```
+
+<Note>
+  delegation 和 undelegation 都是 CPI，可以集成到程序现有的指令中
+</Note>
+
+### Undelegation
+
+`Undelegation` 是将 `PDA` 的所有权转回给你的程序的过程。
+在 undelegation 时，状态会被提交并触发最终确认流程。一旦状态验证完成，`PDA` 就会被解锁，并可像平常一样在 mainnet 上使用。
+
+```rust Delegation
+use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
+
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.pda.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+此外，自定义 CPI 还可以指示 ephemeral validators 对状态执行 `commit`、`finalize`，或 `close` 一个会话。
+
+<Note>
+  请注意，commit 和 undelegation 都接受一个账户列表。这些账户会以原子方式
+  提交到基础层，从而保持相互依赖账户之间的状态一致性
+</Note>
+
+## 前端
+
+为了让前端集成更简单，我们创建了 [Magic Router](/cn/pages/get-started/how-integrate-your-program/magic-router)。你只需直接把交易发送给 magic router，它会帮你判断应该将交易路由到 [Ephemeral Rollup](/cn/pages/get-started/introduction/ephemeral-rollup) 还是基础层。
+
+```typescript Frontend
+import { sendMagicTransaction } from "magic-router-sdk";
+
+const routerConnection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+
+// Construct a standard Solana transaction
+const tx = await exampleClient.current?.methods
+  .exampleMethod(0)
+  .accounts({
+      user: userPda,
+      user: userKeypair.current.publicKey,
+  }).transaction() as Transaction;
+
+const noopInstruction = new TransactionInstruction({
+      programId: new PublicKey('11111111111111111111111'),
+      keys: [],
+      data: Buffer.from(crypto.getRandomValues(new Uint8Array(5))),
+  });
+transaction.add(noopInstruction);
+
+// Send the transaction
+const signature = await sendMagicTransaction(
+  routerConnection,
+  tx,
+  [userKeypair]
+)
+```
+
+<Endpoints/>

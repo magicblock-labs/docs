@@ -1,0 +1,98 @@
+---
+title: Magic Router
+description: MagicBlock の Magic Router が、適切な実行環境へルーティングすることで取引をどう高速化するかを学びましょう。
+---
+
+import MagicRouterSDK from "/jp/snippets/magic-router-sdk.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/Wc2XMAKtEug?si=bjitIDG7w5fY5zmK&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## 動的トランザクションルーティング
+
+**MagicBlock の Magic Router** は、トランザクションメタデータに基づいて、**Ephemeral Rollups** と **Solana** のどちらで実行すべきかを賢く判断する動的トランザクションルーティングエンジンです。
+
+これにより、開発者は手動でルーティングロジックを書く必要がなくなり、取引速度と開発体験の両方が大きく向上します。
+
+- ✅ **単一エンドポイントで簡単統合**：1 つの RPC エンドポイントに接続するだけ
+- ✅ **シームレスなウォレット体験**：接続、署名、送信だけでよく、裏側を意識する必要はありません
+- ✅ **より速い確認**：Magic Router が最速の利用可能エンドポイントへルーティングします
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
+---
+
+## クイックアクセス
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  >
+    Anchor プログラムと統合する
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
+    iconType="duotone"
+  >
+    Native Rust プログラムと統合する
+  </Card>
+  <Card
+    title="API"
+    icon="server"
+    href="/jp/pages/ephemeral-rollups-ers/api-reference/er/getRoutes"
+    iconType="duotone"
+  >
+    Magic Router API を試す
+  </Card>
+</CardGroup>
+
+---
+
+## コードスニペット
+
+<MagicRouterSDK />
+
+Magic Router は各トランザクションのメタデータ（writable accounts、owner、signer など）を解析し、最適な専用エンドポイントへ自動ルーティングします。
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router-scenarios.png" />
+1. **クライアント - トランザクション送信** dApp またはユーザーが Magic Router RPC エンドポイントへトランザクションを送信します。
+
+2. **RPC - メタデータ検査**
+   Magic Router はトランザクションメタデータを調べ、writable accounts の owner を確認します。
+
+3. **Validator - スマートルーティングと実行**
+   メタデータに基づいて、ルーターは次のどちらへ送るかを判断します。
+
+   - **Ephemeral Rollup**：高速・低レイテンシ・ゼロコスト実行向け
+   - **Solana**：永続的で高スループットな実行向け
+
+---

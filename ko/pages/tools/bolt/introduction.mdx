@@ -1,0 +1,40 @@
+---
+title: "프레임워크"
+description: "온체인에서 게임 로직 구축하기"
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="Installation"
+    icon="bolt"
+    href="/ko/pages/tools/bolt/getting-started/installation"
+    iconType="duotone"
+  >
+    개발 환경을 설정하고 BOLT CLI를 설치합니다.
+  </Card>
+  <Card
+    title="ECS"
+    icon="block"
+    href="/ko/pages/tools/bolt/getting-started/create-component"
+    iconType="duotone"
+  >
+    온체인 게임을 위한 ECS 패턴을 살펴보세요.
+  </Card>
+</CardGroup>
+
+## 상태와 로직
+
+온체인에서 게임이나 애플리케이션을 만들려면 먼저 Solana programs(스마트 컨트랙트)에 익숙해져야 합니다.
+이미 Solana에서 스마트 컨트랙트를 작성할 때 가장 널리 사용되는 툴킷 중 하나인 [Anchor](https://www.anchor-lang.com/)를 알고 있을 수도 있습니다.
+
+BOLT는 **Anchor 기능을 확장**해 Entity Component System(ECS) 패턴으로 게임 로직을 표준화된 방식으로 모델링할 수 있게 해 주는 프레임워크입니다.
+
+ECS는 로직과 상태를 분리하는 모듈식 패턴으로, 대규모 프로젝트에서 코드 재사용성, 확장성, 성능 향상에 도움이 됩니다. Solana Virtual Machine(SVM) 역시 상태(accounts)와 로직(programs)이 본질적으로 분리되어 있기 때문에 ECS와 유사한 패러다임을 사용합니다.
+
+Entity Component System에서는 다음과 같이 구성됩니다.
+
+- **Entities** 는 고유 식별자로 표현되는 범용 객체입니다. 자체적으로 데이터나 동작은 없고, 여러 components 묶음을 가리키는 식별자 역할을 합니다.
+- **Components** 는 원시 데이터 구조입니다. 예를 들어 Position Component는 x, y, z 좌표를 가질 수 있습니다. 이 개념은 본질적으로 Solana의 accounts와 유사합니다.
+- **Systems** 는 특정 components를 가진 entities에 작용해 게임 로직을 수행합니다. Systems는 본질적으로 Solana의 programs이며, 로직과 작동 대상 accounts를 정의합니다.
+
+BOLT는 Anchor의 모든 기능을 지원하지만, 기존 components/systems를 재사용하거나 게임의 mods와 확장을 더 쉽게 만들고 싶다면 ECS 패턴을 채택하는 것이 특히 유용합니다。

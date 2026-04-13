@@ -1,0 +1,83 @@
+---
+title: "World Program 概览"
+description: " "
+---
+
+World Program 是统一框架中的入口，用于创建 world 实例、entities、附加 components，以及执行 systems。
+
+## 客户端开发
+
+当前的开发重点是提供更多客户端 SDK 和集成方案。
+
+[World Program](https://explorer.solana.com/address/WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n/anchor-program?cluster=devnet) 是一个标准的 Anchor program，它将自己的 Interface Definition Language（IDL）发布在链上，以便实现无缝交互。
+
+## TypeScript SDK 安装
+
+要安装 Bolt SDK，请执行以下命令：
+
+```bash
+npm install @magicblock-labs/bolt-sdk
+```
+
+使用 `bolt init` 初始化项目时，会自动生成一个简单的 `bolt-sdk` 使用示例。
+
+## 创建新的 World 实例
+
+按照下面的示例创建一个新的 world 实例：
+
+```typescript
+const initializeNewWorld = await InitializeNewWorld({
+  payer: provider.wallet.publicKey,
+  connection: provider.connection,
+});
+const signature = await provider.sendAndConfirm(initializeNewWorld.transaction);
+const worldPda = initializeNewWorld.worldPda; // 之后可以继续使用
+```
+
+## 添加新的 Entity
+
+要添加一个新的 entity：
+
+```typescript
+const addEntity = await AddEntity({
+  payer: provider.wallet.publicKey,
+  world: worldPda,
+  connection: provider.connection,
+});
+const signature = await provider.sendAndConfirm(addEntity.transaction);
+const entityPda = addEntity.entityPda; // 之后可以继续使用
+```
+
+## 为 Entity 附加 Components
+
+下面演示如何附加 components：
+
+```typescript
+const initializeComponent = await InitializeComponent({
+  payer: provider.wallet.publicKey,
+  entity: entityPda,
+  componentId: positionComponent.programId,
+});
+const signature = await provider.sendAndConfirm(
+  initializeComponent.transaction
+);
+const componentPda = initializeComponent.componentPda; // 可用于获取状态
+```
+
+## 应用 Systems
+
+要应用一个 system：
+
+```typescript
+const applySystem = await ApplySystem({
+  authority: provider.wallet.publicKey,
+  systemId: systemMovement.programId,
+  entities: [
+    {
+      entity: entityPda,
+      components: [{ componentId: positionComponent.programId }],
+    },
+  ],
+});
+const signature = await provider.sendAndConfirm(applySystem.transaction);
+```

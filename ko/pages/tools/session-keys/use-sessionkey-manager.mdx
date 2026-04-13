@@ -1,0 +1,84 @@
+---
+title: "session key manager 사용하기"
+description:
+  "세션 토큰의 생성과 철회를 관리하고, 안전하고 사용하기 쉬운 방식으로 트랜잭션 서명과 전송에 필요한 핵심 메서드를 제공하는 커스텀 React hook"
+---
+
+`useSessionKeyManager`는 `AnchorWallet`, `Connection`, `Cluster`를 인자로 받아 `SessionWalletInterface`를 반환하는 커스텀 hook입니다. 이 hook은 session keys와 tokens를 관리하고 트랜잭션 서명 및 전송 메서드를 제공합니다.
+
+`SessionWalletInterface`는 다음 속성과 메서드로 구성됩니다.
+
+```typescript
+interface SessionWalletInterface {
+  publicKey: PublicKey | null; // Public key associated with the session wallet
+  ownerPublicKey: PublicKey | null; // The Publickey of the session token authority(The creator of the session token)
+  isLoading: boolean; // Indicates whether the session wallet is loading
+  error: string | null; // An error message, if any
+  sessionToken: string | null; // Session token for the current session
+  signTransaction:
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T>)
+    | undefined; // Sign a single transaction
+  signAllTransactions:
+    | (<T extends Transaction>(
+        transactions: T[],
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T[]>)
+    | undefined; // Sign multiple transactions
+  signMessage: ((message: Uint8Array) => Promise<Uint8Array>) | undefined; // Sign a message
+  sendTransaction:
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string>)
+    | undefined; // Send a signed transaction
+  signAndSendTransaction:
+    | (<T extends Transaction>(
+        transactions: T | T[],
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string[]>)
+    | undefined; // Sign and send transactions
+  createSession: (
+    targetProgram: PublicKey, // Target Solana program
+    topUpLamports?: number, // Top up session wallet with lamports or not
+    validUntil?: number, // Duration of session token before expiration
+    sessionCreatedCallback?: (sessionInfo: {
+      sessionToken: string;
+      publicKey: string;
+    }) => void
+  ) => Promise<SessionWalletInterface | undefined>; // Create a new session
+  revokeSession: () => Promise<void>; // Revoke the current session
+  getSessionToken: () => Promise<string | null>; // Retrieve the current session token
+}
+```
+
+다음은 `useSessionKeyManager` 사용 예시입니다.
+
+```typescript
+import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useSessionKeyManager } from '@gumhq/react-sdk';
+
+function YourComponent() {
+  const wallet = useAnchorWallet();
+  const connection = useConnection();
+  const cluster = "devnet"; // or "mainnet-beta", "testnet", "localnet"
+
+  const sessionWallet = useSessionKeyManager(wallet, connection, cluster);
+
+  // 여기서 session wallet의 속성과 메서드에 접근할 수 있습니다
+  // 예: sessionWallet.publicKey
+  // 예: sessionWallet.createSession
+
+  return (
+    // Your component JSX
+  );
+}
+```
+
+여러 컴포넌트에서 Session Key Manager를 사용하려면 다음 섹션처럼 애플리케이션에 Provider Component와 Context를 설정하면 됩니다.

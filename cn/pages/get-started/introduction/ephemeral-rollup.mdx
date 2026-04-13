@@ -1,0 +1,124 @@
+---
+title: "Ephemeral Rollup"
+description: "面向高性能、可组合应用的扩展方案"
+---
+
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
+
+MagicBlock 的核心思想是 **利用 Solana Virtual Machine (SVM) 基于账户的结构与并行执行能力** 来优化状态管理。通过将状态组织为 **集群**，用户可以 **锁定一个或多个账户**，并暂时将状态执行转移到一个 **专用辅助层**，我们将其定义为 **“ephemeral rollup” (ER)**。
+
+### **工作原理**
+
+1. **状态委托**：用户将状态账户锁定到 ephemeral rollup 中，从而启用一个可配置、可独立运行的运行时。
+2. **Sequencer 控制**：sequencer 会在该 rollup 中临时修改状态。如果违反约束，状态会在 L1 上被 **强制回滚** 并解锁。
+3. **并行读取访问**：即使账户已经被委托，基础层上的交易仍然可以 **读取其状态**，从而保证兼容性。未委托的账户则仍然 **可直接修改且不受影响**。
+
+### **Ephemeral Rollup 的能力**
+
+Ephemeral rollup 作为一个 **专用 SVM runtime** 运行，能够显著提升交易吞吐量。该运行时可以进行 **定制**，支持：
+
+- ✅ **Gasless Transactions**：支持扩展性和大规模采用。
+- ✅ **更快的出块时间**：实现实时交互和流畅用户体验。
+- ✅ **集成调度（Ticking 机制）**：内置类似 **Clockwork** 的自动化能力，按计划执行交易。
+
+程序和资产直接存在于基础层上，并且保持完全兼容。基础层上的任何改进或升级都可以立即获得，无需修改或重新部署程序。
+
+- ✅ **程序与状态同步**：无碎片化。状态和程序可以与任何现有协议和资产交互。
+- ✅ **水平扩展**：按需启动多个 rollup，处理数百万笔交易。
+- ✅ **熟悉的工具链**：复用现有熟悉的编程语言、库和测试工具。
+
+<Card title="无缝用户体验">
+  这一切都会 **对终端用户透明地发生**。一个 **专用 RPC 提供方**
+  会动态地将交易并行路由到 **基础层和一个或多个 ephemeral rollup**，
+  从而优化执行。
+</Card>
+
+[白皮书](https://arxiv.org/abs/2311.02650) 对该架构和扩展方案进行了详细说明。
+
+## 交易是如何执行的？
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
+当交易通过专用 RPC 提交后，provisioner 会检测委托事件，并根据配置管理运行时的配置与分配。下面是交易在 ephemeral rollup 中执行流程的高级概览：
+
+<Steps>
+  <Step title="委托">
+    状态账户通过 Delegation Program 被委托到 Ephemeral Rollup，并指定
+    生命周期、更新频率等参数。
+  </Step>
+  <Step title="交易执行">
+    交易会通过 RPC 路由器被发送到合适的执行层（基础层或 Ephemeral）。
+  </Step>
+  <Step title="状态提交">
+    operator 会定期将 ephemeral 状态提交到基础层，包括新的状态及相关指针。
+    状态会通过白皮书中描述的 fraud-proof 机制完成最终确认。
+  </Step>
+  <Step title="持续执行交易">
+    交易会持续通过 RPC 路由器被发送到适当的执行层（基础层或 Ephemeral）。
+  </Step>
+  <Step title="最终提交与取消委托">
+    Ephemeral 状态被提交回基础层，账户则通过 Delegation Program 取消委托，
+    交还给原始拥有者。
+  </Step>
+</Steps>
+
+## 更多资源
+
+• [白皮书](https://arxiv.org/abs/2311.02650)
+
+• [Breakpoint 2023 演讲](https://t.co/P8SEeSEb8j)
+
+• [a16z CSX Demo Day](https://www.youtube.com/watch?v=UFUlv-gIBTk)
+
+### 下一步去哪里？
+
+<CardGroup cols={2}>
+  <Card
+    title="为什么选择 MagicBlock？"
+    icon="wand"
+    href="/cn/pages/get-started/introduction/why-magicblock"
+    iconType="duotone"
+  >
+    了解为何要使用 MagicBlock 构建
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/cn/pages/get-started/introduction/smart-router"
+    iconType="duotone"
+  >
+    了解 Magic Router 的工作方式
+  </Card>
+  <Card
+    title="构建"
+    icon="hammer"
+    href="/cn/pages/get-started/how-integrate-your-program/overview"
+    iconType="duotone"
+  >
+    使用 Rust、Anchor 和 Typescript 进行实践
+  </Card>
+  <Card
+    title="使用场景"
+    icon="star"
+    href="/cn/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    从示例中发现新的灵感
+  </Card>
+  <Card
+    title="框架与 SDK"
+    icon="code"
+    href="/cn/pages/tools/introduction"
+    iconType="duotone"
+  >
+    深入了解框架与 SDK
+  </Card>
+  <Card
+    title="隐私"
+    icon="shield-check"
+    href="/cn/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    使用 TEE 构建私密且可验证的应用
+  </Card>
+</CardGroup>

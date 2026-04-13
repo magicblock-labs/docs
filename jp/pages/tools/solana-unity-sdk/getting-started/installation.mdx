@@ -1,0 +1,31 @@
+---
+title: "インストール"
+---
+
+## Unity
+
+[こちら](https://unity.com/download)から Unity をインストールしてください。
+
+## SDK パッケージをインポートする
+
+- [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui.html) ウィンドウを開きます。
+- ステータスバーの `+` ボタンをクリックします。
+- パッケージ追加のオプションが表示されます。
+- 追加メニューから `Add package from git URL` を選択します。テキストボックスと `Add` ボタンが表示されます。
+- ![](/images/package_manager.png)
+- テキストボックスに `https://github.com/magicblock-labs/Solana.Unity-SDK.git` の Git URL を入力し、`Add` をクリックします。
+- パッケージのインストール後、Package Manager のインスペクターに `Samples` が表示されます。`Import` をクリックしてください。
+- 指定バージョン付きの URL を使って、特定のバージョンをインストールすることもできます。
+
+  - `https://github.com/magicblock-labs/Solana.Unity-SDK.git#X.Y.X`
+  - ここに記載された `X.Y.Z` は、取得したいバージョン番号に置き換えてください。
+  - 利用可能なすべてのリリースは[こちら](https://github.com/magicblock-labs/Solana.Unity-SDK/releases)で確認できます。
+  - 最新のリリースは [![Last Release](https://img.shields.io/github/v/release/magicblock-labs/Solana.Unity-SDK)](https://github.com/magicblock-labs/Solana.Unity-SDK/releases/latest) です
+
+- サンプルシーンをインポートする
+- ![](/images/sample_scene.png)
+- 設定済みウォレットを含むサンプルシーンは `Samples/Solana SDK/0.0.2/Simple Wallet/Solana Wallet/scenes/wallet_scene.unity` にあります。
+
+<Card title="知っておくとよいこと" icon="lightbulb" iconType="duotone">
+  このチュートリアルは Unity 2021.3.5f1 を使用して作成されています。
+</Card>

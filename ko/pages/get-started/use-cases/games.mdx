@@ -1,0 +1,126 @@
+---
+title: 게임
+description: "실시간 온체인 게임의 새로운 시대를 열어보세요"
+---
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="https://github.com/GabrielePicco/notes/raw/refs/heads/main/demo-day.mov"
+  controls
+></video>
+
+#### 🔴 게임의 문제점
+
+- **진정한 소유권 부재**: 게임 자산은 회사가 통제합니다.
+- **서비스 종료 위험**: 서버가 꺼지면 플레이어는 진행 상황을 잃습니다.
+- **닫힌 생태계**: 게임 경제 간 상호운용성이 없습니다.
+
+#### ⛓️ 현재 블록체인의 한계
+
+- **느린 게임플레이**: 높은 지연 시간은 실시간 상호작용을 가로막습니다.
+- **높은 가스 비용**: 빈번한 게임 내 행동에 대한 거래 비용이 비쌉니다.
+- **제한된 개발자 도구**: 블록체인 개발은 복잡합니다.
+
+#### ⚡ MagicBlock의 해결책
+
+- **진정한 디지털 소유권**: 플레이어는 자산을 자유롭게 소유하고 거래할 수 있습니다.
+- **실시간 게임플레이**: 즉각적이고 가스 효율적인 거래로 부드러운 경험을 제공합니다.
+- **컴포저블 월드**: 누구나 게임 로직과 경제를 확장할 수 있습니다.
+
+## 예시: MagicBlock Labs - Generals
+
+### 개요
+
+MagicBlock 사용에 포함되는 모든 요소를 한눈에 파악할 수 있도록, MagicBlock Engine으로 가속된 실제 완성형 게임 예시를 제공합니다.
+
+<img width="100%" src="/images/magicblock_generals_moves.gif" />
+<CardGroup cols={2}>
+  <Card
+    title="소스 코드: MagicBlock Labs - Generals"
+    icon="github"
+    href="https://github.com/magicblock-labs/solana-generals"
+    iconType="duotone"
+  >
+    MagicBlock로 게임을 구축하고 통합하는 방법을 자세히 알아보세요!
+  </Card>
+  <Card
+    title="Bolt"
+    icon="bolt"
+    href="/ko/pages/tools/bolt/introduction"
+    iconType="duotone"
+  >
+    BOLT로 온체인 게임 개발을 단순화하세요
+  </Card>
+  <Card
+    title="더 많은 도구"
+    icon="code"
+    href="/ko/pages/tools/introduction"
+    iconType="duotone"
+  >
+    BOLT, Solana Unity SDK, SOAR, Session Keys 등으로 워크플로를 간소화하세요
+  </Card>
+</CardGroup>
+
+### 아키텍처
+
+MagicBlock로 빌드할 때는 몇 가지 핵심 구성 요소가 관여합니다.
+
+- **Solana**: `mainnet-beta` 또는 `devnet` Solana 퍼블릭 체인의 RPC
+
+  - 스마트 컨트랙트가 배포되고 조회되는 곳입니다
+  - 게임의 최종 상태와 부분 상태가 정산되는 곳입니다
+
+- **Ephemeral Rollups**: MagicBlock 검증자 RPC
+
+  - 게임 트랜잭션이 실행되는 곳입니다
+  - 이미 MagicBlock와 노드 운영자가 배포해 두었으므로 바로 사용할 수 있습니다
+
+- **백엔드**: 게임 스마트 컨트랙트의 소스 코드
+
+  - 이 예시에서는 스마트 컨트랙트가 BOLT 프레임워크로 작성됩니다
+  - 이 스마트 컨트랙트는 일반 Solana 체인에 배포됩니다
+  - 소스 코드는 여기에서 확인할 수 있습니다: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/backend)
+
+- **프런트엔드**: 게임의 사용자 인터페이스
+  - UI는 체인과 에페메럴 양쪽에서 상태를 가져옵니다
+  - UI는 체인과 에페메럴 양쪽으로 트랜잭션을 전송합니다
+  - 소스 코드는 여기에서 확인할 수 있습니다: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/frontend)
+
+### 중요한 프로세스
+
+코드베이스를 살펴보면 에페메럴 게임을 구성하는 상위 수준의 로직을 이해하는 데 도움이 됩니다.
+
+### 사용자가 새 게임을 만들 때
+
+사용자가 "Create" 페이지를 열면 새 게임 생성 로직을 실행합니다: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameCreate.ts)
+
+1. 먼저 일반 Solana 스마트 컨트랙트처럼 온체인에 새 계정을 생성합니다
+2. 그런 다음 이 새 계정을 에페메럴 검증자에 위임합니다
+3. 이후 게임 트랜잭션을 에페메럴 RPC로 직접 보낼 수 있습니다
+   1. 맵을 생성합니다
+   2. 플레이어가 참가하기를 기다립니다
+   3. 모든 플레이어가 참가하면 게임을 시작합니다
+
+#### 플레이어가 게임에 참가할 때
+
+사용자가 메인 페이지를 열면 체인에서 기존 게임 목록을 가져옵니다: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameList.ts)
+
+1. 사용자가 게임 페이지에 들어오면 에페메럴 내부의 게임 상태를 구독하기 시작합니다: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
+2. 에페메럴 내부에서 게임 상태가 바뀔 때마다 UI를 업데이트하여 맵을 표시합니다. 페이지 로직 코드는 여기에서 확인할 수 있습니다: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
+3. 사용자가 맵에서 이동을 실행하면 명령 트랜잭션을 에페메럴로 직접 보냅니다: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
+4. 그러면 에페메럴 내부의 게임 상태가 업데이트되고, 모든 플레이어에게 즉시 알림이 전달되며 UI도 바로 갱신됩니다
+
+### 요약
+
+MagicBlock로 게임을 만드는 과정은 Solana에서 게임을 만드는 과정과 매우 비슷합니다.
+
+유일한 차이는 위임 과정입니다.
+
+- Solana에서 계정을 설정한 뒤 해당 계정을 `delegate` 하여 MagicBlock Engine 내부에서 사용할 수 있게 합니다
+- 계정이 위임되면 그 계정이 포함된 모든 트랜잭션을 Ephemeral Rollups로 보낼 수 있습니다
+- 에페메럴 세션 내부에서 실행되는 트랜잭션은 실시간으로 처리되며 무료일 수 있습니다
+- 게임 세션이 끝나면 다시 Solana에서 사용할 계정을 `undelegate` 하면 됩니다

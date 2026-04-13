@@ -1,0 +1,161 @@
+```rust
+#[program]
+pub mod private_payments {
+
+    use super::*;
+
+    /// Initializes a deposit account for a user and token mint if it does not exist.
+    /// Sets up a new deposit account with zero balance for the user and token mint.
+    pub fn initialize_deposit(ctx: Context<InitializeDeposit>) -> Result<()> {
+        let deposit = &mut ctx.accounts.deposit;
+        deposit.set_inner(Deposit {
+            user: ctx.accounts.user.key(),
+            token_mint: ctx.accounts.token_mint.key(),
+            amount: 0,
+        });
+
+        Ok(())
+    }
+
+    /// Modifies the balance of a user's deposit account by transferring tokens in or out.
+    /// If `args.increase` is true, tokens are transferred from the user's token account to the deposit account.
+    /// If false, tokens are transferred from the deposit account back to the user's token account.
+    pub fn modify_balance(ctx: Context<ModifyDeposit>, args: ModifyDepositArgs) -> Result<()> {
+        let deposit = &mut ctx.accounts.deposit;
+
+        if args.increase {
+            transfer_checked(
+                CpiContext::new(
+                    ctx.accounts.token_program.to_account_info(),
+                    TransferChecked {
+                        from: ctx.accounts.user_token_account.to_account_info(),
+                        mint: ctx.accounts.token_mint.to_account_info(),
+                        to: ctx.accounts.vault_token_account.to_account_info(),
+                        authority: ctx.accounts.user.to_account_info(),
+                    },
+                ),
+                args.amount,
+                ctx.accounts.token_mint.decimals,
+            )?;
+            deposit.amount += args.amount;
+        } else {
+            let seeds = [
+                VAULT_PDA_SEED,
+                &ctx.accounts.token_mint.key().to_bytes(),
+                &[ctx.bumps.vault]
+            ];
+            let signer_seeds = &[&seeds[..]];
+            transfer_checked(
+                CpiContext::new_with_signer(
+                    ctx.accounts.token_program.to_account_info(),
+                    TransferChecked {
+                        from: ctx.accounts.vault_token_account.to_account_info(),
+                        mint: ctx.accounts.token_mint.to_account_info(),
+                        to: ctx.accounts.user_token_account.to_account_info(),
+                        authority: ctx.accounts.vault.to_account_info(),
+                    },
+                    signer_seeds,
+                ),
+                args.amount,
+                ctx.accounts.token_mint.decimals,
+            )?;
+            deposit.amount -= args.amount;
+        }
+
+        Ok(())
+    }
+
+    /// ... Other instructions for delegation and privacy
+}
+
+/// Context for InitializeDeposit
+#[derive(Accounts)]
+pub struct InitializeDeposit<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Anyone can initialize the deposit
+    pub user: UncheckedAccount<'info>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        space = 8 + Deposit::INIT_SPACE,
+        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), token_mint.key().as_ref()],
+        bump
+    )]
+    pub deposit: Account<'info, Deposit>,
+    pub token_mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
+}
+
+/// Context args for InitializeDeposit
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct ModifyDepositArgs {
+    pub amount: u64,
+    pub increase: bool,
+}
+
+
+/// Context for ModifyDeposit
+#[derive(Accounts)]
+pub struct ModifyDeposit<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub user: Signer<'info>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        space = 8 + Vault::INIT_SPACE,
+        seeds = [VAULT_PDA_SEED, deposit.token_mint.as_ref()],
+        bump,
+    )]
+    pub vault: Account<'info, Vault>,
+    #[account(
+        mut,
+        seeds = [DEPOSIT_PDA_SEED, deposit.user.as_ref(), deposit.token_mint.as_ref()],
+        bump,
+        has_one = user,
+        has_one = token_mint,
+    )]
+    pub deposit: Account<'info, Deposit>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        associated_token::mint = token_mint,
+        associated_token::authority = user,
+    )]
+    pub user_token_account: Account<'info, TokenAccount>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        associated_token::mint = token_mint,
+        associated_token::authority = vault,
+    )]
+    pub vault_token_account: Account<'info, TokenAccount>,
+    pub token_mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+}
+
+
+/// A deposit account for a user and token mint.
+#[account]
+#[derive(InitSpace)]
+pub struct Deposit {
+    pub user: Pubkey,
+    pub token_mint: Pubkey,
+    pub amount: u64,
+}
+
+/// A vault storing deposited tokens.
+/// Has a dummy field because Anchor requires it.
+#[account]
+#[derive(InitSpace)]
+pub struct Vault {
+    _dummy: u8,
+}
+
+/// ... Other context and accounts for delegation and privacy
+
+```

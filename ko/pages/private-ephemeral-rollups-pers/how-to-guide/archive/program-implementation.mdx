@@ -1,0 +1,94 @@
+---
+title: "프로그램 구현"
+description: "MagicBlock의 ER과 Intel TDX 기반 Trusted Execution Environment를 통해 모든 Solana 프로그램 상태 계정에 프라이버시를 적용하세요."
+---
+
+import PerCards from "/ko/snippets/per-cards.mdx";
+import QuickAccessPER from "/ko/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
+### 프로그램 구현 흐름
+
+MagicBlock TEE용 프로그램을 작성하는 방식은 일반적인 Solana 프로그램 작성과 비슷하지만, 프라이버시 제어를 관리하는 Permission Program이 추가됩니다.
+
+- **권한 그룹 생성**: Permission Program으로 CPI를 수행해 그룹을 생성합니다. 그룹은 원하는 만큼 만들 수 있고, 각 그룹마다 다른 멤버와 권한을 가질 수 있습니다.
+- **권한 생성**: 생성한 그룹에 권한을 추가합니다. 현재 권한은 읽기 접근을 의미하며, 향후에는 읽기/쓰기 구분이 추가될 수 있습니다.
+- **접근**: 클라이언트는 권한이 있는 ER 상태에 접근하기 위해 자신의 신원을 인증합니다. 성공하면 조회에 사용할 액세스 토큰이 발급됩니다.
+
+그룹 기반 추상화를 사용하면 한 번의 트랜잭션으로 여러 사용자의 권한을 수정할 수 있습니다. 권한 상태는 Solana L1에 유지됩니다.
+
+```rust
+use ephemeral_rollups_sdk::access_control::{
+    CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
+};
+
+pub fn create_permission(ctx: Context<CreatePermission>, id: Pubkey) -> Result<()> {
+    let CreatePermission {
+        payer,
+        permission,
+        permission_program,
+        group,
+        deposit,
+        user,
+        system_program,
+    } = ctx.accounts;
+
+    // [1] Create a Permission Group
+    CreateGroupCpiBuilder::new(&permission_program)
+        .group(&group)
+        .id(id)
+        .members(vec![user.key()])
+        .payer(&payer)
+        .system_program(system_program)
+        .invoke()?;
+
+    // [2] Create Permissions
+    CreatePermissionCpiBuilder::new(&permission_program)
+        .permission(&permission)
+        .delegated_account(&deposit.to_account_info())
+        .group(&group)
+        .payer(&payer)
+        .system_program(system_program)
+        .invoke_signed(&[&[
+            DEPOSIT_PDA_SEED,
+            user.key().as_ref(),
+            deposit.token_mint.as_ref(),
+            &[ctx.bumps.deposit],
+        ]] )?;
+
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct CreatePermission<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Anyone can create the permission
+    pub user: UncheckedAccount<'info>,
+    #[account(
+        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), deposit.token_mint.as_ref()],
+        bump
+    )]
+    pub deposit: Account<'info, Deposit>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub group: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    pub permission_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+import PerEndpoint from "/ko/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+<PerCards />

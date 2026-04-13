@@ -1,0 +1,37 @@
+```rust
+use solana_program::{
+    account_info::{next_account_info, AccountInfo},
+    pubkey::Pubkey,
+    entrypoint::ProgramResult,
+    program_error::ProgramError,
+};
+use ephemeral_rollups_sdk::ephem::{commit_accounts};
+
+// For ER only
+pub fn process_commit(
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
+) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let counter_account = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
+
+    // Signer should be the same as the initializer
+    if !initializer.is_signer {
+        msg!("Initializer {} should be the signer", initializer.key);
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
+    commit_accounts(
+        initializer,
+        vec![counter_account],
+        magic_context,
+        magic_program,
+    )?;
+
+    Ok(())
+}
+```

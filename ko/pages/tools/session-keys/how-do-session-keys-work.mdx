@@ -1,0 +1,26 @@
+---
+title: "Session Keys는 어떻게 동작하나요?"
+description: "Session Keys란 무엇인가요?"
+---
+
+Session Keys는 프로그램에서 보조 signer로 사용되도록 설계되었습니다. 특히 게시물 좋아요나 체스 말 이동처럼 자주 발생하는 상호작용에서는, 반복되는 팝업이 매끄러운 사용자 경험을 방해할 수 있기 때문에 유용합니다. **이것은 burner wallet이 아닙니다**.&#x20;
+
+Session Keys는 token과 그 scope를 검증하기 위해 우리의 on-chain program과 함께 동작합니다.
+
+## **Session Keys의 두 가지 구성 요소**
+
+1. **Ephemeral Keypair**: 대상 program에서 **보조 signer**로 사용되는 keypair
+2. **Session Token**: keypair의 **만료 시간과 scope** 정보를 담고 있는 PDA
+
+## **어떻게 동작하나요?**
+
+<img
+  class="w-full h-auto max-w-5xl"
+  alt="Session keys lifecycle"
+  src="/images/how_session_keys_work.png"
+/>
+
+- Ephemeral Keys는 transaction을 호출하기 위해 클라이언트 측에 저장됩니다.
+- 이 ephemeral keys로 호출된 transaction은 대상 program에서 유효성, 만료 시간, scope를 검증받습니다.
+- 모든 transaction은 ephemeral signer와 session token을 모두 제시해야 합니다.
+- 이것이 _account abstraction_ 의 기본 아이디어로, 외부 소유 키만 있는 것이 아니라 보안을 강화하는 스마트 컨트랙트도 함께 존재합니다.

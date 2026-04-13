@@ -1,0 +1,106 @@
+---
+title: Jupiter V6 통합
+description: 게임에 Jupiter v6 API 통합하기
+---
+
+## Jupiter
+
+SDK는 Jupiter V6를 네이티브로 지원하며, 스왑 견적을 쉽게 가져오고 스왑에 필요한 트랜잭션을 생성하고 전송할 수 있는 유틸리티 메서드를 제공합니다.
+Jupiter는 Solana의 핵심 유동성 애그리게이터로, 가장 폭넓은 토큰 범위와 모든 토큰 쌍 사이에서 최적의 경로 탐색을 제공합니다. 자세한 내용은 공식 [Jupiter 문서](https://station.jup.ag/)를 참고하세요.
+
+---
+
+## 스왑 실행하기
+
+기본 계정을 전달해 `IDex` 인스턴스를 생성합니다.
+
+```csharp
+IDexAggregator dex = new JupiterDexAg(Web3.Account);
+```
+
+토큰 정보를 가져옵니다.
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("SOL");
+TokenData tokenB = await dex.GetTokenBySymbol("USDC");
+```
+
+1 SOL에 대한 스왑 견적을 가져옵니다.
+
+```csharp
+SwapQuoteAg swapQuote = await dex.GetSwapQuote(
+    tokenA.MintAddress,
+    tokenB.MintAddress,
+    DecimalUtil.ToUlong(1, tokenA.Decimals)
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.OutputAmount, tokenB.Decimals);
+Debug.Log(quote); // 받을 것으로 예상되는 USDC 수량
+```
+
+경로를 표시합니다.
+
+```csharp
+Debug.Log(string.Join(" -> ", swapQuote.RoutePlan.Select(p => p.SwapInfo.Label)));
+
+// Lifinity V2 -> Whirlpool
+```
+
+스왑 트랜잭션을 생성합니다.
+
+```csharp
+Transaction tx = await dex.Swap(swapQuote);
+```
+
+스왑 트랜잭션에 서명하고 전송합니다.
+
+```csharp
+await Web3.Wallet.SignAndSendTransaction(tx);
+```
+
+## Jupiter Payments API 사용하기
+
+Jupiter Payments API도 사용할 수 있으며, Jupiter와 SolanaPay를 함께 활용해 사용자가 어떤 SPL 토큰으로도 결제할 수 있게 하고 USDC 또는 다른 토큰으로 가격을 책정할 수 있습니다.
+
+기본 계정을 전달해 `IDex` 인스턴스를 생성합니다.
+
+```csharp
+IDexAggregator dex = new JupiterDexAg(Web3.Account);
+```
+
+토큰 정보를 가져옵니다.
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("SOL");
+TokenData tokenB = await dex.GetTokenBySymbol("USDC");
+```
+
+5 USDC를 얻는 데 필요한 SOL 수량의 스왑 견적을 가져옵니다.
+
+```csharp
+SwapQuoteAg swapQuote = await dex.GetSwapQuote(
+    tokenA.MintAddress,
+    tokenB.MintAddress,
+    DecimalUtil.ToUlong(5, tokenB.Decimals),
+    SwapMode.ExactOut
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.InputAmount, tokenA.Decimals);
+Debug.Log(quote); // 지불할 것으로 예상되는 SOL 수량
+```
+
+스왑 트랜잭션을 생성합니다.
+
+```csharp
+Transaction tx = await dex.Swap(swapQuote);
+```
+
+스왑 트랜잭션에 서명하고 전송합니다.
+
+```csharp
+await Web3.Wallet.SignAndSendTransaction(tx);
+```

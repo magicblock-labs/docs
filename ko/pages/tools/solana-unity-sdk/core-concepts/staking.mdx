@@ -1,0 +1,62 @@
+---
+title: "스테이킹"
+description: "SOL 토큰 보유자는 하나 이상의 검증자에게 토큰을 스테이킹하여 보상을 얻고 네트워크 보안에도 기여할 수 있습니다. 스테이킹 보상은 현재 인플레이션율, 네트워크 전체에 스테이킹된 SOL 총량, 각 검증자의 가동 시간과 수수료에 따라 결정됩니다."
+---
+
+Staking에 대해서는 Solana 공식 [문서](https://spl.solana.com/stake-pool/overview#staking)를 참고하세요.
+
+```csharp
+public class CreateAccountAndInitializeStakeExample : IExample
+{
+    private static readonly IRpcClient rpcClient = ClientFactory.GetClient(Cluster.TestNet);
+
+    private const string MnemonicWords =
+        "clerk shoe noise umbrella apple gold alien swap desert rubber truck okay twenty fiscal near talent drastic present leg put balcony leader access glimpse";
+
+    public void Run()
+    {
+        var wallet = new Wallet.Wallet(new Mnemonic(MnemonicWords));
+        rpcClient.RequestAirdrop(wallet.Account.PublicKey, 100_000_000);
+        RequestResult<ResponseValue<BlockHash>> blockHash = rpcClient.GetRecentBlockHash();
+        ulong minbalanceforexception = rpcClient.GetMinimumBalanceForRentExemption(StakeProgram.StakeAccountDataSize).Result;
+        Account fromAccount = wallet.Account;
+        Account stakeAccount = wallet.GetAccount(22);
+
+        Authorized authorized = new Authorized()
+        {
+            Staker = fromAccount,
+            Withdrawer = fromAccount
+        };
+        Lockup lockup = new Lockup()
+        {
+            Custodian = fromAccount.PublicKey,
+            Epoch = 0,
+            UnixTimestamp = 0
+        };
+
+        Console.WriteLine($"BlockHash >> {blockHash.Result.Value.Blockhash}");
+
+        byte[] tx = new TransactionBuilder()
+            .SetRecentBlockHash(blockHash.Result.Value.Blockhash)
+            .SetFeePayer(fromAccount)
+            .AddInstruction(SystemProgram.CreateAccount(
+                fromAccount.PublicKey,
+                stakeAccount,
+                minbalanceforexception + 42,
+                StakeProgram.StakeAccountDataSize,
+                StakeProgram.ProgramIdKey))
+            .AddInstruction(StakeProgram.Initialize(
+                stakeAccount.PublicKey,
+                authorized,
+                lockup))
+            .Build(new List<Account> { fromAccount, stakeAccount });
+        Console.WriteLine($"Tx base64: {Convert.ToBase64String(tx)}");
+        RequestResult<ResponseValue<SimulationLogs>> txSim = rpcClient.SimulateTransaction(tx);
+
+        string logs = Examples.PrettyPrintTransactionSimulationLogs(txSim.Result.Value.Logs);
+        Console.WriteLine($"Transaction Simulation:\n\tError: {txSim.Result.Value.Error}\n\tLogs: \n" + logs);
+        RequestResult<string> firstSig = rpcClient.SendTransaction(tx);
+        Console.WriteLine($"First Tx Result: {firstSig.Result}");
+    }
+}
+```

@@ -1,0 +1,18 @@
+---
+title: "安全"
+description: "随机性证明如何被验证"
+---
+
+随机性证明会通过加密方式绑定到输入 `caller_seed` 以及 MagicBlock 的 VRF signer 身份。你的 callback 会通过以下方式强制验证：
+
+```rust
+#[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
+pub vrf_program_identity: Signer<'info>,
+```
+
+只有官方的 MagicBlock oracle 才能触发这个 callback，从而防止伪造或被操控的结果。无效证明会自动失败，其他 programs 也无法抢跑这个请求。
+
+EphemeralVrf 会检查 `InvalidProof`、`Unauthorized` 等条件，因此错误签名或未授权调用者会在游戏逻辑执行前被拒绝。当前实现尚未经过审计，因此在正式上线前，请务必在 staging 环境中持续监控 callbacks。
+
+应避免让用户直接提供完整的 `caller_seed`，最好将其与游戏状态或时间戳结合，以防止 seed grinding。由于一切都在确定性的 rollup 中执行，因此随机值无法被重复利用或延迟执行。
+这套约束机制会在执行你游戏逻辑的同一个 [ephemeral rollup](/cn/pages/get-started/introduction/ephemeral-rollup) 内完成。

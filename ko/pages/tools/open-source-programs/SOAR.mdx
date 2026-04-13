@@ -1,0 +1,165 @@
+---
+title: SOAR
+description: "Solana 온체인 업적 및 랭킹"
+---
+
+SOAR는 Solana 블록체인에서 리더보드, 업적, 플레이어 프로필, 자동 보상 분배를 관리하기 위한 매끄러운 솔루션을 제공하는 program입니다. 현재는 TypeScript 클라이언트 호출을 지원하며, Solana.Unity-SDK 통합도 곧 제공될 예정입니다.
+
+## 목차
+
+- [SOAR SDK](#soar-sdk)
+  - [시작하기](#quick-start)
+  - [클래스](#classes)
+    - [SoarProgram](#soarprogram)
+    - [GameClient](#gameclient)
+    - [InstructionBuilder](#instructionbuilder)
+
+<div id="soar-sdk" />
+<div id="quick-start" />
+## 빠른 시작
+
+### 새 게임 만들기
+
+```typescript
+import { SoarProgram, GameType, Genre } from "@magicblock-labs/soar-sdk";
+
+// '@solana/web3.js'의 활성 Connection과 defaultPayer를 사용해 Soar 클라이언트를 생성합니다
+const client = SoarProgram.getFromConnection(connection, defaultPayer);
+
+let game = Keypair.generate();
+let title = "Game1";
+let description = "Description";
+let genre = Genre.Action;
+let gameType = GameType.Web;
+let nftMeta = Keypair.generate().publicKey;
+let _auths = auths.map((keypair) => keypair.publicKey);
+
+// 번들된 트랜잭션을 가져옵니다
+let { newGame, transaction } = await client.initializeNewGame(
+  game.publicKey,
+  title,
+  description,
+  genre,
+  gameType,
+  nftMeta,
+  _auths
+);
+// game keypair를 signer로 사용해 트랜잭션을 전송하고 확인합니다
+await web3.sendAndConfirmTransaction(connection, transaction);
+```
+
+### 리더보드 만들기
+
+```typescript
+const transactionIx = await client.addNewGameLeaderBoard(
+  newGame,
+  authWallet.publicKey,
+  "my leaderboard", // 설명
+  leaderboardNft, // 리더보드에 연결된 nft
+  100,
+  true // isAscending
+);
+
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [
+  authWallet,
+]);
+```
+
+### 점수 제출하기
+
+```typescript
+const score = 10;
+const playerAddress = new web3.PublicKey("..."); // 플레이어 publicKey
+const authWallet = web3.Keypair.fromSecretKey(bs58.decode("")); // AUTH_WALLET_PRIVATE_KEY
+const leaderboardPda = new web3.PublicKey(""); // LEADERBOARD_PDA
+
+const transactionIx = await client.submitScoreToLeaderBoard(
+  playerAddress,
+  authWallet.publicKey,
+  leaderboardPda,
+  new BN(score)
+);
+
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [
+  authWallet,
+]);
+```
+
+<div id="classes" />
+## 클래스
+
+### SoarProgram <span id="soarprogram" />
+
+`SoarProgram` 클래스는 클라이언트가 온체인 SOAR program의 모든 명령에 접근할 수 있게 해 줍니다.
+
+또한 PDA를 도출하는 유틸리티 함수도 제공합니다.
+
+```typescript
+const user = Keypair.generate().publicKey;
+const playerAddress = client.utils.derivePlayerAddress(user)[0];
+```
+
+단일 account를 가져오려면:
+
+```typescript
+const account = await client.fetchLeaderBoardAccount(address);
+```
+
+여러 account를 가져오려면:
+
+```typescript
+const accounts = await client.fetchAllLeaderboardAccounts([]);
+```
+
+### GameClient <span id="gameclient" />
+
+`GameClient`는 단일 Game account에 맞춘 더 구체적인 함수 집합을 제공합니다.
+
+```typescript
+import { GameClient } from "@magicblock-labs/soar-sdk";
+```
+
+기존 온체인 Game account를 나타내는 인스턴스를 가져오려면:
+
+```typescript
+const soar = SoarProgram.getFromConnection(connection, defaultPayer);
+const gameClient = new GameClient(soar, address);
+```
+
+새 게임을 등록하려면:
+
+```typescript
+const soar = SoarProgram.getFromConnection(connection, defaultPayer);
+const game = new GameClient.register(soar, ...);
+```
+
+```typescript
+// 새로운 리더보드를 생성합니다
+await game.addLeaderboard(....);
+
+// 게임 상태에 접근합니다
+await game.init();
+
+// 게임 상태를 새로 고칩니다
+await game.refresh();
+
+// 게임에서 가장 최근 생성된 업적을 가져옵니다
+const achievement = game.recentAchievementAddress();
+```
+
+## InstructionBuilder <span id="instructionbuilder" />
+
+```typescript
+import { InstructionBuilder } from "@magicblock-labs/soar-sdk";
+```
+
+InstructionBuilder는 트랜잭션을 편리하게 묶기 위한 메서드 세트를 제공합니다.
+
+```typescript
+const transaction = await this.builder
+  .andInitializePlayer({ username, nftMeta }, user)
+  .andRegisterPlayerEntry(/*...*/)
+  .andSubmitScoreToLeaderboard(/*...*/)
+  .and(/*some other transaction*/)
+  .then((builder) => builder.build());
+```

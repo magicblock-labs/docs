@@ -1,0 +1,88 @@
+---
+title: 클라이언트 구현
+description: Magic Actions를 구축하기 위한 클라이언트 측 가이드
+---
+
+import Web3jsCode from "/ko/snippets/magic-router-code/web3js.mdx";
+import KitCode from "/ko/snippets/magic-router-code/kit.mdx";
+
+---
+
+### 빠른 접근
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+  >
+    GitHub에서 참조 구현 살펴보기
+  </Card>
+</CardGroup>
+
+---
+
+### Router 연결 설정
+
+Magic Router를 사용해 트랜잭션을 ER과 베이스 레이어로 라우팅하고 전송합니다.
+
+<CodeGroup>
+  <KitCode />
+  <Web3jsCode />
+</CodeGroup>
+
+### 트랜잭션 흐름
+
+1. 카운터를 ER에 위임합니다
+
+```ts
+const delegateTx = await program.methods
+  .delegate()
+  .accounts({
+    payer: anchor.Wallet.local().publicKey,
+    pda: pda,
+  })
+  .transaction();
+```
+
+2. ER에서 카운터를 실시간으로 증가시킵니다
+
+```ts
+const incrementTx = await program.methods
+  .increment()
+  .accounts({
+    counter: pda,
+  })
+  .transaction();
+```
+
+3. Magic Action과 함께 커밋합니다
+
+```ts
+const commitTx = await program.methods
+  .commitAndUpdateLeaderboard()
+  .accounts({ payer: wallet.publicKey /* your accounts */ })
+  .transaction();
+```
+
+### 예시
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart Ephemeral Rollups"
+    icon="play"
+    href="/ko/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    ER 사용을 처음부터 끝까지 살펴보는 가이드
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="route"
+    href="/ko/pages/ephemeral-rollups-ers/introduction/magic-router"
+    iconType="duotone"
+  >
+    Router 개요와 흐름
+  </Card>
+</CardGroup>

@@ -1,0 +1,101 @@
+---
+title: "介绍"
+description: "Private Ephemeral SPL Token API 文档"
+---
+
+## 概览
+
+Private Ephemeral SPL Token API 允许你在 MagicBlock 的 Ephemeral Rollup 上构建 SPL token 交易。这个 API 提供了一组端点，用于管理临时 token 账户、存款、提款和委托操作。
+
+### 健康检查与配置
+
+- [**Root**](/cn/api-reference/spl-api/root) - 检查 API 健康状态
+- [**Get Config**](/cn/api-reference/spl-api/get-config) - 获取 API 配置设置
+
+### 设置与初始化
+
+- [**Initialize Global Vault**](/cn/api-reference/spl-api/initialize-global-vault) - 为某个 token mint 设置全局金库
+- [**Initialize ATA for Global Vault**](/cn/api-reference/spl-api/initialize-ata) - 初始化全局金库 token 账户
+
+### Token 操作
+
+- [**Initialize ATA**](/cn/api-reference/spl-api/initialize-ata) - 初始化发送方和接收方所需的 token 账户
+- [**Initialize Ephemeral ATA**](/cn/api-reference/spl-api/initialize-ephemeral-ata) - 初始化发送方和接收方所需的临时 token 账户
+- [**Deposit SPL Tokens**](/cn/api-reference/spl-api/deposit-spl-tokens) - 将 token 存入临时账户
+- [**Delegate Ephemeral ATA**](/cn/api-reference/spl-api/delegate-ephemeral-ata) - 将临时账户委托给 Delegation Program
+- [**Transfer SPL Tokens**](/cn/api-reference/spl-api/transfer-ephemeral-ata) - 使用 SPL checked transfer 在账户之间转移 token（**注意：** 转账前必须先初始化并委托 Ephemeral ATA）
+- [**Undelegate Ephemeral ATA**](/cn/api-reference/spl-api/undelegate-ephemeral-ata) - 移除临时账户的委托
+- [**Withdraw SPL Tokens**](/cn/api-reference/spl-api/withdraw-spl-tokens) - 从临时账户提取 token
+
+### 权限管理
+
+- [**Create Ephemeral ATA Permission**](/cn/api-reference/spl-api/create-ephemeral-ata-permission) - 为 Ephemeral ATA 创建权限账户
+- [**Delegate Ephemeral ATA Permission**](/cn/api-reference/spl-api/delegate-ephemeral-ata-permission) - 将 Ephemeral ATA 的权限委托给 Delegation Program，以强制执行访问控制
+- [**Reset Ephemeral ATA Permission**](/cn/api-reference/spl-api/reset-ephemeral-ata-permission) - 重置 Ephemeral ATA 上的权限标志
+- [**Undelegate Ephemeral ATA Permission**](/cn/api-reference/spl-api/undelegate-ephemeral-ata-permission) - 在关闭账户前取消 Ephemeral ATA 的权限委托
+
+## Private SPL Token 流程
+
+私密 token 转账的典型流程如下：
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ 第 1 步：初始化基础设施（如果尚不存在）                            │
+├─────────────────────────────────────────────────────────────────────┤
+│ • 为 token mint 初始化 Global Vault                                 │
+│ • 初始化 Global Vault ATA                                           │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ 第 2 步：初始化用户账户（如果尚不存在）                            │
+├─────────────────────────────────────────────────────────────────────┤
+│ • 初始化发送方 ATA                                                  │
+│ • 初始化接收方 ATA                                                  │
+│ • 初始化发送方 Ephemeral ATA                                        │
+│ • 初始化接收方 Ephemeral ATA                                        │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ 第 3 步：设置权限                                                   │
+├─────────────────────────────────────────────────────────────────────┤
+│ • 为 Ephemeral ATA 创建权限                                         │
+│ • 委托权限                                                          │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ 第 4 步：存入并委托                                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│ • 将 SPL token 存入 Global Vault                                    │
+│ • 委托发送方和接收方的 Ephemeral ATA                                │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ 第 5 步：私密转账                                                   │
+├─────────────────────────────────────────────────────────────────────┤
+│ • 在 Ephemeral ATA 之间转移 token（发送方 → 接收方）               │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ 第 6 步：取消委托并提取                                             │
+├─────────────────────────────────────────────────────────────────────┤
+│ • 取消 Ephemeral ATA 的委托                                         │
+│ • 从 Ephemeral ATA 中提取 SPL token                                 │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## 响应格式
+
+### 交易响应（POST 端点）
+
+所有成功的 POST 响应都会返回如下结构的交易对象：
+
+```json
+{
+  "transaction": "base64-encoded-transaction",
+  "message": "Transaction created successfully"
+}
+```
+
+### 状态响应（GET 端点）
+
+GET 端点会返回对应端点的配置和状态信息。

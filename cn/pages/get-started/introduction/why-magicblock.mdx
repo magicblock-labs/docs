@@ -1,0 +1,112 @@
+---
+title: 为什么选择 MagicBlock？
+description: "面向 Solana 实时应用的高性能引擎"
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/yfgDZJJvydU?si=3k8ndg9Z69sv6_LE&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+<Card>
+  MagicBlock 是 Solana 网络的扩展，专为高性能去中心化应用而设计。
+  它在保留 Solana 可组合性与完整性的同时，进一步增强了 Solana 的能力。
+</Card>
+
+## 为什么选择 MagicBlock？
+
+尽管区块链技术正在重塑去中心化应用，它仍然面临一些根本挑战：
+
+- **延迟**：区块链交易速度对于实时应用来说仍然太慢。
+- **成本**：即便是“低手续费”区块链，在规模化后也可能变得昂贵。
+- **可扩展性**：现有架构难以承载高吞吐量应用。
+- **隐私**：区块链默认是公开的，这意味着链上所有数据都可被读取。
+
+MagicBlock 通过 **ephemeral rollup** 解决这些问题，使开发者能够构建需要 **10 ms 状态切换**、**免 Gas 交易** 与 **水平扩展** 的 dApp。具体方式如下：
+
+#### 构建于 Solana 生态与性能之上
+
+MagicBlock 以专用的 **Solana Virtual Machine (SVM) runtime** 形式运行，并与 Solana 基础层无缝集成。在 Solana 上部署程序的开发者能够在字节码层面与 ephemeral rollup 完全兼容，从而受益于 SVM 的高性能和强大生态。
+
+<img class="w-full h-auto max-w-5xl" src="/images/magicblock-solana.png" />
+
+#### 突破扩展性与成本限制
+
+传统 rollup 和 Solana 当前的执行模型在处理资源密集型应用时存在固有限制。MagicBlock 通过以下方式消除这些限制：
+
+- **超低延迟（10 ms 出块时间）**：Solana 默认的 400 ms 出块时间对于实时应用仍然太慢。MagicBlock 允许开发者自定义执行环境，同时保持完全兼容。
+- **无碎片化的状态完整性**：传统 rollup 会将应用状态拆分到多个环境中，导致互操作困难。MagicBlock 借助专用 RPC 提供方，在 Solana 基础层与 ephemeral rollup 之间 **并行路由和处理交易**，从而避免这一问题。
+- **近乎零交易费用**：即便 Solana 的费用较低（约每笔交易 $0.01），在大规模场景下仍可能昂贵。MagicBlock 大幅降低成本，使极低费用甚至 **零费用交易** 成为可能。
+- **水平可扩展性**：标准 rollup 难以高效扩容。MagicBlock 支持 **水平自动扩展**，可无缝启动多个 ephemeral rollup，每秒处理数百万笔交易。
+
+### 从哪里开始？
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollup"
+    icon="bolt"
+    href="/cn/pages/get-started/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    了解 Ephemeral Rollup 的工作方式
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/cn/pages/get-started/introduction/magic-router"
+    iconType="duotone"
+  >
+    了解 Magic Router 的工作方式
+  </Card>
+  <Card
+    title="构建"
+    icon="hammer"
+    href="/cn/pages/get-started/how-integrate-your-program/overview"
+    iconType="duotone"
+  >
+    使用 Rust、Anchor 和 Typescript 进行实践
+  </Card>
+  <Card
+    title="使用场景"
+    icon="star"
+    href="/cn/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    从示例中发现新的灵感
+  </Card>
+  <Card
+    title="框架与 SDK"
+    icon="code"
+    href="/cn/pages/tools/introduction"
+    iconType="duotone"
+  >
+    深入了解框架与 SDK
+  </Card>
+  <Card
+    title="隐私"
+    icon="shield-check"
+    href="/cn/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    使用 TEE 构建私密且可验证的应用
+  </Card>
+</CardGroup>

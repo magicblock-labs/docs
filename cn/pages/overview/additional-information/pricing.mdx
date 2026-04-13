@@ -1,0 +1,147 @@
+---
+title: "定价"
+description: "MagicBlock 的定价模型借鉴了去中心化云基础设施。目标是在为开发者提供 **可预测计算成本** 的同时，也为需要优先访问或专属资源的企业提供 **灵活性**。"
+---
+
+import { ERCostSimulator } from "/snippets/components/ERCostSimulator.jsx";
+import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
+import ProductCards from "/cn/snippets/product-cards.mdx";
+
+---
+
+## 产品定价
+
+<Tabs>
+  <div id="ephemeral-rollup" />
+  <Tab title="Ephemeral Rollup">
+
+**Public nodes** 让你可以以零摩擦、免费交易的方式开始在 MagicBlock 上构建。只有在关闭会话或将数据提交回 Solana 时才会产生费用。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>费用类型</th>
+      <th>金额 (SOL)</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>基础费用</td>
+      <td>0</td>
+      <td>每笔交易 (Tx)</td>
+    </tr>
+    <tr>
+      <td>会话费用</td>
+      <td>0.0003</td>
+      <td>每个 ER 会话（在 undelegation 时收取）</td>
+    </tr>
+    <tr>
+      <td>提交费用</td>
+      <td>0.0001</td>
+      <td>每次提交到 Solana</td>
+    </tr>
+  </tbody>
+</table>
+
+**Dedicated nodes** 适合企业和大规模团队。借助专属基础设施，你可以获得更高可靠性、可预测成本以及 MEV 保护。
+
+[了解更多 ER →](/cn/pages/ephemeral-rollups-ers/how-to-guide/quickstart)
+
+### ER 成本模拟器：30 天
+
+<ERCostSimulator />
+  </Tab>
+
+  <Tab title="Private Ephemeral Rollup">
+
+Private Ephemeral Rollup 支持由智能合约定义的自定义私密计算。
+
+自定义 PER 逻辑使用标准 ER 定价。[查看 Ephemeral Rollup 定价 →](#ephemeral-rollup)
+
+  </Tab>
+
+  <Tab title="VRF">
+
+VRF 服务提供 **链上可证明公平的随机性**。费用涵盖证明生成与上链发布。
+
+> ⚠️ 注意：这些成本不包含请求随机性的交易本身。在 ER 上交易免费，在 Solana 上则可能因你的 priority fee 设置而不同。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>VRF 类型</th>
+      <th>金额 (SOL)</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ER (&lt;50 ms)</td>
+      <td>免费</td>
+      <td>每次随机性请求</td>
+    </tr>
+    <tr>
+      <td>Solana (&lt;500 ms)</td>
+      <td>0.0008</td>
+      <td>每次随机性请求</td>
+    </tr>
+    <tr>
+      <td>Solana (1/2 seconds)</td>
+      <td>0.0005</td>
+      <td>每次随机性请求</td>
+    </tr>
+  </tbody>
+</table>
+
+### VRF 成本模拟器：30 天
+
+<VRFCostSimulator />
+
+[了解更多 VRF →](/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)
+
+  </Tab>
+
+  <Tab title="Private Payments API">
+
+Private Payment API 让你能够轻松在 Solana Mainnet 和/或 Private ER 上发送私密稳定币转账。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>支付类型</th>
+      <th>固定费用 (SOL)</th>
+      <th>按量收费</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Solana Mainnet</td>
+      <td>0.002</td>
+      <td>0.1%</td>
+    </tr>
+  </tbody>
+</table>
+
+<CardGroup cols={1}>
+  <Card
+    title="API 参考"
+    icon="book"
+    href="/cn/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
+    iconType="duotone"
+  >
+    浏览 Private Payments API 的各个端点
+  </Card>
+</CardGroup>
+  </Tab>
+</Tabs>
+
+---
+
+## 客户支持
+
+如果你需要 **自建节点** 相关支持，请联系：
+
+📧 [development@magicblock.xyz](mailto:development@magicblock.xyz)
+
+<ProductCards />

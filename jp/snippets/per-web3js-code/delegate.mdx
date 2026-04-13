@@ -1,0 +1,23 @@
+```typescript Web3.js
+import {
+  PERMISSION_PROGRAM_ID,
+  createDelegatePermissionInstruction,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+
+// Build the instruction
+const delegatePermissionIx = createDelegatePermissionInstruction({
+  payer: payer.publicKey,
+    authority: [payer.publicKey, true], // defined as authority in permission members
+    permissionedAccount: [permissionedAccountKeypair.publicKey, false], // optional signer, since payer is defined as authority in permission members
+  ownerProgram: PERMISSION_PROGRAM_ID
+  validator,
+});
+
+// Create a transaction
+const tx = new Transaction().add(delegatePermissionIx);
+
+// Send the transaction
+const txSig = await sendAndConfirmTransaction(connection, tx, [payer]);
+console.log("TX:", txSig);
+```

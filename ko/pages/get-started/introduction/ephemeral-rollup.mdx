@@ -1,0 +1,127 @@
+---
+title: "Ephemeral Rollup"
+description: "고성능 컴포저블 애플리케이션을 위한 확장 솔루션"
+---
+
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
+
+MagicBlock의 핵심 아이디어는 **Solana Virtual Machine (SVM)의 계정 기반 구조와 병렬 실행** 을 활용해 상태 관리를 최적화하는 것입니다. 상태를 **클러스터** 로 구성함으로써 사용자는 **하나 이상의 계정을 잠그고**, 상태 실행을 일시적으로 **전용 보조 레이어** 로 옮길 수 있습니다. 이것을 우리는 **"ephemeral rollup" (ER)** 이라고 부릅니다.
+
+### **작동 방식**
+
+1. **상태 위임** – 사용자는 상태 계정을 ephemeral rollup에 잠가 독립적으로 동작하는 설정 가능한 runtime을 활성화합니다.
+2. **Sequencer 제어** – sequencer는 이 rollup 안에서 상태를 일시적으로 수정합니다. 제약이 위반되면 상태는 L1에서 **강제로 되돌려지고** 잠금이 해제됩니다.
+3. **병렬 읽기 접근** – 계정이 위임된 상태에서도 베이스 레이어의 트랜잭션은 여전히 **그 상태를 읽을 수 있어** 호환성이 유지됩니다. 위임되지 않은 계정은 계속해서 **수정 가능하며 영향받지 않습니다**.
+
+### **Ephemeral Rollup의 기능**
+
+ephemeral rollup은 **특화된 SVM runtime** 으로 동작하며 트랜잭션 처리량을 크게 높입니다. 이 runtime은 다음과 같이 **커스터마이즈** 할 수 있습니다.
+
+- ✅ **Gasless Transactions** – 확장성과 대규모 채택을 가능하게 함
+- ✅ **더 빠른 블록 타임** – 실시간 상호작용과 매끄러운 UX를 가능하게 함
+- ✅ **통합 스케줄링 (Ticking 메커니즘)** – **Clockwork** 와 같은 자동화를 내장해 예약 실행 가능
+
+프로그램과 자산은 베이스 레이어에 직접 존재하며 완전히 호환됩니다. 베이스 레이어의 어떤 개선이나 발전도 프로그램을 수정하거나 재배포하지 않고 바로 활용할 수 있습니다.
+
+- ✅ **프로그램과 상태 동기화** – 단편화 없음. 상태와 프로그램은 기존 프로토콜 및 자산과 상호작용 가능
+- ✅ **수평 확장** – 필요에 따라 여러 rollup을 띄워 수백만 건의 트랜잭션 처리
+- ✅ **익숙한 툴링** – 기존 프로그래밍 언어, 라이브러리, 테스트 도구를 그대로 재사용
+
+<Card title="매끄러운 사용자 경험">
+  이 모든 과정은 **최종 사용자에게는 투명하게** 일어납니다. **전용 RPC
+  공급자** 가 트랜잭션을 **베이스 레이어와 하나 이상의 ephemeral rollup에
+  병렬로** 동적으로 라우팅하여 실행을 최적화합니다.
+</Card>
+
+[백서](https://arxiv.org/abs/2311.02650) 에서 이 아키텍처와 확장성 솔루션을 자세히 설명합니다.
+
+## 트랜잭션은 어떻게 실행되나요?
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
+트랜잭션이 전용 RPC를 통해 제출되면 provisioner가 위임 이벤트를 감지하고 설정에 따라 runtime 프로비저닝을 관리합니다. 아래는 ephemeral rollup에서 트랜잭션이 실행되는 과정을 높은 수준에서 요약한 것입니다.
+
+<Steps>
+  <Step title="위임">
+    상태 계정은 Delegation Program을 통해 Ephemeral Rollup에 위임되며,
+    수명과 업데이트 빈도 같은 파라미터가 지정됩니다.
+  </Step>
+  <Step title="트랜잭션 실행">
+    트랜잭션은 RPC 라우터를 통해 적절한 실행 레이어(base 또는
+    Ephemeral)로 라우팅됩니다.
+  </Step>
+  <Step title="상태 커밋">
+    operator는 새로운 상태와 관련 포인터를 포함해 ephemeral 상태를
+    주기적으로 베이스 레이어에 커밋합니다. 상태는 백서에서 설명한
+    fraud-proof 메커니즘으로 최종 확정됩니다.
+  </Step>
+  <Step title="지속적인 트랜잭션 실행">
+    트랜잭션은 계속해서 RPC 라우터를 통해 적절한 실행 레이어(base 또는
+    Ephemeral)로 라우팅됩니다.
+  </Step>
+  <Step title="최종 커밋 및 위임 해제">
+    Ephemeral 상태는 베이스 레이어에 커밋되고, 계정은 Delegation Program을
+    통해 원래 소유자에게 undelegate 됩니다.
+  </Step>
+</Steps>
+
+## 추가 자료
+
+• [백서](https://arxiv.org/abs/2311.02650)
+
+• [Breakpoint 2023 발표](https://t.co/P8SEeSEb8j)
+
+• [a16z CSX Demo Day](https://www.youtube.com/watch?v=UFUlv-gIBTk)
+
+### 다음으로 읽을 곳
+
+<CardGroup cols={2}>
+  <Card
+    title="왜 MagicBlock인가요?"
+    icon="wand"
+    href="/ko/pages/get-started/introduction/why-magicblock"
+    iconType="duotone"
+  >
+    MagicBlock로 빌드해야 하는 이유를 알아보세요
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/ko/pages/get-started/introduction/smart-router"
+    iconType="duotone"
+  >
+    Magic Router의 작동 방식을 알아보세요
+  </Card>
+  <Card
+    title="빌드"
+    icon="hammer"
+    href="/ko/pages/get-started/how-integrate-your-program/overview"
+    iconType="duotone"
+  >
+    Rust, Anchor, Typescript로 직접 시도해 보세요
+  </Card>
+  <Card
+    title="활용 사례"
+    icon="star"
+    href="/ko/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    예시에서 새로운 아이디어를 찾아보세요
+  </Card>
+  <Card
+    title="프레임워크와 SDK"
+    icon="code"
+    href="/ko/pages/tools/introduction"
+    iconType="duotone"
+  >
+    프레임워크와 SDK를 깊이 살펴보세요
+  </Card>
+  <Card
+    title="프라이버시"
+    icon="shield-check"
+    href="/ko/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    TEE로 비공개이면서 검증 가능한 앱을 구축하세요
+  </Card>
+</CardGroup>

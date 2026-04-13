@@ -1,0 +1,205 @@
+---
+title: "プログラムをテストする"
+description: "シンプルな Rust プログラムのテスト方法を学ぶ"
+---
+
+import Endpoints from "/jp/snippets/endpoints.mdx";
+import Validators from "/jp/snippets/notes/validators.mdx";
+import SoftwareRust from "/jp/snippets/software-rust.mdx";
+import SolanaResources from "/jp/snippets/solana-resources.mdx";
+
+import TestWeb3jsConnectionCode from "/jp/snippets/rust-counter-code/test-web3js-connection.mdx";
+import TestWeb3jsDelegateCode from "/jp/snippets/rust-counter-code/test-web3js-delegate.mdx";
+import TestWeb3jsCommitCode from "/jp/snippets/rust-counter-code/test-web3js-commit.mdx";
+import TestWeb3jsUndelegateCode from "/jp/snippets/rust-counter-code/test-web3js-undelegate.mdx";
+import TestKitConnectionCode from "/jp/snippets/rust-counter-code/test-kit-connection.mdx";
+import TestKitDelegateCode from "/jp/snippets/rust-counter-code/test-kit-delegate.mdx";
+import TestKitCommitCode from "/jp/snippets/rust-counter-code/test-kit-commit.mdx";
+import TestKitUndelegateCode from "/jp/snippets/rust-counter-code/test-kit-undelegate.mdx";
+import DelegationInfo from "/jp/snippets/delegation-info.mdx";
+
+---
+
+### クイックアクセス
+
+すぐにコードを見たい場合はこちらです。
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
+    iconType="duotone"
+  >
+    Rust Counter のテスト
+  </Card>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/pinocchio-counter/tests"
+    iconType="duotone"
+  >
+    Pinocchio Counter のテスト
+  </Card>
+  <Card
+    title="Guide"
+    icon="computer"
+    href="/jp/pages/ephemeral-rollups-ers/how-to-guide/local-development"
+    iconType="duotone"
+  >
+    ローカル開発
+  </Card>
+</CardGroup>
+
+---
+
+## ステップバイステップガイド
+
+delegation と undelegation 用 instruction を呼び出す有効なトランザクションを組み立てます。
+このプロジェクトの完全なテストは [Typescript Test Script](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests) にあります。
+
+<Steps>
+  <Step
+    title={<a href="#1-connection">SDK をインポートし Connection を初期化する</a>}
+  >
+    connection とアカウントをセットアップする
+  </Step>
+  <Step title={<a href="#2-delegate">Base Layer で PDA を Delegate する</a>}>
+    Base Layer 上で状態アカウントを委任する CPI hook をテストする
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-commit">ER で PDA を Commit する</a>}>
+    ER 上で状態アカウントをコミットする CPI hook をテストする
+  </Step>
+  <Step title={<a href="#4-undelegate">ER で PDA を Undelegate する</a>}>
+    ER 上で状態アカウントを委任解除する CPI hook をテストする
+  </Step>
+</Steps>
+
+---
+
+## Counter 例
+
+<SoftwareRust />
+
+<div id="code-snippets" />
+### コードスニペット
+
+<Tabs>
+  <Tab title="1. Connection">
+    ### SDK をインポートして Connection を作成する
+
+    `@magicblock-labs/ephemeral-rollups-sdk` または `@magicblock-labs/ephemeral-rollups-kit` をインポートし、テストやトランザクション送信の前に connection を初期化します。
+
+    <CodeGroup>
+      ```bash kit
+      yarn add @magicblock-labs/ephemeral-rollups-kit@latest
+      ```
+      ```bash web3.js
+      yarn add @magicblock-labs/ephemeral-rollups-sdk@latest
+      ```
+    </CodeGroup>
+
+    <Endpoints />
+    <CodeGroup>
+      <TestKitConnectionCode />
+
+      <TestWeb3jsConnectionCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title="2. Delegate">
+    ### `delegation` トランザクションをテストする
+
+    アカウントの順序と属性が正しく、かつプログラムの `delegation` 用 instruction discriminator を持つ instruction を作成します。その instruction を含むトランザクションを Base Layer（Solana）ネットワークへ送信します。
+
+    <Card
+      title="トランザクション（Base Layer）: Delegate"
+      icon="magnifying-glass"
+      href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+      iconType="duotone"
+    >
+      Solana Explorer でトランザクション詳細を見る
+    </Card>
+
+    <CodeGroup>
+      <TestKitDelegateCode />
+      <TestWeb3jsDelegateCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="3. Commit">
+    ### `commit` トランザクションをテストする
+
+    アカウントの順序と属性が正しく、かつプログラムの `commit` 用 instruction discriminator を持つ instruction を作成します。その instruction を含むトランザクションを ER ネットワークへ送信します。
+
+    <CardGroup cols={2}>
+      <Card
+        title="トランザクション（ER）: Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Solana Explorer でトランザクション詳細を見る
+      </Card>
+      <Card
+        title="トランザクション（Base layer）: Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+        iconType="duotone"
+      >
+        Solana Explorer でトランザクション詳細を見る
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitCommitCode />
+      <TestWeb3jsCommitCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="4. Undelegate">
+    ### `undelegation` トランザクションをテストする
+
+    アカウントの順序と属性が正しく、かつプログラムの `undelegation` 用 instruction discriminator を持つ instruction を作成します。その instruction を含むトランザクションを ER ネットワークへ送信します。
+
+    <CardGroup cols={2}>
+      <Card
+        title="トランザクション（ER）: Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Solana Explorer でトランザクション詳細を見る
+      </Card>
+      <Card
+        title="トランザクション（Base layer）: Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+        iconType="duotone"
+      >
+        Solana Explorer でトランザクション詳細を見る
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitUndelegateCode />
+      <TestWeb3jsUndelegateCode />
+    </CodeGroup>
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

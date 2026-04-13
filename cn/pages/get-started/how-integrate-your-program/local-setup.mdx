@@ -1,0 +1,43 @@
+---
+title: "本地验证器设置"
+description: "使用完整本地 Ephemeral Rollup 栈、Surfpool 或本地 VRF 预言机来运行和测试你的 Native Rust 或 Anchor 程序。"
+---
+
+import LocalSetupOptions from "/cn/snippets/local-setup-options.mdx";
+
+## 为什么使用本地环境？
+
+在测试 Solana 程序中的 delegation 和实时行为时，**快速反馈循环** 至关重要。
+
+运行 **本地 Ephemeral Rollup Validator** 可以让你：
+
+- 在没有网络延迟或速率限制的情况下快速测试 delegation 和行为。
+- 在本地模拟 Solana runtime 交易。
+- 根据自身需求自定义验证器设置。
+
+---
+
+## 快速开始：本地 Ephemeral Validator
+
+查看适用于 Anchor 和 Native Rust 的 delegation 与测试脚本：
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="/cn/pages/get-started/how-integrate-your-program/anchor"
+    iconType="duotone"
+  >
+    与 Anchor 程序集成
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="/cn/pages/get-started/how-integrate-your-program/rust"
+    iconType="duotone"
+  >
+    与 Native Rust 程序集成
+  </Card>
+</CardGroup>
+
+<LocalSetupOptions />

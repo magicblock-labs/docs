@@ -1,0 +1,147 @@
+---
+title: "快速开始"
+description: "通过 MagicBlock 的 ER 和基于 Intel TDX 的可信执行环境，为任意 Solana 程序状态账户启用隐私。"
+---
+
+import Endpoints from "/cn/snippets/endpoints.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+import Construction from "/cn/snippets/construction.mdx";
+import Software from "/cn/snippets/software.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/cn/snippets/per-code/write-program.mdx";
+import DelegateCode from "/cn/snippets/per-code/delegate.mdx";
+import RestrictCode from "/cn/snippets/per-code/restrict.mdx";
+import AuthorizeCode from "/cn/snippets/per-code/authorize.mdx";
+import TestCode from "/cn/snippets/per-code/test.mdx";
+import DelegationInfo from "/cn/snippets/delegation-info.mdx";
+
+import QuickAccessPER from "/cn/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
+## 分步指南
+
+<Steps>
+  <Step title={<a href="#1-write-program">编写程序</a>}>
+    按照你平常的方式编写 Solana 程序。
+  </Step>
+  <Step
+    title={
+      <a href="#2-restrict">
+        在程序中通过权限 Hook 添加访问限制。
+      </a>
+    }
+  >
+    添加 CPI Hook，创建组和权限，以便对特定已委托账户施加限制。
+  </Step>
+  <Step title={<a href="#3-delegate">在程序中添加委托 Hook</a>}>
+    添加 CPI Hook，通过 Ephemeral Rollup 会话对状态账户进行委托、提交和取消委托。
+  </Step>
+  <Step title={<a href="#4-deploy">将程序部署到 Solana</a>}>
+    使用 Anchor CLI 部署你的 Solana 程序。
+  </Step>
+  <Step
+    title={<a href="#5-authorize">在客户端实现授权</a>}
+  >
+    对用户消息签名，从 TEE 端点获取授权令牌。
+  </Step>
+  <Step title={<a href="#6-test">执行交易并测试隐私</a>}>
+    请求授权令牌并发送机密交易。
+  </Step>
+</Steps>
+
+---
+
+## 私密转账示例
+
+<img
+  src="/images/gifs/per-short-2x-420w.gif"
+  alt="Private Payments GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+
+<Software />
+
+<div id="code-snippets" />
+### 代码片段
+
+<Tabs>
+    <Tab title={<span id="1-write-program">1. 编写程序</span>}>
+        一个简单的转账程序，代币通过存款账户进行跟踪，并锁定在金库账户中：
+        <WriteProgramCode />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="2-restrict">2. 限制访问</span>}>
+        分两步定义账户级权限：
+        1. 创建用户组
+        2. 为状态账户和用户组创建权限：
+        <RestrictCode />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+        <Tab title={<span id="3-delegate">3. 委托</span>}>
+        通过将账户委托给 TEE 中的验证器来强制执行隐私： 
+        <DelegateCode />
+        <DelegationInfo />
+        指定你偏好的委托配置，例如自动提交和特定的 ER 验证器：
+        <Validators />
+
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="4-deploy">4. 部署</span>}>
+        现在你的程序已经升级完成并准备就绪。将其构建并部署到目标集群：
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="5-authorize">5. 授权</span>}>
+        设置与 TEE 中 ER RPC 的交互：
+        1. 通过 `https://pccs.phala.network/tdx/certification/v4` 验证 TEE RPC 的完整性
+        2. 为用户请求授权令牌，以便与 TEE 端点交互
+        <AuthorizeCode />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="6-test">6. 测试</span>}>
+        使用 `authToken` 测试私密支付程序：
+
+        `https://devnet-tee.magicblock.app?token=${token}`
+        1. 初始化用户存款账户（接收方也需要）
+        2. 存入代币
+        3. 为存款设置权限
+        4. 委托存款账户
+        5. 在已委托的存款账户之间私密转账
+        6. 将存款账户取消委托回 Solana
+        7. 提取存款
+
+        <TestCode />
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock 产品
+
+import ProductCards from "/cn/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

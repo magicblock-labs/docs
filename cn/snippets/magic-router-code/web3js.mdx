@@ -1,0 +1,18 @@
+```typescript Web3.js
+import { sendAndConfirmTransaction } from "@solana/web3.js";
+import { ConnectionMagicRouter } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Initialize connection
+const connection = new ConnectionMagicRouter(
+  "https://devnet-router.magicblock.app/",
+  { wsEndpoint: "wss://devnet-router.magicblock.app/" }
+);
+
+// ... create transaction
+
+// Send and confirm transaction
+const txHash = await sendAndConfirmTransaction(connection, tx, [payer], {
+  skipPreflight: true,
+  commitment: "confirmed",
+});
+```

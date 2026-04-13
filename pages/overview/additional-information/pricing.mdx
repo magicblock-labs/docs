@@ -5,50 +5,142 @@ description: "MagicBlock’s pricing is modeled after decentralized cloud infras
 
 import { ERCostSimulator } from "/snippets/components/ERCostSimulator.jsx";
 import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
-
-import QuickAccesER from "/snippets/quick-access-er.mdx";
-import QuickAccessVRF from "/snippets/quick-access-vrf.mdx";
+import ProductCards from "/snippets/product-cards.mdx";
 
 ---
 
-## Ephemeral Rollup (ER) Nodes
+## Product Pricing
+
+<Tabs>
+  <Tab title="Ephemeral Rollup">
 
 **Public nodes** make it simple to start building on MagicBlock with free transactions and zero friction. Fees are only charged when you close a session or commit data back to Solana.
 
-| **Fee type**    | **Amount (SOL)** | **Description**                  |
-| :-------------- | :--------------- | :------------------------------- |
-| **Base fee**    | 0                | Per transaction (Tx)             |
-| **Session fee** | 0.0003           | Per ER session (at undelegation) |
-| **Commit fee**  | 0.0001           | Per commit to Solana             |
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>Fee type</th>
+      <th>Amount (SOL)</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Base fee</td>
+      <td>0</td>
+      <td>Per transaction (Tx)</td>
+    </tr>
+    <tr>
+      <td>Session fee</td>
+      <td>0.0003</td>
+      <td>Per ER session (at undelegation)</td>
+    </tr>
+    <tr>
+      <td>Commit fee</td>
+      <td>0.0001</td>
+      <td>Per commit to Solana</td>
+    </tr>
+  </tbody>
+</table>
 
 **Dedicated nodes** are ideal for enterprises and high-scale teams. They provide maximum reliability, predictable costs, and MEV protection with your own dedicated infrastructure.
-
-For support to **run your own nodes**, reach out to:
-
-📧 [development@magicblock.xyz](mailto:development@magicblock.xyz)
 
 [Learn more about ER →](/pages/ephemeral-rollups-ers/how-to-guide/quickstart)
 
 ### ER Cost Simulator: 30-Days
 
 <ERCostSimulator />
+  </Tab>
 
----
+  <Tab title="Private Ephemeral Rollup">
 
-## Verifiable Randomness Function (VRF)
+Private Ephemeral Rollup supports custom private computation defined by your smart contract.
+
+Custom PER logic uses standard ER pricing. [See Ephemeral Rollup pricing →](#ephemeral-rollup)
+
+  </Tab>
+
+  <Tab title="VRF">
 
 The VRF service provides **provably fair randomness on-chain**. Fees cover proof generation + posting on-chain.
 
-> ⚠️ Note: Costs do not include the transaction to request randomness. On ER transactions are free, on Solana transactions may vary based on your priority fees. 
+> ⚠️ Note: Costs do not include the transaction to request randomness. On ER transactions are free, on Solana transactions may vary based on your priority fees.
 
-| **VRF type**             | **Amount (SOL)** | **Description**        |
-| :----------------------- | :--------------- | :--------------------- |
-| **ER (\<50 ms)**         | Free             | Per randomness request |
-| **Solana (\<500 ms)**    | 0.0008           | Per randomness request |
-| **Solana (1/2 seconds)** | 0.0005           | Per randomness request |
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>VRF type</th>
+      <th>Amount (SOL)</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ER (&lt;50 ms)</td>
+      <td>Free</td>
+      <td>Per randomness request</td>
+    </tr>
+    <tr>
+      <td>Solana (&lt;500 ms)</td>
+      <td>0.0008</td>
+      <td>Per randomness request</td>
+    </tr>
+    <tr>
+      <td>Solana (1/2 seconds)</td>
+      <td>0.0005</td>
+      <td>Per randomness request</td>
+    </tr>
+  </tbody>
+</table>
 
 ### VRF Cost Simulator: 30-Days
 
 <VRFCostSimulator />
 
 [Learn more about VRF →](/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)
+
+  </Tab>
+
+  <Tab title="Private Payments API">
+
+Private Payment API make it simple to send private stablecoin transfers on Solana Mainnet and/or on an a Private ER.
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>Payment type</th>
+      <th>Fixed fee (SOL)</th>
+      <th>Volume fee</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Solana Mainnet</td>
+      <td>0.002</td>
+      <td>0.1%</td>
+    </tr>
+  </tbody>
+</table>
+
+<CardGroup cols={1}>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
+    iconType="duotone"
+  >
+    Explore the Private Payments API endpoints
+  </Card>
+</CardGroup>
+  </Tab>
+</Tabs>
+
+---
+
+## Customer Support
+
+For support to **run your own nodes**, reach out to:
+
+📧 [development@magicblock.xyz](mailto:development@magicblock.xyz)
+
+<ProductCards />

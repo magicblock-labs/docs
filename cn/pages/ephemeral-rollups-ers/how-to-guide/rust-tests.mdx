@@ -1,0 +1,205 @@
+---
+title: "测试你的程序"
+description: "学习如何测试一个简单的 Rust 程序"
+---
+
+import Endpoints from "/cn/snippets/endpoints.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+import SoftwareRust from "/cn/snippets/software-rust.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+
+import TestWeb3jsConnectionCode from "/cn/snippets/rust-counter-code/test-web3js-connection.mdx";
+import TestWeb3jsDelegateCode from "/cn/snippets/rust-counter-code/test-web3js-delegate.mdx";
+import TestWeb3jsCommitCode from "/cn/snippets/rust-counter-code/test-web3js-commit.mdx";
+import TestWeb3jsUndelegateCode from "/cn/snippets/rust-counter-code/test-web3js-undelegate.mdx";
+import TestKitConnectionCode from "/cn/snippets/rust-counter-code/test-kit-connection.mdx";
+import TestKitDelegateCode from "/cn/snippets/rust-counter-code/test-kit-delegate.mdx";
+import TestKitCommitCode from "/cn/snippets/rust-counter-code/test-kit-commit.mdx";
+import TestKitUndelegateCode from "/cn/snippets/rust-counter-code/test-kit-undelegate.mdx";
+import DelegationInfo from "/cn/snippets/delegation-info.mdx";
+
+---
+
+### 快速入口
+
+如果你想直接进入代码：
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
+    iconType="duotone"
+  >
+    Rust Counter 的测试
+  </Card>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/pinocchio-counter/tests"
+    iconType="duotone"
+  >
+    Pinocchio Counter 的测试
+  </Card>
+  <Card
+    title="Guide"
+    icon="computer"
+    href="/cn/pages/ephemeral-rollups-ers/how-to-guide/local-development"
+    iconType="duotone"
+  >
+    本地开发
+  </Card>
+</CardGroup>
+
+---
+
+## 分步指南
+
+构建能够调用程序中 delegation 和 undelegation instruction 的有效交易。
+该项目的完整测试可以在 [Typescript 测试脚本](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests) 中找到。
+
+<Steps>
+  <Step
+    title={<a href="#1-connection">导入 SDK 并初始化 Connection</a>}
+  >
+    设置 connection 和账户
+  </Step>
+  <Step title={<a href="#2-delegate">在 Base Layer 上 Delegate PDA</a>}>
+    测试在 Base Layer 上委托状态账户的 CPI hook
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-commit">在 ER 上 Commit PDA</a>}>
+    测试在 ER 上提交状态账户的 CPI hook
+  </Step>
+  <Step title={<a href="#4-undelegate">在 ER 上 Undelegate PDA</a>}>
+    测试在 ER 上取消委托状态账户的 CPI hook
+  </Step>
+</Steps>
+
+---
+
+## Counter 示例
+
+<SoftwareRust />
+
+<div id="code-snippets" />
+### 代码片段
+
+<Tabs>
+  <Tab title="1. Connection">
+    ### 导入 SDK 并创建 Connection
+
+    导入相关库 `@magicblock-labs/ephemeral-rollups-sdk` 或 `@magicblock-labs/ephemeral-rollups-kit`。在测试和发送交易之前先初始化 connection。
+
+    <CodeGroup>
+      ```bash kit
+      yarn add @magicblock-labs/ephemeral-rollups-kit@latest
+      ```
+      ```bash web3.js
+      yarn add @magicblock-labs/ephemeral-rollups-sdk@latest
+      ```
+    </CodeGroup>
+
+    <Endpoints />
+    <CodeGroup>
+      <TestKitConnectionCode />
+
+      <TestWeb3jsConnectionCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title="2. Delegate">
+    ### 测试 `delegation` 交易
+
+    创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `delegation` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 Base Layer（Solana）网络。
+
+    <Card
+      title="交易（Base Layer）：Delegate"
+      icon="magnifying-glass"
+      href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+      iconType="duotone"
+    >
+      在 Solana Explorer 中查看交易详情
+    </Card>
+
+    <CodeGroup>
+      <TestKitDelegateCode />
+      <TestWeb3jsDelegateCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="3. Commit">
+    ### 测试 `commit` 交易
+
+    创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `commit` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 ER 网络。
+
+    <CardGroup cols={2}>
+      <Card
+        title="交易（ER）：Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+      <Card
+        title="交易（Base layer）：Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitCommitCode />
+      <TestWeb3jsCommitCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="4. Undelegate">
+    ### 测试 `undelegation` 交易
+
+    创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `undelegation` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 ER 网络。
+
+    <CardGroup cols={2}>
+      <Card
+        title="交易（ER）：Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+      <Card
+        title="交易（Base layer）：Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitUndelegateCode />
+      <TestWeb3jsUndelegateCode />
+    </CodeGroup>
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

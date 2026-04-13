@@ -1,0 +1,54 @@
+---
+title: "实现"
+description: "推导 Pyth Lazer 价格源账户并解码其字节数据"
+---
+
+## 推导价格源账户
+
+我们使用以下 seeds 推导价格账户的 PDA：
+
+- **"price feed"**（buffer）
+- **"pyth-lazer"**（buffer）
+- **feedID**（buffer）: 你想要的资产。支持的 feed 列表可在[这里](https://github.com/magicblock-labs/real-time-pricing-oracle/blob/main/pyth_lazer_list.json)查看。
+- **price program id**: `PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd`
+
+```ts
+// seeds: ["price_feed", "pyth-lazer", feed_id_as_string]
+function deriveFeedAddress (feedId: string) {
+  const [addr] = web3.PublicKey.findProgramAddressSync(
+  [Buffer.from('price_feed'), Buffer.from('pyth-lazer'), Buffer.from(feedId)],
+  PROGRAM ID
+  );
+  return addr
+}
+```
+
+## 解析账户
+
+链上账户会存储一个头部以及价格数据字段。我们读取原始字节并进行解码。
+
+- **Price offset**: 从起始位置算起 73 个字节
+- **Type**: 有符号 64 位整数（`i64`）
+- **Apply exponent**: 使用账户中的 exponent 对原始价格进行缩放
+
+```ts
+const addr = deriveFeedAddress(feed.id);
+const PRICE_OFFSET = 73;
+
+const dv = new DataView(ai.data.buffer, ai.data.byteOffset, ai.data.byteLength);
+const raw = dv.getBigUint64(PRICE_OFFSET, true);
+const price = Number(raw) * Math.pow(10, feed.exponent);
+```
+
+<CardGroup cols={3}>
+  <Card title="在线演示" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
+    实时价格流
+  </Card>
+  <Card title="实现方式" icon="book" href="/cn/pages/tools/oracle/implementation" iconType="duotone">
+    了解如何在链上访问我们的预言机
+  </Card>
+  <Card title="代码示例" icon="code" href="https://github.com/magicblock-labs/real-time-pricing-oracle
+" iconType="duotone">
+    查看我们的 Github 仓库
+  </Card>
+</CardGroup>

@@ -1,0 +1,272 @@
+---
+title: "Anchor の例"
+description: "Solana 上でカウンターを増やすシンプルな Anchor プログラムの書き方を学ぶ"
+---
+
+import Endpoints from "/jp/snippets/endpoints.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Anchor Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+このガイドでは、カウンターを増やすシンプルな Anchor プログラムを書く手順を説明します。さらに、そのプログラムを Solana にデプロイし、React クライアントから操作する方法も学べます。
+
+## ソフトウェアパッケージ
+
+このプログラムは以下のソフトウェアパッケージで開発・テストされています。他のソフトウェアでも互換性がある可能性があります。
+
+| ソフトウェア | バージョン | インストールガイド |
+| ---------- | ------- | --------------------------------------------------------------- |
+| **Solana** | 2.1.21  | [Solana をインストール](https://docs.anza.xyz/cli/install)             |
+| **Rust**   | 1.82.0  | [Rust をインストール](https://www.rust-lang.org/tools/install)         |
+| **Anchor** | 0.31.1  | [Anchor をインストール](https://www.anchor-lang.com/docs/installation) |
+
+## ソースコードへのクイックアクセス
+
+すぐにコードを見たい場合はこちらです。
+
+<CardGroup cols={2}>
+  <Card
+    title="ソースコード: Anchor Counter Program"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="ソースコード: React Client"
+    icon="react"
+    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
+
+## Anchor プログラムを書く
+
+このカウンタープログラムの主要な構成要素を見ていきましょう。
+
+## コア機能
+
+このプログラムは主に 2 つの instruction を実装しています。
+
+1. `initialize`: カウンターを 0 に設定する
+2. `increment`: カウンターを 1 増やす
+
+以下がプログラムの基本構造です。
+
+```rust
+#[ephemeral]
+#[program]
+pub mod anchor_counter {
+    use super::*;
+
+    /// Initialize the counter.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        Ok(())
+    }
+
+    /// Increment the counter.
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+
+    // ... Additional instructions will be added here
+}
+```
+
+ここに特別なことはなく、単純にカウンターを増やす Anchor プログラムです。違いは、delegation program とやり取りするための便利なロジックを注入する `delegate` macro を追加している点だけです。
+
+### Counter PDA の委任
+
+counter PDA を委任し、Ephemeral Rollup セッション内で writable にするためには、内部で `delegate_account` 関数を呼び出す instruction を追加する必要があります。`delegate_account` は delegation program に CPI を行い、検証が通るとそのアカウントの所有権を得ます。
+このステップの後、ephemeral validator は counter PDA 上でトランザクションを処理し、delegation program を通じて状態差分を提案できるようになります。
+
+<Card
+  title="トランザクション（Base Layer）: Delegate"
+  icon="magnifying-glass"
+  href="https://solscan.io/tx/5tyEk8gkdP88xe8GL7X12f9WGZfYZtmDbuXozvqkpea4rphXPiNp91vAzmSjsyUR399wimBYazEszKSH35sidPRH?cluster=devnet"
+  iconType="duotone"
+>
+  Solana Explorer でトランザクション詳細を見る
+</Card>
+```rust
+/// Add delegate function to the context
+#[delegate]
+#[derive(Accounts)]
+pub struct DelegateInput<'info> {
+    pub payer: Signer<'info>,
+    /// CHECK The pda to delegate
+    #[account(mut, del)]
+    pub pda: AccountInfo<'info>,
+}
+````
+
+```rust
+/// Delegate the account to the delegation program
+/// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
+pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    ctx.accounts.delegate_pda(
+        &ctx.accounts.payer,
+        &[TEST_PDA_SEED],
+        DelegateConfig {
+            commit_frequency_ms: 30_000,
+            validator: Some(pubkey!("MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57")), // Asia ER, please set based on ER validator.
+        }
+    )?;
+    Ok(())
+}
+```
+
+### PDA が委任中のままコミットする
+
+ephemeral runtime では、PDA が委任されたままでもその状態をコミットできます。これは `commit_accounts` 関数を呼び出して行います。
+
+<CardGroup cols={2}>
+  <Card
+    title="トランザクション（ER）: Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/335F5UcgAW3P8wSaVoEPiBoxeykw9wR1kcJLWUnd9sHmxymCgGvLtxaGDy6ZKDgJw2ku9jtRqwVNY85DuAHvs9GT?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を見る
+  </Card>
+  <Card
+    title="トランザクション（Base layer）: Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/3xzMGbj2fwFCnGp6r7wyMv5LExmL6SXaEbt52DmxA3Wx1LyksuXpPJS4AAPtqoSeJe3aF7oY3jFNiEhBQKwhzRGN?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を見る
+  </Card>
+</CardGroup>
+```rust
+/// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    commit_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+````
+
+### PDA の委任解除
+
+PDA の委任解除は、ある instruction の一部として `commit_and_undelegate_accounts` を呼ぶことで行います。
+undelegation は最新の状態をコミットし、PDA の所有権を owner program に戻します。
+
+<CardGroup cols={2}>
+  <Card
+    title="トランザクション（ER）: Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/3MN6Avygk3FwsuQPoKHzpLo9kBBommHwRHTdgxBooDwsaNHgSYr1yaDXYEe63Eii5DCVbtaK89Yyrhy3dSGhHmvw?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を見る
+  </Card>
+  <Card
+    title="トランザクション（Base layer）: Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/2YwzNQh632bJu8TSP9GPsXmh7o78KgMMM9QPNbdaAzamtjGZfmT4o7bkG2PtpCWp7aJmmxpxTXr4Qo36k5EjgPab?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を見る
+  </Card>
+</CardGroup>
+
+```rust
+/// Undelegate the account from the delegation program
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.counter.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+## React クライアントを接続する
+
+React クライアントは Anchor プログラムとやり取りするためのシンプルなインターフェースです。
+プログラムとのやり取りには Anchor bindings を、Ephemeral Rollup セッションとのやり取りには MagicBlock SDK を使います。
+
+{" "}
+
+<Card
+  title="ソースコード: React Client"
+  icon="react"
+  href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+  iconType="duotone"
+></Card>
+
+<iframe
+  src="https://main--ephemeral-counter.netlify.app/"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+<Warning>
+  iframe は一部のウォレット（例: Backpack）でのみ動作します。代わりに、
+  デプロイ済みデモはこちらから試せます: https://main--ephemeral-counter.netlify.app/
+</Warning>
+
+### Ephemeral エンドポイント設定
+
+Ephemeral Rollup セッションとやり取りするには、適切なエンドポイントを設定する必要があります。
+
+- devnet では以下の ephemeral エンドポイントを使います。
+
+  https://devnet.magicblock.app
+
+- mainnet については、適切なエンドポイントを受け取るため MagicBlock チームにお問い合わせください。
+- <a href="/jp/pages/get-started/how-integrate-your-program/local-setup">localhost</a> の場合は、適切な環境変数で ephemeral validator をローカルにインストールして実行してください。
+
+開発環境または本番環境に応じて、クライアント設定で正しいエンドポイントを使うようにしてください。
+
+<Endpoints />
+
+<CardGroup cols={2}>
+  <Card
+    title="ソースコード: Anchor Counter Program"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="ソースコード: React Client"
+    icon="react"
+    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    iconType="duotone"
+  ></Card>
+</CardGroup>

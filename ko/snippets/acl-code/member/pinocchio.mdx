@@ -1,0 +1,34 @@
+```rust
+use ephemeral_rollups_pinocchio::types::{Member, MemberFlags};
+use pinocchio::Address;
+
+// Create and set flags using individual methods
+let mut flags = MemberFlags::new();
+flags.set(MemberFlags::AUTHORITY);
+flags.set(MemberFlags::TX_LOGS);
+flags.set(MemberFlags::TX_BALANCES);
+
+// Create a member with flags
+let member = Member {
+    flags,
+    pubkey: user_address,
+};
+
+// Remove a flag
+flags.remove(MemberFlags::TX_LOGS);
+
+// Create flags from individual boolean values
+let flags = MemberFlags::from_acl_flags(
+    true,  // authority
+    true,  // tx_logs
+    false, // tx_balances
+    true,  // tx_message
+    false, // account_signatures
+);
+
+// Convert flags to byte value
+let flag_byte = flags.to_acl_flag_byte();
+
+// Create flags from byte value
+let flags = MemberFlags::from_acl_flag_byte(flag_byte);
+```

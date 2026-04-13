@@ -1,0 +1,43 @@
+---
+title: "ローカルバリデータ設定"
+description: "完全ローカルな Ephemeral Rollup スタック、Surfpool、またはローカル VRF オラクルを使って Native Rust や Anchor のプログラムを実行・テストします。"
+---
+
+import LocalSetupOptions from "/jp/snippets/local-setup-options.mdx";
+
+## なぜローカルセットアップを使うのか？
+
+Solana プログラムの delegation やリアルタイム挙動をテストする際には、**素早いフィードバックループ** が重要です。
+
+**ローカル Ephemeral Rollup Validator** を動かすことで、次のことが可能になります。
+
+- ネットワーク遅延やレート制限なしで delegation や挙動を素早く確認
+- Solana runtime の取引をローカルでシミュレート
+- 自分の用途に合わせて validator 構成を調整
+
+---
+
+## クイックスタート: ローカル Ephemeral Validator
+
+Anchor と Native Rust の delegation およびテストスクリプトを確認できます。
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="/jp/pages/get-started/how-integrate-your-program/anchor"
+    iconType="duotone"
+  >
+    Anchor プログラムと統合する
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="/jp/pages/get-started/how-integrate-your-program/rust"
+    iconType="duotone"
+  >
+    Native Rust プログラムと統合する
+  </Card>
+</CardGroup>
+
+<LocalSetupOptions />

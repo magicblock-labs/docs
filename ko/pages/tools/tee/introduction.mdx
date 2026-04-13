@@ -1,0 +1,88 @@
+### MagicBlock Private Ephemeral Rollup(PER)
+
+MagicBlock은 고성능의 범용 Trusted Execution Environments(TEE)를 Solana에 도입하고 있습니다. 우리는 이를 Private Ephemeral Rollup(PER)이라고 부릅니다.
+
+Intel Trust Domain Extension(TDX) 아키텍처의 보안 보장과 MagicBlock의 Ephemeral Rollup(ER) 기술을 결합함으로써, Solana의 composability와 속도를 유지하면서도 민감한 로직을 하드웨어로 보호되는 환경 안에서 실행할 수 있게 했습니다.
+
+이제 개발자는 처음으로 다음 특성을 동시에 갖는 애플리케이션을 설계할 수 있습니다.
+
+- **기밀성**: state가 모든 비인가 주체로부터 보호됩니다
+- **확장성**: 높은 처리량과 낮은 지연으로 블록을 실행할 수 있는 ER 내부에서 동작합니다
+- **조합 가능성**: 다른 Solana programs와 여전히 상호운용할 수 있습니다
+- **규정 준수**: 세밀한 접근 제어 레이어 덕분에 compliance를 쉽게 적용할 수 있습니다
+
+이를 통해 confidential transfers, sealed-bid auctions, secure identity flows 같은 Solana 활용 사례가 가능해집니다.
+
+### Trusted Execution Environments
+
+Trusted execution environment는 CPU 내부의 금고처럼 동작합니다. 일반적으로 프로그램(예: validator)을 실행하면 운영체제가 코드, 상태, 메모리 등 모든 것을 보고 영향을 줄 수 있습니다. TEE는 실행 중인 기계 자신조차 간섭할 수 없도록 하드웨어로 보호된 공간을 만듭니다.
+
+우리는 TEE를 사용해 Ephemeral Rollup의 상태를 보호합니다. 일반적으로 온체인에서 스마트 컨트랙트를 실행하면 호출된 program, accounts, 그리고 결과적인 상태 변화까지 모든 단계가 보입니다. TEE를 사용하면 programs가 ER state를 선택적으로 숨길 수 있습니다.
+
+- 모든 account는 Solana와 마찬가지로 기본적으로 공개됩니다
+- Programs는 자신의 accounts에 대한 접근 규칙을 명시적으로 정의할 수 있습니다
+
+즉, 원할 경우 transfers, program calls, interactions를 공개적으로 브로드캐스트하지 않아도 됩니다.
+
+### 왜 TEE인가
+
+블록체인에는 여러 가지 프라이버시 보존 접근 방식이 있으며, 각각 다른 트레이드오프를 가집니다.
+
+| 방식 | 무엇인가 | 장점 | 단점 |
+| ------------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| Trusted Execution Environments | CPU 내부의 하드웨어 보호 실행 환경 | 네이티브에 가까운 성능, 일반 코드 실행 가능 | 벤더 하드웨어에 대한 신뢰 필요 |
+| Fully Homomorphic Encryption | 암호화된 데이터 위에서 직접 계산 | 데이터를 복호화하지 않음 | 매우 느림, 특수한 도구 필요, 어려운 키 관리, 버그와 취약점 |
+| Zero Knowledge Proofs | 입력을 공개하지 않고 무언가를 증명 | 검증 효율적, identity/compliance/correctness에 강함 | 증명 생성이 무겁고 버그 및 취약점 존재 |
+| Multi-party Computation | 여러 참여자에게 비밀을 분산해 공동 계산 | 강한 암호학적 보장 | 조정 오버헤드, 높은 지연, 특수한 도구, 버그와 취약점 |
+
+- **ZK**: 검증은 효율적이지만, 범용 저지연 계산에는 최적화되어 있지 않습니다
+- **MPC**: 신뢰를 분산하지만, 더 높은 지연과 조정 비용이 필요합니다
+- **FHE**: 이론적으로는 강력하지만, 아직 일반적인 사용에는 준비되지 않았습니다
+- **TEE**: Solana에서 실용적인 기밀성, 실시간 성능, 익숙한 개발자 UX를 제공합니다
+
+### 가능해지는 애플리케이션
+
+- **Confidential Transfers**: 잔액이나 상대방을 노출하지 않고 자산을 비공개로 이동합니다
+- **Sealed-Bid Auctions**: 정산 시점까지 입찰을 숨겨 공정한 가격 발견을 돕습니다
+- **Private Games**: 상태가 공개되면 게임성이 훼손되는 게임을 지원합니다
+- **Enterprise and Compliance Flows**: 데이터를 비공개로 유지하면서 블록체인 보장을 갖춘 민감한 작업을 수행합니다
+- **Identity-Based Access**: 불필요한 account 이력을 공개하지 않고 그룹 소속을 검증합니다
+
+import PerEndpoint from "/ko/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+<CardGroup cols={2}>
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/ko/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    권한 그룹과 접근 제어
+  </Card>
+  <Card
+    title="Program Implementation"
+    icon="code"
+    href="/ko/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    CPI를 통해 권한 추가
+  </Card>
+  <Card
+    title="Client Implementation"
+    icon="browser"
+    href="/ko/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    증명, 챌린지, 접근
+  </Card>
+  <Card
+    title="Privacy Use Case"
+    icon="shield-check"
+    href="/ko/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    비공개이면서 검증 가능한 애플리케이션 구축
+  </Card>
+</CardGroup>

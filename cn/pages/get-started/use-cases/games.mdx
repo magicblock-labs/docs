@@ -1,0 +1,126 @@
+---
+title: 游戏
+description: "开启实时链上游戏的新时代"
+---
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="https://github.com/GabrielePicco/notes/raw/refs/heads/main/demo-day.mov"
+  controls
+></video>
+
+#### 🔴 游戏面临的问题
+
+- **缺乏真正所有权**：游戏资产由公司控制。
+- **停服风险**：服务器下线后，玩家进度可能丢失。
+- **封闭生态**：游戏经济之间无法互操作。
+
+#### ⛓️ 当前区块链的限制
+
+- **游戏体验缓慢**：高延迟阻碍了实时交互。
+- **Gas 成本高**：频繁的游戏内操作会带来高昂交易费用。
+- **开发工具有限**：区块链开发复杂度高。
+
+#### ⚡ MagicBlock 的解决方案
+
+- **真正的数字所有权**：玩家可不受限制地拥有并交易资产。
+- **实时游戏体验**：即时且高效的交易让交互更加顺畅。
+- **可组合的世界**：任何人都能扩展游戏逻辑与经济系统。
+
+## 示例：MagicBlock Labs - Generals
+
+### 概要
+
+为了让你从全局视角理解使用 MagicBlock 所涉及的各个环节，我们提供了一个由 MagicBlock Engine 加速的完整真实游戏示例。
+
+<img width="100%" src="/images/magicblock_generals_moves.gif" />
+<CardGroup cols={2}>
+  <Card
+    title="源代码：MagicBlock Labs - Generals"
+    icon="github"
+    href="https://github.com/magicblock-labs/solana-generals"
+    iconType="duotone"
+  >
+    进一步了解如何使用 MagicBlock 构建并集成游戏！
+  </Card>
+  <Card
+    title="Bolt"
+    icon="bolt"
+    href="/cn/pages/tools/bolt/introduction"
+    iconType="duotone"
+  >
+    使用 BOLT 简化链上游戏开发
+  </Card>
+  <Card
+    title="更多工具"
+    icon="code"
+    href="/cn/pages/tools/introduction"
+    iconType="duotone"
+  >
+    借助 BOLT、Solana Unity SDK、SOAR、Session Keys 等工具简化工作流
+  </Card>
+</CardGroup>
+
+### 架构
+
+使用 MagicBlock 构建时，主要会涉及以下几个组成部分：
+
+- **Solana**：也就是 `mainnet-beta` 或 `devnet` 的 Solana 公链 RPC
+
+  - 智能合约会部署并从这里获取
+  - 游戏的最终状态与部分状态会在这里结算
+
+- **Ephemeral Rollups**：也就是 MagicBlock 验证器 RPC
+
+  - 游戏交易会在这里执行
+  - 这部分已由 MagicBlock 与节点运营者部署完成，你可以直接使用
+
+- **后端**：也就是游戏智能合约的源代码
+
+  - 在这个示例中，智能合约使用 BOLT 框架编写
+  - 这些智能合约随后会部署到常规的 Solana 链上
+  - 源代码见：[HERE](https://github.com/magicblock-labs/solana-generals/tree/main/backend)
+
+- **前端**：也就是游戏的用户界面
+  - UI 会同时从链上和 ephemeral 层读取状态
+  - UI 也会同时向链上和 ephemeral 层发送交易
+  - 源代码见：[HERE](https://github.com/magicblock-labs/solana-generals/tree/main/frontend)
+
+### 关键流程
+
+浏览代码库将有助于理解搭建 ephemeral 游戏的高层逻辑。
+
+### 当用户创建新游戏时
+
+当用户打开 “Create” 页面时，我们会执行创建新游戏的流程：[HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameCreate.ts)
+
+1. 我们首先像普通 Solana 智能合约一样，在链上创建一个新账户
+2. 然后把这个新账户委托给我们的 ephemeral 验证器
+3. 之后我们就可以把所有游戏交易直接发送到 ephemeral 的 RPC
+   1. 生成地图（通过发送到 ephemeral RPC 的交易）
+   2. 等待玩家加入
+   3. 当所有玩家加入后开始游戏
+
+#### 当玩家加入游戏时
+
+当用户打开主页时，我们会从链上获取现有游戏列表：[HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameList.ts)
+
+1. 当用户进入游戏页面时，我们开始监听 ephemeral 层中的游戏状态：[HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
+2. 每当游戏在 ephemeral 层中的状态发生变化时，我们都会更新 UI 来显示地图，页面逻辑代码见：[HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
+3. 当用户在地图上执行移动时，我们会直接将指令交易发送到 ephemeral 层：[HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
+4. 这会更新 ephemeral 层中的游戏状态，立即通知所有玩家并刷新 UI
+
+### 总结
+
+使用 MagicBlock 开发游戏，与在 Solana 上开发游戏非常相似。
+
+唯一的区别在于委托流程：
+
+- 当你在 Solana 上完成账户设置后，可以将这些账户 `delegate`，使其可在 MagicBlock Engine 中使用
+- 一旦账户完成委托，就可以把所有涉及这些账户的交易发送到 Ephemeral Rollups
+- 在 Ephemeral 会话中运行的这些交易是实时的，并且可以免费
+- 当游戏会话结束后，你可以将需要重新在 Solana 上使用的账户 `undelegate`

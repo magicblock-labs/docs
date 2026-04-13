@@ -1,0 +1,36 @@
+```typescript Web3.js
+import {
+  Member,
+  createCreatePermissionInstruction,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Define members
+let members: Member[] | null = [
+  {
+    flags: AUTHORITY_FLAG | TX_LOGS_FLAG,
+    pubkey: payer.publicKey,
+  },
+  {
+    flags: TX_LOGS_FLAG,
+    pubkey: user2.publicKey,
+  },
+];
+
+// Build the instruction
+const createPermissionIx = createCreatePermissionInstruction(
+  {
+    permissionedAccount: permissionedAccount.publicKey,
+    payer: payer.publicKey,
+  },
+  {
+    members,
+  }
+);
+
+// Create a transaction
+const tx = new Transaction().add(createPermissionIx);
+
+// Send the transaction
+const txSig = await sendAndConfirmTransaction(connection, tx, [payer]);
+console.log("TX:", txSig);
+```

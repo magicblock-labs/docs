@@ -1,0 +1,28 @@
+---
+title: "技术细节"
+description: "MagicBlock 如何集成可验证随机性"
+---
+
+有关运行时概览，请参阅 [Ephemeral Rollup 文档](/cn/pages/get-started/introduction/ephemeral-rollup)。
+
+MagicBlock 通过 `ephemeral_vrf_sdk` 将随机性作为一等原语提供。Rollup 程序会使用 `caller_seed` 和类似 `consume_randomness` 的回调来调用 `create_request_randomness_ix`（即 `RequestRandomness` 指令）。随后，EphemeralVrf 网络中的某个预言机会执行 `ProvideRandomness` 指令来返回结果。
+
+随机数通过构建在 Curve25519 Ristretto 群之上的 VRF 生成，并使用 RFC&nbsp;9381 所描述的类 Schnorr 签名进行证明。证明和输出会通过来自 MagicBlock VRF signer PDA 的签名回调返回给 rollup。你的程序会先验证调用方，然后再在游戏逻辑中使用该随机性。
+
+`random_u32`、`random_u8_with_range` 和 `random_bool` 等辅助工具可以轻松将 `[u8; 32]` 输出转换为可用值。由于请求和消费步骤都发生在临时执行窗口内，用户可以获得具备可验证公平性的实时结果，而无需依赖外部服务器。
+
+## 流程
+
+<img class="w-full h-auto max-w-5xl" src="/images/vrf-flow.png" />
+
+流程从“请求随机性”开始。
+
+1. 你的程序会通过 CPI 调用 MagicBlock VRF 程序，并将请求追加到队列中。
+2. 当随机性请求进入队列后，某个预言机会取出该请求并执行随机性计算。
+3. 完成后，它会将结果和证明返回给 MagicBlock VRF 程序。
+4. 在验证证明后，VRF 程序会回调你的程序中预先定义的函数来“消费”随机性。
+
+<Note>
+  EphemeralVrf 代码库仍在积极开发中，尚未经过审计。
+  在集成到生产 rollup 之前，请务必充分测试。
+</Note>

@@ -1,0 +1,27 @@
+```typescript Web3.js
+// Create assign instruction
+const assignInstruction = SystemProgram.assign({
+  accountPubkey: userPubkey,
+  programId: DELEGATION_PROGRAM_ID,
+});
+
+// Create delegate instruction
+const delegateInstruction = createDelegateInstruction({
+  payer: feePayerKeypair.publicKey,
+  delegatedAccount: userPubkey,
+  ownerProgram: ownerProgram,
+  validator: validator,
+});
+
+// Create and send transaction (fee payer need to sign, on-curve account cannot be signer since delegated)
+const tx = new Transaction().add(assignInstruction, delegateInstruction);
+tx.feePayer = feePayerKeypair.publicKey;
+const txSignature = await sendAndConfirmTransaction(
+  connectionBaseLayer,
+  tx,
+  [userKeypair, feePayerKeypair],
+  {
+    skipPreflight: true,
+  }
+);
+```

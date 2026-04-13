@@ -1,0 +1,81 @@
+---
+title: "게임을 xNFT로 게시하기"
+---
+
+## xNFT용으로 게임 빌드하기
+
+이제 별도 단계 없이 게임을 WebGL로 바로 빌드할 수 있습니다. 최신 버전의 SDK만 사용하고 있으면 됩니다.
+
+다음 단계에서 xNFT를 게시할 때 URL이 필요하므로, 먼저 일반 WebGL 게임처럼 배포해 두세요.
+
+<Card title="One build to rule them all" icon="lightbulb" iconType="duotone">
+  WebGL 게임은 브라우저와 Backpack 내부에서 모두 동작하므로 플랫폼마다 별도 버전을 빌드하고 호스팅할 필요가 없습니다.
+</Card>
+
+<Card
+  title="Github Pages에 게임 호스팅하기"
+  icon="lightbulb"
+  iconType="duotone"
+>
+  [이 가이드](/Build/SolanaUnitySDK/guides/host-your-game)를 따라 게임을 WebGL로 빌드하고 Github Pages에 호스팅하세요
+</Card>
+
+### (선택 사항) xNFT WebGL 템플릿 사용하기
+
+xNFT로 게임을 더 쉽게 배포할 수 있도록 맞춤형 WebGL 템플릿도 제공됩니다. 필수는 아니지만 화면 크기에 완전히 반응하고 브라우저와 xNFT 앱 양쪽에서 보기 좋게 동작하므로 권장합니다.
+
+xNFT WebGL 템플릿을 사용하려면 다음 단계를 따르세요.
+
+- [Build Settings](https://docs.unity3d.com/Manual/BuildSettings.html) 창을 열고 아직 WebGL 플랫폼으로 바꾸지 않았다면 변경합니다.
+  - 플랫폼으로 WebGL을 선택합니다
+  - **Switch Platform** 버튼을 눌러 변경 사항을 적용합니다
+    ![](/images/switch_platform.png)
+
+Unity 프로젝트가 WebGL 플랫폼으로 설정되면 SDK가 `/Assets/WebGLTemplate` 폴더에 `xNFT`라는 새 WebGL 템플릿을 자동으로 가져옵니다.
+
+![](/images/xnft_webgl_template_imported.png)
+
+- Build Settings에서 **Player Settings** 창을 열고 xNFT 템플릿을 선택합니다.
+
+  ![](/images/select_xnft_template.png)
+
+이제 게임을 빌드하고 일반 WebGL 게임처럼 호스팅할 수 있습니다.
+
+## 게임을 xNFT로 게시하기
+
+아직 Backpack 계정이 없다면 먼저 준비하세요. Backpack은 [여기](https://www.backpack.app/downloads)에서 다운로드할 수 있습니다.
+게임을 웹 서버에 호스팅하고 Backpack 계정도 준비했다면, [https://www.xnft.gg/publish](https://www.xnft.gg/publish)에서 mainnet-beta에 xNFT를 배포하거나 [https://devnet.xnft.gg/publish](https://devnet.xnft.gg/publish)에서 devnet에 배포할 수 있습니다.
+
+Backpack 지갑을 연결한 뒤 다음 단계를 따르세요.
+
+- 기본 [xnft.json](https://github.com/coral-xyz/xnft-quickstart/blob/master/xnft.json) 설정 파일을 복사합니다
+- `"entrypoints"` -> `"default"` -> `"web"` 값을 게임 URL로 수정합니다
+- `xnft.json`을 수정해 `"tag": "game"` 줄을 추가하고, `Assets` 폴더에 앱 아이콘과 스크린샷을 넣습니다
+- `xnft.json` 파일과 `Assets` 폴더를 함께 zip으로 묶습니다
+- [xnft.gg/publish](https://www.xnft.gg/publish)로 이동합니다
+- 압축된 Manifest를 드롭하고 민팅합니다
+
+  ![](/images/drop_manifest.png)
+
+  축하합니다. 게임을 xNFT로 게시했습니다.
+
+## 영상 데모
+
+아래는 게임을 빌드하고 브라우저와 Backpack 내부의 xNFT 앱으로 테스트하는 과정을 보여주는 짧은 데모입니다.
+
+<div style={{ position: "relative", paddingBottom: "62.5%", height: 0 }}>
+  <iframe
+    src="https://www.youtube.com/embed/J4W3vzal5_I"
+    frameBorder={0}
+    webkitallowfullscreen
+    mozallowfullscreen
+    allowFullScreen
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+  />
+</div>

@@ -1,0 +1,230 @@
+---
+title: "Solana 程序"
+description: "学习如何编写一个在 Solana 上委托并递增计数器的简单 Rust 程序"
+---
+
+import Endpoints from "/cn/snippets/endpoints.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+import SoftwareRust from "/cn/snippets/software-rust.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+
+import DelegateCode from "/cn/snippets/rust-counter-code/delegate.mdx";
+import CommitCode from "/cn/snippets/rust-counter-code/commit.mdx";
+import UndelegateCode from "/cn/snippets/rust-counter-code/undelegate.mdx";
+import InstructionsCode from "/cn/snippets/rust-counter-code/instructions.mdx";
+import ResizeCode from "/cn/snippets/rust-counter-code/resize.mdx";
+import OncurveDelegation from "/cn/snippets/oncurve-delegation.mdx";
+
+import UndelegationCallbackNote from "/cn/snippets/notes/undelegation-callback-note.mdx";
+
+import QuickAccesERRust from "/cn/snippets/quick-access-er-rust.mdx";
+
+---
+
+<QuickAccesERRust />
+
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/b77bwSGDHK0?si=Oknc5f8CuC17WBnV&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Rust Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## 分步指南
+
+构建你的程序，并通过 MagicBlock 的 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 加入 delegation hooks 完成升级：
+
+<Steps>
+  <Step
+    title={
+      <a href="#1-write-program">
+        编写程序并添加 delegation instructions
+      </a>
+    }
+  >
+    按照你平常的方式编写 Solana 程序。
+  </Step>
+  <Step title={<a href="#2-delegate">在 Base Layer 上 Delegate PDA</a>}>
+    添加 CPI hooks，使状态账户能够在 Ephemeral Rollup 会话中完成 delegate、commit 和 undelegate。
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-commit">在 ER 上 Commit PDA</a>}>
+    使用 Solana CLI 将程序直接部署到 Solana 上。
+  </Step>
+  <Step title={<a href="#4-undelegate">在 ER 上 Undelegate PDA</a>}>
+    在链上和链下发送无需修改且符合 SVM RPC 规范的交易。
+  </Step>
+</Steps>
+
+---
+
+## Counter 示例
+
+<SoftwareRust />
+
+<div id="code-snippets" />
+### 代码片段
+
+<Tabs>
+  <Tab title="1. Write Program">
+
+    该程序实现了两个主要 instruction：
+
+    1. `InitializeCounter`：初始化并将计数器设为 0（在 Base Layer 调用）
+    2. `IncreaseCounter`：将已初始化的计数器增加 X（可在 Base Layer 或 ER 调用）
+
+    该程序还为计数器的委托与取消委托实现了专用 instruction：
+
+    1. `Delegate`：将计数器从 Base Layer 委托到 ER（在 Base Layer 调用）
+    2. `CommitAndUndelegate`：安排将计数器从 ER 同步回 Base Layer，并在 ER 上取消委托（在 ER 调用）
+    3. `Commit`：安排将计数器从 ER 同步回 Base Layer（在 ER 调用）
+    4. `Undelegate`：在 Base Layer 上取消委托计数器（通过 validator CPI 在 Base Layer 调用）
+    <UndelegationCallbackNote />
+
+    下面是程序的核心结构：
+
+    {" "}
+    <InstructionsCode />
+    <Note>
+      你的 "Undelegate" instruction 必须使用完全一致的 discriminator。它不会
+      由你主动调用，而是由 Base Layer 上的 validator 在 ER 中完成账户
+      undelegate 后，通过 CPI 回调进入你的程序。
+    </Note>
+
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="2. Delegate">
+    ### 委托 Counter PDA
+
+    为了委托 counter PDA，并使其在 Ephemeral Rollup 会话中可写，我们需要添加一个 instruction，
+    其内部会调用 `delegate_account` 函数。`delegate_account` 会通过 CPI 调用 delegation program，
+    在验证通过后 delegation program 将获得该账户的所有权。
+    完成这一步后，ephemeral validator 就可以开始在 counter PDA 上处理交易，并通过 delegation program 提交状态差异。
+
+    <Card
+      title="交易（Base Layer）：Delegate"
+      icon="magnifying-glass"
+      href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+      iconType="duotone"
+    >
+      在 Solana Explorer 中查看交易详情
+    </Card>
+
+    <DelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="3. Commit">
+    ### 在 PDA 已委托时进行提交
+
+    ephemeral runtime 允许在 PDA 已委托时提交其状态。这通过调用 `commit_accounts` 函数来完成。
+
+    <CardGroup cols={2}>
+      <Card
+        title="交易（ER）：Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+      <Card
+        title="交易（Base layer）：Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+    </CardGroup>
+
+    <CommitCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="4. Undelegate">
+    ### 取消委托 PDA
+
+    取消委托 PDA 是通过在某个 instruction 中调用 `commit_and_undelegate_accounts` 来完成的。
+    undelegation 会提交最新状态，并将 PDA 的所有权归还给 owner program。完成 undelegation 和状态最终确认后，validator 会在 Base Layer 上触发一个对 `"undelegate"` 的 CPI 回调。
+    <UndelegationCallbackNote />
+    <CardGroup cols={2}>
+      <Card
+        title="交易（ER）：Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+      <Card
+        title="交易（Base layer）：Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+        iconType="duotone"
+      >
+        在 Solana Explorer 中查看交易详情
+      </Card>
+    </CardGroup>
+
+    <UndelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+</Tabs>
+
+---
+
+<div id="advanced-code-snippets" />
+### 进阶代码片段
+
+<Tabs>
+  <Tab title="Resize PDA">
+    当调整已委托 PDA 的大小时：
+    - PDA 必须有足够的 lamports，才能在新账户大小下继续保持 rent-exempt。
+    - 如果需要额外 lamports，则 **payer account 也必须已委托**，以补足差额。
+    - PDA 必须由程序持有，且交易中必须包含转移 lamports 所需的 signer。
+    - 使用 `system_instruction::allocate`
+
+    <ResizeCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="On-Curve Delegation">
+
+    <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

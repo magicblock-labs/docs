@@ -1,0 +1,28 @@
+---
+title: "创建 Component"
+description: " "
+---
+
+Components 是纯数据结构（class 或 struct），用于保存 entity 某一特定方面的数据。它们不包含逻辑或方法。例如，一个 “Position” component 可以包含 x、y、z 坐标。
+
+使用以下命令创建一个 Position component：
+
+```bash
+bolt component position
+```
+
+这会在你的 workspace 中新增一个 component：
+
+```rust
+use bolt_lang::*;
+
+declare_id!("Fn1JzzEdyb55fsyduWS94mYHizGhJZuhvjX6DVvrmGbQ");
+
+#[component]
+#[derive(Copy)]
+pub struct Position {
+    pub x: i64,
+    pub y: i64,
+    pub z: i64,
+}
+```

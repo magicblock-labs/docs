@@ -1,0 +1,28 @@
+```typescript Kit
+// "Commit" transaction
+
+const accounts = [
+  { address: userPubkey, role: AccountRole.WRITABLE_SIGNER },
+  { address: counterPda, role: AccountRole.WRITABLE },
+  { address: address(MAGIC_PROGRAM_ID.toString()), role: AccountRole.READONLY },
+  { address: address(MAGIC_CONTEXT_ID.toString()), role: AccountRole.WRITABLE },
+];
+const serializedInstructionData = Buffer.from(CounterInstruction.Commit, "hex");
+const commitIx: Instruction = {
+  accounts,
+  programAddress: PROGRAM_ID,
+  data: serializedInstructionData,
+};
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(userPubkey, tx),
+  (tx) => appendTransactionMessageInstructions([commitIx], tx)
+);
+
+// Send and confirm transaction on ER
+const txHash = await ephemeralConnection.sendAndConfirmTransaction(
+  transactionMessage,
+  [userKeypair],
+  { commitment: "confirmed", skipPreflight: true }
+);
+```

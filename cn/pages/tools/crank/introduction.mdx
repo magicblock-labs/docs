@@ -1,0 +1,59 @@
+---
+title: "介绍"
+description: "按时间自动执行链上指令"
+---
+
+## 什么是 Cranks？
+
+Cranks（计划任务）能够让链上指令按照预定时间**自动执行**，无需用户手动参与。在传统区块链系统中，每个操作都需要用户签名并提交交易，这限制了自动化能力。
+
+借助 MagicBlock 的 Ephemeral Rollups，你可以安排任务按固定间隔自动执行，为 Solana 程序带来强大的自动化能力。
+
+## 核心优势
+
+- **自动执行**：程序可以按预定间隔执行指令，无需用户交互
+- **成本效率**：减少对链下 cron 任务或监控服务的依赖
+- **去中心化**：执行发生在链上，保留无需信任的保障
+- **可靠性**：计划任务会在区块链共识机制内可靠执行
+
+## 使用场景
+
+- **周期性状态更新**：更新价格、清理过期数据或刷新游戏状态
+- **自动化工作流**：定期付款、归属计划或订阅续费
+- **游戏机制**：周期性奖励、限时活动或自动推进游戏进程
+- **DeFi 操作**：投资组合再平衡、清算检查或收益复投
+
+<CardGroup cols={2}>
+  <Card
+    title="实现方式"
+    icon="code"
+    href="/cn/pages/tools/crank/implementation"
+    iconType="duotone"
+  >
+    了解如何在程序中实现 crank
+  </Card>
+  <Card
+    title="代码示例"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/crank-counter"
+    iconType="duotone"
+  >
+    查看我们的 GitHub 仓库
+  </Card>
+</CardGroup>
+
+## 工作原理
+
+Cranks 依托 MagicBlock 的 Ephemeral Rollups 提供计划执行能力：
+
+1. 在 Solana 基础层上**初始化**程序状态
+2. 将账户**委托**给 Ephemeral Rollup，以获得更快执行
+3. **安排**一个会自动执行指令的 crank 任务
+4. 在指定间隔内自动**执行**
+5. 完成后将账户**取消委托**回 Solana 基础层
+
+调度通过对 MagicBlock 调度程序的 Cross-Program Invocation（CPI）完成，由它负责实际的执行时机和可靠性。
+
+<Callout type="info">
+  Crank 在 Ephemeral Rollup 的共识机制内执行，从而保证可靠且无需信任。更详细的实现步骤请参阅<a href="/cn/pages/tools/crank/implementation">实现方式</a>指南。
+</Callout>

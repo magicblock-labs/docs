@@ -1,0 +1,89 @@
+---
+title: "설정"
+description: "원하는 지갑을 설정하는 방법을 알아보세요"
+---
+
+원하는 지갑을 설정하는 방법을 알아보세요
+
+이 SDK는 다음과 같은 다양한 지갑을 지원합니다.
+
+| Wallet                   | Support | Type     |
+| ------------------------ | ------- | -------- |
+| In-game (new or restore) | ✅      | In-app   |
+| In-game (Web3auth)       | ✅      | In-app   |
+| Wallet Adapter           | ✅      | External |
+| Mobile Wallet Adapter    | ✅      | External |
+| Seed Vault               | 🏗       | In-app   |
+
+## 인터페이스
+
+`IWalletBase` 는 공통 [인터페이스](https://github.com/garbles-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/IWalletBase.cs)를 정의합니다.
+
+추상 클래스 WalletBase는 `IWalletBase` 인터페이스를 구현하며, 모든 지갑 어댑터에서 공통으로 사용하는 편의 메서드를 제공합니다.
+
+예시는 다음과 같습니다.
+
+- Mainnet/Devnet/Testnet 또는 custom RPC에 연결
+- Login / logout
+- Account 생성
+- 잔액 조회
+- token accounts 조회
+- transactions 서명 / 부분 서명
+- transactions 전송
+
+## 로그인 예시
+
+씬 안의 아무 게임 오브젝트에 [Web3.cs](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/Web3.cs) 스크립트
+（../Runtime/Codebase/Web3.cs）를 붙인 다음 `Web3.Instance.LoginWalletAdapter();` 를 호출할 수 있습니다.
+
+![](/images/Web3.png)
+
+<Card title="추가 메서드" icon="lightbulb" iconType="duotone">
+  전체 메서드 목록은
+  [여기](https://github.com/garbles-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/WalletBase.cs)에서 확인할 수 있습니다
+</Card>
+
+## Wallet Adapter
+
+[Wallet Adapter](https://solana-mobile.github.io/mobile-wallet-adapter/spec/spec.html) 표준을 따르는 지갑을 설정하려면 [SolanaWalletAdapterWebGL](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/SolanaWalletAdapterWebGL.cs) 지갑 구현을 사용하세요.
+
+```csharp
+WalletBase wallet = new SolanaWalletAdapterWebGL(walletAdapterOptions, RpcCluster.DevNet, ...);
+```
+
+## SMS
+
+Solana Mobile Stack은 지갑과 앱을 위한 라이브러리 모음으로, 개발자가 Solana 네트워크에서 풍부한 모바일 경험을 만들 수 있게 해줍니다.
+SMS에 대한 자세한 내용은 공식 [문서](https://solanamobile.com/developers)를 참고하세요.
+
+## Mobile Wallet Adapter
+
+Mobile Wallet Adapter 표준을 따르는 지갑을 설정하려면 [SolanaMobileWalletAdapter](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/SolanaMobileWalletAdapter.cs) 지갑 구현을 사용하세요.
+
+```csharp
+WalletBase wallet = new SolanaMobileWalletAdapter(solanaMobileWalletOptions, RpcCluster.DevNet, ...);
+```
+
+## Deeplink 설정
+
+일부 지갑(예: Phantom)은 현재 DeepLinks를 사용해 구현되어 있습니다. Deep link는 앱 안의 특정 콘텐츠나 기능으로 연결되는 URL입니다. Solana 트랜잭션 맥락에서는 사용자가 자신의 Solana 지갑으로 트랜잭션을 승인해 서명할 수 있도록 하는 데 활용할 수 있습니다.
+
+### Android 애플리케이션에서 deep linking 활성화
+
+Android 애플리케이션에서 deep linking을 활성화하려면 [intent filter](https://developer.android.com/guide/components/intents-filters)를 사용하세요. intent filter는 표준 Android App [Manifest](https://docs.unity3d.com/Manual/android-manifest.html)를 확장해 [Activity](https://developer.android.com/reference/android/app/Activity)를 위한 특정 intent filter 섹션을 포함하게 합니다.
+
+지갑 intent filter를 설정하려면 다음 단계를 따르세요.
+
+1. Project window에서 `Assets > Plugins > Android` 로 이동합니다.
+2. `AndroidManifest.xml` 이라는 새 파일을 만듭니다. Unity는 애플리케이션을 빌드할 때 이 파일을 자동으로 처리합니다.
+3. 이 [코드 샘플](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Samples~/Solana%20Wallet/Plugins/Android/AndroidManifest.xml)을 새 파일에 복사한 뒤 저장합니다。
+
+_`android:scheme="unitydl"` 는 지갑 설정에서 정의한 값과 일치해야 합니다_
+
+자세한 설명은 Unity [문서 페이지](https://docs.unity3d.com/Manual/deep-linking-android.html)를 참고하세요.
+
+### iOS 애플리케이션에서 deep linking 활성화
+
+자세한 설명은 Unity [문서 페이지](https://docs.unity3d.com/Manual/deep-linking-android.html)를 참고하세요.
+
+_정의한 schema는 지갑 설정에서 정의한 값과 일치해야 합니다_

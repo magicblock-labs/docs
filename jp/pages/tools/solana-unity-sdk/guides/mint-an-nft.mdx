@@ -1,0 +1,99 @@
+---
+title: "NFT をミントする"
+description: "NFT をミントするには、[Token Metadata](https://docs.metaplex.com/programs/token-metadata/) プログラムとやり取りします。全体像については metaplex の[ドキュメント](https://docs.metaplex.com/)を参照してください。"
+---
+
+まず、ミントしたい NFT 用の新しい mint アカウントと、それを保有するための関連トークンアカウントを作成します。
+
+```csharp
+var mint = new Account();
+var associatedTokenAccount = AssociatedTokenAccountProgram
+    .DeriveAssociatedTokenAccount(Web3.Account, mint.PublicKey);
+```
+
+次に、NFT のメタデータを定義します。
+
+```csharp
+var metadata = new Metadata()
+{
+    name = "Test",
+    symbol = "TST",
+    uri = "https://y5fi7acw5f5r4gu6ixcsnxs6bhceujz4ijihcebjly3zv3lcoqkq.arweave.net/x0qPgFbpex4ankXFJt5eCcRKJzxCUHEQKV43mu1idBU",
+    sellerFeeBasisPoints = 0,
+    creators = new List<Creator> { new(Web3.Account.PublicKey, 100, true)}
+};
+```
+
+これでトランザクションを構築できます。内容は次の 6 つの命令です。
+
+- Mint アカウントの作成
+- Mint アカウントの初期化
+- Associated Token Account の作成
+- NFT のミント
+- Metadata アカウントの作成
+- Master Edition の作成
+
+```csharp
+var transaction = new TransactionBuilder()
+    .SetRecentBlockHash(blockHash)
+    .SetFeePayer(Web3.Account)
+    .AddInstruction(
+        SystemProgram.CreateAccount(
+            Web3.Account,
+            mint.PublicKey,
+            minimumRent.Result,
+            TokenProgram.MintAccountDataSize,
+            TokenProgram.ProgramIdKey))
+    .AddInstruction(
+        TokenProgram.InitializeMint(
+            mint.PublicKey,
+            0,
+            Web3.Account,
+            Web3.Account))
+    .AddInstruction(
+        AssociatedTokenAccountProgram.CreateAssociatedTokenAccount(
+            Web3.Account,
+            Web3.Account,
+            mint.PublicKey))
+    .AddInstruction(
+        TokenProgram.MintTo(
+            mint.PublicKey,
+            associatedTokenAccount,
+            1,
+            Web3.Account))
+    .AddInstruction(MetadataProgram.CreateMetadataAccount(
+        PDALookup.FindMetadataPDA(mint),
+        mint.PublicKey,
+        Web3.Account,
+        Web3.Account,
+        Web3.Account.PublicKey,
+        metadata,
+        TokenStandard.NonFungible,
+        true,
+        true,
+        null,
+        metadataVersion: MetadataVersion.V3))
+    .AddInstruction(MetadataProgram.CreateMasterEdition(
+        maxSupply: null,
+        masterEditionKey: PDALookup.FindMasterEditionPDA(mint),
+        mintKey: mint,
+        updateAuthorityKey: Web3.Account,
+        mintAuthority: Web3.Account,
+        payer: Web3.Account,
+        metadataKey: PDALookup.FindMetadataPDA(mint),
+        version: CreateMasterEditionVersion.V3
+    )
+);
+```
+
+最後に、トランザクションに署名して送信します。
+
+```csharp
+var tx = Transaction.Deserialize(transaction.Build(new List<Account> {Web3.Account, mint}));
+var res = await Web3.Wallet.SignAndSendTransaction(tx);
+Debug.Log(res.Result);
+```
+
+コンソールにはトランザクション署名が表示されます。エクスプローラーで確認すると、この[トランザクション](https://explorer.solana.com/tx/TPSviDzpzTFEyfJkYwmQzqaPJTTsGMZTuPuG9q1LiKrhZnwg5WWHH7ARR8eYAdoB8rt8qcjKwqbcZj43b84Ls5C?cluster=devnet)のような内容になります。
+
+mint アドレスもエクスプローラーで確認でき、この [NFT](https://explorer.solana.com/address/4X199VtLKVJUeLMXzwXzSsFgapVQcrYx9vnqxNDkH2Xa?cluster=devnet) のように表示されます。

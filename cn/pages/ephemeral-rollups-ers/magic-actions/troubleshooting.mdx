@@ -1,0 +1,72 @@
+---
+title: 故障排查
+description: 诊断 Magic Actions 的常见问题
+---
+
+### Handler 未执行
+
+- 验证 `instruction discriminator`
+- 分配足够的 `compute_units`
+
+### 反序列化错误
+
+- 在 action 上下文中，对已提交账户使用 `UncheckedAccount`
+- 对借用数据通过 `try_deserialize` 手动反序列化
+- 检查账户 discriminator 是否与预期类型匹配
+
+### 交易失败
+
+- 确保所有 action 账户都列在 `ShortAccountMeta` 中
+- 让 `is_writable` 标志与实际使用方式一致
+- 为提交中的所有 action 提高计算预算
+
+### 限制与注意事项
+
+- Handlers 在基础层执行，并消耗基础层费用
+- 适用标准 Solana 限制（计算、账户锁）
+- 原子性：任一 action 失败都会回滚此次提交
+- 前两个 action 账户会被自动注入（`escrow`、`escrow_auth`）
+
+### 有用链接
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollups"
+    icon="bolt"
+    href="/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    委托、提交与取消委托
+  </Card>
+
+{" "}
+
+<Card
+  title="Magic Router"
+  icon="route"
+  href="/cn/pages/ephemeral-rollups-ers/introduction/magic-router"
+  iconType="duotone"
+>
+  Router 概览与流程
+</Card>
+
+{" "}
+
+<Card
+  title="Magic Actions Example"
+  icon="code"
+  href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+  iconType="duotone"
+>
+  在 GitHub 上查看参考实现
+</Card>
+
+  <Card
+    title="Community Support"
+    icon="telegram"
+    href="https://t.me/+78KHQkUsy0ViMzQ6"
+    iconType="duotone"
+  >
+    与团队和社区交流
+  </Card>
+</CardGroup>

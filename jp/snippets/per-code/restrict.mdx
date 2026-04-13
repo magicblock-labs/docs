@@ -1,0 +1,64 @@
+```rust
+#[program]
+pub mod private_payments {
+
+    /// Creates a permission for a deposit account using the external permission program.
+    /// Calls out to the permission program to create a permission for the deposit account.
+    pub fn create_permission(ctx: Context<CreatePermission>) -> Result<()> {
+        let CreatePermission {
+            payer,
+            permission,
+            permission_program,
+            deposit,
+            user,
+            system_program,
+        } = ctx.accounts;
+
+        // Whitelist programs allowed to use the permission account
+        // The owner program is added by default to prevent bricking the account
+        let members = vec![
+            Member { pubkey: user.key(), flags: AUTHORITY_FLAG }, // The user can directly modify the permission
+            // Example: Member { pubkey: crate::id(), flags: 0 },
+        ];
+        CreatePermissionCpiBuilder::new(&permission_program)
+            .permission(&permission)
+            .permissioned_account(&deposit.to_account_info())
+            .payer(&payer)
+            .system_program(system_program)
+            .args(MembersArgs {
+                members: Some(members),
+            })
+            .invoke_signed(&[&[
+                DEPOSIT_PDA_SEED,
+                user.key().as_ref(),
+                deposit.token_mint.as_ref(),
+                &[ctx.bumps.deposit],
+            ]])?;
+
+        Ok(())
+    }
+
+    /// ... other instructions
+}
+
+#[derive(Accounts)]
+pub struct CreatePermission<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Anyone can create the permission
+    pub user: UncheckedAccount<'info>,
+    #[account(
+        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), deposit.token_mint.as_ref()],
+        bump
+    )]
+    pub deposit: Account<'info, Deposit>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    pub permission_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+/// Other context and accounts ...
+```

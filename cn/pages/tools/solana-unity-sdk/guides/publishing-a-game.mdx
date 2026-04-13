@@ -1,0 +1,81 @@
+---
+title: "将你的游戏发布为 xNFT"
+---
+
+## 为 xNFT 编译游戏
+
+现在你可以直接将游戏编译为 WebGL，无需额外步骤。只要确保使用的是最新版本的 SDK 即可。
+
+先像普通 WebGL 游戏一样部署你的游戏，因为下一步发布 xNFT 时需要使用这个 URL。
+
+<Card title="One build to rule them all" icon="lightbulb" iconType="duotone">
+  你的 WebGL 游戏既可以在浏览器中运行，也可以在 Backpack 内运行，无需为每个平台单独构建和托管一个版本。
+</Card>
+
+<Card
+  title="将游戏托管到 Github Pages"
+  icon="lightbulb"
+  iconType="duotone"
+>
+  按照[这份指南](/Build/SolanaUnitySDK/guides/host-your-game)将游戏编译为 WebGL，并把构建结果托管到 Github Pages
+</Card>
+
+### （可选）使用 xNFT WebGL 模板
+
+我们还提供了一个定制的 WebGL 模板，便于将你的游戏部署为 xNFT。虽然不是必需的，但推荐使用，因为它能让游戏完全适配屏幕尺寸，并在浏览器和 xNFT 应用中都保持良好显示效果。
+
+要使用 xNFT WebGL 模板，请按照以下步骤操作：
+
+- 打开 [Build Settings](https://docs.unity3d.com/Manual/BuildSettings.html) 窗口，如果尚未切换到 WebGL 平台：
+  - 选择 WebGL 作为平台
+  - 点击 **Switch Platform** 按钮以应用更改
+    ![](/images/switch_platform.png)
+
+当 Unity 项目设置为 WebGL 平台后，SDK 会自动将一个名为 xNFT 的新 WebGL 模板导入到 `/Assets/WebGLTemplate` 文件夹中：
+
+![](/images/xnft_webgl_template_imported.png)
+
+- 在 Build Settings 中打开 **Player Settings** 窗口，并选择 xNFT 模板。
+
+  ![](/images/select_xnft_template.png)
+
+现在你就可以构建游戏，并像普通 WebGL 游戏一样进行托管。
+
+## 将你的游戏发布为 xNFT
+
+如果你还没有 Backpack 账户，请先注册一个。你可以在[这里](https://www.backpack.app/downloads)下载 Backpack。
+当你的游戏已经托管在 Web 服务器上，并且你拥有 Backpack 账户后，就可以前往 [https://www.xnft.gg/publish](https://www.xnft.gg/publish) 在 mainnet-beta 发布 xNFT，或者前往 [https://devnet.xnft.gg/publish](https://devnet.xnft.gg/publish) 在 devnet 发布。
+
+连接你的 Backpack 钱包，然后按以下步骤操作：
+
+- 复制这个基础的 [xnft.json](https://github.com/coral-xyz/xnft-quickstart/blob/master/xnft.json) 配置文件
+- 编辑 `"entrypoints"` -> `"default"` -> `"web"`，将其指向你的游戏 URL
+- 编辑 `xnft.json`（添加一行 `"tag": "game"`），并在 `Assets` 文件夹中加入应用图标和截图
+- 将 `xnft.json` 文件和 `Assets` 文件夹一起打包成 zip
+- 前往 [xnft.gg/publish](https://www.xnft.gg/publish)
+- 上传压缩后的 Manifest 并完成铸造
+
+  ![](/images/drop_manifest.png)
+
+  恭喜，你已经成功将游戏发布为 xNFT！
+
+## 视频演示
+
+下面是一个简短演示，展示如何构建游戏，并分别在浏览器和 Backpack 内作为 xNFT 应用进行测试。
+
+<div style={{ position: "relative", paddingBottom: "62.5%", height: 0 }}>
+  <iframe
+    src="https://www.youtube.com/embed/J4W3vzal5_I"
+    frameBorder={0}
+    webkitallowfullscreen
+    mozallowfullscreen
+    allowFullScreen
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+  />
+</div>

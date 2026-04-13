@@ -1,0 +1,36 @@
+---
+title: "Hello Bolt"
+description: "プロジェクトの足場作成"
+---
+
+新しいプロジェクトを初期化するには、次のコマンドを実行するだけです。
+
+```bash
+bolt init <my_project>
+```
+
+これで新しい bolt workspace が作成され、すぐにその中で作業を始められます。フォルダ内の主なファイルは次のとおりです。
+
+- `.anchor` フォルダ: 最新のプログラムログと、テスト用のローカル ledger が含まれます
+- `app` フォルダ: monorepo を使う場合にフロントエンドを置ける空フォルダです
+- `programs` フォルダ: あなたの programs が入るフォルダです。複数入れられますが、初期状態では `<my_project>` と同名の program が 1 つだけ含まれています。この program にはすでにサンプルコード入りの `lib.rs` が含まれています。
+- `tests` フォルダ: E2E テストを置くフォルダです。`programs/<my_project>` のサンプルコードをテストするファイルがすでに含まれています。
+- `migrations` フォルダ: program の deploy や migration 用スクリプトを保存できます
+- `Anchor.toml` ファイル: workspace 全体の program 設定を行うファイルです。初期状態では次の内容が設定されています。
+  - localnet 上の program アドレス（`[programs.localnet]`）
+  - program を push できる registry（`[registry]`）
+  - テストで利用する provider（`[provider]`）
+  - Anchor が実行するスクリプト（`[scripts]`）。`anchor test` を実行すると test script が走り、`anchor run <my_script>` で独自スクリプトも実行できます。
+
+次のコマンドでサンプルのユニットテストを実行できます。
+
+```bash
+bolt test
+```
+
+このコマンドは、新しい World instance を登録し、entity を作成し、component をアタッチし、その上で system を実行します。テストスクリプトは `tests` フォルダ内に参考として含まれています。
+
+## Anchor について
+
+Bolt は Anchor の上に構築されており、Anchor のすべてのコマンドをサポートした上で、いくつかの拡張も加えています。
+Anchor コマンドの完全な一覧は [Anchor ドキュメント](https://www.anchor-lang.com/) を参照してください。

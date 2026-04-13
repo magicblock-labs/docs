@@ -1,0 +1,22 @@
+---
+title: "介绍"
+description: "什么是 Session Keys？"
+---
+
+Session Keys 是一种临时密钥，支持细粒度的指令范围控制，用于在你的 Solana 程序中实现分层访问。
+
+Session keys 在改善用户体验方面是一次巨大飞跃，因为它们消除了用户在游戏内购买或链上交互时反复弹出钱包的需求。过期时间与访问权限保存在合约层，因此可以更好地抵御潜在安全漏洞。Session Keys 的参数可以包括持续时间、最大花费代币数量、交易次数，或任何适合你使用场景的功能限制。
+
+你还可以提供分层安全模型，让 session key 只拥有分级访问权限，从而确保用户资产始终安全，且不会被 session keys 任意访问。
+这种分层安全模式在 web2 应用中非常常见，能够提供更强的防御能力并帮助保护用户资产安全。现在借助合约层的 Session Keys，这种模式也可以在 web3 中实现。
+
+#### Session Keys 的示例用例
+
+- 为链上游戏提供不中断的游戏体验
+- 提供流畅的应用内 NFT 购买体验
+- 为你的游戏或 dApp 提供分层安全模型
+
+<Card title="程序" icon="lightbulb" iconType="duotone" color="#ca8b04">
+  最初的 Session key 程序由 *[Gum](https://gum.fun/)* 开发。
+  新部署的程序地址是 `KeyspM2ssCJbqUhQ4k7sveSiY4WjnYsrXkC8oDbwde5`
+</Card>

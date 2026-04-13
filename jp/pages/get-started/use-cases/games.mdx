@@ -1,0 +1,126 @@
+---
+title: ゲーム
+description: "リアルタイムオンチェーンゲームの新時代を切り開く"
+---
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="https://github.com/GabrielePicco/notes/raw/refs/heads/main/demo-day.mov"
+  controls
+></video>
+
+#### 🔴 ゲームの課題
+
+- **真の所有権の欠如**：ゲーム資産は企業に管理されています。
+- **サービス終了リスク**：サーバーが停止すると、プレイヤーは進行状況を失います。
+- **閉じたエコシステム**：ゲーム経済同士に相互運用性がありません。
+
+#### ⛓️ 現在のブロックチェーンの制約
+
+- **遅いゲームプレイ**：高レイテンシによりリアルタイムな操作ができません。
+- **高いガスコスト**：頻繁なゲーム内操作に対して取引手数料が高すぎます。
+- **開発ツールの不足**：ブロックチェーン開発は複雑です。
+
+#### ⚡ MagicBlock の解決策
+
+- **真のデジタル所有権**：プレイヤーは資産を自由に所有し、取引できます。
+- **リアルタイムなゲームプレイ**：即時でガス効率の高い取引が滑らかな体験を実現します。
+- **コンポーザブルな世界**：ゲームロジックと経済は誰でも拡張できます。
+
+## 例: MagicBlock Labs - Generals
+
+### 概要
+
+MagicBlock を使う際に関わる要素全体を俯瞰できるように、MagicBlock Engine によって加速された実際のフルゲームの例を紹介します。
+
+<img width="100%" src="/images/magicblock_generals_moves.gif" />
+<CardGroup cols={2}>
+  <Card
+    title="ソースコード: MagicBlock Labs - Generals"
+    icon="github"
+    href="https://github.com/magicblock-labs/solana-generals"
+    iconType="duotone"
+  >
+    MagicBlock を使ったゲームの構築と統合について詳しく見る
+  </Card>
+  <Card
+    title="Bolt"
+    icon="bolt"
+    href="/jp/pages/tools/bolt/introduction"
+    iconType="duotone"
+  >
+    BOLT でオンチェーンゲーム開発を簡素化
+  </Card>
+  <Card
+    title="その他のツール"
+    icon="code"
+    href="/jp/pages/tools/introduction"
+    iconType="duotone"
+  >
+    BOLT、Solana Unity SDK、SOAR、Session Keys などでワークフローを効率化
+  </Card>
+</CardGroup>
+
+### アーキテクチャ
+
+MagicBlock で構築する際には、主に次の要素が関わります。
+
+- **Solana**：`mainnet-beta` または `devnet` の Solana パブリックチェーン RPC
+
+  - スマートコントラクトはここにデプロイされ、ここから取得されます
+  - ゲームの最終状態および部分状態はここに確定されます
+
+- **Ephemeral Rollups**：MagicBlock バリデータ RPC
+
+  - ゲームのトランザクションはここで実行されます
+  - これは MagicBlock とノードオペレーターによってすでにデプロイ済みです
+
+- **バックエンド**：ゲームのスマートコントラクトのソースコード
+
+  - この例では、スマートコントラクトは BOLT フレームワークで書かれています
+  - それらのスマートコントラクトは通常の Solana チェーンにデプロイされます
+  - ソースコードはこちら: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/backend)
+
+- **フロントエンド**：ゲームのユーザーインターフェース
+  - UI はチェーンとエフェメラルの両方から状態を取得します
+  - UI はチェーンとエフェメラルの両方にトランザクションを送信します
+  - ソースコードはこちら: [HERE](https://github.com/magicblock-labs/solana-generals/tree/main/frontend)
+
+### 重要なプロセス
+
+コードベースを見ることで、エフェメラルゲームを構成する高レベルなロジックを理解しやすくなります。
+
+### ユーザーが新しいゲームを作成するとき
+
+ユーザーが「Create」ページを開くと、新しいゲームを作成する処理が走ります: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameCreate.ts)
+
+1. まず通常の Solana スマートコントラクトのように、新しいアカウントをオンチェーンで作成します
+2. 次に、その新しいアカウントをエフェメラルバリデータへ委任します
+3. 以後はゲームのトランザクションをエフェメラル RPC に直接送れます
+   1. マップを生成する
+   2. プレイヤーの参加を待つ
+   3. 全員が参加したらゲームを開始する
+
+#### プレイヤーがゲームに参加するとき
+
+ユーザーがメインページを開くと、チェーン上から既存ゲームの一覧を取得します: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameList.ts)
+
+1. ユーザーがゲームページに入ると、エフェメラル内のゲーム状態の監視を開始します: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameListen.ts)
+2. エフェメラル内でゲーム状態が変わるたびに UI を更新してマップを表示します。ページロジックはこちら: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/components/page/PagePlay.tsx)
+3. ユーザーがマップ上で行動すると、そのコマンドトランザクションをエフェメラルへ直接送信します: [HERE](https://github.com/magicblock-labs/solana-generals/blob/main/frontend/src/states/gameSystemCommand.ts)
+4. これによりエフェメラル内のゲーム状態が更新され、全プレイヤーへ即時通知され UI もすぐ更新されます
+
+### まとめ
+
+MagicBlock を使ったゲーム開発は、Solana 上でのゲーム開発と非常によく似ています。
+
+違いは委任プロセスだけです。
+
+- Solana 上でアカウントを準備したら、それらを `delegate` して MagicBlock Engine 内で使えるようにします
+- アカウントが委任されたら、それらを含むトランザクションを Ephemeral Rollups に送れます
+- エフェメラルセッション内の取引はリアルタイムに実行され、無料になることもあります
+- ゲームセッションが終わったら、再び Solana で使うアカウントを `undelegate` します

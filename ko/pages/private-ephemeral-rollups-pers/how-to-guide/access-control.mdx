@@ -1,0 +1,333 @@
+---
+title: "접근 제어"
+description: "Private Ephemeral Rollups에서 세밀한 접근 제어와 멤버 권한을 관리하는 방법을 알아봅니다."
+---
+
+import CreatePermissionRust from "/ko/snippets/acl-code/permission/rust/create.mdx";
+import UpdatePermissionRust from "/ko/snippets/acl-code/permission/rust/update.mdx";
+import DelegatePermissionRust from "/ko/snippets/acl-code/permission/rust/delegate.mdx";
+import CommitAndUndelegatePermissionRust from "/ko/snippets/acl-code/permission/rust/commit_and_undelegate.mdx";
+import ClosePermissionRust from "/ko/snippets/acl-code/permission/rust/close.mdx";
+
+import CreatePermissionWeb3js from "/ko/snippets/acl-code/permission/web3js/create.mdx";
+import UpdatePermissionWeb3js from "/ko/snippets/acl-code/permission/web3js/update.mdx";
+import DelegatePermissionWeb3js from "/ko/snippets/acl-code/permission/web3js/delegate.mdx";
+import CommitAndUndelegatePermissionWeb3js from "/ko/snippets/acl-code/permission/web3js/commit_and_undelegate.mdx";
+import ClosePermissionWeb3js from "/ko/snippets/acl-code/permission/web3js/close.mdx";
+
+import CreatePermissionKit from "/ko/snippets/acl-code/permission/kit/create.mdx";
+import UpdatePermissionKit from "/ko/snippets/acl-code/permission/kit/update.mdx";
+import DelegatePermissionKit from "/ko/snippets/acl-code/permission/kit/delegate.mdx";
+import CommitAndUndelegatePermissionKit from "/ko/snippets/acl-code/permission/kit/commit_and_undelegate.mdx";
+import ClosePermissionKit from "/ko/snippets/acl-code/permission/kit/close.mdx";
+
+import CreatePermissionPinocchio from "/ko/snippets/acl-code/permission/pinocchio/create.mdx";
+import UpdatePermissionPinocchio from "/ko/snippets/acl-code/permission/pinocchio/update.mdx";
+import DelegatePermissionPinocchio from "/ko/snippets/acl-code/permission/pinocchio/delegate.mdx";
+import CommitAndUndelegatePermissionPinocchio from "/ko/snippets/acl-code/permission/pinocchio/commit_and_undelegate.mdx";
+import ClosePermissionPinocchio from "/ko/snippets/acl-code/permission/pinocchio/close.mdx";
+
+import MemberFlagsRust from "/ko/snippets/acl-code/member/rust.mdx";
+import MemberFlagsWeb3js from "/ko/snippets/acl-code/member/web3js.mdx";
+import MemberFlagsKit from "/ko/snippets/acl-code/member/kit.mdx";
+import MemberFlagsPinocchio from "/ko/snippets/acl-code/member/pinocchio.mdx";
+
+import AuthorizationWeb3js from "/ko/snippets/acl-code/authorization/web3js.mdx";
+import AuthorizationKit from "/ko/snippets/acl-code/authorization/kit.mdx";
+
+import PerCards from "/ko/snippets/per-cards.mdx";
+import AclCards from "/ko/snippets/acl-cards.mdx";
+import PerEndpoint from "/ko/snippets/per-endpoint.mdx";
+import Validators from "/ko/snippets/notes/validators.mdx";
+
+---
+
+<AclCards />
+
+---
+
+## 개요
+
+Private Ephemeral Rollups는 [컴플라이언스](/ko/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)를 핵심에 둔 [Trusted Execution Environment](/ko/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) 안에서 permissioned accounts에 대한 세밀한 권한 제어를 가능하게 하는 [Ephemeral Rollups](/ko/pages/ephemeral-rollups-ers/introduction/why)입니다. 각 permission account는 멤버 목록과 이들이 수행할 수 있는 작업을 결정하는 특정 플래그를 유지합니다.
+
+### 핵심 개념
+
+- **Permission Account**: 특정 계정에 대한 접근 제어 규칙을 저장하는 PDA
+- **Members**: 플래그를 통해 특정 권한이 부여된 주소
+- **Flags**: 멤버가 무엇을 할 수 있는지(authority, 로그 보기, 잔액 보기 등)를 정의하는 비트마스크
+- **Public Permissions**: 멤버가 `None`으로 설정되면 permissioned account가 일시적으로 보이게 됩니다
+
+---
+
+## 멤버 플래그
+
+멤버 플래그는 각 멤버에 대한 세밀한 권한을 정의합니다. 플래그는 비트 OR로 결합해 여러 권한을 동시에 부여할 수 있습니다.
+
+**플래그 설명:**
+
+- **AUTHORITY**: 멤버가 permission 설정을 업데이트하고 위임하며, 다른 멤버를 추가/제거하고 멤버 플래그를 업데이트할 수 있게 합니다.
+- **TX_LOGS**: 멤버가 트랜잭션 실행 로그를 볼 수 있게 합니다.
+- **TX_BALANCES**: 멤버가 계정 잔액 변화를 볼 수 있게 합니다.
+- **TX_MESSAGE**: 멤버가 트랜잭션 메시지 데이터를 볼 수 있게 합니다.
+- **ACCOUNT_SIGNATURES**: 멤버가 계정 서명을 볼 수 있게 합니다
+
+<Tabs>
+  <Tab title="Rust SDK">
+    <MemberFlagsRust />
+  </Tab>
+  <Tab title="Pinocchio">
+    <MemberFlagsPinocchio />
+  </Tab>
+  <Tab title="Web3.js">
+    <MemberFlagsWeb3js />
+  </Tab>
+  <Tab title="Kit">
+    <MemberFlagsKit />
+  </Tab>
+</Tabs>
+---
+
+<div id="permission-lifecycle" />
+## Permission 라이프사이클
+
+permissioned account의 일반적인 라이프사이클은 MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 및 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`과의 상호작용을 필요로 합니다.
+
+<Steps>
+  <Step title={<a href="#1-create">Permission 생성</a>}>
+    초기 멤버와 그 플래그를 포함한 새 permission account를 초기화합니다.
+  </Step>
+  <Step title={<a href="#2-delegate">Permission 위임</a>}>
+    Private Ephemeral Rollup에 permission을 위임해 강제력 있는 실시간 접근 제어를 활성화합니다.
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-update">Permission 업데이트</a>}>
+    필요에 따라 멤버 권한을 추가, 제거, 수정합니다. 업데이트는 Private Ephemeral Rollup에서 실시간으로 수행할 수 있습니다.
+  </Step>
+  <Step title={<a href="#4-request">요청 수행</a>}>
+    요청을 수행하기 전에 TEE RPC 무결성을 검증하고 인가 토큰을 받아야 합니다. 적절한 플래그를 가진 멤버만 계정 상태에 접근하거나 수정할 수 있습니다.
+  </Step>
+  <Step title={<a href="#5-commit-%26-undelegate">커밋 및 위임 해제</a>}>
+    최종 상태를 Solana로 동기화하고 계정을 Base Layer 제어로 되돌립니다.
+  </Step>
+  <Step title={<a href="#6-close">Permission 닫기</a>}>
+    더 이상 필요하지 않으면 permission account를 닫고 lamports를 회수합니다.
+  </Step>
+</Steps>
+
+---
+
+## Permission 작업
+
+<Tabs>
+  <Tab title="1. 생성">
+    프로그램을 만든 뒤 permission 및 delegation 훅을 추가해 계정 접근을 제어할 수 있습니다. 예시는 [빠른 시작](/ko/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart)을 참고하세요.
+    
+    MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`을 통해 초기 멤버와 플래그를 포함한 새 permission account를 생성합니다.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <CreatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CreatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CreatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **사용 사례:**
+
+    - 새로 위임된 계정에 대한 접근 제어 초기화
+    - authority 멤버와 그 권한 설정
+    - 누가 트랜잭션 세부 정보를 볼 수 있는지 정의
+
+
+    [⬆️ 맨 위로](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="2. 위임">
+    MagicBlock의 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`을 통해 permissioned account를 위임해 저지연 Private Ephemeral Rollup 실행을 활성화합니다.
+
+    <Validators />
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <DelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <DelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <DelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <DelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **사용 사례:**
+
+    - permissioned account의 ER 실행 활성화
+    - 상태 변경을 실행할 특정 검증기 지정
+    - 실시간 트랜잭션 처리를 위한 위임 설정
+
+    **중요:**
+
+    - `AUTHORITY_FLAG`에 따라 authority 또는 `permissioned_account` 중 하나가 서명해야 합니다
+    - 검증기는 ER 속도로 트랜잭션을 처리합니다
+    - 커밋 빈도는 상태가 Solana에 얼마나 자주 동기화되는지 결정합니다
+    - **Private Ephemeral Rollup에 위임되는 즉시 permission이 강제됩니다**. 적절한 플래그를 가진 멤버만 계정 상태에 접근하거나 수정할 수 있습니다
+
+    [⬆️ 맨 위로](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="3. 업데이트">
+    MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`을 통해 permission account의 기존 멤버 또는 플래그를 수정합니다.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <UpdatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <UpdatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **사용 사례:**
+
+    - permission group에 새 멤버 추가
+    - 멤버 제거를 통한 권한 철회
+    - 멤버 플래그 변경을 통한 접근 허용/제한
+    - 멤버를 `None`으로 설정해 계정을 일시적으로 공개 상태로 전환
+
+    [⬆️ 맨 위로](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="4. 요청">
+    Private Ephemeral Rollup에 요청할 때는 먼저 인가를 설정해야 합니다:
+
+    <PerEndpoint />
+
+    **인가 단계:**
+
+    1. **TEE RPC 무결성 검증**: TDX quote 및 Intel 발급 attestation certificates를 사용해 TEE RPC 서버가 정품 Intel TDX 하드웨어에서 실행되는지 확인합니다
+    2. **인가 토큰 요청**: challenge message에 서명해 인가 토큰을 받습니다
+    3. **연결 생성**: 인가 토큰을 header 또는 query parameter로 전달합니다
+
+    <Tabs>
+      <Tab title="Kit">
+        <AuthorizationKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <AuthorizationWeb3js />
+      </Tab>
+    </Tabs>
+
+    **계정 가시성:**
+
+    - **기본적으로**: 모든 계정은 투명하며 인가된 모든 사용자가 접근할 수 있습니다
+    - **권한 적용 시**: 계정이 permission system을 통해 보호되면 모든 요청에서 접근 제어 규칙이 강제됩니다
+    - 적절한 플래그를 가진 멤버만 permissioned accounts와 트랜잭션에 접근하거나 수정할 수 있습니다
+
+    **핵심 사항:**
+
+    - 요청은 검증기에서 실시간으로 실행됩니다
+    - 멤버 플래그가 각 사용자가 할 수 있는 작업을 결정합니다
+    - 실행 중에도 권한을 동적으로 업데이트할 수 있습니다
+    - 업데이트는 Private Ephemeral Rollup에 즉시 반영됩니다
+
+    [⬆️ 맨 위로](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="5. 커밋 및 위임 해제">
+    Private Ephemeral Rollup의 최신 permission state는 접근 제어를 강제합니다. permission account를 닫으려면 permission을 Solana로 위임 해제하기 전에 permission members를 먼저 업데이트하세요.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <CommitAndUndelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CommitAndUndelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CommitAndUndelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CommitAndUndelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    [⬆️ 맨 위로](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="6. 닫기">
+    permissioned account를 닫고 Solana에서 lamports를 회수합니다.
+
+    <Tabs>
+      <Tab title="Rust SDK">
+        <ClosePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <ClosePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <ClosePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <ClosePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **사용 사례:**
+
+    - 사용하지 않는 permission accounts 정리
+    - 닫힌 계정에서 SOL 회수
+
+    **중요:**
+
+    - permission은 먼저 Solana로 위임 해제되어야 합니다
+    - 위임된 상태라면 닫기 전에 `commit_and_undelegate`를 호출하세요
+    - lamports는 payer에게 반환됩니다
+
+    [⬆️ 맨 위로](#permission-lifecycle)
+
+  </Tab>
+</Tabs>
+
+---
+
+## 모범 사례
+
+1. **Authority 관리**: 항상 최소 한 명의 신뢰할 수 있는 멤버에게 `AUTHORITY_FLAG`를 부여하세요
+2. **최소 권한 원칙**: 각 멤버에게 필요한 플래그만 부여하세요
+3. **실시간 업데이트**: 위임 해제 없이도 Private Ephemeral Rollup에서 permission을 실시간으로 업데이트해 동적 접근 제어 조정이 가능합니다
+4. **정리**: 사용하지 않는 permission accounts를 위임 해제하고 닫아 SOL을 확보하세요
+
+---
+
+## 보안 고려 사항
+
+- **서명자 검증**: `AUTHORITY_FLAG`를 가진 멤버 또는 permissioned account를 가진 프로그램만 변경을 인가할 수 있습니다
+- **공개 계정**: 멤버를 `None`으로 설정하면 계정이 공개적으로 보이게 됩니다
+- **기본 Authority**: 기본적으로 permissioned account의 소유자가 permission account의 members에 permission authority로 추가됩니다
+- **빈 멤버 목록**: `members` 필드가 빈 목록으로 설정되면 permissioned account는 완전히 제한되고 비공개가 됩니다. permission을 수정할 수 있는 것은 소유자뿐입니다
+- **접근 감사**: 멤버 플래그를 사용해 접근을 감사하고 제어하세요
+
+---
+
+<PerCards />

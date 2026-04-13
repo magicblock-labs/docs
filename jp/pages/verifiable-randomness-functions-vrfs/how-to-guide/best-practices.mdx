@@ -1,0 +1,25 @@
+---
+title: "ベストプラクティス"
+description: "検証可能なランダムネスを統合するためのガイドライン"
+---
+
+ランダムネスを要求するときに、より信頼性の高い結果を得るためのヒントです。
+リクエストがすばやく処理されるよう、`DelegateOracleQueue` 命令で rollup を信頼できる oracle queue に委任してください。
+
+### Seed の選択
+
+- 予測しにくい seed を作るために、user input を server timestamps や game state と組み合わせます。
+- grinding を防ぐため、プレイヤーに `caller_seed` 全体を指定させないでください。
+
+### Callback の検証
+
+- callback が MagicBlock の公式 signer から来たことを確認するため、常に `vrf_program_identity` を確認してください。
+- 元のリクエストパラメータと一致しない callback は拒否してください。
+
+### 状態管理
+
+- retry や予期しない callback を安全に処理できるよう、保留中の request identifiers を保存してください。
+- 結果を正しく照合できるよう、リクエストがどの oracle queue に委任されたかを追跡してください。
+- random outputs は短命に保ち、[rollup logic](/jp/pages/get-started/introduction/ephemeral-rollup) 内ですぐに使い切り、再利用を避けてください。
+
+これらのガイドラインに従うことで、改ざんリスクを減らし、セッション間で一貫したランダムネスを確保できます。

@@ -1,0 +1,145 @@
+---
+title: "빠른 시작"
+description: "MagicBlock의 ER과 Intel TDX 위의 Trusted Execution Environment를 통해 모든 Solana 프로그램 상태 계정에 프라이버시를 적용합니다."
+---
+
+import Endpoints from "/ko/snippets/endpoints.mdx";
+import Validators from "/ko/snippets/notes/validators.mdx";
+import Construction from "/ko/snippets/construction.mdx";
+import Software from "/ko/snippets/software.mdx";
+import SolanaResources from "/ko/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/ko/snippets/per-rps-code/write-program.mdx";
+import DelegateCode from "/ko/snippets/per-rps-code/delegate.mdx";
+import RestrictCode from "/ko/snippets/per-rps-code/restrict.mdx";
+import AuthorizeCode from "/ko/snippets/per-rps-code/authorize.mdx";
+import DelegationInfo from "/ko/snippets/delegation-info.mdx";
+
+import QuickAccessPER from "/ko/snippets/quick-access-per.mdx";
+import PerCards from "/ko/snippets/per-cards.mdx";
+
+---
+
+<QuickAccessPER />
+<Note>
+  MagicBlock의 Private Ephemeral Rollup은 노드 수준 IP 지오펜싱,
+  OFAC 제재 목록, 제한된 관할권을 기준으로 컴플라이언스를 입구에서 강제하며,
+  어떤 트랜잭션도 수락되거나 실행되기 전에 적용합니다.
+  [자세히 보기](/ko/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)
+</Note>
+
+---
+
+<div id="quickstart" />
+## 단계별 가이드
+
+MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 및 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`을 활용하는 권한 및 위임 훅으로 프로그램을 확장하세요.
+
+<Steps>
+  <Step title={<a href="#1-write-program">프로그램 작성</a>}>
+    평소처럼 Solana 프로그램을 작성합니다.
+  </Step>
+  <Step
+    title={
+      <a href="#2-restrict">
+        프로그램의 권한 훅을 통해 제한 추가
+      </a>
+    }
+  >
+    접근 제어를 생성하고 관리하는 권한 훅을 추가합니다. [자세히 보기](/ko/pages/private-ephemeral-rollups-pers/how-to-guide/access-control).
+  </Step>
+  <Step title={<a href="#3-delegate">프로그램에 위임 훅 추가</a>}>
+    권한과 permissioned accounts에 대한 위임 훅을 추가해 제한을 강제합니다.
+    <Validators />
+  </Step>
+  <Step title={<a href="#4-deploy">Solana에 프로그램 배포</a>}>
+    Anchor CLI를 사용해 Solana 프로그램을 배포합니다.
+  </Step>
+  <Step
+    title={<a href="#5-authorize">클라이언트에 인가 구현</a>}
+  >
+    사용자 메시지에 서명해 TEE 엔드포인트에서 인가 토큰을 가져옵니다.
+  </Step>
+  <Step title={<a href="#6-test">트랜잭션 실행 및 프라이버시 테스트</a>}>
+    인가 토큰을 요청하고 기밀 트랜잭션을 전송합니다.
+  </Step>
+</Steps>
+
+---
+
+<div id="rock-paper-scissors-example" />
+## 가위바위보 예제
+
+<Software />
+<Note>
+  최신 Permission Program은
+  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk) SDK 버전을 요구합니다.
+  자세한 내용은 [마이그레이션 가이드](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103)를 참고하세요.
+</Note>
+
+<div id="code-snippets" />
+<div id="code-snippets-section" />
+### 코드 스니펫
+
+<Tabs>
+    <Tab title="1. 프로그램 작성">
+        플레이어가 선택을 하고 결과를 공개하는 간단한 가위바위보 프로그램:
+        <WriteProgramCode />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title="2. 제한 추가">
+        MagicBlock의 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`을 통해 멤버가 포함된 계정 수준 권한을 생성하고 업데이트합니다. [자세히 보기](/ko/pages/private-ephemeral-rollups-pers/how-to-guide/access-control):
+        <RestrictCode />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title="3. 위임">
+        MagicBlock의 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`을 통해 TEE 검증기에 위임하여 계정의 프라이버시를 강제합니다. `permission`과 `permissioned_account` 모두 위임되어야 합니다.
+        <Validators />
+        <DelegateCode />
+
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title="4. 배포">
+        이제 프로그램 업그레이드가 완료되었습니다. 원하는 클러스터에 빌드하고 배포하세요:
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title="5. 인가">
+        TEE 내부의 ER RPC와 상호작용을 설정합니다:
+        1. `https://pccs.phala.network/tdx/certification/v4`를 통해 TEE RPC 무결성을 검증합니다
+        2. 사용자가 TEE 엔드포인트와 상호작용할 수 있도록 인가 토큰을 요청합니다
+        <AuthorizeCode />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title="6. 테스트">
+        Private Ephemeral Rollup 연결로 프로그램을 테스트합니다:
+
+        `https://devnet-tee.magicblock.app?token=${token}`
+
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<PerCards />
+
+---
+
+<SolanaResources />
+
+---
+
+<div id="magicblock-products" />
+## MagicBlock 제품
+
+import ProductCards from "/ko/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

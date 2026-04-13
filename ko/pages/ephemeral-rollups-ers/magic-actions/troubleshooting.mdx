@@ -1,0 +1,72 @@
+---
+title: 문제 해결
+description: Magic Actions에서 자주 발생하는 문제를 진단합니다
+---
+
+### 핸들러가 실행되지 않음
+
+- `instruction discriminator`를 확인합니다
+- 충분한 `compute_units`를 할당합니다
+
+### 역직렬화 오류
+
+- 액션 컨텍스트에서 커밋된 계정에는 `UncheckedAccount`를 사용합니다
+- 빌린 데이터에 대해 `try_deserialize`로 수동 역직렬화합니다
+- 계정 discriminator가 예상 타입과 일치하는지 확인합니다
+
+### 트랜잭션 실패
+
+- 모든 액션 계정이 `ShortAccountMeta`에 포함되어 있는지 확인합니다
+- `is_writable` 플래그가 실제 사용 방식과 일치하도록 맞춥니다
+- 커밋에 포함된 모든 액션의 compute budget을 늘립니다
+
+### 제한 사항 및 고려 사항
+
+- 핸들러는 베이스 레이어에서 실행되며 베이스 레이어 수수료를 사용합니다
+- 표준 Solana 제한이 적용됩니다(연산량, 계정 잠금)
+- 원자성: 어떤 액션이든 실패하면 커밋이 되돌려집니다
+- 처음 두 개의 액션 계정은 자동 주입됩니다(`escrow`, `escrow_auth`)
+
+### 도움 되는 링크
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollups"
+    icon="bolt"
+    href="/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    위임, 커밋 및 위임 해제
+  </Card>
+
+{" "}
+
+<Card
+  title="Magic Router"
+  icon="route"
+  href="/ko/pages/ephemeral-rollups-ers/introduction/magic-router"
+  iconType="duotone"
+>
+  Router 개요와 흐름
+</Card>
+
+{" "}
+
+<Card
+  title="Magic Actions Example"
+  icon="code"
+  href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+  iconType="duotone"
+>
+  GitHub에서 참조 구현 살펴보기
+</Card>
+
+  <Card
+    title="Community Support"
+    icon="telegram"
+    href="https://t.me/+78KHQkUsy0ViMzQ6"
+    iconType="duotone"
+  >
+    팀과 커뮤니티와 대화하기
+  </Card>
+</CardGroup>

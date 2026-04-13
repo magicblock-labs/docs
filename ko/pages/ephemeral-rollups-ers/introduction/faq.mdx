@@ -1,0 +1,20 @@
+---
+title: "자주 묻는 질문"
+description: "트랜잭션 실행과 상태 동기화를 모두 실시간으로."
+---
+
+<AccordionGroup>
+    <Accordion title="위임된 계정을 ER에서 생성할 수 있나요?">
+        **아니요.** 위임된 계정은 먼저 Solana에 존재해야 합니다. ER에서 해당 계정을 요청하거나, 위임된 계정을 포함한 트랜잭션을 제출한 뒤에야 계정이 복제됩니다。     
+    </Accordion>
+    <Accordion title="프로그램을 ER로 위임할 수 있나요?">
+        **아니요.** Program accounts 는 절대 위임되지 않습니다. 위임할 수 있는 것은 state accounts 뿐이며, **program accounts 는 트랜잭션이 ER에 제출될 때 복제** 되고 이후 업데이트를 구독하게 됩니다.
+    </Accordion>
+    <Accordion title="위임된 계정은 Solana의 모든 프로그램과 composable 한가요?">
+        **예.** 위임된 계정은 모든 Solana programs 및 accounts 와 함께 활용될 수 있습니다. Solana의 모든 계정은 ER에서 읽을 수 있지만, ER의 atomic transaction 안에서 변경할 수 있는 것은 위임된 계정뿐입니다. 
+    </Accordion>
+    <Accordion title="개발자는 slot time 을 신뢰할 수 있는 타이밍 메커니즘으로 사용해야 하나요?">
+        **아니요.** **2025년 11월 20일 기준**, Solana는 **400 ms slot time** 을 사용하고, MagicBlock의 Execution Runtime (ER)은 **50 ms slot time** 으로 동작합니다. 개발자는 slot time 을 고정된 시간 단위처럼 사용하고 싶을 수 있지만, **slot time 은 보장된 값이 아니며 시간이 지나며 바뀔 수 있습니다**. 따라서 특정 slot duration 에 의존하는 코드나 로직은 신중하게 작성해야 합니다.
+    </Accordion>
+
+</AccordionGroup>

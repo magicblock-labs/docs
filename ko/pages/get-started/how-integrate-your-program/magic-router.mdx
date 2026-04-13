@@ -1,0 +1,136 @@
+---
+title: Magic Router
+description: MagicBlock의 Magic Router가 거래를 올바른 실행 환경으로 라우팅해 어떻게 가속하는지 알아보세요.
+---
+
+import Endpoints from "/ko/snippets/endpoints.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/Wc2XMAKtEug?si=bjitIDG7w5fY5zmK&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+**MagicBlock의 Magic Router** 는 거래 메타데이터를 바탕으로 거래를 **Ephemeral Rollups** 또는 **Solana** 중 어디에서 실행할지 지능적으로 결정하여 거래를 가속하는 동적 거래 라우팅 엔진입니다.
+
+이로써 개발자의 워크플로에서 인프라 결정의 복잡성이 사라지고, 서로 다른 실행 환경 전반에서 매끄러운 사용자 경험을 제공할 수 있습니다.
+
+<Tip>
+  {" "}
+  [여기](https://router-demo.magicblock.app/)에서 Magic Router 데모를
+  체험하거나, [여기](https://pyth-template.magicblock.app/)에서 Pyth 가격
+  데이터 데모를 확인해 보세요
+</Tip>
+
+### **무엇을 하나요**
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
+Magic Router는 각 거래의 메타데이터(writable accounts, owner, signer 등)를 분석하고 가장 적합한 전용 엔드포인트로 자동 라우팅합니다.
+
+- **Ephemeral Rollup**: 빠르고 저지연이며 무비용인 실행을 위해
+- **Solana**: 영속적이고 높은 처리량의 실행을 위해
+
+이렇게 하면 개발자가 수동으로 라우팅 로직을 작성할 필요가 없어지고, 거래 속도와 개발 경험 모두에서 큰 이점을 얻을 수 있습니다.
+
+- ✅ **단일 엔드포인트로 간단한 통합**: 하나의 RPC 엔드포인트만 연결하면 됩니다
+- ✅ **매끄러운 지갑 경험**: 연결, 서명, 제출만 하면 되고 내부 동작을 알 필요가 없습니다
+- ✅ **더 빠른 확인**: Magic Router가 가장 빠른 사용 가능한 엔드포인트로 라우팅합니다
+
+### **작동 방식**
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router-scenarios.png" />
+
+1. **클라이언트 - 거래 제출**  
+   dApp 또는 사용자가 거래를 Magic Router RPC 엔드포인트로 보냅니다.
+
+2. **RPC - 메타데이터 검사**  
+   Magic Router는 거래 메타데이터를 검사하고 writable accounts의 owner를 확인합니다.
+
+3. **Validator - 스마트 라우팅 및 실행**  
+   메타데이터에 따라 라우터는 다음 중 어디로 보낼지 결정합니다.
+
+   - **Ephemeral Rollup**
+   - **Solana**
+
+   라우터는 거래를 올바른 실행 레이어로 보냅니다. 사용자는 서명하고 제출하기만 하면 되며 추가 단계는 필요 없습니다。
+
+<Endpoints />
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Router SDK"
+    icon="route"
+    href="/ko/pages/tools/magic-router-sdk/introduction"
+    iconType="duotone"
+  >
+    Magic Router SDK로 매끄럽게 통합하기
+  </Card>
+  <Card
+    title="Core Concepts"
+    icon="lightbulb"
+    href="/ko/pages/tools/magic-router-sdk/core-concepts"
+    iconType="duotone"
+  >
+    delegation, blockhash 처리, validator 선택 이해하기
+  </Card>
+  <Card
+    title="Getting Started with SDK"
+    icon="play"
+    href="/ko/pages/tools/magic-router-sdk/getting-started"
+    iconType="duotone"
+  >
+    SDK 구현을 위한 빠른 시작 가이드
+  </Card>
+  <Card
+    title="왜 MagicBlock인가요?"
+    icon="wand"
+    href="/ko/pages/get-started/introduction/why-magicblock"
+    iconType="duotone"
+  >
+    왜 MagicBlock로 빌드해야 하는지 알아보세요
+  </Card>
+  <Card
+    title="Ephemeral Rollup"
+    icon="bolt"
+    href="/ko/pages/get-started/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Ephemeral Rollup의 작동 방식을 알아보세요
+  </Card>
+  <Card
+    title="활용 사례"
+    icon="star"
+    href="/ko/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    예시에서 새로운 아이디어를 찾아보세요
+  </Card>
+  <Card
+    title="Pyth Demo"
+    icon="dollar-sign"
+    href="https://pyth-template.magicblock.app/"
+    iconType="duotone"
+  >
+    Pyth 가격 데이터 스트림 라이브 데모
+  </Card>
+</CardGroup>

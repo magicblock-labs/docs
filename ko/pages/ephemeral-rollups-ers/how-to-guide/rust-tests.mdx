@@ -1,0 +1,205 @@
+---
+title: "프로그램 테스트하기"
+description: "간단한 Rust 프로그램을 테스트하는 방법 배우기"
+---
+
+import Endpoints from "/ko/snippets/endpoints.mdx";
+import Validators from "/ko/snippets/notes/validators.mdx";
+import SoftwareRust from "/ko/snippets/software-rust.mdx";
+import SolanaResources from "/ko/snippets/solana-resources.mdx";
+
+import TestWeb3jsConnectionCode from "/ko/snippets/rust-counter-code/test-web3js-connection.mdx";
+import TestWeb3jsDelegateCode from "/ko/snippets/rust-counter-code/test-web3js-delegate.mdx";
+import TestWeb3jsCommitCode from "/ko/snippets/rust-counter-code/test-web3js-commit.mdx";
+import TestWeb3jsUndelegateCode from "/ko/snippets/rust-counter-code/test-web3js-undelegate.mdx";
+import TestKitConnectionCode from "/ko/snippets/rust-counter-code/test-kit-connection.mdx";
+import TestKitDelegateCode from "/ko/snippets/rust-counter-code/test-kit-delegate.mdx";
+import TestKitCommitCode from "/ko/snippets/rust-counter-code/test-kit-commit.mdx";
+import TestKitUndelegateCode from "/ko/snippets/rust-counter-code/test-kit-undelegate.mdx";
+import DelegationInfo from "/ko/snippets/delegation-info.mdx";
+
+---
+
+### 빠른 접근
+
+바로 코드로 들어가고 싶다면:
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
+    iconType="duotone"
+  >
+    Rust Counter 테스트
+  </Card>
+  <Card
+    title="GitHub"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/pinocchio-counter/tests"
+    iconType="duotone"
+  >
+    Pinocchio Counter 테스트
+  </Card>
+  <Card
+    title="Guide"
+    icon="computer"
+    href="/ko/pages/ephemeral-rollups-ers/how-to-guide/local-development"
+    iconType="duotone"
+  >
+    로컬 개발
+  </Card>
+</CardGroup>
+
+---
+
+## 단계별 가이드
+
+프로그램의 delegation 및 undelegation instruction을 호출하는 유효한 트랜잭션을 구성하세요。
+이 프로젝트의 전체 테스트는 [Typescript 테스트 스크립트](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests) 에서 확인할 수 있습니다。
+
+<Steps>
+  <Step
+    title={<a href="#1-connection">SDK 가져오기 및 Connection 초기화</a>}
+  >
+    connection과 계정 설정
+  </Step>
+  <Step title={<a href="#2-delegate">Base Layer에서 PDA Delegate 하기</a>}>
+    Base Layer에서 상태 계정을 위임하는 CPI hook 테스트
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-commit">ER에서 PDA Commit 하기</a>}>
+    ER에서 상태 계정을 커밋하는 CPI hook 테스트
+  </Step>
+  <Step title={<a href="#4-undelegate">ER에서 PDA Undelegate 하기</a>}>
+    ER에서 상태 계정을 위임 해제하는 CPI hook 테스트
+  </Step>
+</Steps>
+
+---
+
+## Counter 예제
+
+<SoftwareRust />
+
+<div id="code-snippets" />
+### 코드 스니펫
+
+<Tabs>
+  <Tab title="1. Connection">
+    ### SDK 가져오기 및 Connection 생성
+
+    `@magicblock-labs/ephemeral-rollups-sdk` 또는 `@magicblock-labs/ephemeral-rollups-kit` 를 가져오고, 테스트와 트랜잭션 전송 전에 connection을 초기화합니다。
+
+    <CodeGroup>
+      ```bash kit
+      yarn add @magicblock-labs/ephemeral-rollups-kit@latest
+      ```
+      ```bash web3.js
+      yarn add @magicblock-labs/ephemeral-rollups-sdk@latest
+      ```
+    </CodeGroup>
+
+    <Endpoints />
+    <CodeGroup>
+      <TestKitConnectionCode />
+
+      <TestWeb3jsConnectionCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title="2. Delegate">
+    ### `delegation` 트랜잭션 테스트
+
+    계정의 순서와 속성이 올바르고, 프로그램의 `delegation` instruction discriminator를 가진 instruction을 만드세요。 그런 다음 해당 instruction을 포함한 트랜잭션을 Base Layer(Solana) 네트워크로 보냅니다。
+
+    <Card
+      title="트랜잭션 (Base Layer): Delegate"
+      icon="magnifying-glass"
+      href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+      iconType="duotone"
+    >
+      Solana Explorer에서 트랜잭션 상세 보기
+    </Card>
+
+    <CodeGroup>
+      <TestKitDelegateCode />
+      <TestWeb3jsDelegateCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="3. Commit">
+    ### `commit` 트랜잭션 테스트
+
+    계정의 순서와 속성이 올바르고, 프로그램의 `commit` instruction discriminator를 가진 instruction을 만드세요。 그런 다음 해당 instruction을 포함한 트랜잭션을 ER 네트워크로 보냅니다。
+
+    <CardGroup cols={2}>
+      <Card
+        title="트랜잭션 (ER): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+      <Card
+        title="트랜잭션 (Base layer): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitCommitCode />
+      <TestWeb3jsCommitCode />
+    </CodeGroup>
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title="4. Undelegate">
+    ### `undelegation` 트랜잭션 테스트
+
+    계정의 순서와 속성이 올바르고, 프로그램의 `undelegation` instruction discriminator를 가진 instruction을 만드세요。 그런 다음 해당 instruction을 포함한 트랜잭션을 ER 네트워크로 보냅니다。
+
+    <CardGroup cols={2}>
+      <Card
+        title="트랜잭션 (ER): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+      <Card
+        title="트랜잭션 (Base layer): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+    </CardGroup>
+
+    <CodeGroup>
+      <TestKitUndelegateCode />
+      <TestWeb3jsUndelegateCode />
+    </CodeGroup>
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---
