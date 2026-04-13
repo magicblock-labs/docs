@@ -1,0 +1,53 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Build an unsigned transaction that transfers SPL tokens publicly or privately through an ephemeral rollup."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/v1/spl/transfer": {
+      "post": {
+        "summary": "Transfer SPL Tokens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner": { "type": "string" },
+                  "destination": { "type": "string" },
+                  "cluster": { "type": "string" },
+                  "mint": { "type": "string" },
+                  "amount": { "type": "integer", "minimum": 1 },
+                  "privacy": { "type": "string" },
+                  "validator": { "type": "string" },
+                  "memo": { "type": "string" }
+                },
+                "required": ["owner", "destination", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unsigned serialized transaction"
+          },
+          "400": {
+            "description": "Build error"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    }
+  }
+}

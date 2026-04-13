@@ -1,0 +1,39 @@
+---
+title: "技术细节"
+description: "MagicBlock 如何集成可验证随机数"
+---
+
+随机数通过构建在 Curve25519 的 Ristretto group 之上的 VRF 生成，并使用 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381) 所描述的类 Schnorr 签名进行证明。proof 和输出会通过来自 MagicBlock VRF signer PDA 的已签名 callback 返回给 rollup。你的程序会先验证 caller，然后在游戏逻辑中使用该随机数。
+
+像 `random_u32`、`random_u8_with_range` 和 `random_bool` 这样的辅助工具，可以轻松将 `[u8; 32]` 输出转换为可用值。由于请求和消费步骤都发生在 ephemeral execution window 内，用户能够获得具备可验证公平性的实时结果，而无需依赖外部服务器。
+
+## 流程
+
+<img class="w-full h-auto max-w-5xl" src="/images/vrf-flow.png" />
+
+流程从“请求随机数”开始。
+
+1. 你的程序会通过 CPI 调用 MagicBlock VRF program，并将一个请求追加到队列中。
+2. 一旦你的随机数请求进入队列，某个预言机就会提取该请求并执行随机数计算。
+3. 完成后，它会将结果和 proof 返回给 MagicBlock VRF program。VRF program 验证 proof 后，会通过预定义函数回调你的程序，从而“消费”该随机数。
+
+<Note>MagicBlock 的 VRF Program 是开源且经过审计的。</Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="Audit"
+    icon="certificate"
+    href="/cn/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    阅读完整审计报告
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="book"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    学习如何添加随机数能力
+  </Card>
+</CardGroup>

@@ -1,0 +1,20 @@
+```typescript
+import {
+  createCommitAndUndelegatePermissionInstruction,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+
+const commitAndUndelegatePermissionIx =
+  await createCommitAndUndelegatePermissionInstruction({
+    authority: [payer.address, true],
+    permissionedAccount: [permissionedAccount.address, false],
+  });
+
+const tx = transaction([commitAndUndelegatePermissionIx]);
+const signature = await sendAndConfirmTransaction(
+  client,
+  tx,
+  [payer]
+);
+console.log("TX:", signature);
+```

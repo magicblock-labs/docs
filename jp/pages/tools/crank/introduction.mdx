@@ -1,0 +1,59 @@
+---
+title: "紹介"
+description: "時間ベースで自動実行されるオンチェーン命令"
+---
+
+## Crank とは？
+
+Crank（スケジュールタスク）は、ユーザーが手動で介入しなくても、オンチェーン命令を**時間ベースで自動実行**できる仕組みです。従来のブロックチェーンシステムでは、すべての操作にユーザーの署名とトランザクション送信が必要なため、自動化には限界があります。
+
+MagicBlock の Ephemeral Rollups を使えば、あらかじめ決めた間隔で自動実行されるタスクを設定でき、Solana プログラムに強力な自動化機能を持ち込めます。
+
+## 主な利点
+
+- **自動実行**: ユーザー操作なしで、あらかじめ決めた間隔で命令を実行できます
+- **コスト効率**: オフチェーンの cron ジョブや監視サービスへの依存を減らせます
+- **分散性**: 実行はオンチェーンで行われ、トラストレス性が保たれます
+- **信頼性**: スケジュールタスクはブロックチェーンのコンセンサス機構内で安定して実行されます
+
+## ユースケース
+
+- **定期的な状態更新**: 価格更新、期限切れデータの削除、ゲーム状態のリフレッシュ
+- **自動ワークフロー**: 定期支払い、ベスティングスケジュール、サブスクリプション更新
+- **ゲームメカニクス**: 定期報酬、時間制イベント、自動的なゲーム進行
+- **DeFi オペレーション**: ポートフォリオのリバランス、清算チェック、利回りの複利化
+
+<CardGroup cols={2}>
+  <Card
+    title="実装"
+    icon="code"
+    href="/jp/pages/tools/crank/implementation"
+    iconType="duotone"
+  >
+    プログラムに crank を実装する方法を学ぶ
+  </Card>
+  <Card
+    title="コード例"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/crank-counter"
+    iconType="duotone"
+  >
+    GitHub リポジトリを見る
+  </Card>
+</CardGroup>
+
+## 仕組み
+
+Crank は MagicBlock の Ephemeral Rollups を活用して、スケジュール実行を実現します。
+
+1. Solana ベースレイヤー上でプログラム状態を**初期化**
+2. より高速に実行するため、アカウントを Ephemeral Rollup に**委任**
+3. 命令を自動実行する crank タスクを**スケジュール**
+4. 指定した間隔で自動的に**実行**
+5. 完了後、アカウントを Solana ベースレイヤーへ**委任解除**
+
+スケジューリングは、MagicBlock のスケジューリングプログラムに対する Cross-Program Invocation（CPI）を通じて行われ、実際の実行タイミングと信頼性をそのプログラムが担います。
+
+<Callout type="info">
+  Crank は Ephemeral Rollup のコンセンサス機構内で実行されるため、信頼性が高くトラストレスです。実装手順の詳細は<a href="/jp/pages/tools/crank/implementation">実装</a>ガイドを参照してください。
+</Callout>

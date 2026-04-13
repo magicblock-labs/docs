@@ -1,0 +1,28 @@
+---
+title: "인가"
+description: "사용자 그룹을 위해 온체인 계정 단위 제한으로 인가된 접근을 구성합니다."
+---
+
+import PerCards from "/ko/snippets/per-cards.mdx";
+
+---
+
+### 인가 모델
+
+<img class="w-full h-auto max-w-5xl" src="/images/TEE_permission.png" />
+
+Private Ephemeral Rollups는 Permission Program을 사용해 계정과 계정 그룹에 대한 세밀한 프라이버시 제어를 관리합니다. 이 프로그램은 Solana L1에서 실행되며 즉시 업데이트할 수 있습니다.
+
+- **권한 그룹**: CPI를 통해 임의의 멤버십과 ID를 가진 그룹을 정의합니다. 하나의 그룹은 사용자와 그 권한이 적용되는 계정을 묶습니다.
+- **권한**: 그룹에 권한을 추가합니다. 현재 권한은 위임된 계정에 대한 읽기 접근을 의미하며, 향후 읽기/쓰기 분리가 추가될 수 있습니다.
+- **접근**: 권한이 적용된 ER 상태에 접근하려면 지정된 공개 키의 소유권을 인증해야 합니다. 인증에 성공하면 ER 조회에 사용할 토큰이 발급됩니다.
+
+import PerEndpoint from "/ko/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+이 그룹 추상화를 사용하면 하나의 트랜잭션으로 많은 사용자와 계정의 권한을 원자적으로 수정할 수 있습니다.
+
+---
+
+<PerCards />

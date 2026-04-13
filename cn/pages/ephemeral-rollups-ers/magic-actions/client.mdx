@@ -1,0 +1,88 @@
+---
+title: 客户端实现
+description: 使用 Magic Actions 的客户端构建指南
+---
+
+import Web3jsCode from "/cn/snippets/magic-router-code/web3js.mdx";
+import KitCode from "/cn/snippets/magic-router-code/kit.mdx";
+
+---
+
+### 快速访问
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+  >
+    在 GitHub 上查看参考实现
+  </Card>
+</CardGroup>
+
+---
+
+### 设置 Router 连接
+
+使用 Magic Router 将交易路由并发送到 ER 和基础层。
+
+<CodeGroup>
+  <KitCode />
+  <Web3jsCode />
+</CodeGroup>
+
+### 交易流程
+
+1. 将计数器委托给 ER
+
+```ts
+const delegateTx = await program.methods
+  .delegate()
+  .accounts({
+    payer: anchor.Wallet.local().publicKey,
+    pda: pda,
+  })
+  .transaction();
+```
+
+2. 在 ER 上实时递增计数器
+
+```ts
+const incrementTx = await program.methods
+  .increment()
+  .accounts({
+    counter: pda,
+  })
+  .transaction();
+```
+
+3. 使用 Magic Action 提交
+
+```ts
+const commitTx = await program.methods
+  .commitAndUpdateLeaderboard()
+  .accounts({ payer: wallet.publicKey /* your accounts */ })
+  .transaction();
+```
+
+### 示例
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart Ephemeral Rollups"
+    icon="play"
+    href="/cn/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    ER 使用端到端演练
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="route"
+    href="/cn/pages/ephemeral-rollups-ers/introduction/magic-router"
+    iconType="duotone"
+  >
+    Router 概览与流程
+  </Card>
+</CardGroup>

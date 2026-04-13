@@ -1,0 +1,49 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Build an unsigned base-chain transaction that initializes a validator-scoped transfer queue for a mint."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/v1/spl/initialize-mint": {
+      "post": {
+        "summary": "Initialize Mint",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner": { "type": "string" },
+                  "cluster": { "type": "string" },
+                  "mint": { "type": "string" },
+                  "validator": { "type": "string" }
+                },
+                "required": ["owner", "mint"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unsigned serialized transaction"
+          },
+          "400": {
+            "description": "Build error"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    }
+  }
+}

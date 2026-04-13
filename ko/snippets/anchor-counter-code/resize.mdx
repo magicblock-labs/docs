@@ -1,0 +1,39 @@
+```rust
+#[account]
+pub struct Counter {
+    pub count: u64,
+    pub extra_data: Vec<u8>,
+}
+
+#[derive(Accounts)]
+pub struct ResizeCounter<'info> {
+    #[account(mut)]
+    pub counter: Account<'info, Counter>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+    // Resize the counter (e.g., to store more extra_data)
+    pub fn resize_counter(ctx: Context<ResizeCounter>, new_size: usize) -> Result<()> {
+        let account_to_resize = &mut ctx.accounts.counter.to_account_info();
+        let payer = &mut ctx.accounts.payer.to_account_info();
+
+        // Calculate rent-exemption for the new size
+        let rent = Rent::get()?;
+        let min_balance = rent.minimum_balance(new_size);
+
+        // Top up lamports if needed
+        let current_lamports = **account_to_resize.lamports.borrow();
+        if current_lamports < min_balance {
+            let to_transfer = min_balance - current_lamports;
+            **payer.try_borrow_mut_lamports()? -= to_transfer;
+            **account_to_resize.try_borrow_mut_lamports()? += to_transfer;
+        }
+
+        // Resize account
+        account_to_resize.resize(new_size)?;
+
+        Ok(())
+    }
+```

@@ -1,0 +1,88 @@
+### MagicBlock 私有 Ephemeral Rollup（PER）
+
+MagicBlock 正在将高性能、通用型的 Trusted Execution Environments（TEE）带到 Solana。我们将其称为 Private Ephemeral Rollup（PER）。
+
+通过结合 Intel Trust Domain Extension（TDX）架构提供的安全保证与 MagicBlock 的 Ephemeral Rollup（ER）技术，我们让敏感逻辑能够运行在硬件保护环境中，同时继承 Solana 的可组合性与速度。
+
+这是第一次让开发者能够设计出同时具备以下特性的应用：
+
+- **机密性**：状态可防止所有未授权方访问
+- **可扩展性**：运行在高吞吐、低延迟执行区块的 ER 中
+- **可组合性**：依然可以与其他 Solana programs 互操作
+- **合规性**：借助细粒度访问控制层，更容易实施合规规则
+
+这使得机密转账、密封竞价拍卖以及安全身份流程等 Solana 用例成为可能。
+
+### Trusted Execution Environments
+
+Trusted Execution Environment 就像 CPU 内部的一个保险库。通常，当你运行一个程序（例如 validator）时，操作系统可以看到并影响一切，包括代码、状态和内存。而 TEE 会创建一个由硬件保护的空间，即使是它所运行的那台机器本身，也无法进行干预。
+
+我们使用 TEE 来保护 Ephemeral Rollup 的状态。通常，在链上执行智能合约时，整个过程的每一步都是可见的：调用了哪个 program、涉及哪些 accounts，以及最终产生哪些状态变化。借助 TEE，programs 可以选择性地屏蔽 ER 状态。
+
+- 默认情况下，每个 account 都是公开的，就像在 Solana 中一样
+- Programs 可以为自己的 accounts 明确定义访问规则
+
+这意味着当有需要时，转账、program 调用与交互可以不再公开广播。
+
+### 为什么选择 TEE
+
+区块链中有多种隐私保护方案，而每一种都有不同的取舍。
+
+| 方案 | 它是什么？ | 优势 | 劣势 |
+| ------------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| Trusted Execution Environments | CPU 内的硬件保护执行环境 | 接近原生性能，可运行常规代码 | 需要信任硬件厂商 |
+| Fully Homomorphic Encryption | 直接在加密数据上计算 | 数据始终无需解密 | 极其缓慢、工具链专门化、密钥管理困难，且存在漏洞与风险 |
+| Zero Knowledge Proofs | 在不暴露输入的前提下证明某件事 | 验证高效，适合身份、合规、正确性场景 | 证明过程开销大，也存在漏洞与风险 |
+| Multi-party Computation | 将秘密拆分到多个参与方进行联合计算 | 具备强加密保证 | 协调开销高、延迟高、工具链专门化，且存在漏洞与风险 |
+
+- **ZK**：验证高效，但不适合通用低延迟计算
+- **MPC**：共享信任模型，但延迟和协调成本更高
+- **FHE**：理论上很强大，但目前还不适合通用落地
+- **TEE**：在 Solana 上提供实用的机密性、实时性能以及熟悉的开发者体验
+
+### 可解锁的应用场景
+
+- **机密转账**：私密转移资产，不暴露余额或对手方
+- **密封竞价拍卖**：在结算前隐藏出价，实现更公平的价格发现
+- **私密游戏**：支持那些一旦暴露状态就会破坏玩法的游戏
+- **企业与合规流程**：在保留数据隐私的同时，以区块链保证执行敏感操作
+- **基于身份的访问控制**：验证群组成员身份，而不暴露不必要的账户历史
+
+import PerEndpoint from "/cn/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+<CardGroup cols={2}>
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/cn/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    权限组与访问控制
+  </Card>
+  <Card
+    title="Program Implementation"
+    icon="code"
+    href="/cn/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    通过 CPI 添加权限
+  </Card>
+  <Card
+    title="Client Implementation"
+    icon="browser"
+    href="/cn/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    证明、挑战与访问
+  </Card>
+  <Card
+    title="Privacy Use Case"
+    icon="shield-check"
+    href="/cn/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    构建私密且可验证的应用
+  </Card>
+</CardGroup>

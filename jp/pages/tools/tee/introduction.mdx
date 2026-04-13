@@ -1,0 +1,88 @@
+### MagicBlock Private Ephemeral Rollup（PER）
+
+MagicBlock は、高性能で汎用的な Trusted Execution Environments（TEE）を Solana にもたらしています。これを Private Ephemeral Rollup（PER）と呼んでいます。
+
+Intel Trust Domain Extension（TDX）アーキテクチャのセキュリティ保証と MagicBlock の Ephemeral Rollup（ER）技術を組み合わせることで、Solana の composability と速度を維持したまま、機密ロジックをハードウェア保護環境内で実行できるようにしています。
+
+これにより、開発者は初めて次の性質を同時に持つアプリケーションを設計できます。
+
+- **Confidential**: state が未承認の第三者から保護される
+- **Scalable**: 高スループット・低レイテンシでブロック実行できる ER 内で動作する
+- **Composable**: 他の Solana programs と相互運用できる
+- **Compliant**: きめ細かなアクセス制御レイヤーによりコンプライアンスを適用しやすい
+
+これにより、confidential transfers、sealed-bid auctions、安全な identity flows などの Solana 上のユースケースが可能になります。
+
+### Trusted Execution Environments
+
+Trusted execution environment は CPU 内部の金庫のようなものです。通常、プログラム（たとえば validator）を実行すると、OS はコード、状態、メモリのすべてを参照し、影響を与えられます。TEE は、実行しているマシン自身からであっても干渉できないハードウェア保護空間を作ります。
+
+私たちは TEE を使って Ephemeral Rollup の状態を保護しています。通常、オンチェーンでスマートコントラクトを実行すると、呼び出された program、accounts、結果として生じる状態変化まで、すべてが可視です。TEE を使えば、program は ER state を選択的に保護できます。
+
+- すべての account は Solana と同様にデフォルトで公開
+- Programs は自分の accounts に対するアクセスルールを明示的に定義可能
+
+これにより、必要に応じて transfers、program calls、interactions を公開ブロードキャストせずに処理できます。
+
+### なぜ TEE なのか
+
+ブロックチェーンには複数のプライバシー保護手法があり、それぞれ異なるトレードオフがあります。
+
+| 手法 | 概要 | 長所 | 短所 |
+| ------------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| Trusted Execution Environments | CPU 内のハードウェア保護実行環境 | ネイティブに近い性能、通常のコードを実行できる | ベンダーハードウェアへの信頼が必要 |
+| Fully Homomorphic Encryption | 暗号化されたデータのまま計算 | データを復号しない | 非常に遅い、専用ツールが必要、鍵管理が難しい、バグや脆弱性 |
+| Zero Knowledge Proofs | 入力を明かさずに証明する | 検証が効率的、identity/compliance/correctness に強い | 証明生成が重い、バグや脆弱性 |
+| Multi-party Computation | 複数者に秘密を分割して共同計算 | 強い暗号学的保証 | 調整コスト、高レイテンシ、専用ツール、バグや脆弱性 |
+
+- **ZK**: 検証は効率的だが、汎用的な低レイテンシ計算には向いていない
+- **MPC**: 信頼を分散できるが、レイテンシと調整コストが高い
+- **FHE**: 理論的には強力だが、現時点では一般利用に適していない
+- **TEE**: Solana 上で実用的な秘匿性、リアルタイム性能、馴染みある開発 UX を提供する
+
+### 可能になるアプリケーション
+
+- **Confidential Transfers**: 残高や相手先を公開せずに資産を移動する
+- **Sealed-Bid Auctions**: 決済まで入札を秘匿し、公平な価格形成を実現する
+- **Private Games**: 状態公開がゲーム性を損なうゲームを支える
+- **Enterprise and Compliance Flows**: データを秘匿しながら、ブロックチェーン保証付きで機微な処理を実行する
+- **Identity-Based Access**: 不要な account 履歴を明かさずにグループ所属を検証する
+
+import PerEndpoint from "/jp/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+<CardGroup cols={2}>
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/jp/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    権限グループとアクセス
+  </Card>
+  <Card
+    title="Program Implementation"
+    icon="code"
+    href="/jp/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    CPI 経由で権限を追加する
+  </Card>
+  <Card
+    title="Client Implementation"
+    icon="browser"
+    href="/jp/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    証明、チャレンジ、アクセス
+  </Card>
+  <Card
+    title="Privacy Use Case"
+    icon="shield-check"
+    href="/jp/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    秘密性と検証可能性を備えたアプリケーションを構築する
+  </Card>
+</CardGroup>

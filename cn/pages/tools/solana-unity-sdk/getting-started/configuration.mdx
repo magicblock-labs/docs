@@ -1,0 +1,89 @@
+---
+title: "配置"
+description: "了解如何配置你偏好的钱包"
+---
+
+了解如何配置你偏好的钱包
+
+该 SDK 支持多种钱包，包括
+
+| Wallet                   | Support | Type     |
+| ------------------------ | ------- | -------- |
+| In-game (new or restore) | ✅      | In-app   |
+| In-game (Web3auth)       | ✅      | In-app   |
+| Wallet Adapter           | ✅      | External |
+| Mobile Wallet Adapter    | ✅      | External |
+| Seed Vault               | 🏗       | In-app   |
+
+## 接口
+
+`IWalletBase` 定义了通用的[接口](https://github.com/garbles-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/IWalletBase.cs)
+
+抽象类 WalletBase 实现了 `IWalletBase` 接口，并提供所有钱包适配器共享的便捷方法。
+
+例如：
+
+- 连接到 Mainnet/Devnet/Testnet 或自定义 RPC
+- 登录 / 登出
+- 创建账户
+- 获取余额
+- 获取 token accounts
+- 签名 / 部分签名交易
+- 发送交易
+
+## 登录示例
+
+你可以将 [Web3.cs](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/Web3.cs) 脚本
+（../Runtime/Codebase/Web3.cs）挂载到场景中的任意游戏对象上，然后调用 `Web3.Instance.LoginWalletAdapter();`
+
+![](/images/Web3.png)
+
+<Card title="更多方法" icon="lightbulb" iconType="duotone">
+  完整的方法列表可在
+  [这里](https://github.com/garbles-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/WalletBase.cs)查看
+</Card>
+
+## Wallet Adapter
+
+如果要配置遵循 [Wallet Adapter](https://solana-mobile.github.io/mobile-wallet-adapter/spec/spec.html) 标准的钱包，请使用 [SolanaWalletAdapterWebGL](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/SolanaWalletAdapterWebGL.cs) 钱包实现。
+
+```csharp
+WalletBase wallet = new SolanaWalletAdapterWebGL(walletAdapterOptions, RpcCluster.DevNet, ...);
+```
+
+## SMS
+
+Solana Mobile Stack 是一套面向钱包和应用的库，可让开发者为 Solana 网络打造丰富的移动端体验。
+有关 SMS 的更多信息，请查看官方[文档](https://solanamobile.com/developers)。
+
+## Mobile Wallet Adapter
+
+如果要配置遵循 Mobile Wallet Adapter 标准的钱包，请使用 [SolanaMobileWalletAdapter](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/SolanaMobileWalletAdapter.cs) 钱包实现。
+
+```csharp
+WalletBase wallet = new SolanaMobileWalletAdapter(solanaMobileWalletOptions, RpcCluster.DevNet, ...);
+```
+
+## 配置 Deeplinks
+
+某些钱包（例如 Phantom）目前通过 DeepLinks 实现。Deep links 是一种可链接到应用中特定内容或功能的 URL。在 Solana 交易场景下，deep links 可以让用户通过自己的 Solana 钱包批准交易，从而完成签名。
+
+### 为 Android 应用启用 deep linking
+
+要为 Android 应用启用 deep linking，请使用 [intent filter](https://developer.android.com/guide/components/intents-filters)。intent filter 会覆盖标准 Android 应用的 [Manifest](https://docs.unity3d.com/Manual/android-manifest.html)，并为 [Activity](https://developer.android.com/reference/android/app/Activity) 添加特定的 intent filter 配置段。
+
+设置钱包 intent filter 的步骤如下：
+
+1. 在 Project 窗口中，前往 `Assets > Plugins > Android`。
+2. 创建一个名为 `AndroidManifest.xml` 的新文件。Unity 会在构建应用时自动处理这个文件。
+3. 将这个[代码示例](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Samples~/Solana%20Wallet/Plugins/Android/AndroidManifest.xml)复制到新文件中并保存。
+
+_`android:scheme="unitydl"` 应与钱包配置中定义的值保持一致_
+
+更详细的说明请参阅 Unity [文档页面](https://docs.unity3d.com/Manual/deep-linking-android.html)。
+
+### 为 iOS 应用启用 deep linking
+
+更详细的说明请参阅 Unity [文档页面](https://docs.unity3d.com/Manual/deep-linking-android.html)。
+
+_定义的 schema 应与钱包配置中定义的值保持一致_

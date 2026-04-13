@@ -1,0 +1,27 @@
+```rust
+use ephemeral_rollups_sdk::access_control::structs::{
+    Member,
+    AUTHORITY_FLAG,
+    TX_LOGS_FLAG,
+    TX_BALANCES_FLAG,
+    TX_MESSAGE_FLAG,
+    ACCOUNT_SIGNATURES_FLAG,
+};
+
+// Set flags by combining them with bitwise OR
+let flags = AUTHORITY_FLAG | TX_LOGS_FLAG;
+
+// Create a member with combined flags
+let mut member = Member {
+    flags,
+    pubkey: user_pubkey,
+};
+
+// Check if member has a specific flag using bitwise AND
+let is_authority = (member.flags & AUTHORITY_FLAG) != 0;
+let can_see_logs = (member.flags & TX_LOGS_FLAG) != 0;
+
+// Use helper methods to set/remove flags
+member.set_flags(TX_BALANCES_FLAG); // Add a flag
+member.remove_flags(TX_LOGS_FLAG);  // Remove a flag
+```

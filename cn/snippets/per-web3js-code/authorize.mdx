@@ -1,0 +1,19 @@
+```typescript Web3.js
+import {
+  verifyTeeRpcIntegrity,
+  getAuthToken,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Verify the integrity of TEE RPC
+const isVerified = await verifyTeeRpcIntegrity(EPHEMERAL_RPC_URL);
+
+// Get AuthToken before making request to TEE
+const token = await getAuthToken(
+  EPHEMERAL_RPC_URL,
+  wallet.publicKey,
+  signMessage
+  // if not using wallet:
+  // (message: Uint8Array) =>
+  //  Promise.resolve(nacl.sign.detached(message, wallet.secretKey))
+);
+```

@@ -1,0 +1,17 @@
+import Routers from "/jp/snippets/routers.mdx";
+import KitCode from "/jp/snippets/magic-router-code/kit.mdx";
+import Web3jsCode from "/jp/snippets/magic-router-code/web3js.mdx";
+
+動的にトランザクションを送る前に、まず Magic Router との接続を初期化します。
+
+<Routers />
+
+初期化、送信、確認に使う好みの SDK を選んでください。
+
+- `ephemeral-rollups-kit` は `@solana/kit` 向け
+- `ephemeral-rollups-sdk` は `@solana/web.js` 向け
+
+<CodeGroup>
+  <KitCode />
+  <Web3jsCode />
+</CodeGroup>

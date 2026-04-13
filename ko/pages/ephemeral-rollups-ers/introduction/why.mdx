@@ -1,0 +1,92 @@
+---
+title: Ephemeral Rollup
+description: "Solana 위 실시간 애플리케이션을 위한 고성능 엔진"
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/yfgDZJJvydU?si=3k8ndg9Z69sv6_LE&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+<Card>
+  [MagicBlock의 Ephemeral
+  Rollup](/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)은
+  고성능 탈중앙 애플리케이션을 위해 설계된 Solana 네트워크의 확장입니다.
+  Solana의 컴포저빌리티와 무결성을 유지하면서 그 역량을 더 강화합니다.
+</Card>
+
+---
+
+## 왜 Ephemeral Rollups인가요?
+
+블록체인 기술이 탈중앙 애플리케이션을 혁신하고 있지만, 여전히 다음과 같은 근본적인 과제가 있습니다.
+
+- **지연 시간**: 블록체인 거래 속도는 실시간 애플리케이션에 너무 느립니다.
+- **비용**: "저수수료" 블록체인도 규모가 커지면 비싸질 수 있습니다.
+- **확장성**: 현재 아키텍처는 고처리량 애플리케이션을 감당하기 어렵습니다.
+- **프라이버시**: 블록체인은 기본적으로 공개되어 있어 온체인 데이터는 모두 읽힐 수 있습니다.
+
+## **MagicBlock Ephemeral Rollup의 장점**
+
+ephemeral rollup은 **특화된 SVM runtime** 으로 동작하며 다음과 같이 **커스터마이즈** 할 수 있습니다。
+
+- ✅ **Gasless Transactions** – 무수수료로 확장성과 대규모 채택을 가능하게 함
+- ✅ **더 빠른 블록 타임** – 10ms 미만 지연으로 매끄러운 UX 제공
+- ✅ **고정밀 스케줄링** – 트랜잭션 실행을 위한 자동화 내장
+- ✅ **프로그램과 상태 동기화** – 단편화 없이 컴포저블하고 업그레이드 가능
+- ✅ **수평 확장** – 필요에 따라 여러 rollup을 띄워 수백만 건의 거래 처리
+- ✅ **익숙한 툴링** – 기존 프로그래밍 언어, 라이브러리, 테스트 도구 재사용 가능
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollup"
+    icon="bolt"
+    href="/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Ephemeral Rollup의 작동 방식을 알아보세요
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/ko/pages/ephemeral-rollups-ers/introduction/magic-router"
+    iconType="duotone"
+  >
+    Magic Router의 작동 방식을 알아보세요
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="hammer"
+    href="/ko/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Rust, Anchor, Typescript로 직접 시도해 보세요
+  </Card>
+  <Card
+    title="Privacy"
+    icon="shield-check"
+    href="/ko/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy"
+    iconType="duotone"
+  >
+    TEE로 비공개이면서 검증 가능한 앱을 구축하세요
+  </Card>
+</CardGroup>

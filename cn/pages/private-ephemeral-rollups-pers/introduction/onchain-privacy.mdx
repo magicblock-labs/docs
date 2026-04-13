@@ -1,0 +1,66 @@
+---
+title: "链上隐私"
+description: "面向 Solana 上需要隐私与合规的实时应用的高性能引擎"
+---
+
+import PerCards from "/cn/snippets/per-cards.mdx";
+
+---
+
+### MagicBlock Private Ephemeral Rollup（PER）
+
+MagicBlock 正在将高性能、通用型 Trusted Execution Environments（TEE）带到 Solana。我们称之为 Private Ephemeral Rollup（PER）。
+
+通过结合 Intel Trust Domain Extension（TDX）架构提供的安全保障与 MagicBlock 的 Ephemeral Rollup（ER）技术，我们让敏感逻辑能够在硬件保护的环境中运行，同时继承 Solana 的可组合性与速度。
+
+构建者首次可以设计同时具备以下特性的应用：
+
+- **机密性**：状态受到保护，未经授权方无法访问
+- **可扩展性**：运行在可高吞吐、低延迟执行区块的 ER 中
+- **可组合性**：仍然能够与其他 Solana 程序互操作
+- **合规性**：借助细粒度访问控制层，合规更易于执行
+
+这使得机密转账、密封竞价拍卖以及安全身份流程等 Solana 用例成为可能。
+
+### Intel TDX 上的 Trusted Execution Environment
+
+Trusted execution environment 就像 CPU 内部的一个保险库。通常，当你运行一个程序（例如验证器）时，操作系统可以看到并影响一切，包括代码、状态和内存。而 TEE 会创建一个硬件保护空间，即使是运行它的机器本身也无法干预。
+
+我们使用 TEE 来保护 Ephemeral Rollup 的状态。通常，在链上执行智能合约时，整个过程的每一步都是可见的：调用了什么程序、使用了哪些账户，以及最终产生了哪些状态变化。借助 TEE，程序可以选择性地屏蔽 ER 状态。
+
+- 默认情况下，每个账户都像 Solana 一样是公开的
+- 程序可以显式为其账户定义访问规则
+
+这意味着转账、程序调用和交互在需要时可以不被公开广播。
+
+### 为什么选择 TEE
+
+区块链中存在多种隐私保护方案，它们各自都有不同的权衡。
+
+| 方案 | 它是什么？ | 优点 | 缺点 |
+| --- | --- | --- | --- |
+| Trusted Execution Environments | 在 CPU 内执行硬件保护计算 | 接近原生性能，可运行普通代码 | 需要信任硬件供应商 |
+| Fully Homomorphic Encryption | 直接在加密数据上进行计算 | 数据永不解密 | 极其缓慢、工具链专业化、密钥管理困难，且存在漏洞与风险 |
+| Zero Knowledge Proofs | 在不暴露输入的前提下证明某件事 | 验证高效；非常适合身份、合规和正确性证明 | 证明过程开销大，且存在漏洞与风险 |
+| Multi-party Computation | 将秘密拆分到多个参与方共同计算 | 具备强密码学保证 | 协调成本高、延迟高、工具链专业化，且存在漏洞与风险 |
+
+- **ZK**：验证高效，但不适合通用低延迟计算
+- **MPC**：信任分散，但延迟更高、协调更复杂
+- **FHE**：理论上很强大，但今天还未准备好用于通用场景
+- **TEE**：在 Solana 上提供兼具实时性能与熟悉开发体验的实用机密性
+
+### 可解锁的应用场景
+
+- **机密转账**：私密转移资产而不暴露余额或交易对手
+- **密封竞价拍卖**：在结算前隐藏出价，以实现更公平的价格发现
+- **私密游戏**：支持那些一旦公开状态就会破坏玩法的游戏
+- **企业与合规流程**：在保留区块链保障的同时执行敏感操作并保护数据隐私
+- **基于身份的访问**：在不暴露不必要账户历史的情况下验证群组成员身份
+
+import PerEndpoint from "/cn/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+---
+
+<PerCards />

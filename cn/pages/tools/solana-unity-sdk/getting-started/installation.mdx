@@ -1,0 +1,31 @@
+---
+title: "安装"
+---
+
+## Unity
+
+前往[这里](https://unity.com/download)安装 Unity。
+
+## 导入 SDK 包
+
+- 打开 [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui.html) 窗口。
+- 点击状态栏中的 `+` 按钮。
+- 此时会显示添加包的选项。
+- 在添加菜单中选择 `Add package from git URL`。随后会出现一个文本框和 `Add` 按钮。
+- ![](/images/package_manager.png)
+- 在文本框中输入 `https://github.com/magicblock-labs/Solana.Unity-SDK.git` 这个 Git URL，然后点击 `Add`。
+- 安装完成后，你会在 Package Manager 面板中看到 `Samples`。点击 `Import`。
+- 你也可以通过带指定版本号的 URL 安装特定版本的包。
+
+  - `https://github.com/magicblock-labs/Solana.Unity-SDK.git#X.Y.X`
+  - 请注意，这里的版本号 `X.Y.Z` 需要替换为你想要安装的版本。
+  - 所有可用版本可以在[这里](https://github.com/magicblock-labs/Solana.Unity-SDK/releases)查看。
+  - 最新发布版本为 [![Last Release](https://img.shields.io/github/v/release/magicblock-labs/Solana.Unity-SDK)](https://github.com/magicblock-labs/Solana.Unity-SDK/releases/latest)
+
+- 导入示例场景
+- ![](/images/sample_scene.png)
+- 你可以在 `Samples/Solana SDK/0.0.2/Simple Wallet/Solana Wallet/scenes/wallet_scene.unity` 中找到一个已配置好钱包的示例场景。
+
+<Card title="你需要知道" icon="lightbulb" iconType="duotone">
+  本教程基于 Unity 2021.3.5f1 编写。
+</Card>

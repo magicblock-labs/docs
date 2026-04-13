@@ -1,0 +1,81 @@
+---
+title: "ゲームを xNFT として公開する"
+---
+
+## xNFT 用にゲームをビルドする
+
+追加の手順なしで、そのままゲームを WebGL 向けにビルドできます。最新バージョンの SDK を使っていることだけ確認してください。
+
+次の手順で xNFT を公開する際に URL が必要になるため、まず通常の WebGL ゲームとしてデプロイしておきます。
+
+<Card title="One build to rule them all" icon="lightbulb" iconType="duotone">
+  WebGL ゲームはブラウザでも Backpack 内でも動作するため、プラットフォームごとに別バージョンをビルドしてホストする必要はありません。
+</Card>
+
+<Card
+  title="ゲームを Github Pages にホストする"
+  icon="lightbulb"
+  iconType="duotone"
+>
+  [このガイド](/Build/SolanaUnitySDK/guides/host-your-game)に従ってゲームを WebGL にビルドし、Github Pages にホストしてください
+</Card>
+
+### （任意）xNFT WebGL テンプレートを使う
+
+xNFT としてゲームを簡単にデプロイできるよう、カスタマイズ済みの WebGL テンプレートも用意されています。必須ではありませんが、画面サイズに完全対応し、ブラウザでも xNFT アプリでも見栄えよく動作するためおすすめです。
+
+xNFT WebGL テンプレートを使うには、次の手順に従ってください。
+
+- [Build Settings](https://docs.unity3d.com/Manual/BuildSettings.html) ウィンドウを開き、まだなら WebGL プラットフォームに切り替えます。
+  - プラットフォームとして WebGL を選択します
+  - **Switch Platform** ボタンをクリックして変更を適用します
+    ![](/images/switch_platform.png)
+
+Unity プロジェクトを WebGL プラットフォームに設定すると、SDK が `xNFT` という名前の新しい WebGL テンプレートを `/Assets/WebGLTemplate` フォルダに自動で取り込みます。
+
+![](/images/xnft_webgl_template_imported.png)
+
+- Build Settings から **Player Settings** ウィンドウを開き、xNFT テンプレートを選択します。
+
+  ![](/images/select_xnft_template.png)
+
+これでゲームをビルドし、通常の WebGL ゲームとしてホストできます。
+
+## ゲームを xNFT として公開する
+
+まだ Backpack アカウントを持っていない場合は先に用意してください。Backpack は[こちら](https://www.backpack.app/downloads)からダウンロードできます。
+ゲームを Web サーバーにホストし、Backpack アカウントも用意できたら、[https://www.xnft.gg/publish](https://www.xnft.gg/publish) で mainnet-beta に xNFT を公開するか、[https://devnet.xnft.gg/publish](https://devnet.xnft.gg/publish) で devnet に公開できます。
+
+Backpack ウォレットを接続して、次の手順に従ってください。
+
+- この基本的な [xnft.json](https://github.com/coral-xyz/xnft-quickstart/blob/master/xnft.json) 設定ファイルをコピーします
+- `"entrypoints"` -> `"default"` -> `"web"` を編集して、ゲームの URL を指定します
+- `xnft.json` を編集し（`"tag": "game"` を追加）、`Assets` フォルダにアプリアイコンとスクリーンショットを入れます
+- `xnft.json` ファイルと `Assets` フォルダを zip にまとめます
+- [xnft.gg/publish](https://www.xnft.gg/publish) にアクセスします
+- 圧縮した Manifest をドロップして mint します
+
+  ![](/images/drop_manifest.png)
+
+  これでゲームの xNFT 公開は完了です。
+
+## 動画デモ
+
+以下は、ゲームをビルドし、ブラウザと Backpack 内の xNFT アプリとしてテストする流れを紹介する短いデモです。
+
+<div style={{ position: "relative", paddingBottom: "62.5%", height: 0 }}>
+  <iframe
+    src="https://www.youtube.com/embed/J4W3vzal5_I"
+    frameBorder={0}
+    webkitallowfullscreen
+    mozallowfullscreen
+    allowFullScreen
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+  />
+</div>

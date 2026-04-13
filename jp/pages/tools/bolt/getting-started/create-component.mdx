@@ -1,0 +1,28 @@
+---
+title: "Component を作成する"
+description: " "
+---
+
+Components は、entity の特定の側面に関するデータを保持する単純なデータ構造（class または struct）です。ロジックやメソッドは持ちません。たとえば “Position” component には x、y、z 座標が入ります。
+
+次のコマンドで Position component を作成します。
+
+```bash
+bolt component position
+```
+
+これにより workspace に新しい component が追加されます。
+
+```rust
+use bolt_lang::*;
+
+declare_id!("Fn1JzzEdyb55fsyduWS94mYHizGhJZuhvjX6DVvrmGbQ");
+
+#[component]
+#[derive(Copy)]
+pub struct Position {
+    pub x: i64,
+    pub y: i64,
+    pub z: i64,
+}
+```

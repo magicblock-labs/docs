@@ -1,0 +1,53 @@
+---
+title: "セットアップ / インストール"
+description: "開発環境を整えて BOLT をインストールする"
+---
+
+## 依存関係をインストールする
+
+#### Rust
+
+[Rust](https://www.rust-lang.org/tools/install) をインストールします
+
+#### Solana
+
+[Solana](https://docs.solanalabs.com/cli/install) をインストールします
+
+#### Node
+
+[NodeJs](https://nodejs.org/) をインストールします
+
+#### Yarn
+
+[Yarn](https://yarnpkg.com/getting-started/install) をインストールします
+
+## 開発用ウォレット
+
+`solana-keygen new` を実行して、デフォルトの場所に keypair を作成します。
+Anchor はこの keypair を使ってプログラムテストを実行します。
+
+## BOLT
+
+BOLT は Anchor の上に構築されているため、Anchor の基本知識があるとゲームロジック構築に必要な土台になります。
+
+[Anchor ドキュメント](https://www.anchor-lang.com/docs/basics) のコアコンセプトを読むことをおすすめします。
+
+BOLT をインストールする
+
+<CodeGroup>
+
+```bash NPM
+npm install -g @magicblock-labs/bolt-cli
+```
+
+```bash Yarn
+yarn global add @magicblock-labs/bolt-cli
+```
+
+</CodeGroup>
+
+インストールを確認する
+
+```bash
+bolt -h
+```

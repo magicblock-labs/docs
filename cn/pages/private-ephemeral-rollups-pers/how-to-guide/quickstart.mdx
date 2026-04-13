@@ -1,0 +1,144 @@
+---
+title: "快速开始"
+description: "通过 MagicBlock 的 ER 和 Intel TDX 上的 Trusted Execution Environment，为任意 Solana 程序状态账户启用隐私。"
+---
+
+import Endpoints from "/cn/snippets/endpoints.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+import Construction from "/cn/snippets/construction.mdx";
+import Software from "/cn/snippets/software.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/cn/snippets/per-rps-code/write-program.mdx";
+import DelegateCode from "/cn/snippets/per-rps-code/delegate.mdx";
+import RestrictCode from "/cn/snippets/per-rps-code/restrict.mdx";
+import AuthorizeCode from "/cn/snippets/per-rps-code/authorize.mdx";
+import DelegationInfo from "/cn/snippets/delegation-info.mdx";
+
+import QuickAccessPER from "/cn/snippets/quick-access-per.mdx";
+import PerCards from "/cn/snippets/per-cards.mdx";
+
+---
+
+<QuickAccessPER />
+<Note>
+  MagicBlock 的 Private Ephemeral Rollup 会在入口处、交易被接受或执行之前，
+  基于节点级 IP 地理围栏、OFAC 制裁名单以及受限司法辖区来执行合规控制。
+  [了解更多](/cn/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)
+</Note>
+
+---
+
+<div id="quickstart" />
+## 分步指南
+
+构建你的程序，并通过权限与委托钩子进行升级，以使用 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 和 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`：
+
+<Steps>
+  <Step title={<a href="#1-write-program">编写你的程序</a>}>
+    像平常一样编写你的 Solana 程序。
+  </Step>
+  <Step
+    title={
+      <a href="#2-restrict">
+        通过程序中的权限钩子添加限制。
+      </a>
+    }
+  >
+    添加用于创建和管理访问控制的权限钩子，[查看详情](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
+  </Step>
+  <Step title={<a href="#3-delegate">在程序中添加委托钩子</a>}>
+    为权限账户和受权限控制的账户添加委托钩子以执行限制。
+    <Validators />
+  </Step>
+  <Step title={<a href="#4-deploy">在 Solana 上部署程序</a>}>
+    使用 Anchor CLI 部署你的 Solana 程序。
+  </Step>
+  <Step
+    title={<a href="#5-authorize">在客户端中实现授权</a>}
+  >
+    对用户消息进行签名，以从 TEE 端点获取授权令牌。
+  </Step>
+  <Step title={<a href="#6-test">执行交易并测试隐私</a>}>
+    请求授权令牌并发送机密交易。
+  </Step>
+</Steps>
+
+---
+
+<div id="rock-paper-scissors-example" />
+## 石头剪刀布示例
+
+<Software />
+<Note>
+  最新的 Permission Program 需要使用
+  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk) 的 SDK 版本。
+  详情请参阅[迁移指南](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103)。
+</Note>
+
+<div id="code-snippets" />
+<div id="code-snippets-section" />
+### 代码片段
+
+<Tabs>
+    <Tab title={<span id="1-write-program">1. 编写程序</span>}>
+        一个简单的石头剪刀布程序，玩家可以做出选择并揭示结果：
+        <WriteProgramCode />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="2-restrict">2. 添加限制</span>}>
+        通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 创建和更新带成员的账户级权限，[查看详情](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)：
+        <RestrictCode />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+        <Tab title={<span id="3-delegate">3. 委托</span>}>
+        通过 MagicBlock 的 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 将账户委托给 TEE 验证器来强制执行隐私，`permission` 和 `permissioned_account` 都必须被委托。
+        <Validators />
+        <DelegateCode />
+
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="4-deploy">4. 部署</span>}>
+        现在你的程序已经升级完成并准备就绪！将其构建并部署到目标集群：
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="5-authorize">5. 授权</span>}>
+        在 TEE 中设置与 ER RPC 的交互：
+        1. 通过 `https://pccs.phala.network/tdx/certification/v4` 验证 TEE RPC 的完整性
+        2. 请求一个授权令牌，以便用户与 TEE 端点交互
+        <AuthorizeCode />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+    <Tab title={<span id="6-test">6. 测试</span>}>
+        使用 Private Ephemeral Rollup 连接测试你的程序：
+
+        `https://devnet-tee.magicblock.app?token=${token}`
+
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ 返回顶部](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<PerCards />
+
+---
+
+<SolanaResources />
+
+---
+
+<div id="magicblock-products" />
+## MagicBlock 产品
+
+import ProductCards from "/cn/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

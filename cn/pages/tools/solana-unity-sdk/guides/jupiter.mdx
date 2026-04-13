@@ -1,0 +1,106 @@
+---
+title: Jupiter V6 集成
+description: 在你的游戏中集成 Jupiter v6 API
+---
+
+## Jupiter
+
+SDK 原生支持 Jupiter V6，并提供了一组实用方法，帮助你轻松获取兑换报价、构建交易以及发送执行兑换所需的交易。
+Jupiter 是 Solana 上核心的流动性聚合器，提供最广泛的代币覆盖范围，并能在任意代币对之间寻找最佳路由。更多细节请参阅官方 [Jupiter 文档](https://station.jup.ag/)。
+
+---
+
+## 执行兑换
+
+创建一个 `IDex` 实例，并传入默认账户：
+
+```csharp
+IDexAggregator dex = new JupiterDexAg(Web3.Account);
+```
+
+获取代币信息：
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("SOL");
+TokenData tokenB = await dex.GetTokenBySymbol("USDC");
+```
+
+获取 1 SOL 的兑换报价：
+
+```csharp
+SwapQuoteAg swapQuote = await dex.GetSwapQuote(
+    tokenA.MintAddress,
+    tokenB.MintAddress,
+    DecimalUtil.ToUlong(1, tokenA.Decimals)
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.OutputAmount, tokenB.Decimals);
+Debug.Log(quote); // 预期收到的 USDC 数量
+```
+
+显示路由路径：
+
+```csharp
+Debug.Log(string.Join(" -> ", swapQuote.RoutePlan.Select(p => p.SwapInfo.Label)));
+
+// Lifinity V2 -> Whirlpool
+```
+
+创建兑换交易：
+
+```csharp
+Transaction tx = await dex.Swap(swapQuote);
+```
+
+签名并发送兑换交易：
+
+```csharp
+await Web3.Wallet.SignAndSendTransaction(tx);
+```
+
+## 使用 Jupiter Payments API
+
+Jupiter Payments API 同样可用，你可以结合 Jupiter 和 SolanaPay，让用户使用任意 SPL 代币付款，并支持以 USDC 或其他代币定价。
+
+创建一个 `IDex` 实例，并传入默认账户：
+
+```csharp
+IDexAggregator dex = new JupiterDexAg(Web3.Account);
+```
+
+获取代币信息：
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("SOL");
+TokenData tokenB = await dex.GetTokenBySymbol("USDC");
+```
+
+获取兑换成 5 USDC 所需 SOL 数量的报价：
+
+```csharp
+SwapQuoteAg swapQuote = await dex.GetSwapQuote(
+    tokenA.MintAddress,
+    tokenB.MintAddress,
+    DecimalUtil.ToUlong(5, tokenB.Decimals),
+    SwapMode.ExactOut
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.InputAmount, tokenA.Decimals);
+Debug.Log(quote); // 预期需要支付的 SOL 数量
+```
+
+创建兑换交易：
+
+```csharp
+Transaction tx = await dex.Swap(swapQuote);
+```
+
+签名并发送兑换交易：
+
+```csharp
+await Web3.Wallet.SignAndSendTransaction(tx);
+```

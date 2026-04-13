@@ -1,0 +1,81 @@
+---
+title: "概要"
+description: "Private Payments API ドキュメント"
+---
+
+import PrivatePaymentApiCard from "/jp/snippets/private-payment-api-card.mdx";
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token Program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    プライベート SPL トークンフローのリファレンスプログラム
+  </Card>
+
+  <PrivatePaymentApiCard />
+</CardGroup>
+
+## 概要
+
+Private Payments API は、Solana と MagicBlock ephemeral rollups をまたいで、入金、送金、出金、mint 初期化用の未署名 SPL トークントランザクションを構築します。また、残高および mint 初期化状態の照会も提供します。正式な公開リファレンスは [payments.magicblock.app/reference](https://payments.magicblock.app/reference) です。
+
+### メタ
+
+- [**Health**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/health) - API の健全性と可用性を確認する
+
+### SPL
+
+- [**Deposit SPL Tokens**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/deposit) - Solana から ephemeral rollup への未署名入金トランザクションを構築する
+- [**Transfer SPL Tokens**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/transfer) - 未署名の公開または非公開 SPL 送金を構築する
+- [**Withdraw SPL Tokens**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - Solana へ戻す未署名出金トランザクションを構築する
+- [**Initialize Mint**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - mint 用の validator-scoped transfer queue を初期化する未署名トランザクションを構築する
+- [**Balance**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - アドレスの base-chain SPL トークン残高を取得する
+- [**Private Balance**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - アドレスの ephemeral-rollup SPL トークン残高を取得する
+- [**Is Mint Initialized**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - mint に validator-scoped transfer queue が ephemeral RPC 上で存在するか確認する
+
+### MCP
+
+- [**MCP**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/mcp) - stateless Streamable HTTP MCP endpoint にアクセスする
+
+```
+┌────────────────────────────────────────────┐
+│ 1. Deposit                                │
+├────────────────────────────────────────────┤
+│ • 未署名の入金トランザクションを構築      │
+│ • Solana base balance → ephemeral rollup  │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 2. Transfer                               │
+├────────────────────────────────────────────┤
+│ • SPL 送金を構築                          │
+│ • base/ephemeral → base/ephemeral         │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 3. Withdraw                               │
+├────────────────────────────────────────────┤
+│ • 未署名の出金を構築                      │
+│ • ephemeral rollup → Solana base balance  │
+└────────────────────────────────────────────┘
+```
+
+## レスポンス形式
+
+トランザクション構築エンドポイントが成功すると、未署名トランザクションのペイロードが返されます:
+
+```json
+{
+  "kind": "deposit",
+  "version": "legacy",
+  "transactionBase64": "base64-encoded-transaction",
+  "sendTo": "base",
+  "recentBlockhash": "blockhash",
+  "lastValidBlockHeight": 284512337,
+  "instructionCount": 3,
+  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
+}
+```

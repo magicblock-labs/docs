@@ -1,0 +1,17 @@
+```typescript Web3.js
+import { createCommitAndUndelegatePermissionInstruction } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+// Build the instruction
+const commitAndUndelegatePermissionIx =
+  createCommitAndUndelegatePermissionInstruction({
+    authority: [payer.publicKey, true], // defined as authority in permission members
+    permissionedAccount: [permissionedAccountKeypair.publicKey, false], // optional signer, since payer is defined as authority in permission members
+  });
+
+// Create a transaction
+const tx = new Transaction().add(commitAndUndelegatePermissionIx);
+
+// Send the transaction
+const txSig = await sendAndConfirmTransaction(connection, tx, [payer]);
+console.log("TX:", txSig);
+```

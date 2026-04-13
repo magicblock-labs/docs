@@ -1,0 +1,42 @@
+### 授权模型
+
+<img class="w-full h-auto max-w-5xl" src="/images/TEE_permission.png" />
+
+Private Ephemeral Rollups 使用 Permission Program 来管理账户及账户组的细粒度隐私控制。它运行在 Solana L1 上，并且可以动态更新。
+
+- **权限组**：通过 CPI 定义任意成员和 ID 的组。一个组会聚合用户以及受其权限约束的账户。
+- **权限**：向组中添加权限。目前权限表示对已委托账户的读取访问；未来可能增加读写分离。
+- **访问**：客户端要访问受权限保护的 ER 状态，需要验证对指定公钥的所有权。验证成功后会获得一个用于查询 ER 的令牌。
+
+import PerEndpoint from "/cn/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+这种基于组的抽象让你能够在一笔交易中原子性地修改多个用户或账户的权限。
+
+<CardGroup cols={2}>
+  <Card
+    title="程序实现"
+    icon="code"
+    href="/cn/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    通过 CPI 添加权限
+  </Card>
+  <Card
+    title="客户端实现"
+    icon="browser"
+    href="/cn/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    远程证明、挑战与访问
+  </Card>
+  <Card
+    title="隐私用例"
+    icon="shield-check"
+    href="/cn/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    构建私密且可验证的应用
+  </Card>
+</CardGroup>

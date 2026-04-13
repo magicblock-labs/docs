@@ -1,0 +1,65 @@
+---
+title: "介绍"
+description: "借助 MagicBlock Ephemeral Rollups 获取实时链上数据"
+---
+
+## MagicBlock 上的预言机
+
+MagicBlock 通过接入 <b>Pyth Lazer</b> 数据源，并以 <b>50–200&nbsp;ms</b> 的间隔（取决于资产）更新 Ephemeral Rollup 账户，从而提供低延迟、高吞吐的预言机数据。
+
+<CardGroup cols={3}>
+  <Card title="在线演示" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
+    实时价格流
+  </Card>
+  <Card title="实现方式" icon="book" href="/cn/pages/tools/oracle/implementation" iconType="duotone">
+    了解如何在链上访问我们的预言机
+  </Card>
+  <Card title="代码示例" icon="code" href="https://github.com/magicblock-labs/real-time-pricing-oracle
+" iconType="duotone">
+    查看我们的 Github 仓库
+  </Card>
+</CardGroup>
+<Note id="endpoints">
+  这个预言机示例使用 Pyth Lazer，但我们也可以为任意数据源构建预言机。
+</Note>
+
+
+## 什么是链上预言机？
+
+链上预言机会提供程序可以信任的、可验证的链下数据。其使用场景涵盖资产价格到事件结果等多种类型。
+
+在 Solana 上，预言机通常通过持续更新链上账户来工作。程序会直接读取这些账户，而无需在执行时调用外部 API。我们使用的是被广泛采用的跨链预言机网络 <b>Pyth</b>。
+
+## 为什么预言机很重要
+
+- **金融**：清算、资金费率、TWAP 等场景中，不准确的报价会带来损失和风险
+- **游戏**：结算体育比赛结果；让游戏内状态与现实世界事件保持同步
+- **可组合性**：可靠的链上数据让程序之间能够安全组合
+
+准确性与延迟会直接影响正确性、安全性和用户体验。
+
+## MagicBlock 上的预言机
+
+MagicBlock 采用标准的预言机模式，将数据写入可组合的链上账户中，但更新频率可达到 <b>50–200&nbsp;ms</b>（取决于资产），相比之下 Solana slot 大约是 <b>400&nbsp;ms</b>。这种延迟表现非常适合清算、跟单交易和其他对时效性要求很高的流程。
+
+### 预言机的两个组成部分
+
+- **数据源**：上游真实数据。我们可以接入任意链上或链下数据源，把 Pyth 尚未覆盖的资产（例如新的 PumpFun 或 Raydium R‑tokens）带入 Ephemeral Rollups。
+- **链上推送器**：处理数据源并将更新写入链上。MagicBlock 的 chain pusher 将会开源。
+
+### 流程
+
+1. 按固定间隔接收 Pyth Lazer 更新（根据资产为 50&nbsp;ms 或 200&nbsp;ms）。
+2. 将更新推送到预定义的链上账户。
+3. 程序直接读取相应账户。
+
+import Endpoints from '/cn/snippets/endpoints.mdx'
+
+<Endpoints />
+
+<Callout type="info">
+  本页是概览。若要查看字节级细节和代码示例，请参阅<a href="/cn/pages/tools/oracle/implementation">实现方式</a>。
+  <br />
+  代码片段刻意使用占位符，以便将重点放在流程本身。
+</Callout>
+

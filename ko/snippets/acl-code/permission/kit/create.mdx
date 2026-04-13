@@ -1,0 +1,39 @@
+```typescript
+import {
+  createCreatePermissionInstruction,
+  type Member,
+  AUTHORITY_FLAG,        // Member can directly modify the permission
+  TX_LOGS_FLAG,          // Member can view transaction logs
+  TX_BALANCES_FLAG,      // Member can view account balances
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+
+const members: Member[] = [
+  {
+    // AUTHORITY_FLAG allows this member to modify permission settings
+    // TX_LOGS_FLAG allows viewing transaction logs
+    flags: AUTHORITY_FLAG | TX_LOGS_FLAG,
+    pubkey: payer.address,
+  },
+];
+
+// Either the authority or permissioned_account can sign the transaction
+// The signer depends on who has AUTHORITY_FLAG in the members list
+const createPermissionIx = await createCreatePermissionInstruction(
+  {
+    permissionedAccount: permissionedAccount.address,
+    payer: payer.address,
+  },
+  {
+    members,
+  }
+);
+
+const tx = transaction([createPermissionIx]);
+const signature = await sendAndConfirmTransaction(
+  client,
+  tx,
+  [payer]
+);
+console.log("TX:", signature);
+```

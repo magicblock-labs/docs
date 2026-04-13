@@ -1,0 +1,172 @@
+---
+title: "快速开始"
+description: "了解如何在 Solana 上使用 MagicBlock VRF SDK 请求并消费链上可验证随机数。"
+---
+
+import Endpoints from "/cn/snippets/endpoints.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+import Software from "/cn/snippets/software.mdx";
+import ExplorerCards from "/cn/snippets/explorer-cards.mdx";
+import RpcCards from "/cn/snippets/rpc-cards.mdx";
+import ValidatorCards from "/cn/snippets/validator-cards.mdx";
+import ServerStatusCards from "/cn/snippets/serverstatus-cards.mdx";
+
+import InitializeCode from "/cn/snippets/roll-dice-code/initialize.mdx";
+import RequestConsumeRandomnessCode from "/cn/snippets/roll-dice-code/request-consume-randomness.mdx";
+import TestCode from "/cn/snippets/roll-dice-code/test.mdx";
+
+import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
+
+---
+
+<QuickAccessVRF />
+
+---
+
+<Note>
+  想在本机端到端运行 VRF？请使用 <a href="/cn/pages/get-started/how-integrate-your-program/local-setup">Local Validator Setup</a> 指南，了解完整本地栈、Surfpool 替代方案以及本地 <code>vrf-oracle</code> 流程。
+</Note>
+
+---
+
+<div id="quickstart" />
+## 分步指南
+
+任何 Solana 程序都可以使用 MagicBlock VRF SDK 在数秒内请求并消费链上可验证随机数。完成本指南后，你将得到一个使用可验证随机数掷骰子的可运行示例。
+
+<Steps>
+  <Step title={<a href="#1-write-program">编写你的程序</a>}>
+    像平常一样编写你的 Solana 程序。
+  </Step>
+  <Step
+    title={
+      <a href="#2-request-%26-consume-randomnness">
+        添加请求和消费随机数的指令。
+      </a>
+    }
+  >
+    添加 CPI 钩子，通过已验证预言机的回调来请求并消费随机数。
+  </Step>
+  <Step title={<a href="#3-deploy">将程序部署到 Solana</a>}>
+    使用 Anchor CLI 部署你的 Solana 程序。
+  </Step>
+  <Step
+    title={<a href="#4-test">执行链上随机数交易。</a>}
+  >
+    发送交易以在链上生成并消费随机数。
+  </Step>
+</Steps>
+
+---
+
+<div id="roll-dice-example" />
+## 掷骰子示例
+
+<img
+  src="/images/gifs/vrf-roll-dice-420w.gif"
+  alt="Roll Dice GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+
+<Software />
+
+<div id="code-snippets" />
+### 代码片段
+
+<Tabs>
+  <Tab title={<span id="1-write-program">1. 编写程序</span>}>
+    一个简单的掷骰子程序，玩家初始化状态账户来存储、请求并消费随机数：
+    
+    <InitializeCode />
+
+    [⬆️ 返回顶部](#code-snippets)
+
+  </Tab>
+  <Tab title={<span id="2-request-%26-consume-randomnness">2. 请求并消费随机数</span>}>
+
+    1. 将带有 Anchor 特性的 `ephemeral_vrf_sdk` 添加到你的程序中
+
+    ```bash
+    cargo add ephemeral_vrf_sdk --features anchor
+    ```
+
+    导入 `vrf`、`create_request_randomness_ix`、`RequestRandomnessParams` 和 `SerializableAccountMeta`：
+
+    ```rust
+    use ephemeral_vrf_sdk::anchor::vrf;
+    use ephemeral_vrf_sdk::instructions::{create_request_randomness_ix, RequestRandomnessParams};
+    use ephemeral_vrf_sdk::types::SerializableAccountMeta;
+    ```
+
+    2. 添加用于请求随机数的 `roll_dice` 指令，以及用于消费随机数的 `callback_roll_dice` 指令及其上下文：
+
+    <RequestConsumeRandomnessCode />
+
+    > `Request Randomness` 是生成一个随机 `hashId` 并附带相关回调指令的过程，用于触发已验证预言机。
+
+    > `Consume Randomness` 是你的程序使用可验证随机数的过程，该随机数由已验证预言机提供并触发。
+
+    [⬆️ 返回顶部](#code-snippets)
+
+  </Tab>
+  <Tab title={<span id="3-deploy">3. 部署</span>}>
+    现在你的程序已经升级完成并准备就绪！将其构建并部署到目标集群：
+    ```bash
+    anchor build && anchor deploy
+    ```
+    [⬆️ 返回顶部](#code-snippets)
+
+  </Tab>
+  <Tab title={<span id="4-test">4. 测试</span>}>
+    准备好执行链上随机数交易吧！
+    ```bash
+    anchor test --skip-build --skip-deploy --skip-local-validator
+    ```
+    运行以下测试：
+    <TestCode />
+    [⬆️ 返回顶部](#code-snippets)
+  </Tab>
+</Tabs>
+
+---
+
+## Solana 浏览器
+
+查看你在 Solana 上的交易和账户信息：
+
+<ExplorerCards />
+
+## Solana RPC 提供商
+
+通过现有 RPC 提供商发送交易和请求：
+
+<RpcCards />
+
+## Solana 验证器仪表板
+
+查看 Solana 验证器基础设施的实时更新：
+
+<ValidatorCards />
+
+## 服务器状态订阅
+
+订阅 Solana 和 MagicBlock 的服务器状态：
+
+<ServerStatusCards />
+
+---
+
+<div id="magicblock-products" />
+## MagicBlock 产品
+
+import ProductCards from "/cn/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

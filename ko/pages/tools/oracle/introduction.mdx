@@ -1,0 +1,65 @@
+---
+title: "소개"
+description: "MagicBlock Ephemeral Rollups로 실시간 온체인 데이터 활용하기"
+---
+
+## MagicBlock의 오라클
+
+MagicBlock은 <b>Pyth Lazer</b> 피드를 수집하고 Ephemeral Rollup 계정을 <b>50–200&nbsp;ms</b> 간격(자산별 상이)으로 업데이트해, 저지연·고처리량의 오라클 데이터를 제공합니다.
+
+<CardGroup cols={3}>
+  <Card title="라이브 데모" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
+    실시간 가격 스트림
+  </Card>
+  <Card title="구현" icon="book" href="/ko/pages/tools/oracle/implementation" iconType="duotone">
+    온체인에서 오라클에 접근하는 방법 알아보기
+  </Card>
+  <Card title="코드 예시" icon="code" href="https://github.com/magicblock-labs/real-time-pricing-oracle
+" iconType="duotone">
+    Github 저장소 보기
+  </Card>
+</CardGroup>
+<Note id="endpoints">
+  이 오라클 예시는 Pyth Lazer를 사용하지만, 원하는 어떤 데이터 소스에 대해서도 오라클을 만들 수 있습니다.
+</Note>
+
+
+## 온체인 오라클이란?
+
+온체인 오라클은 프로그램이 신뢰할 수 있는 검증 가능한 오프체인 데이터를 제공합니다. 사용 사례는 자산 가격부터 이벤트 결과까지 다양합니다.
+
+Solana에서 오라클은 일반적으로 온체인 계정을 계속 업데이트합니다. 프로그램은 이 계정을 직접 읽기 때문에 실행 시 외부 API 호출이 필요 없습니다. 우리는 널리 채택된 크로스체인 오라클 네트워크인 <b>Pyth</b>를 사용합니다.
+
+## 왜 오라클이 중요한가요
+
+- **금융**: 청산, 펀딩, TWAP 같은 상황에서는 부정확한 가격이 손실과 위험을 초래합니다
+- **게임**: 스포츠 경기 결과를 확정하거나 게임 상태를 현실 세계 이벤트와 동기화할 수 있습니다
+- **합성 가능성**: 신뢰할 수 있는 온체인 데이터는 안전한 프로그램 조합을 가능하게 합니다
+
+정확성과 지연 시간은 정확성, 안전성, UX에 직접적인 영향을 줍니다.
+
+## MagicBlock의 오라클
+
+MagicBlock은 표준 오라클 패턴을 따르며 데이터를 합성 가능한 온체인 계정에 기록하지만, 업데이트 주기는 <b>50–200&nbsp;ms</b>(자산별 상이)로 Solana slot의 약 <b>400&nbsp;ms</b>보다 빠릅니다. 이런 지연 특성은 청산, 카피 트레이딩, 기타 시간 민감형 플로에 잘 맞습니다.
+
+### 오라클의 두 가지 구성 요소
+
+- **데이터 소스**: 상위 진실의 원천입니다. 임의의 온체인/오프체인 피드를 수집해 Pyth가 다루지 않는 자산(예: 새로운 PumpFun 또는 Raydium R‑tokens)도 Ephemeral Rollups에 올릴 수 있습니다.
+- **체인 푸셔**: 소스 피드를 처리하고 업데이트를 온체인에 기록합니다. MagicBlock의 chain pusher는 오픈소스로 공개될 예정입니다.
+
+### 흐름
+
+1. Pyth Lazer 업데이트를 고정 간격(자산별 50&nbsp;ms 또는 200&nbsp;ms)으로 받습니다.
+2. 미리 정의된 온체인 계정에 업데이트를 기록합니다.
+3. 프로그램이 해당 계정을 직접 읽습니다.
+
+import Endpoints from '/ko/snippets/endpoints.mdx'
+
+<Endpoints />
+
+<Callout type="info">
+  이 페이지는 개요입니다. 바이트 수준의 세부 내용과 코드 예시는 <a href="/ko/pages/tools/oracle/implementation">구현</a> 문서를 참고하세요.
+  <br />
+  코드 스니펫은 흐름 자체에 집중할 수 있도록 의도적으로 플레이스홀더를 사용합니다.
+</Callout>
+

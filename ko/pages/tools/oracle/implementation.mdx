@@ -1,0 +1,54 @@
+---
+title: "구현"
+description: "Pyth Lazer 가격 피드 계정을 도출하고 바이트를 디코딩하기"
+---
+
+## 가격 피드 계정 도출하기
+
+다음 seeds를 사용해 가격 계정의 PDA를 도출합니다.
+
+- **"price feed"** (buffer)
+- **"pyth-lazer"** (buffer)
+- **feedID** (buffer): 원하는 자산입니다. 지원되는 피드는 [여기](https://github.com/magicblock-labs/real-time-pricing-oracle/blob/main/pyth_lazer_list.json)에서 확인할 수 있습니다.
+- **price program id**: `PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd`
+
+```ts
+// seeds: ["price_feed", "pyth-lazer", feed_id_as_string]
+function deriveFeedAddress (feedId: string) {
+  const [addr] = web3.PublicKey.findProgramAddressSync(
+  [Buffer.from('price_feed'), Buffer.from('pyth-lazer'), Buffer.from(feedId)],
+  PROGRAM ID
+  );
+  return addr
+}
+```
+
+## 계정 파싱하기
+
+온체인 계정에는 헤더와 가격 데이터 필드가 저장됩니다. 여기서는 원시 바이트를 읽고 디코딩합니다.
+
+- **Price offset**: 시작 지점에서 73바이트
+- **Type**: 부호 있는 64비트 정수(`i64`)
+- **Apply exponent**: 계정의 exponent를 사용해 원시 가격을 스케일링
+
+```ts
+const addr = deriveFeedAddress(feed.id);
+const PRICE_OFFSET = 73;
+
+const dv = new DataView(ai.data.buffer, ai.data.byteOffset, ai.data.byteLength);
+const raw = dv.getBigUint64(PRICE_OFFSET, true);
+const price = Number(raw) * Math.pow(10, feed.exponent);
+```
+
+<CardGroup cols={3}>
+  <Card title="라이브 데모" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
+    실시간 가격 스트림
+  </Card>
+  <Card title="구현" icon="book" href="/ko/pages/tools/oracle/implementation" iconType="duotone">
+    온체인에서 오라클에 접근하는 방법 알아보기
+  </Card>
+  <Card title="코드 예시" icon="code" href="https://github.com/magicblock-labs/real-time-pricing-oracle
+" iconType="duotone">
+    Github 저장소 보기
+  </Card>
+</CardGroup>

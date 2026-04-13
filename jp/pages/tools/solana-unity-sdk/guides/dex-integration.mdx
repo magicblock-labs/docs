@@ -1,0 +1,101 @@
+---
+title: "Orca との DEX 統合"
+description: "SDK は Orca をネイティブにサポートしており、スワップ、ポジション作成、資金管理、Whirlpools とのやり取りに必要なトランザクションを簡単に構築できます。"
+---
+
+## Orca
+
+Orca は、Solana ブロックチェーン上で暗号資産を取引する最も簡単な方法の一つです。詳細については公式 [Orca ドキュメント](https://docs.orca.so/orca-for-traders/master) と [Orca Developer Portal](https://orca-so.gitbook.io/orca-developer-portal/orca/welcome) を参照してください。
+
+## スワップを実行する
+
+- デフォルトアカウントと RPC クライアントインスタンスを指定して IDex インスタンスを作成します：
+
+```csharp
+IDex dex = new OrcaDex(
+    WalletH.Account,
+    WalletH.Rpc
+)
+```
+
+- token 情報を取得します：
+
+```csharp
+TokenData tokenA = await dex.GetTokenBySymbol("USDC");
+TokenData tokenB = await dex.GetTokenBySymbol("ORCA");
+```
+
+- whirlpool を検索します：
+
+```csharp
+Pool whirlpool = await dex.FindWhirlpoolAddress(tokenA.MintAddress, tokenB.MintAddress)
+```
+
+- 1 USDC のスワップ見積もりを取得します：
+
+```csharp
+SwapQuote swapQuote = await dex.GetSwapQuoteFromWhirlpool(
+    whirlpool.Address,
+    DecimalUtil.ToUlong(1, tokenA.Decimals),
+    tokenA.MintAddress,
+    slippageTolerance: 0.1,
+);
+```
+
+```csharp
+var quote = DecimalUtil.FromBigInteger(swapQuote.EstimatedAmountOut, tokenB.Decimals);
+Debug.Log(quote); // 受け取れる見込みの Orca token 数量
+```
+
+- スワップトランザクションを作成します：
+
+```csharp
+Transaction tx = await dex.SwapWithQuote(
+    whirlpool,
+    swapQuote
+);
+```
+
+- スワップトランザクションに署名して送信します：
+
+```csharp
+await WalletH.Base.SignAndSendTransaction(tx);
+```
+
+## ORCA/USDC whirlpool のポジションを開き、流動性を追加する
+
+以下は、プールに 5 ORCA と 5 USDC を追加し、そのポジションを表す metaplex NFT を発行する例です。
+
+```csharp
+OrcaDex dex = new OrcaDex(
+    WalletH.Account,
+    WalletH.Rpc
+);
+
+var orcaToken = await dex.GetTokenBySymbol("ORCA");
+var usdcToken = await dex.GetTokenBySymbol("USDC");
+
+var whirlpool = await dex.FindWhirlpoolAddress(
+  usdcToken.MintAddress,
+  orcaToken.MintAddress
+);
+
+Account mint = new Account();
+
+Transaction tx = await dex.OpenPositionWithLiquidity(
+    whirlpool,
+    mint,
+    -1792,
+    1152,
+    DecimalUtil.ToUlong(5, tokenA.Decimals),
+    DecimalUtil.ToUlong(5, tokenB.Decimals),
+    commitment: Commitment.Confirmed
+);
+
+var txSer = tx.Build(new List<Account>() {
+  WalletH.Account,
+  mint
+});
+
+await WalletH.Base.SignAndSendTransaction(tx);
+```

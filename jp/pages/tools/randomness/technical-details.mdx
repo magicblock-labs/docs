@@ -1,0 +1,28 @@
+---
+title: "技術詳細"
+description: "MagicBlock が検証可能なランダムネスをどのように統合しているか"
+---
+
+ランタイムの概要については [Ephemeral Rollup ドキュメント](/jp/pages/get-started/introduction/ephemeral-rollup) を参照してください。
+
+MagicBlock は `ephemeral_vrf_sdk` を通じて、ランダムネスを第一級のプリミティブとして提供します。Rollup プログラムは `caller_seed` と `consume_randomness` のようなコールバックを使って `create_request_randomness_ix`（`RequestRandomness` 命令）を呼び出します。その後、EphemeralVrf ネットワークのオラクルが `ProvideRandomness` 命令を実行して結果を返します。
+
+乱数は Curve25519 の Ristretto グループ上に構築された VRF によって生成され、RFC&nbsp;9381 に記載された Schnorr 風署名で証明されます。証明と出力は、MagicBlock VRF signer PDA からの署名付きコールバックによって rollup に返されます。プログラムは呼び出し元を検証し、その後ゲームロジックでランダムネスを使用します。
+
+`random_u32`、`random_u8_with_range`、`random_bool` のようなヘルパーユーティリティを使うと、`[u8; 32]` の出力を扱いやすい値に簡単に変換できます。リクエストと消費のステップはどちらも一時的な実行ウィンドウ内で行われるため、ユーザーは外部サーバーに依存することなく、検証可能に公平なリアルタイム結果を得られます。
+
+## フロー
+
+<img class="w-full h-auto max-w-5xl" src="/images/vrf-flow.png" />
+
+フローは「ランダムネスのリクエスト」から始まります。
+
+1. あなたのプログラムは CPI で MagicBlock VRF プログラムを呼び出し、リクエストをキューに追加します。
+2. ランダムネスのリクエストがキューに入ると、オラクルがそのリクエストを処理し、ランダムネス計算を行います。
+3. 完了すると、結果と証明が MagicBlock VRF プログラムに返されます。
+4. 証明が検証された後、VRF プログラムはあらかじめ定義された関数を通じてあなたのプログラムへコールバックし、ランダムネスを「消費」させます。
+
+<Note>
+  EphemeralVrf のコードベースは現在も活発に開発中で、まだ監査されていません。
+  本番の rollup に統合する前に、十分にテストしてください。
+</Note>

@@ -1,0 +1,17 @@
+import Routers from "/ko/snippets/routers.mdx";
+import KitCode from "/ko/snippets/magic-router-code/kit.mdx";
+import Web3jsCode from "/ko/snippets/magic-router-code/web3js.mdx";
+
+동적으로 트랜잭션을 보내기 전에 먼저 Magic Router 연결을 초기화하세요.
+
+<Routers />
+
+트랜잭션 초기화, 전송, 확인에 사용할 선호 SDK를 선택하세요。
+
+- `ephemeral-rollups-kit` 는 `@solana/kit` 용
+- `ephemeral-rollups-sdk` 는 `@solana/web.js` 용
+
+<CodeGroup>
+  <KitCode />
+  <Web3jsCode />
+</CodeGroup>

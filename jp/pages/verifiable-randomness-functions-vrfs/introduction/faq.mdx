@@ -1,0 +1,20 @@
+---
+title: "よくある質問"
+description: "検証可能なランダムネスに関するよくある質問"
+---
+
+### ランダムネスに block hashes を使わないのはなぜですか？
+
+Block hashes はマイナーやバリデータによって予測または操作される可能性があり、公平なゲームプレイには向きません。MagicBlock の VRF は、ランダムネスが block production とは独立して生成されたことを証明します。
+
+### ランダムネス callback はどのくらい速いですか？
+
+VRF は [ephemeral rollup](/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) の execution window 内で動作するため、結果は通常、外部 polling なしで 1 回の transaction round の中で利用可能になります。
+
+### ランダムネス proof は監査できますか？
+
+はい。各 request には、VRF signer と同じ cryptography を使って誰でもオンチェーン検証できる proof が含まれています。この透明性により、プレイヤーは公平性を確認できます。
+
+### オラクルは誰が運営していますか？
+
+EphemeralVrf は、on-chain queues を通じて管理される permissioned set of oracles を利用します。rollup を特定の queue に委任することで、信頼できるオペレーターに request を処理してもらえます。

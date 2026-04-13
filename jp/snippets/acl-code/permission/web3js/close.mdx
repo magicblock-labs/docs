@@ -1,0 +1,17 @@
+```typescript
+import { createClosePermissionInstruction } from "@magicblock-labs/ephemeral-rollups-sdk";
+import { Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+
+// Close the permission account and reclaim lamports
+// IMPORTANT: The permission must be undelegated to Solana first
+// If delegated, call commit_and_undelegate before closing
+const closePermissionIx = createClosePermissionInstruction({
+  payer: payer.publicKey,  // Receives reclaimed lamports
+  authority: [payer.publicKey, true],  // Authority signer (has AUTHORITY_FLAG)
+  permissionedAccount: [permissionedAccount.publicKey, false],  // or permissioned_account can sign
+});
+
+const tx = new Transaction().add(closePermissionIx);
+const txSig = await sendAndConfirmTransaction(connection, tx, [payer]);
+console.log("TX:", txSig);
+```

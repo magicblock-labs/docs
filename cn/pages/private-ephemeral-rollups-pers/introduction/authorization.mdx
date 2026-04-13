@@ -1,0 +1,28 @@
+---
+title: "授权"
+description: "通过链上账户级限制，为用户组定制授权访问。"
+---
+
+import PerCards from "/cn/snippets/per-cards.mdx";
+
+---
+
+### 授权模型
+
+<img class="w-full h-auto max-w-5xl" src="/images/TEE_permission.png" />
+
+Private Ephemeral Rollups 使用 Permission Program 来管理账户及账户组的细粒度隐私控制。它运行在 Solana L1 上，并且可以实时更新。
+
+- **权限组**：通过 CPI 定义具有任意成员和 ID 的组。一个组会聚合用户以及受其权限管辖的账户。
+- **权限**：向组中添加权限。目前一个权限意味着对已委托账户的读取访问；未来可能会增加读写分离。
+- **访问**：客户端要访问受权限控制的 ER 状态，必须验证其拥有指定公钥。验证成功后会获得一个用于查询 ER 的令牌。
+
+import PerEndpoint from "/cn/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+这种基于组的抽象让你可以在单笔交易中原子性地修改多个用户或账户的权限。
+
+---
+
+<PerCards />

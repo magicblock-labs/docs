@@ -1,0 +1,127 @@
+---
+title: "Ephemeral Rollup"
+description: "高性能でコンポーザブルなアプリケーション向けのスケーリングソリューション"
+---
+
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
+
+MagicBlock の中核となる考え方は、**Solana Virtual Machine (SVM) のアカウントベース構造と並列実行** を活用して状態管理を最適化することです。状態を **クラスター** として構成することで、ユーザーは **1 つまたは複数のアカウントをロック** し、状態実行を一時的に **専用の補助レイヤー** に移せます。これを **"ephemeral rollup" (ER)** と呼びます。
+
+### **仕組み**
+
+1. **状態の委任** – ユーザーは状態アカウントを ephemeral rollup にロックし、独立して動作する設定可能な runtime を有効にします。
+2. **Sequencer 制御** – sequencer はこの rollup 内で一時的に状態を変更します。制約に違反した場合、その状態は L1 上で **強制的に巻き戻され**、ロック解除されます。
+3. **並列読み取りアクセス** – アカウントが委任されていても、ベースレイヤー上のトランザクションは依然として **その状態を読み取る** ことができ、互換性が保たれます。委任されていないアカウントは引き続き **変更可能で影響を受けません**。
+
+### **Ephemeral Rollup の機能**
+
+ephemeral rollup は **専用の SVM runtime** として機能し、トランザクションのスループットを大幅に向上させます。この runtime は次のように **カスタマイズ** できます。
+
+- ✅ **Gasless Transactions** – スケーラビリティと大規模普及を実現
+- ✅ **より速いブロックタイム** – シームレスな UX のためのリアルタイム操作を可能にする
+- ✅ **統合スケジューリング（Ticking メカニズム）** – **Clockwork** のような自動化を内蔵し、スケジュール実行を可能にする
+
+プログラムと資産はベースレイヤー上にそのまま存在し、完全な互換性を保ちます。ベースレイヤー側の改善や進化は、プログラムを変更したり再デプロイしたりすることなく即座に利用できます。
+
+- ✅ **プログラムと状態の同期** – 断片化なし。状態とプログラムは既存のあらゆるプロトコルや資産と連携可能
+- ✅ **水平スケーリング** – 必要に応じて複数の rollup を起動し、何百万件ものトランザクションを処理
+- ✅ **馴染みのあるツール群** – 既存の言語、ライブラリ、テストツールをそのまま再利用可能
+
+<Card title="シームレスなユーザー体験">
+  これらすべては **エンドユーザーに対して透過的に** 行われます。**専用 RPC
+  プロバイダー** がトランザクションを **ベースレイヤーと複数の ephemeral
+  rollup に並列で** 動的ルーティングし、実行を最適化します。
+</Card>
+
+[ホワイトペーパー](https://arxiv.org/abs/2311.02650) では、このアーキテクチャとスケーリング解決策が詳しく説明されています。
+
+## トランザクションはどのように実行されるのか？
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
+トランザクションが専用 RPC 経由で送信されると、provisioner が delegation イベントを検知し、設定に応じて runtime のプロビジョニングを管理します。以下は ephemeral rollup におけるトランザクション実行の概要です。
+
+<Steps>
+  <Step title="委任">
+    状態アカウントは Delegation Program を通じて Ephemeral Rollup に委任され、
+    寿命や更新頻度などのパラメータが指定されます。
+  </Step>
+  <Step title="トランザクション実行">
+    トランザクションは RPC ルーターによって、適切な実行レイヤー
+    （base または Ephemeral）にルーティングされます。
+  </Step>
+  <Step title="状態コミット">
+    operator は ephemeral 状態を新しい状態や関連ポインタとともに
+    定期的にベースレイヤーへコミットします。状態はホワイトペーパーで説明
+    されている fraud-proof メカニズムで確定されます。
+  </Step>
+  <Step title="継続的なトランザクション実行">
+    トランザクションは引き続き RPC ルーターによって適切な実行レイヤー
+    （base または Ephemeral）へルーティングされます。
+  </Step>
+  <Step title="最終コミットと委任解除">
+    Ephemeral 状態はベースレイヤーへコミットされ、アカウントは
+    Delegation Program を通じて元の所有者へ undelegate されます。
+  </Step>
+</Steps>
+
+## 追加リソース
+
+• [ホワイトペーパー](https://arxiv.org/abs/2311.02650)
+
+• [Breakpoint 2023 でのプレゼンテーション](https://t.co/P8SEeSEb8j)
+
+• [a16z CSX Demo Day](https://www.youtube.com/watch?v=UFUlv-gIBTk)
+
+### 次に読むもの
+
+<CardGroup cols={2}>
+  <Card
+    title="なぜ MagicBlock なのか？"
+    icon="wand"
+    href="/jp/pages/get-started/introduction/why-magicblock"
+    iconType="duotone"
+  >
+    MagicBlock で構築する理由を知る
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/jp/pages/get-started/introduction/smart-router"
+    iconType="duotone"
+  >
+    Magic Router の仕組みを学ぶ
+  </Card>
+  <Card
+    title="構築"
+    icon="hammer"
+    href="/jp/pages/get-started/how-integrate-your-program/overview"
+    iconType="duotone"
+  >
+    Rust、Anchor、Typescript で試してみる
+  </Card>
+  <Card
+    title="ユースケース"
+    icon="star"
+    href="/jp/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    事例から新しいアイデアを得る
+  </Card>
+  <Card
+    title="フレームワークと SDK"
+    icon="code"
+    href="/jp/pages/tools/introduction"
+    iconType="duotone"
+  >
+    フレームワークと SDK を深く知る
+  </Card>
+  <Card
+    title="プライバシー"
+    icon="shield-check"
+    href="/jp/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    TEE でプライベートかつ検証可能なアプリを構築する
+  </Card>
+</CardGroup>

@@ -1,0 +1,73 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Build an unsigned transaction that deposits SPL tokens from Solana into an ephemeral rollup."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/v1/spl/deposit": {
+      "post": {
+        "summary": "Deposit SPL Tokens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner": { "type": "string" },
+                  "cluster": { "type": "string" },
+                  "mint": { "type": "string" },
+                  "amount": { "type": "integer", "minimum": 1 },
+                  "validator": { "type": "string" },
+                  "initIfMissing": { "type": "boolean" },
+                  "initVaultIfMissing": { "type": "boolean" }
+                },
+                "required": ["owner", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unsigned serialized transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "kind": { "type": "string" },
+                    "transactionBase64": { "type": "string" },
+                    "sendTo": { "type": "string" },
+                    "recentBlockhash": { "type": "string" },
+                    "lastValidBlockHeight": { "type": "integer" },
+                    "instructionCount": { "type": "integer" },
+                    "requiredSigners": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "validator": { "type": "string" }
+                  },
+                  "required": ["kind", "transactionBase64", "requiredSigners"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Build error"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    }
+  }
+}

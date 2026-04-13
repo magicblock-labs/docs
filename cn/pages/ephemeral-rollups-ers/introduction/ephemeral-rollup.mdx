@@ -1,0 +1,46 @@
+---
+title: "委托、提交与取消委托"
+description: "实时执行交易并同步状态。"
+---
+
+import Validators from "/cn/snippets/notes/validators.mdx";
+
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
+
+[MagicBlock 的 Ephemeral Rollup](/cn/pages/overview/additional-information/whitepaper) **利用 Solana Virtual Machine (SVM) 基于账户的结构与并行执行能力** 来优化状态管理。通过将状态组织为 **集群**，用户可以 **锁定一个或多个账户**，并暂时将状态执行转移到一个 **专用辅助层**，也就是 “Ephemeral Rollup (ER)”。一个动态 fraud-proof 机制通过去中心化 Security Committee 实现快速状态最终确认，详见[白皮书](/public/Ephemeral_Rollups_Fraud_Proof.pdf)。
+
+---
+
+## 使用 ER 实时执行交易的账户生命周期：
+
+<img
+  class="w-full h-auto max-w-5xl"
+  src="/images/magicblock-delegation-lifecycle.png"
+/>
+
+<Steps>
+  <Step title="委托账户">
+    状态账户必须首先被委托给特定的 ER validator，这通过将账户 owner 改为 [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 并指定 ER validator、账户生命周期和同步频率等参数来完成。
+    <Validators />
+
+  </Step>
+  <Step title="实时执行交易">
+    已委托的状态账户可以通过直接在 ER 上执行交易，或通过 [Magic
+    Router](/cn/pages/ephemeral-rollups-ers/introduction/magic-router). The
+    Router](/cn/pages/ephemeral-rollups-ers/introduction/magic-router) 实时更新。**ER 上的第一笔交易会把已委托账户** 从 base layer 克隆到 ephemeral rollup。
+  </Step>
+  <Step title="提交状态">
+    operator 会将 ephemeral 状态 **定期或按需** 提交到 base layer，包括新状态和相关指针。账户状态会通过白皮书中描述的 fraud-proof 机制完成最终确认。
+  </Step>
+  <Step title="持续实时执行交易">
+    已委托账户的状态可以持续在 ER 上直接更新，或通过 [Magic
+    Router](/cn/pages/ephemeral-rollups-ers/introduction/magic-router).
+  </Step>
+  <Step title="取消委托账户">
+    已委托账户的状态会通过 ER validator 提交到 base layer，账户 owner 会从 [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 恢复为原始 owner。
+  </Step>
+</Steps>

@@ -1,0 +1,259 @@
+---
+title: "프로그램에 Sessions 통합하기"
+description: "Solana Programs에 sessions를 통합하고 관리하기"
+---
+
+이 가이드는 간단한 counter 프로그램을 예제로 사용해 Session Keys를 Solana Anchor 프로그램에 통합하는 방법을 설명합니다.
+
+## 설치
+
+먼저 `Cargo.toml`에 `session-keys` crate를 추가합니다.
+
+```toml
+[dependencies]
+session-keys = { version = "1.0.0", features = ["no-entrypoint"] }
+```
+
+또는 cargo 명령을 사용합니다.
+
+```bash
+cargo add session-keys --features no-entrypoint
+```
+
+## 사용법
+
+1. `session-keys` 가져오기:
+```rust
+   use session_keys::{SessionError, SessionToken, session_auth_or, Session};
+```
+이 줄은 `session-keys` crate에서 필요한 구성 요소를 가져옵니다.
+
+2. `Session` trait 파생하기:
+```rust
+   #[derive(Accounts, Session)]
+   pub struct Increment<'info> {
+     #[account(
+        mut, 
+        seeds = [ COUNTER_SEED, counter.authority.key().as_ref() ], 
+        bump
+     )]
+     pub counter: Account<'info, Counter>,
+     ...
+   }
+```
+`Increment` 구조체에 `Session` trait를 파생하면 session 기능이 활성화됩니다.
+
+3. session token 계정 정의하기:
+```rust
+   #[session(
+       signer = signer,
+       authority = counter.authority.key() 
+   )]
+   pub session_token: Option<Account<'info, SessionToken>>,
+```
+여기서는 선택적 `SessionToken` 계정을 정의하고 session의 signer와 authority를 지정합니다.
+- `session_token.authority`: session token을 만든 계정
+- `counter.authority.key()`: counter를 만든 계정
+authority 조건은 session token이 counter와 동일한 사용자가 만들었는지 확인합니다.
+
+4. `session_auth_or` 매크로 사용하기:
+```rust
+   #[session_auth_or(
+       ctx.accounts.counter.authority.key() == ctx.accounts.signer.key(),
+       SessionError::InvalidToken
+   )]
+   pub fn increment(ctx: Context<Increment>) -> Result<()> {
+       ...
+   }
+```
+이 매크로는 `increment` 함수에 적용됩니다.
+유효한 session token이 있는지 확인하고, 없으면 signer가 counter의 authority인지 검증합니다.
+
+## 전체 예제
+
+아래는 session keys를 사용하는 counter 프로그램의 전체 예제입니다.
+각 사용자는 자신의 counter 계정을 가지므로, session keys로 인증이 어떻게 이루어지는지 보여 줄 수 있습니다.
+
+```rust
+use anchor_lang::prelude::*;
+use session_keys::{SessionError, SessionToken, session_auth_or, Session};
+
+declare_id!("...");
+const COUNTER_SEED: &[u8] = b"counter";
+
+#[program]
+pub mod counter_session {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter: &mut Counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        counter.authority = *ctx.accounts.owner.key;
+        Ok(())
+    }
+
+    #[session_auth_or(
+        ctx.accounts.counter.authority.key() == ctx.accounts.signer.key(),
+        SessionError::InvalidToken
+    )]
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter: &mut Counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(
+        init, 
+        payer = owner, 
+        space = Counter::INIT_SPACE + 8 , 
+        seeds = [ COUNTER_SEED, owner.key().as_ref() ], bump
+    )]
+    pub counter: Account<'info, Counter>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts, Session)]
+pub struct Increment<'info> {
+    #[account(
+        mut, 
+        seeds = [ COUNTER_SEED, counter.authority.key().as_ref() ], 
+        bump
+    )]
+    pub counter: Account<'info, Counter>,    
+    #[session(
+        signer = signer,
+        authority = counter.authority.key() 
+    )]
+    pub session_token: Option<Account<'info, SessionToken>>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct Counter {
+    pub authority: Pubkey,
+    pub count: u64,
+}
+```
+
+## 테스트
+
+아래는 session keys로 counter 프로그램을 테스트하는 예제입니다.
+
+```typescript
+import * as anchor from "@project-serum/anchor";
+import { Program } from "@project-serum/anchor";
+import { CounterSession } from "../target/types/counter_session";
+import { createSessionToken } from "@session-keys/anchor";
+import { expect } from "chai";
+
+describe("counter_session", () => {
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+
+  const program = anchor.workspace.CounterSession as Program<CounterSession>;
+
+  let counterPDA: anchor.web3.PublicKey;
+  let sessionToken: anchor.web3.PublicKey;
+
+  it("Initializes the counter", async () => {
+    const [pda] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from("counter"), provider.wallet.publicKey.toBuffer()],
+      program.programId
+    );
+    counterPDA = pda;
+
+    await program.methods
+      .initialize()
+      .accounts({
+        counter: counterPDA,
+        owner: provider.wallet.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    const counterAccount = await program.account.counter.fetch(counterPDA);
+    expect(counterAccount.count).to.equal(0);
+    expect(counterAccount.authority.toString()).to.equal(provider.wallet.publicKey.toString());
+  });
+
+  it("Increments the counter without session", async () => {
+    await program.methods
+      .increment()
+      .accounts({
+        counter: counterPDA,
+        signer: provider.wallet.publicKey,
+      })
+      .rpc();
+
+    const counterAccount = await program.account.counter.fetch(counterPDA);
+    expect(counterAccount.count).to.equal(1);
+  });
+
+  it("Increments the counter with session token", async () => {
+    await program.methods
+      .increment()
+      .accounts({
+        counter: counterPDA,
+        sessionToken: sessionToken,
+        signer: provider.wallet.publicKey,
+      })
+      .rpc();
+
+    const counterAccount = await program.account.counter.fetch(counterPDA);
+    expect(counterAccount.count).to.equal(2);
+  });
+
+  it("fails to increment with wrong session token owner", async () => {
+    const user = anchor.web3.Keypair.generate();
+    await topUp(user);
+  
+    let counterPDA = await createCounterPDA(user.publicKey);    
+    await createCounter(user);
+
+    const secondUser = anchor.web3.Keypair.generate();
+    await topUp(secondUser);
+    const { sessionSigner, sessionToken } = await createSessionSigner(secondUser);    
+    
+    try {
+      await increment_with_session(counterPDA, sessionSigner, sessionToken);
+      assert(false, "Expected to fail");
+    } catch (err) {}
+
+    const counterData = await program.account.counter.fetch(counterPDA);
+    assert(counterData.count.eq(new anchor.BN(0)));
+  });
+});
+```
+
+이 테스트 스위트는 counter 초기화, session 없이 increment 수행, session token 생성, 그리고 session token을 사용한 increment를 보여 줍니다.
+마지막 테스트는 counter 소유자만 increment할 수 있음을 보장하므로 중요합니다.
+
+## 로컬에서 테스트하기
+
+`solana-test-validator`로 로컬 테스트를 하려면 session keys program과 account를 함께 지정해 시작해야 합니다.
+
+1. Solana CLI가 DEVNET을 가리키는지 확인합니다:
+```
+solana config set --url https://api.devnet.solana.com
+```
+
+2. Session Keys program을 로컬 파일로 dump 합니다:
+```
+solana program dump KeyspM2ssCJbqUhQ4k7sveSiY4WjnYsrXkC8oDbwde5 ./session-keys.so
+```
+
+3. session keys program과 account를 포함해 `solana-test-validator`를 시작합니다:
+> `-r` - ledger를 genesis로 재설정
+> `-ud` - Solana JSON RPC의 URL 또는 moniker (`-ud = DEVNET`)
+> `--clone` - cluster에서 account를 복사
+> `--bpf-program` - genesis 설정에 SBF program을 추가
+```
+solana-test-validator -ud --clone KeyspM2ssCJbqUhQ4k7sveSiY4WjnYsrXkC8oDbwde5 -r --bpf-program KeyspM2ssCJbqUhQ4k7sveSiY4WjnYsrXkC8oDbwde5 ./session-keys.so
+```

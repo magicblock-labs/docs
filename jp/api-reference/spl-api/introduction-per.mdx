@@ -1,0 +1,101 @@
+---
+title: "紹介"
+description: "Private Ephemeral SPL Token API ドキュメント"
+---
+
+## 概要
+
+Private Ephemeral SPL Token API を使うと、MagicBlock の Ephemeral Rollup 上で SPL token トランザクションを構築できます。この API は、ephemeral token アカウント、入金、出金、委任操作を管理するためのエンドポイントを提供します。
+
+### ヘルスチェックと設定
+
+- [**Root**](/jp/api-reference/spl-api/root) - API のヘルス状態を確認する
+- [**Get Config**](/jp/api-reference/spl-api/get-config) - API の設定情報を取得する
+
+### セットアップと初期化
+
+- [**Initialize Global Vault**](/jp/api-reference/spl-api/initialize-global-vault) - token mint 用の Global Vault を設定する
+- [**Initialize ATA for Global Vault**](/jp/api-reference/spl-api/initialize-ata) - Global Vault の token アカウントを初期化する
+
+### Token 操作
+
+- [**Initialize ATA**](/jp/api-reference/spl-api/initialize-ata) - 送信者と受信者に必要な token アカウントを初期化する
+- [**Initialize Ephemeral ATA**](/jp/api-reference/spl-api/initialize-ephemeral-ata) - 送信者と受信者に必要な ephemeral token アカウントを初期化する
+- [**Deposit SPL Tokens**](/jp/api-reference/spl-api/deposit-spl-tokens) - token を ephemeral アカウントへ入金する
+- [**Delegate Ephemeral ATA**](/jp/api-reference/spl-api/delegate-ephemeral-ata) - ephemeral アカウントを Delegation Program に委任する
+- [**Transfer SPL Tokens**](/jp/api-reference/spl-api/transfer-ephemeral-ata) - SPL checked transfer を使ってアカウント間で token を転送する（**注意:** 転送前に Ephemeral ATA を初期化し、委任しておく必要があります）
+- [**Undelegate Ephemeral ATA**](/jp/api-reference/spl-api/undelegate-ephemeral-ata) - ephemeral アカウントの委任を解除する
+- [**Withdraw SPL Tokens**](/jp/api-reference/spl-api/withdraw-spl-tokens) - ephemeral アカウントから token を引き出す
+
+### 権限管理
+
+- [**Create Ephemeral ATA Permission**](/jp/api-reference/spl-api/create-ephemeral-ata-permission) - ephemeral ATA 用の権限アカウントを作成する
+- [**Delegate Ephemeral ATA Permission**](/jp/api-reference/spl-api/delegate-ephemeral-ata-permission) - アクセス制御を適用するため、ephemeral ATA の権限を Delegation Program に委任する
+- [**Reset Ephemeral ATA Permission**](/jp/api-reference/spl-api/reset-ephemeral-ata-permission) - ephemeral ATA 上の権限フラグをリセットする
+- [**Undelegate Ephemeral ATA Permission**](/jp/api-reference/spl-api/undelegate-ephemeral-ata-permission) - アカウントを閉じる前に ephemeral ATA の権限委任を解除する
+
+## Private SPL Token の流れ
+
+プライベート token 転送の一般的な流れは次のとおりです。
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ ステップ 1: 基盤を初期化する（未作成の場合）                      │
+├─────────────────────────────────────────────────────────────────────┤
+│ • token mint 用の Global Vault を初期化する                         │
+│ • Global Vault ATA を初期化する                                     │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ ステップ 2: ユーザーアカウントを初期化する（未作成の場合）         │
+├─────────────────────────────────────────────────────────────────────┤
+│ • 送信者 ATA を初期化する                                           │
+│ • 受信者 ATA を初期化する                                           │
+│ • 送信者 Ephemeral ATA を初期化する                                 │
+│ • 受信者 Ephemeral ATA を初期化する                                 │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ ステップ 3: 権限を設定する                                          │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Ephemeral ATA 用の権限を作成する                                  │
+│ • 権限を委任する                                                    │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ ステップ 4: 入金して委任する                                        │
+├─────────────────────────────────────────────────────────────────────┤
+│ • SPL token を Global Vault に入金する                              │
+│ • 送信者と受信者の Ephemeral ATA を委任する                         │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ ステップ 5: プライベート転送                                        │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Ephemeral ATA 間で token を転送する（送信者 → 受信者）            │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│ ステップ 6: 委任解除して引き出す                                    │
+├─────────────────────────────────────────────────────────────────────┤
+│ • Ephemeral ATA の委任を解除する                                    │
+│ • Ephemeral ATA から SPL token を引き出す                           │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## レスポンス形式
+
+### トランザクションレスポンス（POST エンドポイント）
+
+成功した POST レスポンスはすべて、次の構造のトランザクションオブジェクトを返します。
+
+```json
+{
+  "transaction": "base64-encoded-transaction",
+  "message": "Transaction created successfully"
+}
+```
+
+### ステータスレスポンス（GET エンドポイント）
+
+GET エンドポイントは、それぞれのエンドポイント固有の設定情報と状態情報を返します。

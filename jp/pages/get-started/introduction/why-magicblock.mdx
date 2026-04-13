@@ -1,0 +1,113 @@
+---
+title: なぜ MagicBlock なのか？
+description: "Solana 上のリアルタイムアプリケーション向け高性能エンジン"
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/yfgDZJJvydU?si=3k8ndg9Z69sv6_LE&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+<Card>
+  MagicBlock は、高性能な分散型アプリケーション向けに設計された
+  Solana ネットワークの拡張です。Solana のコンポーザビリティと整合性
+  を保ちながら、その能力をさらに高めます。
+</Card>
+
+## なぜ MagicBlock なのか？
+
+ブロックチェーン技術は分散型アプリケーションを大きく変えつつありますが、依然として次のような根本的課題があります。
+
+- **レイテンシ**：ブロックチェーンの取引速度はリアルタイムアプリには遅すぎます。
+- **コスト**：たとえ「低手数料」のブロックチェーンでも、大規模になると高コストになります。
+- **スケーラビリティ**：現在のアーキテクチャでは高スループットなアプリケーションをさばくのが困難です。
+- **プライバシー**：ブロックチェーンは基本的に公開されており、オンチェーンデータは誰でも読めます。
+
+MagicBlock は **ephemeral rollup** によりこれらを解決し、**10 ms の状態遷移**、**ガスレス取引**、**水平スケーリング** を必要とする dApp を開発できるようにします。仕組みは次のとおりです。
+
+#### Solana のエコシステムと性能の上に構築
+
+MagicBlock は専用の **Solana Virtual Machine (SVM) runtime** として動作し、Solana のベースレイヤーにシームレスに統合されます。Solana 上にプログラムをデプロイする開発者は、バイトコードレベルまで ephemeral rollup と互換性を持ち、SVM の高性能と強力なエコシステムの恩恵を受けられます。
+
+<img class="w-full h-auto max-w-5xl" src="/images/magicblock-solana.png" />
+
+#### スケーリングとコストの制約を克服
+
+従来の rollup や現在の Solana 実行モデルには、リソース集約型アプリケーションを扱う際の固有の制約があります。MagicBlock は次の機能でその制約を取り除きます。
+
+- **超低レイテンシ（10 ms ブロックタイム）**：Solana の標準 400 ms ブロックタイムはリアルタイム用途には遅すぎます。MagicBlock は完全な互換性を保ちながら実行環境をカスタマイズできます。
+- **断片化のない状態整合性**：従来の rollup はアプリケーション状態を複数環境に分散させ、相互運用性を難しくします。MagicBlock は専用 RPC プロバイダーにより、Solana ベースレイヤーと ephemeral rollup 間で取引を **並列ルーティング・処理** することでこれを防ぎます。
+- **ほぼゼロの取引手数料**：Solana の低手数料（約 $0.01/tx）でも大規模では高くつきます。MagicBlock はコストを大幅に削減し、最小または **ゼロ手数料の取引** を可能にします。
+- **水平スケーラビリティ**：標準的な rollup は効率的な拡張が困難です。MagicBlock は **水平オートスケーリング** を可能にし、複数の ephemeral rollup をシームレスに立ち上げて毎秒数百万件を処理できます。
+
+### どこから始める？
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollup"
+    icon="bolt"
+    href="/jp/pages/get-started/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Ephemeral Rollup の仕組みを学ぶ
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/jp/pages/get-started/introduction/magic-router"
+    iconType="duotone"
+  >
+    Magic Router の仕組みを学ぶ
+  </Card>
+  <Card
+    title="構築"
+    icon="hammer"
+    href="/jp/pages/get-started/how-integrate-your-program/overview"
+    iconType="duotone"
+  >
+    Rust、Anchor、Typescript で試してみる
+  </Card>
+  <Card
+    title="ユースケース"
+    icon="star"
+    href="/jp/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    例から新しいアイデアを見つける
+  </Card>
+  <Card
+    title="フレームワークと SDK"
+    icon="code"
+    href="/jp/pages/tools/introduction"
+    iconType="duotone"
+  >
+    フレームワークと SDK を深く知る
+  </Card>
+  <Card
+    title="プライバシー"
+    icon="shield-check"
+    href="/jp/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    TEE でプライベートかつ検証可能なアプリを構築する
+  </Card>
+</CardGroup>

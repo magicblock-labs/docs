@@ -1,0 +1,100 @@
+---
+title: "트랜잭션 흐름"
+description: "다양한 트랜잭션이 Ephemeral Rollup을 통해 어떻게 흐르는가"
+---
+
+delegation 및 undelegation hooks를 포함해 배포하면, 프로그램의 어떤 instruction이든 변경 없이 초저지연으로 실행할 수 있습니다.
+**트랜잭션은 계정의 delegation 상태에 따라** Base Layer(Solana) 또는 Ephemeral Rollup(ER) validators에 의해 처리됩니다.
+
+<Columns cols={4}>
+  <Card
+    title="표준 프로그램 명령"
+    icon="link"
+    href="#standard-program-instruction"
+  ></Card>
+  <Card
+    title="위임 트랜잭션"
+    icon="link"
+    href="#delegate-transaction"
+  ></Card>
+  <Card
+    title="위임 해제 트랜잭션"
+    icon="link"
+    href="#undelegate-transaction"
+  ></Card>
+  <Card
+    title="커밋 트랜잭션"
+    icon="link"
+    href="#commit-transaction"
+  ></Card>
+</Columns>
+<div id="standard-program-instruction" />
+### 표준 프로그램 명령
+
+전용 RPC router를 통해 프로그램 instruction을 실행할 때는 트랜잭션의 계정 목록이 검사됩니다.
+
+- 초저지연: **모든 writable 계정이 위임된 경우** 트랜잭션은 ER에서 저지연으로 실행됩니다.
+  - **계정이 새로 위임된 경우**, 해당 계정은 원래 owner를 유지한 채 Base Layer에서 ER로 복제됩니다.
+  - **계정이 위임되었고 이미 Base Layer에서 ER로 복제된 경우**, ER의 기존 위임 계정이 사용됩니다.
+  - **계정이 undelegated 상태이며 non-writable인 경우**, 해당 계정은 Base Layer에서 ER로 복제됩니다.
+- 일반: **모든 writable 계정이 undelegated 상태인 경우** 트랜잭션은 Base Layer에서 실행됩니다.
+- 오류: **writable 계정에 위임된 것과 위임되지 않은 것이 섞여 있으면** 트랜잭션은 실패합니다。
+  <img class="w-full h-auto max-w-5xl" src="/images/interact.png" />
+
+<div id="delegate-transaction" />
+### 위임 트랜잭션
+
+ER에서 초저지연 트랜잭션을 실행하기 전에 상태 계정은 프로그램의 delegation hook을 통해 위임되어야 합니다. Base Layer에서 ER로 상태 계정을 위임하면 다음이 발생합니다.
+
+- **Base Layer:** account owner가 잠기고 MagicBlock의 Delegation Program으로 설정됩니다.
+- **ER:** delegation 시점에는 ER에 계정이 아직 생성되지 않지만, 이후 ER로 향하는 트랜잭션이 발생하면 생성됩니다.
+
+계정이 이미 위임된 상태라면 트랜잭션은 실패합니다。
+
+<img class="w-full h-auto max-w-5xl" src="/images/delegate.png" />
+
+<div id="undelegate-transaction" />
+### 위임 해제 트랜잭션
+
+undelegation hook을 통해 계정을 ER에서 Base Layer로 커밋하고 undelegate 할 수 있습니다. 상태 계정을 undelegate 하면 다음이 발생합니다。
+
+- **ER:** 계정의 commit이 스케줄됩니다. 계정은 undelegate 되며, owner는 원래 program에서 Delegation Program으로 바뀝니다。
+- **Base Layer:** CPI callback이 호출되어 ER에서 계정을 가져오고 finalize 한 뒤, 원래 program을 owner로 하여 Base Layer에 다시 생성합니다。
+
+계정이 이미 undelegated 상태라면 트랜잭션은 실패합니다。
+
+<img class="w-full h-auto max-w-5xl" src="/images/undelegate.png" />
+
+<div id="commit-transaction" />
+### 커밋 트랜잭션
+
+commit hook을 통해 계정 상태를 커밋하면 delegation 상태를 바꾸지 않고도 ER에서 Base Layer로 상태를 동기화할 수 있습니다. 이때 다음이 발생합니다。
+
+- **ER:** 계정의 commit이 스케줄됩니다。
+- **Base Layer:** CPI callback이 호출되어 ER에서 상태를 가져오고 finalize 한 뒤, Delegation Program을 owner로 유지한 채 Base Layer 계정을 업데이트합니다。
+
+계정이 이미 undelegated 상태라면 트랜잭션은 실패합니다。
+
+<img class="w-full h-auto max-w-5xl" src="/images/commit.png" />
+
+## Native Rust와 Anchor로 빌드하는 방법 배우기!
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/ko/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  Anchor 프로그램과 통합하기
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/ko/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  Native Rust 프로그램과 통합하기
+</Card>
+
+</CardGroup>

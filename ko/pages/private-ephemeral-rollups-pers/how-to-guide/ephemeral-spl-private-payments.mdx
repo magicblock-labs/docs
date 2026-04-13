@@ -1,0 +1,255 @@
+
+---
+title: Ephemeral SPL Tokens를 활용한 프라이빗 결제
+description: ephemeral SPL tokens를 사용해 프라이빗 입금, 전송, 출금을 처리하는 가이드
+---
+
+## 개요
+
+이 가이드는 MagicBlock private-payments 예제의 맥락에서 **ephemeral SPL tokens**를 사용해 **프라이빗 입금, 전송, 출금**을 구현하는 방법을 설명합니다.
+
+Ephemeral tokens는 수명이 짧고 프로그램이 제어하는 SPL token accounts 또는 mint로서 다음 특성을 가집니다:
+- 특정 워크플로가 진행되는 동안에만 존재합니다
+- 사용자 간 온체인 연결 가능성을 최소화합니다
+- 장기적인 메타데이터 및 잔액 추적 가능성을 줄입니다
+
+목표는 기본 익명성이 아니라 **설계에 의한 프라이버시**입니다.
+
+---
+
+## 핵심 개념
+
+### Ephemeral SPL Token이란?
+
+ephemeral SPL token은 보통 다음을 의미합니다:
+
+- **임시 token account**(때로는 임시 mint 포함)
+- program-derived address(PDA)가 소유하거나 제어
+- 트랜잭션 또는 세션 직전에 생성
+- 사용 후 닫히며(rent도 회수됨)
+
+이 패턴은 잔액의 수명을 제한하고 여러 트랜잭션에 걸친 활동 상관관계를 더 어렵게 만듭니다.
+
+---
+
+### 프라이버시 모델
+
+여기서의 프라이빗 결제는 다음에 의존합니다:
+
+- 수명이 짧은 token accounts
+- 프로그램이 매개하는 수탁
+- 제어된 계정 종료
+- 세션마다 새 user keypairs를 사용하는 선택지
+
+⚠️ 이것은 검증기나 RPC 제공자에게 활동을 **완전히 숨기지 않습니다**.
+줄이는 것은 *linkability*이지 *observability*가 아닙니다.
+
+---
+
+## 아키텍처 흐름
+
+```
+User Wallet
+   |
+   | 1. Deposit
+   v
+Ephemeral Token Account (PDA-controlled)
+   |
+   | 2. Transfer (internal)
+   v
+Another Ephemeral Account
+   |
+   | 3. Withdrawal
+   v
+Destination Token Account
+```
+
+---
+
+## 입금
+
+### 입금 방식
+
+1. User가 표준 SPL token account에서의 전송을 승인합니다
+2. Program이 ephemeral token account(PDA)를 생성합니다
+3. token이 ephemeral account로 전송됩니다
+4. 이후 작업을 위해 계정이 내부적으로 등록됩니다
+
+### 주요 특성
+
+- user는 ephemeral account를 직접 소유하지 않습니다
+- authority는 다음에서 파생된 PDA입니다:
+  - Program ID
+  - 세션 또는 deposit seed
+- deposit metadata는 최소한으로 유지됩니다
+
+### 모범 사례
+
+- 입금마다 고유한 seed 사용
+- ephemeral accounts 재사용 금지
+- 전송 후 즉시 user authority 철회
+
+---
+
+## 프라이빗 전송
+
+### 내부 전송
+
+프라이빗 전송은 **program-controlled accounts 내부**에서 발생합니다:
+
+- 입금 후에는 user wallet signature가 필요 없습니다
+- 잔액은 ephemeral accounts 사이에서 이동합니다
+- 전송은 다음을 표현할 수 있습니다:
+  - 내부 결제
+  - 에스크로 유사 흐름
+  - 조건부 해제
+
+### 이것이 프라이버시를 개선하는 이유
+
+- 직접적인 발신자 → 수신자 token transfer가 없습니다
+- 온체인 기록에는 PDA-to-PDA 이동만 남습니다
+- user는 SPL token ownership으로부터 추상화됩니다
+
+---
+
+## 출금
+
+### 출금 흐름
+
+1. User가 출금을 요청합니다
+2. Program이 다음을 검증합니다:
+   - Authorization
+   - Balance
+   - Withdrawal constraints
+3. Program이 user의 목적지 계정으로 token을 전송합니다
+4. Ephemeral account는 **닫힙니다**
+
+### 계정 종료
+
+출금 후에는 항상 ephemeral accounts를 닫아야 합니다:
+
+- rent 회수
+- 온체인 흔적 축소
+- 잔액 탐색 방지
+
+---
+
+## 예시 의사코드
+
+```ts
+// Create ephemeral token account
+const ephemeralAccount = derivePDA(
+  programId,
+  ["ephemeral", user.publicKey, sessionId]
+);
+
+// Deposit
+token.transfer(
+  userTokenAccount,
+  ephemeralAccount,
+  userAuthority,
+  amount
+);
+
+// Withdraw
+token.transfer(
+  ephemeralAccount,
+  destinationAccount,
+  programPDA,
+  amount
+);
+
+token.closeAccount(ephemeralAccount);
+```
+
+---
+
+## 중요: 개발자 메모 ⚠️
+
+### 1. 프라이버시는 스펙트럼이다
+
+Ephemeral tokens는 **익명성을 보장하지 않습니다**.
+
+가능한 것:
+- linkability 감소
+- 오래 남는 잔액 제한
+- 기본 프라이버시 위생 개선
+
+불가능한 것:
+- 거래 금액 숨기기
+- 타이밍 은폐
+- RPC 수준 분석으로부터 보호
+
+---
+
+### 2. Seed 설계는 중요하다
+
+잘못된 PDA seed는 프라이버시를 망칠 수 있습니다。
+
+피해야 할 것:
+- 정적인 seed
+- 재사용되는 user public keys
+- 예측 가능한 counters
+
+권장 사항:
+- 세션 기반 랜덤성
+- user + nonce 해시
+- 일회성 식별자
+
+---
+
+### 3. 항상 계정을 닫아라
+
+ephemeral accounts를 열어 둔 채로 두면:
+- 과거 잔액이 노출됩니다
+- rent가 낭비됩니다
+- 상태 탐색이 가능해집니다
+
+프로그램 로직에서 계정 종료를 필수로 만드세요。
+
+---
+
+### 4. 민감한 메타데이터를 로그에 남기지 마라
+
+출력을 피해야 할 것:
+- User public keys
+- 금액
+- 세션 식별자
+
+특히 program logs 또는 events에서는 더욱 주의하세요。
+
+---
+
+### 5. Wallet UX는 여전히 중요하다
+
+ephemeral tokens를 사용하더라도:
+- wallet approvals는 의도를 드러냅니다
+- 좋지 않은 UX는 identity를 다시 연결할 수 있습니다
+- 재사용된 destination accounts는 패턴을 노출합니다
+
+권장 사항:
+- 새로운 token accounts
+- 선택 가능한 burner wallets
+- 명확한 사용자 교육
+
+---
+
+## 요약
+
+Ephemeral SPL tokens는 Solana에서 **프라이버시를 고려한 결제 흐름**을 구축하기 위한 강력한 프리미티브입니다。
+
+다음과 결합되면:
+- Program-controlled custody
+- 엄격한 account lifecycle 관리
+- 신중한 seed 설계
+
+SPL token standard를 수정하지 않고도 프라이빗 입금, 내부 전송, 깔끔한 출금을 가능하게 합니다。
+
+---
+
+## 다음 단계
+
+- private-payments 예제 코드를 검토하세요
+- PDA 파생 로직을 감사하세요
+- 프라이버시 가정에 대한 위협 모델을 수립하세요
+- 계정 종료 경로를 철저히 테스트하세요

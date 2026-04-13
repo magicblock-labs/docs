@@ -1,0 +1,88 @@
+---
+title: "使用例"
+description:
+  "さまざまな実践例を通じて、useSessionKeyManager と SessionWalletProvider を使って dApp とやり取りする方法を学ぶ"
+---
+
+hooks と provider の設定ができたので、次は提供されているメソッドの使い方をいくつか見ていきましょう。
+
+### セッションを作成する
+
+セッションを作成するには、`sessionWallet` の `createSession` メソッドを呼び出します。このメソッドは 3 つのパラメータを受け取ります。
+
+1. `targetProgramPublicKey`: やり取りしたい対象プログラムを表す `PublicKey` インスタンス
+2. `topUp`: セッション keypair に最初に `0.01 SOL` を入金したい場合は `true`、入金したくない場合は `false`
+3. `expiryInMinutes`: セッションの有効期限を分単位で表す任意パラメータ。デフォルト値は 60 分です。
+
+```typescript
+const handleCreateSession = async () => {
+  const targetProgramPublicKey = new PublicKey(
+    "your_target_program_public_key"
+  );
+  const topUp = true;
+  const expiryInMinutes = 60;
+
+  const session = await sessionWallet.createSession(
+    targetProgramPublicKey,
+    topUp,
+    expiryInMinutes
+  );
+
+  // session wallet に top up したい金額を指定することもできます
+  // 指定額が入金され、revoke 時には authority に返されます
+  const session = await sessionWallet.createSession(
+    targetProgramPublicKey,
+    topUp ? 10000000 : 0, // 0.01 SOL
+    expiryInMinutes
+  );
+
+  if (session) {
+    console.log("Session created:", session);
+  } else {
+    console.error("Failed to create session");
+  }
+};
+```
+
+`createSession` を呼び出すと、新しい一時的な keypair が生成され、クライアント側に保存されます。続いて、その keypair と一緒にセッショントークンも作成・保存されます。これにより、ユーザーは実際のウォレット秘密鍵を公開することなく、生成された keypair を使って安全にトランザクションへ署名できます。
+
+### トランザクションを署名して送信する
+
+トランザクションを署名して送信するには、`signAndSendTransaction` メソッドを使います。このメソッドはまず、セッション中に作成された一時 keypair でトランザクションに署名し、その後署名済みトランザクションを Solana ネットワークへ送信します。
+
+```typescript
+const handleSendTransaction = async () => {
+  const transaction = new Transaction();
+  // トランザクションに命令を追加する
+  const txids = await sessionWallet.signAndSendTransaction(transaction);
+
+  if (txids && txids.length > 0) {
+    console.log("Transaction sent:", txids);
+  } else {
+    console.error("Failed to send transaction");
+  }
+};
+```
+
+`signAndSendTransaction` メソッドは、実際のウォレット秘密鍵を露出させないことで、追加のセキュリティレイヤーを提供します。クライアント側に保存された一時 keypair を使って署名するため、ユーザーのメインウォレットを安全に保てます。
+
+### セッションを取り消す
+
+セッションを取り消すには、`sessionWallet` の `revokeSession` メソッドを呼び出します。このメソッドは次の 3 つの処理を行います。
+
+1. クライアント側ストレージから一時 keypair とセッショントークンを削除する
+2. コントラクト上のセッションを revoke する
+3. lamports を authority に返し、session token PDA を閉じる
+
+```typescript
+const handleRevokeSession = async () => {
+  await sessionWallet.revokeSession();
+  console.log("Session revoked");
+};
+```
+
+セッションを取り消すことで、一時 keypair は以後有効ではなくなり、利用もできなくなります。
+
+これらの例は、アプリ内でセッション管理とウォレット機能を実装し始める助けになるはずです。
+
+_**Session Token の実装方法については、**_ [_**Example App**_](https://github.com/gumhq/gum-example-app) _**の「Create Post」セクションを参照してください。**_

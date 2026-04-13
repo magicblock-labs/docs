@@ -1,0 +1,149 @@
+---
+title: "クイックスタート"
+description: "Solana プログラムに Ephemeral Rollups を統合する方法"
+---
+
+import Endpoints from '/jp/snippets/endpoints.mdx'
+
+統合の観点では、Ephemeral Rollups の利用はマルチスレッドプログラムを書くことに似ています。プログラムは作業を Ephemeral Rollup セッションへオフロードし、低レイテンシ・高スループットの SVM runtime でトランザクションを処理できます。この SVM runtime は必要なタイミングでプロビジョニングされ、トランザクションは分散化された ephemeral validators ネットワークのノードによって処理されます。
+
+Ephemeral Rollups は Solana ブロックチェーン向けのあらゆるプログラムで利用できます。私たちは代表的な統合例を用意しています。
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/jp/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  Anchor プログラムと統合する
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/jp/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  Native Rust プログラムと統合する
+</Card>
+
+</CardGroup>
+
+## 統合ライフサイクル
+
+プログラムに Ephemeral Rollups を統合する流れは次のとおりです。
+
+<Steps>
+  <Step title="プログラムを書く">
+    Anchor、native Rust、Bolt、C、あるいはアセンブリなど、いつも通りの
+    方法で Solana プログラムを書きます。
+  </Step>
+  <Step title="delegation と undelegation hooks を追加する">
+    委任されたアカウントは Ephemeral Rollup セッション内で writable として
+    使用できます。
+  </Step>
+  <Step title="プログラムを Solana にデプロイする">
+    プログラムを直接 Solana にデプロイします。
+  </Step>
+  <Step title="トランザクションを実行する">
+    SVM RPC 仕様に準拠した SDK（web3.js、Solana Rust SDK、Unity SDK など）
+    を使って、オンチェーンまたはオフチェーンでトランザクションを実行します。
+  </Step>
+</Steps>
+
+## delegation と undelegation hooks を追加する
+
+delegation と undelegation hooks を追加することで、プログラムに超低レイテンシなトランザクション能力を持たせることができます。必要なのは native Rust SDK から 2 つの関数を追加するだけです。
+
+### Delegation
+
+`Delegation` は、プログラムの 1 つ以上の `PDA` の所有権を delegation program に移す処理です。これにより Ephemeral Validators はその `PDA` を使って SVM runtime 上でトランザクションを実行し、状態をコミットできるようになります。
+
+Rust プログラムでは `ephemeral_rollups_sdk` crate を使ってアカウントを委任できます。
+
+次のようにインストールします。
+
+```bash
+cargo add ephemeral_rollups_sdk
+```
+
+次に `delegate_account` 関数を使ってアカウントを delegation program に委任します。
+
+```rust Delegation
+use ephemeral_rollups_sdk::cpi::delegate_account;
+
+delegate_account(
+    &ctx.accounts.payer, // The account that will pay for opening the session
+    &ctx.accounts.pda, // The PDA to delegate
+    &ctx.accounts.owner_program, // Owner program of the PDA
+    ...
+    pda_seeds, // Seeds to make the PDA signer
+    0, // 0 means no time limit for the delegation
+    3_000, // Update frequency on the base layer in milliseconds
+)?;
+```
+
+<Note>
+  delegation と undelegation はどちらも CPI であり、既存の命令に統合できます
+</Note>
+
+### Undelegation
+
+`Undelegation` は `PDA` の所有権をプログラムへ戻す処理です。
+undelegation 時には状態がコミットされ、finalization プロセスが開始されます。状態の検証が完了すると、`PDA` はアンロックされ mainnet 上で通常通り使えるようになります。
+
+```rust Delegation
+use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
+
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    commit_and_undelegate_accounts(
+        &ctx.accounts.payer,
+        vec![&ctx.accounts.pda.to_account_info()],
+        &ctx.accounts.magic_context,
+        &ctx.accounts.magic_program,
+    )?;
+    Ok(())
+}
+```
+
+さらに、カスタム CPI により ephemeral validators に対して状態の `commit`、`finalize`、またはセッションの `close` を指示できます。
+
+<Note>
+  commit と undelegation は複数アカウントのリストを受け取ります。これらは
+  ベースレイヤーへ原子的にコミットされるため、依存関係のあるアカウント間の
+  状態整合性を保てます
+</Note>
+
+## フロントエンド
+
+フロントエンドからの統合を簡単にするために、[Magic Router](/jp/pages/get-started/how-integrate-your-program/magic-router) を用意しました。トランザクションを magic router に直接送るだけで、それが [Ephemeral Rollup](/jp/pages/get-started/introduction/ephemeral-rollup) に行くべきか、ベースレイヤーに行くべきかを自動で判断できます。
+
+```typescript Frontend
+import { sendMagicTransaction } from "magic-router-sdk";
+
+const routerConnection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+
+// Construct a standard Solana transaction
+const tx = await exampleClient.current?.methods
+  .exampleMethod(0)
+  .accounts({
+      user: userPda,
+      user: userKeypair.current.publicKey,
+  }).transaction() as Transaction;
+
+const noopInstruction = new TransactionInstruction({
+      programId: new PublicKey('11111111111111111111111'),
+      keys: [],
+      data: Buffer.from(crypto.getRandomValues(new Uint8Array(5))),
+  });
+transaction.add(noopInstruction);
+
+// Send the transaction
+const signature = await sendMagicTransaction(
+  routerConnection,
+  tx,
+  [userKeypair]
+)
+```
+
+<Endpoints/>

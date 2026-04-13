@@ -1,0 +1,228 @@
+---
+title: "Solana 프로그램"
+description: "Solana에서 카운터를 위임하고 증가시키는 간단한 Rust 프로그램 작성법 배우기"
+---
+
+import Endpoints from "/ko/snippets/endpoints.mdx";
+import Validators from "/ko/snippets/notes/validators.mdx";
+import SoftwareRust from "/ko/snippets/software-rust.mdx";
+import SolanaResources from "/ko/snippets/solana-resources.mdx";
+
+import DelegateCode from "/ko/snippets/rust-counter-code/delegate.mdx";
+import CommitCode from "/ko/snippets/rust-counter-code/commit.mdx";
+import UndelegateCode from "/ko/snippets/rust-counter-code/undelegate.mdx";
+import InstructionsCode from "/ko/snippets/rust-counter-code/instructions.mdx";
+import ResizeCode from "/ko/snippets/rust-counter-code/resize.mdx";
+import OncurveDelegation from "/ko/snippets/oncurve-delegation.mdx";
+
+import UndelegationCallbackNote from "/ko/snippets/notes/undelegation-callback-note.mdx";
+
+import QuickAccesERRust from "/ko/snippets/quick-access-er-rust.mdx";
+
+---
+
+<QuickAccesERRust />
+
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/b77bwSGDHK0?si=Oknc5f8CuC17WBnV&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Rust Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## 단계별 가이드
+
+프로그램을 빌드하고 MagicBlock의 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 을 사용해 delegation hooks를 추가하여 업그레이드하세요。
+
+<Steps>
+  <Step
+    title={
+      <a href="#1-write-program">
+        프로그램 작성 및 delegation instructions 추가
+      </a>
+    }
+  >
+    평소와 같이 Solana 프로그램을 작성하세요。
+  </Step>
+  <Step title={<a href="#2-delegate">Base Layer에서 PDA Delegate 하기</a>}>
+    CPI hooks를 추가해 상태 계정을 Ephemeral Rollup 세션을 통해 delegate, commit, undelegate 할 수 있게 하세요。
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-commit">ER에서 PDA Commit 하기</a>}>
+    Solana CLI를 사용해 프로그램을 Solana에 직접 배포하세요。
+  </Step>
+  <Step title={<a href="#4-undelegate">ER에서 PDA Undelegate 하기</a>}>
+    SVM RPC 사양을 준수하는 트랜잭션을 수정 없이 온체인과 오프체인에서 전송하세요。
+  </Step>
+</Steps>
+
+---
+
+## Counter 예제
+
+<SoftwareRust />
+
+<div id="code-snippets" />
+### 코드 스니펫
+
+<Tabs>
+  <Tab title={<span id="1-write-program">1. Write Program</span>}>
+
+    이 프로그램은 두 가지 주요 instruction을 구현합니다。
+
+    1. `InitializeCounter`: 카운터를 초기화하고 0으로 설정 (Base Layer에서 호출)
+    2. `IncreaseCounter`: 초기화된 카운터를 X만큼 증가 (Base Layer 또는 ER에서 호출)
+
+    이 프로그램은 카운터의 위임과 위임 해제를 위한 전용 instruction도 구현합니다。
+
+    1. `Delegate`: 카운터를 Base Layer에서 ER로 위임 (Base Layer에서 호출)
+    2. `CommitAndUndelegate`: 카운터를 ER에서 Base Layer로 동기화하도록 예약하고 ER에서 위임 해제 (ER에서 호출)
+    3. `Commit`: 카운터를 ER에서 Base Layer로 동기화하도록 예약 (ER에서 호출)
+    4. `Undelegate`: Base Layer에서 카운터를 위임 해제 (validator CPI를 통해 Base Layer에서 호출)
+    <UndelegationCallbackNote />
+
+    아래는 프로그램의 핵심 구조입니다。
+
+    {" "}
+    <InstructionsCode />
+    <Note>
+      "Undelegate" instruction은 정확한 discriminator를 가져야 합니다. 이것은
+      사용자가 직접 호출하지 않으며, Base Layer의 validator가 ER에서 계정을
+      undelegate 한 뒤 CPI callback으로 프로그램을 호출합니다.
+    </Note>
+
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title={<span id="2-delegate">2. Delegate</span>}>
+    ### Counter PDA 위임하기
+
+    counter PDA를 위임하고 Ephemeral Rollup 세션에서 writable 하게 만들려면, 내부적으로 `delegate_account` 함수를 호출하는 instruction을 추가해야 합니다. `delegate_account` 는 delegation program으로 CPI를 수행하며, 검증이 끝나면 해당 계정의 소유권을 얻게 됩니다。
+    이 단계가 끝나면 ephemeral validator가 counter PDA에서 트랜잭션을 처리하고 delegation program을 통해 상태 차이를 제안할 수 있게 됩니다。
+
+    <Card
+      title="트랜잭션 (Base Layer): Delegate"
+      icon="magnifying-glass"
+      href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+      iconType="duotone"
+    >
+      Solana Explorer에서 트랜잭션 상세 보기
+    </Card>
+
+    <DelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+    <Tab title={<span id="3-commit">3. Commit</span>}>
+    ### PDA가 위임된 상태에서 커밋하기
+
+    ephemeral runtime은 PDA가 위임된 상태에서도 그 상태를 커밋할 수 있게 해줍니다. 이는 `commit_accounts` 함수를 호출하여 수행됩니다。
+
+    <CardGroup cols={2}>
+      <Card
+        title="트랜잭션 (ER): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+      <Card
+        title="트랜잭션 (Base layer): Commit"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+    </CardGroup>
+
+    <CommitCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title={<span id="4-undelegate">4. Undelegate</span>}>
+    ### PDA 위임 해제하기
+
+    PDA의 위임 해제는 어떤 instruction의 일부로 `commit_and_undelegate_accounts` 를 호출하여 수행합니다。
+    undelegation은 최신 상태를 커밋하고 PDA의 소유권을 owner program에 반환합니다. 위임 해제와 상태 finalization이 끝나면 validator는 Base Layer에서 `"undelegate"` 로 CPI callback을 생성합니다。
+    <UndelegationCallbackNote />
+    <CardGroup cols={2}>
+      <Card
+        title="트랜잭션 (ER): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+      <Card
+        title="트랜잭션 (Base layer): Undelegate"
+        icon="magnifying-glass"
+        href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+        iconType="duotone"
+      >
+        Solana Explorer에서 트랜잭션 상세 보기
+      </Card>
+    </CardGroup>
+
+    <UndelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+</Tabs>
+
+---
+
+<div id="advanced-code-snippets" />
+### 고급 코드 스니펫
+
+<Tabs>
+  <Tab title="Resize PDA">
+    위임된 PDA를 리사이즈할 때：
+    - PDA는 새로운 계정 크기에서도 rent-exempt 상태를 유지할 만큼 충분한 lamports를 가지고 있어야 합니다。
+    - 추가 lamports가 필요하다면, 차액을 제공하기 위해 **payer account도 위임되어 있어야 합니다**。
+    - PDA는 프로그램이 소유하고 있어야 하며, 트랜잭션에는 lamports 전송에 필요한 signer가 포함되어야 합니다。
+    - `system_instruction::allocate` 를 사용합니다。
+
+    <ResizeCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="On-Curve Delegation">
+
+    <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

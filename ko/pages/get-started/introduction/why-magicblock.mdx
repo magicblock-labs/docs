@@ -1,0 +1,113 @@
+---
+title: 왜 MagicBlock인가요?
+description: "Solana 위 실시간 애플리케이션을 위한 고성능 엔진"
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/yfgDZJJvydU?si=3k8ndg9Z69sv6_LE&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+<Card>
+  MagicBlock는 고성능 탈중앙 애플리케이션을 위해 설계된 Solana 네트워크의
+  확장입니다. Solana의 컴포저빌리티와 무결성을 유지하면서 그 역량을 더
+  강화합니다.
+</Card>
+
+## 왜 MagicBlock인가요?
+
+블록체인 기술이 탈중앙 애플리케이션을 혁신하고 있지만, 여전히 다음과 같은 근본적인 과제가 있습니다.
+
+- **지연 시간**: 블록체인 거래 속도는 실시간 애플리케이션에 너무 느립니다.
+- **비용**: "저수수료" 블록체인도 규모가 커지면 비싸질 수 있습니다.
+- **확장성**: 현재 아키텍처는 고처리량 애플리케이션을 감당하기 어렵습니다.
+- **프라이버시**: 블록체인은 기본적으로 공개되어 있어 온체인 데이터는 모두 읽힐 수 있습니다.
+
+MagicBlock는 **ephemeral rollup** 으로 이러한 문제를 해결하여, **10 ms 상태 전환**, **가스리스 트랜잭션**, **수평 확장** 이 필요한 dApp을 구축할 수 있게 합니다. 방법은 다음과 같습니다.
+
+#### Solana 생태계와 성능 위에 구축
+
+MagicBlock는 특화된 **Solana Virtual Machine (SVM) runtime** 으로 동작하며 Solana 베이스 레이어에 매끄럽게 통합됩니다. Solana에 프로그램을 배포하는 개발자는 바이트코드 수준까지 ephemeral rollup과 완전히 호환되며, SVM의 높은 성능과 강력한 생태계의 이점을 누릴 수 있습니다.
+
+<img class="w-full h-auto max-w-5xl" src="/images/magicblock-solana.png" />
+
+#### 확장성과 비용의 한계 극복
+
+기존 rollup과 현재 Solana 실행 모델은 자원 집약형 애플리케이션을 다룰 때 본질적인 제약이 있습니다. MagicBlock는 다음과 같은 기능으로 이러한 한계를 제거합니다.
+
+- **초저지연(10 ms 블록 타임)**: Solana의 기본 400 ms 블록 타임은 실시간 애플리케이션에 너무 느립니다. MagicBlock는 완전한 호환성을 유지하면서 실행 환경을 커스터마이즈할 수 있게 합니다.
+- **단편화 없는 상태 무결성**: 기존 rollup은 애플리케이션 상태를 여러 환경으로 분산시켜 상호운용성을 어렵게 만듭니다. MagicBlock는 전용 RPC 공급자를 통해 Solana 베이스 레이어와 ephemeral rollup 사이에서 트랜잭션을 **병렬로 라우팅하고 처리** 하여 이를 방지합니다.
+- **거의 0에 가까운 거래 수수료**: Solana의 낮은 수수료(거래당 약 $0.01)도 규모가 커지면 부담이 될 수 있습니다. MagicBlock는 비용을 크게 줄여 최소 혹은 **무수수료 트랜잭션** 을 가능하게 합니다.
+- **수평 확장성**: 표준 rollup은 효율적인 확장이 어렵습니다. MagicBlock는 **수평 오토스케일링** 을 지원하여 여러 ephemeral rollup을 매끄럽게 띄우고 초당 수백만 건의 거래를 처리할 수 있습니다.
+
+### 어디서 시작하나요?
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollup"
+    icon="bolt"
+    href="/ko/pages/get-started/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Ephemeral Rollup의 작동 방식을 알아보세요
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/ko/pages/get-started/introduction/magic-router"
+    iconType="duotone"
+  >
+    Magic Router의 작동 방식을 알아보세요
+  </Card>
+  <Card
+    title="빌드"
+    icon="hammer"
+    href="/ko/pages/get-started/how-integrate-your-program/overview"
+    iconType="duotone"
+  >
+    Rust, Anchor, Typescript로 직접 시도해 보세요
+  </Card>
+  <Card
+    title="활용 사례"
+    icon="star"
+    href="/ko/pages/get-started/use-cases/introduction"
+    iconType="duotone"
+  >
+    예시에서 새로운 아이디어를 찾아보세요
+  </Card>
+  <Card
+    title="프레임워크와 SDK"
+    icon="code"
+    href="/ko/pages/tools/introduction"
+    iconType="duotone"
+  >
+    프레임워크와 SDK를 깊이 살펴보세요
+  </Card>
+  <Card
+    title="프라이버시"
+    icon="shield-check"
+    href="/ko/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    TEE로 비공개이면서 검증 가능한 앱을 구축하세요
+  </Card>
+</CardGroup>

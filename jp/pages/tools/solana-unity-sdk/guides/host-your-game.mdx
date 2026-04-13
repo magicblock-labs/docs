@@ -1,0 +1,51 @@
+---
+title: "Github Pages でゲームを公開する"
+description: "Github Pages を使ってゲームを無料で公開する"
+---
+
+Solana.Unity SDK は WebGL に完全対応しています。このチュートリアルでは、Solana.Unity-SDK の[デモシーン](https://garbles-labs.github.io/Solana.Unity-SDK/)をコンパイルし、[Github Pages](https://pages.github.com/) を使って公開します。
+
+GitHub Pages を使うと、GitHub はリポジトリから直接ウェブページを公開できます。
+
+## ゲームを WebGL にビルドする
+
+1. [Unity](https://unity3d.com/get-unity/download) をダウンロードしてインストールする
+2. [手順](https://github.com/garbles-labs/Solana.Unity-SDK#installation) に従って Solana.Unity-SDK をインストールし、サンプルを読み込む
+3. シーンを WebGL にビルドする（GH Pages は圧縮ファイルを配信できないため、必ず[圧縮を無効化](https://www.youtube.com/watch?v=2jjESP58jsA)してください）
+   ![](/images/webgl.png)
+
+<Card title="ビルド手順を省略する" icon="lightbulb" iconType="duotone">
+  ビルド手順を省略したい場合は、SDK リポジトリを fork できます。
+  その
+  [gp-pages](https://github.com/garbles-labs/Solana.Unity-SDK/tree/gh-pages)
+  ブランチには、あらかじめビルド済みの WebGL 版が含まれています
+</Card>
+
+## Github Pages でデモを公開する
+
+- 新しいリポジトリを作成する
+- `index.html` を含むビルドフォルダに移動する
+
+```shell
+git init
+git add .
+git commit -m "WebGL game"
+git remote add origin <remote_repo_url>
+git push origin <branch>
+```
+
+- リポジトリの内容は、SDK の [gp-pages](https://github.com/garbles-labs/Solana.Unity-SDK/tree/gh-pages) ブランチに近い状態になります
+- リポジトリ設定から gh-pages デプロイを有効にする
+  ![](images/gh-pages-deply.png)
+
+Github は公開用 URL を提供します: [garbles-labs.github.io/Solana.Unity-SDK](https://garbles-labs.github.io/Solana.Unity-SDK/)
+
+<Card title="カスタムドメイン" icon="lightbulb" iconType="duotone">
+  Github Pages で[カスタムドメイン](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)を設定する方法を学ぶ
+</Card>
+
+<Card title="ゲームを xNFT として公開する" icon="lightbulb" iconType="duotone">
+  [このガイド](/Build/SolanaUnitySDK/guides/publishing-a-game) に従えば、2 分以内にゲームを xNFT として公開できます。
+</Card>
+
+楽しいゲーム開発を。そしてリポジトリへの ⭐ もお忘れなく

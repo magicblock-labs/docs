@@ -1,0 +1,77 @@
+---
+title: "System 만들기"
+description: " "
+---
+
+Systems는 components를 기반으로 entities를 처리하고 조작하는 로직을 담고 있습니다. 일반적으로 system은 특정 components 집합을 가진 모든 entities에 작동합니다. 예를 들어 “Movement” system은 “Position” component의 위치를 업데이트할 수 있습니다.
+
+다음 명령으로 movement system을 생성합니다.
+
+```rust
+bolt system system-movement
+```
+
+이렇게 하면 workspace에 새 system이 추가됩니다.
+
+```rust
+use bolt_lang::*;
+use component_position::Position;
+
+declare_id!("FSa6qoJXFBR3a7ThQkTAMrC15p6NkchPEjBdd4n6dXxA");
+
+#[system]
+#[program]
+pub mod system_movement {
+
+    pub fn execute(ctx: Context<Components>, args_p: Vec<u8>) -> Result<Components> {
+        let position = &mut ctx.accounts.position;
+        position.x += 1;
+        position.y += 1;
+        Ok(ctx.accounts)
+    }
+
+    // Define the input components
+    #[system_input]
+    pub struct Components {
+        pub position: Position,
+    }
+}
+
+```
+
+이 간단한 예제에서는 x, y, z 좌표를 가진 Position component를 보유한 Player entity를 만들었습니다. movement system을 실행해 상태를 바꿀 수 있습니다.
+
+더 정교한 이동 동작을 위해 Velocity component를 정의해 보겠습니다.
+
+```rust
+use bolt_lang::*;
+
+declare_id!("CbHEFbSQdRN4Wnoby9r16umnJ1zWbULBHg4yqzGQonU1");
+
+#[component]
+#[derive(Copy)]
+pub struct Velocity {
+    pub x: i64
+}
+```
+
+누군가는 더 빠른 이동을 위한 새로운 power-up을 추가하고 싶을 수 있습니다. 이 경우 Velocity를 사용해 Position component에 작용하는 새 system을 추가하면 됩니다.
+
+```rust
+#[system]
+pub mod system_apply_velocity {
+
+    pub fn execute(ctx: Context<Components>, _args: Vec<u8>) -> Result<Components> {
+        ctx.accounts.position.x += ctx.accounts.velocity.x;
+        Ok(ctx.accounts)
+    }
+
+    #[system_input]
+    pub struct Components {
+        pub position: Position,
+        pub velocity: Velocity,
+    }
+}
+```
+
+이 새로운 system은 Position과 Velocity components를 입력으로 받아 power-up의 로직을 정의합니다. 여기서는 Solana accounts나 CPI를 직접 다룰 필요가 없으며, 프록시 역할을 하는 [World program](https://github.com/magicblock-labs/bolt/tree/main/programs/world)이 이를 모두 처리합니다.

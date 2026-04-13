@@ -1,0 +1,81 @@
+---
+title: "소개"
+description: "Private Payments API 문서"
+---
+
+import PrivatePaymentApiCard from "/ko/snippets/private-payment-api-card.mdx";
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token Program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    프라이빗 SPL 토큰 흐름용 참조 프로그램
+  </Card>
+
+  <PrivatePaymentApiCard />
+</CardGroup>
+
+## 개요
+
+Private Payments API는 Solana와 MagicBlock ephemeral rollups 전반에서 입금, 전송, 출금, mint 초기화를 위한 미서명 SPL 토큰 트랜잭션을 생성합니다. 또한 잔액 조회와 mint 초기화 상태 조회도 제공합니다. 공식 공개 레퍼런스는 [payments.magicblock.app/reference](https://payments.magicblock.app/reference)에서 확인할 수 있습니다.
+
+### 메타
+
+- [**Health**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/health) - API 상태와 가용성을 확인합니다
+
+### SPL
+
+- [**Deposit SPL Tokens**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/deposit) - Solana에서 ephemeral rollup으로 들어가는 미서명 입금 트랜잭션을 생성합니다
+- [**Transfer SPL Tokens**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/transfer) - 미서명 공개 또는 비공개 SPL 전송을 생성합니다
+- [**Withdraw SPL Tokens**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - Solana로 되돌리는 미서명 출금 트랜잭션을 생성합니다
+- [**Initialize Mint**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - mint용 validator-scoped transfer queue를 초기화하는 미서명 트랜잭션을 생성합니다
+- [**Balance**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - 주소의 base-chain SPL 토큰 잔액을 가져옵니다
+- [**Private Balance**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - 주소의 ephemeral-rollup SPL 토큰 잔액을 가져옵니다
+- [**Is Mint Initialized**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - mint가 ephemeral RPC에 validator-scoped transfer queue를 가지고 있는지 확인합니다
+
+### MCP
+
+- [**MCP**](/ko/pages/private-ephemeral-rollups-pers/api-reference/per/mcp) - stateless Streamable HTTP MCP endpoint에 접근합니다
+
+```
+┌────────────────────────────────────────────┐
+│ 1. Deposit                                │
+├────────────────────────────────────────────┤
+│ • 미서명 입금 트랜잭션 생성               │
+│ • Solana base balance → ephemeral rollup  │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 2. Transfer                               │
+├────────────────────────────────────────────┤
+│ • SPL 전송 생성                           │
+│ • base/ephemeral → base/ephemeral         │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 3. Withdraw                               │
+├────────────────────────────────────────────┤
+│ • 미서명 출금 트랜잭션 생성               │
+│ • ephemeral rollup → Solana base balance  │
+└────────────────────────────────────────────┘
+```
+
+## 응답 형식
+
+트랜잭션 생성 엔드포인트가 성공하면 미서명 트랜잭션 페이로드를 반환합니다:
+
+```json
+{
+  "kind": "deposit",
+  "version": "legacy",
+  "transactionBase64": "base64-encoded-transaction",
+  "sendTo": "base",
+  "recentBlockhash": "blockhash",
+  "lastValidBlockHeight": 284512337,
+  "instructionCount": 3,
+  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
+}
+```

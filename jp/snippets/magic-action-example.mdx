@@ -1,0 +1,28 @@
+import ActionCode from "/jp/snippets/magic-action-code/action.mdx";
+import CommitWithActionCode from "/jp/snippets/magic-action-code/commit-with-action.mdx";
+import MultipleActionCode from "/jp/snippets/magic-action-code/multiple-actions.mdx";
+import OtherActionsCode from "/jp/snippets/magic-action-code/other-actions-code.mdx";
+
+### 1) アクション命令を作成する
+
+`update_leaderboard` 命令はコミット直後にベースレイヤーで実行されます。
+
+<ActionCode />
+
+### 2) アクション付きコミット命令を構築する
+
+`commit_and_update_leaderboard` コミット命令は ER 上で実行され、アクション付きコミットを予約します。
+
+<CommitWithActionCode />
+
+### 複数のアクションを実行する
+
+複数のアカウントをコミットし、複数のアクションを連鎖させることができます。アクションは順番に実行されます。
+
+<MultipleActionCode />
+
+### その他のアクション
+
+アクションは委任解除と一緒に実行することも、コミットなしで実行することもできます。
+
+<OtherActionsCode />

@@ -1,0 +1,57 @@
+---
+title: 概要
+description: 委任中にベースレイヤーのアクションを自動実行
+---
+
+import DemoCards from "/jp/snippets/demo-cards.mdx";
+
+---
+
+### クイックアクセス
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+  >
+    GitHub でリファレンス実装を見る
+  </Card>
+</CardGroup>
+
+---
+
+### Magic Actions とは？
+
+Magic Actions を使うと、Ephemeral Rollup
+（ER）のコミット直後に Solana ベースレイヤー上で自動実行される 1 つ以上の呼び出し命令を追加できます。コミット済みの状態を入力として使い、単一トランザクションで複数ステップのワークフローを編成できます。
+
+- **状態同期**: ER の変更をベースレイヤーのアカウントへ反映
+- **クロスプログラム構成**: コミット後に他のプログラムを呼び出す
+- **自動化ワークフロー**: 1 回のコミットから複雑な処理を連鎖
+- **イベント駆動アクション**: コミット済み状態に基づいてロジックを分岐
+
+### 仕組み
+
+1. アカウントを Ephemeral Rollup に委任する
+2. Ephemeral Rollup 上で低レイテンシーのトランザクションを実行する
+3. 委任状態を維持したまま、アクション付き命令をベースレイヤーへコミットする
+4. ハンドラーが最新のコミット済み状態を使って自動実行される
+
+---
+
+### 関連項目
+
+Magic Actions は Ephemeral Rollups と組み合わせて動作します。
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollups"
+    icon="bolt"
+    href="/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    委任、コミット、委任解除
+  </Card>
+</CardGroup>

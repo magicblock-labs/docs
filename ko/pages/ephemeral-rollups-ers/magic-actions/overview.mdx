@@ -1,0 +1,57 @@
+---
+title: 소개
+description: 위임 상태에서 베이스 레이어 작업을 자동 실행합니다
+---
+
+import DemoCards from "/ko/snippets/demo-cards.mdx";
+
+---
+
+### 빠른 접근
+
+<CardGroup cols={2}>
+  <Card
+    title="Magic Actions Example"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+    iconType="duotone"
+  >
+    GitHub에서 참조 구현 살펴보기
+  </Card>
+</CardGroup>
+
+---
+
+### Magic Actions란 무엇인가요?
+
+Magic Actions를 사용하면 Ephemeral Rollup
+(ER) 커밋 직후 Solana 베이스 레이어에서 자동으로 실행되는 하나 이상의 호출 명령을 연결할 수 있습니다. 커밋된 상태를 입력으로 사용해 단일 트랜잭션 안에서 여러 단계의 워크플로를 오케스트레이션할 수 있습니다.
+
+- **상태 동기화**: ER 변경 사항을 베이스 레이어 계정으로 전파
+- **크로스 프로그램 조합**: 커밋 후 다른 프로그램 호출
+- **자동화된 워크플로**: 한 번의 커밋으로 복잡한 작업 연결
+- **이벤트 기반 액션**: 커밋된 상태를 기준으로 로직 분기
+
+### 동작 방식
+
+1. 계정을 Ephemeral Rollup에 위임합니다
+2. Ephemeral Rollup에서 저지연 트랜잭션을 실행합니다
+3. 위임 상태를 유지한 채 액션이 포함된 명령으로 베이스 레이어에 커밋합니다
+4. 핸들러가 방금 커밋된 상태를 사용해 자동으로 실행됩니다
+
+---
+
+### 함께 보기
+
+Magic Actions는 Ephemeral Rollups와 함께 동작합니다.
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollups"
+    icon="bolt"
+    href="/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    위임, 커밋 및 위임 해제
+  </Card>
+</CardGroup>

@@ -1,0 +1,12 @@
+---
+title: "매핑과 상태 리스닝"
+description: "BOLT를 다양한 클라이언트와 통합하기"
+---
+
+표준화된 ECS 패턴을 사용하면 게임 컴포넌트를 렌더링 엔진과 쉽게 통합해 게임 인터페이스를 표시할 수 있습니다. Bolt는 멀티플레이어 게임 서버를 위한 백엔드의 개방적이고 permissionless한 대안으로 볼 수 있습니다.
+
+시각화와 렌더링에는 Unity, Unreal Engine, Phaser 등 기존 엔진을 활용할 수 있습니다.
+
+components의 표준화된 구조 덕분에 components와 entity 속성을 자동으로 매핑할 수 있고, 직렬화와 역직렬화도 추상화할 수 있습니다. 상태 업데이트 역시 쉽게 수행하고 가로챌 수 있어, Observer 패턴과 비슷하게 상태 변화를 감지하고 렌더링을 갱신하는 메커니즘을 구현할 수 있습니다.
+
+Unity로 개발 중이라면 [Solana Unity SDK](/Build/SolanaUnitySDK/overview)를 통해 게임 인터페이스를 Bolt와 연결하는 데 필요한 도구를 모두 사용할 수 있습니다。

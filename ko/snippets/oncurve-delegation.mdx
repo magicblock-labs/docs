@@ -1,0 +1,37 @@
+import OncurveDelegationWeb3jsCode from "/ko/snippets/oncurve-delegation-web3js.mdx";
+import OncurveDelegationKitCode from "/ko/snippets/oncurve-delegation-kit.mdx";
+import OncurveUndelegationWeb3jsCode from "/ko/snippets/oncurve-undelegation-web3js.mdx";
+import OncurveUndelegationKitCode from "/ko/snippets/oncurve-undelegation-kit.mdx";
+
+### 빠른 접근
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="wallet"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/oncurve-delegation"
+    iconType="duotone"
+  >
+    온커브 위임
+  </Card>
+</CardGroup>
+
+    온커브 계정을 위임할 때 필요한 서명자:
+      1. 위임할 온커브 계정
+      2. 수수료 지불자
+
+    온커브 계정을 위임할 때 필요한 명령:
+      1. System Account를 Delegation Program에 할당
+      2. Delegation Program으로 위임
+
+    <CodeGroup>
+      <OncurveDelegationKitCode />
+      <OncurveDelegationWeb3jsCode />
+    </CodeGroup>
+
+    직접 commit 및 undelegate는 Magic Program을 통해서만 수행합니다.
+
+    <CodeGroup>
+      <OncurveUndelegationKitCode />
+      <OncurveUndelegationWeb3jsCode />
+    </CodeGroup>

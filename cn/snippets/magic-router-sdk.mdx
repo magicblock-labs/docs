@@ -1,0 +1,17 @@
+import Routers from "/cn/snippets/routers.mdx";
+import KitCode from "/cn/snippets/magic-router-code/kit.mdx";
+import Web3jsCode from "/cn/snippets/magic-router-code/web3js.mdx";
+
+在动态发送交易前，先通过 Magic Router 初始化连接。
+
+<Routers />
+
+选择你偏好的 SDK 来初始化、发送并确认交易：
+
+- `ephemeral-rollups-kit` 适用于 `@solana/kit`
+- `ephemeral-rollups-sdk` 适用于 `@solana/web.js`
+
+<CodeGroup>
+  <KitCode />
+  <Web3jsCode />
+</CodeGroup>

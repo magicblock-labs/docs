@@ -1,0 +1,311 @@
+---
+title: "Ephemeral Accounts"
+description: "创建、调整大小并关闭完全存在于 Ephemeral Rollup 中的账户。"
+---
+
+Ephemeral accounts 是只存在于 Ephemeral Rollup 内部的账户。一个 **sponsor** 账户（已委托到 ER）会以 **32 lamports/byte** 的成本为 ephemeral accounts 代付租金，这比 Solana 基础租金便宜约 109 倍。
+
+**关键特性：**
+
+- 完全在 ER 中创建、存在并销毁
+- 归调用它的程序所有（从 CPI 上下文推断）
+- 由 sponsor 账户的 lamports 提供资金
+- 可以被创建、调整大小和关闭
+
+---
+
+## `#[ephemeral_accounts]` Macro
+
+这个 proc-macro attribute 用于 Anchor 的 `Accounts` struct。它会识别 `#[account(...)]` 中的两个自定义标记：
+
+| 标记 | 作用 |
+| --- | --- |
+| `sponsor` | 标记为 ephemeral accounts 支付租金的账户 |
+| `eph` | 将账户标记为 ephemeral（仅存在于 ER） |
+
+### 校验规则
+
+- 如果存在 `eph` 字段，则至少需要一个 `sponsor`
+- 每个 struct 只允许 **一个** `sponsor`
+- `eph` 不能与 `init` 或 `init_if_needed` 一起使用（请改用生成的方法）
+- 如果 sponsor 是 PDA（而不是 `Signer`），则必须提供用于 PDA 签名的 `seeds`
+
+### 生成的方法
+
+对于名为 `conversation` 的字段，macro 会生成：
+
+| 方法 | 签名 | 说明 |
+| --- | --- | --- |
+| `create_ephemeral_conversation` | `(data_len: u32) -> Result<()>` | 创建 ephemeral account |
+| `init_if_needed_ephemeral_conversation` | `(data_len: u32) -> Result<()>` | 仅在 `data_len == 0` 时创建 |
+| `resize_ephemeral_conversation` | `(new_data_len: u32) -> Result<()>` | 扩大或缩小账户 |
+| `close_ephemeral_conversation` | `() -> Result<()>` | 关闭账户，并将租金退还给 sponsor |
+
+---
+
+## 签名要求
+
+- **Sponsor**：在所有操作（create、resize、close）中都必须是 signer
+- **Ephemeral**：**仅在 create 时** 必须是 signer（防止 pubkey 抢注）。resize 或 close 时不要求。
+- 对于 PDA 账户，macro 会通过 `find_program_address` 自动推导 signer seeds
+
+---
+
+## 租金模型
+
+```rust
+pub const EPHEMERAL_RENT_PER_BYTE: u64 = 32;
+const ACCOUNT_OVERHEAD: u32 = 60;
+
+// rent = (data_len + 60) * 32
+pub const fn rent(data_len: u32) -> u64 {
+    (data_len as u64 + ACCOUNT_OVERHEAD as u64) * EPHEMERAL_RENT_PER_BYTE
+}
+```
+
+- **扩容**：sponsor 向 vault 支付额外租金
+- **缩容**：vault 将多余租金退还给 sponsor
+- **关闭**：所有租金都从 vault 退还给 sponsor
+
+---
+
+## 创建一个 Ephemeral Account
+
+```rust
+use ephemeral_rollups_sdk::anchor::ephemeral_accounts;
+
+pub fn create_conversation(ctx: Context<CreateConversation>) -> Result<()> {
+    ctx.accounts
+        .create_ephemeral_conversation((8 + Conversation::space_for_message_count(0)) as u32)?;
+
+    let conversation = Conversation {
+        handle_owner: ctx.accounts.profile_owner.handle.clone(),
+        handle_other: ctx.accounts.profile_other.handle.clone(),
+        bump: ctx.bumps.conversation,
+        messages: Vec::new(),
+    };
+    let mut data = ctx.accounts.conversation.try_borrow_mut_data()?;
+    conversation.try_serialize(&mut &mut data[..])?;
+
+    Ok(())
+}
+
+#[ephemeral_accounts]
+#[derive(Accounts)]
+pub struct CreateConversation<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        sponsor,
+        seeds = [b"profile", profile_owner.handle.as_bytes()],
+        bump = profile_owner.bump,
+        has_one = authority
+    )]
+    pub profile_owner: Account<'info, Profile>,
+
+    #[account(
+        seeds = [b"profile", profile_other.handle.as_bytes()],
+        bump = profile_other.bump,
+    )]
+    pub profile_other: Account<'info, Profile>,
+
+    /// CHECK: Ephemeral conversation PDA sponsored by the profile.
+    #[account(
+        mut,
+        eph,
+        seeds = [b"conversation", profile_owner.handle.as_bytes(), profile_other.handle.as_bytes()],
+        bump
+    )]
+    pub conversation: AccountInfo<'info>,
+    // vault and magic_program are auto-injected by the macro
+}
+```
+
+<Warning>
+在调用 `create_ephemeral_*` 之后，你必须手动将数据 struct 序列化到原始账户数据中。该 macro 只会分配空间，并不会初始化数据。
+</Warning>
+
+---
+
+## 调整 Ephemeral Account 大小
+
+```rust
+pub fn extend_conversation(
+    ctx: Context<ExtendConversation>,
+    additional_messages: u32,
+) -> Result<()> {
+    let current_capacity =
+        Conversation::message_capacity(ctx.accounts.conversation.to_account_info().data_len());
+    let new_capacity = current_capacity + additional_messages as usize;
+
+    ctx.accounts.resize_ephemeral_conversation(
+        (8 + Conversation::space_for_message_count(new_capacity)) as u32,
+    )?;
+
+    Ok(())
+}
+
+#[ephemeral_accounts]
+#[derive(Accounts)]
+pub struct ExtendConversation<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    #[account(mut, sponsor, seeds = [...], bump = ..., has_one = authority)]
+    pub profile_sender: Account<'info, Profile>,
+    #[account(seeds = [...], bump = ...)]
+    pub profile_other: Account<'info, Profile>,
+    /// CHECK: Ephemeral conversation PDA
+    #[account(mut, eph, seeds = [...], bump)]
+    pub conversation: AccountInfo<'info>,
+}
+```
+
+---
+
+## 关闭一个 Ephemeral Account
+
+```rust
+pub fn close_conversation(ctx: Context<CloseConversation>) -> Result<()> {
+    let profile = &mut ctx.accounts.profile_owner;
+    profile.active_conversation_count = profile
+        .active_conversation_count
+        .checked_sub(1)
+        .ok_or(ChatError::ConversationCountUnderflow)?;
+
+    ctx.accounts.close_ephemeral_conversation()?;
+
+    Ok(())
+}
+
+#[ephemeral_accounts]
+#[derive(Accounts)]
+pub struct CloseConversation<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    #[account(mut, sponsor, seeds = [...], bump = ..., has_one = authority)]
+    pub profile_owner: Account<'info, Profile>,
+    #[account(seeds = [...], bump = ...)]
+    pub profile_other: Account<'info, Profile>,
+    /// CHECK: Ephemeral conversation PDA
+    #[account(mut, eph, seeds = [...], bump)]
+    pub conversation: AccountInfo<'info>,
+}
+```
+
+---
+
+## 使用钱包作为 Sponsor
+
+可以直接使用 `Signer` 作为 sponsor，而不是 PDA：
+
+```rust
+#[ephemeral_accounts]
+#[derive(Accounts)]
+pub struct CreateGame<'info> {
+    #[account(mut, sponsor)]
+    pub payer: Signer<'info>,
+
+    /// CHECK: Ephemeral PDA
+    #[account(mut, eph, seeds = [b"game", payer.key().as_ref()], bump)]
+    pub game_state: AccountInfo<'info>,
+}
+```
+
+---
+
+## TypeScript 客户端用法
+
+所有 ephemeral account 操作都发送到 **ER connection**，而不是 base layer：
+
+```typescript
+// Create
+await erProgram.methods
+    .createConversation()
+    .accounts({
+        authority: userA.publicKey,
+        profileOwner: profileAPda,
+        profileOther: profileBPda,
+        conversation: conversationPda,
+        systemProgram: SystemProgram.programId,
+    })
+    .rpc();
+
+// Resize
+await erProgram.methods
+    .extendConversation(5)
+    .accounts({
+        authority: userA.publicKey,
+        profileSender: profileAPda,
+        profileOther: profileBPda,
+    })
+    .rpc();
+
+// Close
+await erProgram.methods
+    .closeConversation()
+    .accounts({
+        authority: userA.publicKey,
+        profileOwner: profileAPda,
+        profileOther: profileBPda,
+        conversation: conversationPda,
+    })
+    .rpc();
+```
+
+---
+
+## 常见坑点
+
+<AccordionGroup>
+  <Accordion title="eph fields must use AccountInfo, not Account">
+    `eph` fields must use `AccountInfo<'info>`, not `Account<'info, T>`. The account doesn't exist yet at validation time, so Anchor cannot deserialize it.
+  </Accordion>
+  <Accordion title="Manual serialization is required after create">
+    After calling `create_ephemeral_*`, you must serialize your data struct into the raw account data yourself. The macro allocates space but does not write any data.
+  </Accordion>
+  <Accordion title="Cannot combine eph with init">
+    The macro enforces this at compile time. Use the generated `create_ephemeral_*` method instead of Anchor's `init` constraint.
+  </Accordion>
+  <Accordion title="Sponsor must be delegated first">
+    The sponsor account needs lamports on the ER to pay ephemeral rent. It must be delegated before creating ephemeral accounts.
+  </Accordion>
+  <Accordion title="Top up the sponsor before delegation">
+    Transfer extra SOL to the sponsor account before delegating it, so it has enough lamports to fund ephemeral accounts on the ER.
+  </Accordion>
+  <Accordion title="vault and magic_program are auto-injected">
+    You don't need to declare them in your struct, but they appear in the IDL and must be passed from the client. Anchor resolves them automatically if named correctly.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Learn More
+
+<CardGroup cols={3}>
+  <Card
+    title="Ephemeral Accounts Demo"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/ephemeral-account-chats/programs/ephemeral-account-chats"
+    iconType="duotone"
+  >
+    Full example program on GitHub
+  </Card>
+  <Card
+    title="Delegation & Undelegation"
+    icon="arrows-rotate"
+    href="/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    How delegation and state synchronization work
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="hammer"
+    href="/cn/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Build your first program with Ephemeral Rollups
+  </Card>
+</CardGroup>

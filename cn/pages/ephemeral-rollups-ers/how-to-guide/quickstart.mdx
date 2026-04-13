@@ -1,0 +1,274 @@
+---
+title: "快速开始"
+description: "任何 Solana 程序都可以通过加入 delegation 能力升级为支持 Ephemeral Rollups。"
+---
+
+import Endpoints from "/cn/snippets/endpoints.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+import Software from "/cn/snippets/software.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/cn/snippets/anchor-counter-code/write-program.mdx";
+import DelegateCode from "/cn/snippets/anchor-counter-code/delegate.mdx";
+import CommitCode from "/cn/snippets/anchor-counter-code/commit.mdx";
+import UndelegateCode from "/cn/snippets/anchor-counter-code/undelegate.mdx";
+import TestCode from "/cn/snippets/anchor-counter-code/test.mdx";
+import ResizeCode from "/cn/snippets/anchor-counter-code/resize.mdx";
+import OncurveDelegation from "/cn/snippets/oncurve-delegation.mdx";
+import MagicRouterSDK from "/cn/snippets/magic-router-sdk.mdx";
+import DelegationInfo from "/cn/snippets/delegation-info.mdx";
+import MagicActionExample from "/cn/snippets/magic-action-example.mdx";
+
+import UndelegationCallbackNote from "/cn/snippets/notes/undelegation-callback-note.mdx";
+
+import QuickAccesER from "/cn/snippets/quick-access-er.mdx";
+import QuickAccessERFooter from "/cn/snippets/quick-access-er-footer.mdx";
+
+---
+
+<QuickAccesER />
+
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Anchor Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+<div id="quickstart" />
+## 分步指南
+
+构建你的程序，并通过 MagicBlock 的 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 加入 delegation hooks 完成升级：
+
+<Steps>
+  <Step title={<a href="#1-write-program">编写程序</a>}>
+    按照你平常的方式编写 Solana 程序。
+  </Step>
+  <Step
+    title={
+      <a href="#2-delegate">
+        在程序中添加 delegation 和 undelegation hooks
+      </a>
+    }
+  >
+    添加 CPI hooks，使状态账户能够在 Ephemeral Rollup 会话中完成 delegate、commit 和 undelegate。
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-deploy">将程序部署到 Solana。</a>}>
+    使用 Anchor 或 Solana CLI 直接将程序部署到 Solana 上。
+  </Step>
+  <Step
+    title={
+      <a href="#4-test">
+        准备开始执行 delegation 以及实时高速交易
+      </a>
+    }
+  >
+    在链上和链下发送无需修改且符合 SVM RPC 规范的交易。
+  </Step>
+</Steps>
+
+---
+
+<div id="counter-example" />
+## Counter 示例
+
+<img
+  src="/images/gifs/counter-420w.gif"
+  alt="Counter GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+
+<Software />
+
+<div id="code-snippets" />
+<div id="code-snippets-section" />
+### 代码片段
+
+<Tabs>
+  <Tab title={<span id="1-write-program">1. Write program</span>}>
+
+    该程序实现了两个主要 instruction：
+
+    1. `initialize`：将计数器设为 0
+    2. `increment`：将计数器加 1
+
+    该程序还为计数器的委托与取消委托实现了专用 instruction：
+
+    1. `Delegate`：将计数器从 Base Layer 委托到 ER（在 Base Layer 调用）
+    2. `CommitAndUndelegate`：安排将计数器从 ER 同步回 Base Layer，并在 ER 上取消委托（在 ER 调用）
+    3. `Commit`：安排将计数器从 ER 同步回 Base Layer（在 ER 调用）
+    4. `Undelegate`:
+        - 安排计数器同步并执行取消委托（在 ER 调用）
+        - 通过 `#[ephemeral]` 注入的 callback instruction 触发 undelegation（通过 validator CPI 在 Base Layer 调用）
+    <UndelegationCallbackNote />
+    <WriteProgramCode />
+
+    这里没有什么特别之处，只是一个简单的 Anchor 计数器程序。唯一的区别是我们加入了用于 undelegation 的 `ephemeral` macro，以及用于注入 delegation program 交互逻辑的 `delegate` macro。
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+  <Tab title={<span id="2-delegate">2. Delegate</span>}>
+      <Validators />
+    1. 在程序中添加带有 Anchor 特性的 `ephemeral-rollups-sdk`
+
+    ```bash
+    cargo add ephemeral-rollups-sdk --features anchor
+    ```
+
+    导入 `delegate`、`commit`、`ephemeral`、`DelegateConfig`、`commit_accounts` 和 `commit_and_undelegate_accounts`：
+
+    ```rust
+    use ephemeral_rollups_sdk::anchor::{
+      commit,
+      delegate,
+      ephemeral
+    };
+    use ephemeral_rollups_sdk::cpi::DelegateConfig;
+    use ephemeral_rollups_sdk::ephem::{
+      commit_accounts,
+      commit_and_undelegate_accounts
+      };
+    ```
+
+    2. 在程序中添加 `delegate` macro 和 instruction、`ephemeral` macro 以及 `undelegate` instruction。你还可以指定希望使用的 delegation 配置，例如自动 commit 和特定 ER validator：
+    <DelegateCode />
+    <CommitCode />
+    <UndelegateCode />
+
+    <DelegationInfo />
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title={<span id="3-deploy">3. Deploy</span>}>
+    现在你的程序已经升级完成并准备就绪！将其构建并部署到目标 cluster：
+
+    ```bash
+    anchor build && anchor deploy
+    ```
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+  <Tab title={<span id="4-test">4. Test</span>}>
+    现在可以开始执行 delegation 和实时高速交易了。
+    <Validators />
+
+    ```bash
+    anchor test --skip-build --skip-deploy --skip-local-validator
+    ```
+    运行以下测试：
+    <TestCode />
+
+    为了让前端集成更简单，我们创建了 [Magic Router](/cn/pages/ephemeral-rollups-ers/introduction/magic-router)。你只需直接把交易发送给 magic router，它会帮你判断应将交易路由到 [Ephemeral Rollup](/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) 还是 base layer。
+
+    <Endpoints />
+
+    [⬆️ Back to Top](#code-snippets)
+
+  </Tab>
+
+</Tabs>
+
+---
+
+<div id="advanced-code-snippets" />
+<div id="advanced-code-snippets" />
+### 进阶代码片段
+
+<Tabs>
+  <Tab title="Resize PDA">
+    当调整已委托 PDA 的大小时：
+    - PDA 必须有足够的 lamports，才能在新账户大小下继续保持 rent-exempt。
+    - 如果需要额外 lamports，则 **payer account 也必须已委托**，以补足差额。
+    - PDA 必须由程序持有，且交易中必须包含转移 lamports 所需的 signer。
+    - 使用 `system_instruction::allocate`
+
+    <ResizeCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Magic Router">
+
+    <MagicRouterSDK />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Magic Action">
+      ### 快速入口
+
+      <CardGroup cols={2}>
+        <Card
+          title="Magic Actions Example"
+          icon="code"
+          href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+          iconType="duotone"
+        >
+          在 GitHub 上查看参考实现
+        </Card>
+      </CardGroup>
+    为 Ephemeral Rollup
+    (ER) commit 之后、在 Solana base layer 上自动执行的一个或多个 instruction 进行绑定。
+    [了解更多 Magic Action](/cn/pages/ephemeral-rollups-ers/magic-actions/overview.mdx)
+    <MagicActionExample />
+
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="On-Curve Delegation">
+    <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+</Tabs>
+
+---
+
+<QuickAccessERFooter />
+
+---
+
+<SolanaResources />
+
+---
+
+<div id="magicblock-products" />
+## MagicBlock 产品
+
+import ProductCards from "/cn/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

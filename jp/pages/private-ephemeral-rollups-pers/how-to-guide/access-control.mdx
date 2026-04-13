@@ -1,0 +1,333 @@
+---
+title: "アクセス制御"
+description: "Private Ephemeral Rollups におけるきめ細かなアクセス制御とメンバー権限の管理方法を学びます。"
+---
+
+import CreatePermissionRust from "/jp/snippets/acl-code/permission/rust/create.mdx";
+import UpdatePermissionRust from "/jp/snippets/acl-code/permission/rust/update.mdx";
+import DelegatePermissionRust from "/jp/snippets/acl-code/permission/rust/delegate.mdx";
+import CommitAndUndelegatePermissionRust from "/jp/snippets/acl-code/permission/rust/commit_and_undelegate.mdx";
+import ClosePermissionRust from "/jp/snippets/acl-code/permission/rust/close.mdx";
+
+import CreatePermissionWeb3js from "/jp/snippets/acl-code/permission/web3js/create.mdx";
+import UpdatePermissionWeb3js from "/jp/snippets/acl-code/permission/web3js/update.mdx";
+import DelegatePermissionWeb3js from "/jp/snippets/acl-code/permission/web3js/delegate.mdx";
+import CommitAndUndelegatePermissionWeb3js from "/jp/snippets/acl-code/permission/web3js/commit_and_undelegate.mdx";
+import ClosePermissionWeb3js from "/jp/snippets/acl-code/permission/web3js/close.mdx";
+
+import CreatePermissionKit from "/jp/snippets/acl-code/permission/kit/create.mdx";
+import UpdatePermissionKit from "/jp/snippets/acl-code/permission/kit/update.mdx";
+import DelegatePermissionKit from "/jp/snippets/acl-code/permission/kit/delegate.mdx";
+import CommitAndUndelegatePermissionKit from "/jp/snippets/acl-code/permission/kit/commit_and_undelegate.mdx";
+import ClosePermissionKit from "/jp/snippets/acl-code/permission/kit/close.mdx";
+
+import CreatePermissionPinocchio from "/jp/snippets/acl-code/permission/pinocchio/create.mdx";
+import UpdatePermissionPinocchio from "/jp/snippets/acl-code/permission/pinocchio/update.mdx";
+import DelegatePermissionPinocchio from "/jp/snippets/acl-code/permission/pinocchio/delegate.mdx";
+import CommitAndUndelegatePermissionPinocchio from "/jp/snippets/acl-code/permission/pinocchio/commit_and_undelegate.mdx";
+import ClosePermissionPinocchio from "/jp/snippets/acl-code/permission/pinocchio/close.mdx";
+
+import MemberFlagsRust from "/jp/snippets/acl-code/member/rust.mdx";
+import MemberFlagsWeb3js from "/jp/snippets/acl-code/member/web3js.mdx";
+import MemberFlagsKit from "/jp/snippets/acl-code/member/kit.mdx";
+import MemberFlagsPinocchio from "/jp/snippets/acl-code/member/pinocchio.mdx";
+
+import AuthorizationWeb3js from "/jp/snippets/acl-code/authorization/web3js.mdx";
+import AuthorizationKit from "/jp/snippets/acl-code/authorization/kit.mdx";
+
+import PerCards from "/jp/snippets/per-cards.mdx";
+import AclCards from "/jp/snippets/acl-cards.mdx";
+import PerEndpoint from "/jp/snippets/per-endpoint.mdx";
+import Validators from "/jp/snippets/notes/validators.mdx";
+
+---
+
+<AclCards />
+
+---
+
+## 概要
+
+Private Ephemeral Rollups は、[コンプライアンス](/jp/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)を中核に据えた [Trusted Execution Environment](/jp/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) 上で、permissioned accounts に対するきめ細かな権限制御を可能にする [Ephemeral Rollups](/jp/pages/ephemeral-rollups-ers/introduction/why) です。各 permission account は、メンバー一覧と、それぞれが実行できる操作を決める特定のフラグを保持します。
+
+### 基本概念
+
+- **Permission Account**: 特定のアカウントに対するアクセス制御ルールを保存する PDA
+- **Members**: フラグを通じて特定の権限を付与されたアドレス
+- **Flags**: メンバーが何をできるか（authority、ログ閲覧、残高閲覧など）を定義するビットマスク
+- **Public Permissions**: メンバーが `None` に設定されると、permissioned account は一時的に可視状態になる
+
+---
+
+## メンバーフラグ
+
+メンバーフラグは、各メンバーに対するきめ細かな権限を定義します。フラグはビット OR で組み合わせることで、複数の権限を付与できます。
+
+**フラグの説明:**
+
+- **AUTHORITY**: 権限設定の更新・委任、他メンバーの追加・削除、メンバーフラグの更新を許可します。
+- **TX_LOGS**: トランザクション実行ログの閲覧を許可します。
+- **TX_BALANCES**: アカウント残高の変化の閲覧を許可します。
+- **TX_MESSAGE**: トランザクションメッセージデータの閲覧を許可します。
+- **ACCOUNT_SIGNATURES**: アカウント署名の閲覧を許可します
+
+<Tabs>
+  <Tab title="Rust SDK">
+    <MemberFlagsRust />
+  </Tab>
+  <Tab title="Pinocchio">
+    <MemberFlagsPinocchio />
+  </Tab>
+  <Tab title="Web3.js">
+    <MemberFlagsWeb3js />
+  </Tab>
+  <Tab title="Kit">
+    <MemberFlagsKit />
+  </Tab>
+</Tabs>
+---
+
+<div id="permission-lifecycle" />
+## Permission のライフサイクル
+
+permissioned account の典型的なライフサイクルでは、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` との連携が必要です。
+
+<Steps>
+  <Step title={<a href="#1-create">Permission を作成する</a>}>
+    初期メンバーとそのフラグを持つ新しい permission account を初期化します。
+  </Step>
+  <Step title={<a href="#2-delegate">Permission を委任する</a>}>
+    Private Ephemeral Rollup に permission を委任し、強制力のあるリアルタイムアクセス制御を有効にします。
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-update">Permission を更新する</a>}>
+    必要に応じてメンバー権限を追加、削除、変更します。更新は Private Ephemeral Rollup 上でリアルタイムに行えます。
+  </Step>
+  <Step title={<a href="#4-request">リクエストを行う</a>}>
+    リクエストを行う前に、TEE RPC の完全性を検証し、認可トークンを取得します。適切なフラグを持つメンバーのみがアカウント状態へアクセスまたは変更できます。
+  </Step>
+  <Step title={<a href="#5-commit-%26-undelegate">コミットして委任解除する</a>}>
+    最終状態を Solana に同期し、アカウントを Base Layer の制御に戻します。
+  </Step>
+  <Step title={<a href="#6-close">Permission を閉じる</a>}>
+    不要になった permission account を閉じて lamports を回収します。
+  </Step>
+</Steps>
+
+---
+
+## Permission 操作
+
+<Tabs>
+  <Tab title="1. 作成">
+    プログラムを作成したら、permission と delegation のフックを追加してアカウントへのアクセスを制御できます。例としては[クイックスタート](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart)を参照してください。
+    
+    MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` を通じて、初期メンバーとそのフラグを持つ新しい permission account を作成します。
+
+    <Tabs>
+      <Tab title={<span id="1-create">Rust SDK</span>}>
+        <CreatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CreatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CreatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **ユースケース:**
+
+    - 新しく委任されたアカウントのアクセス制御を初期化する
+    - authority メンバーとその権限を設定する
+    - 誰がトランザクション詳細を見られるかを定義する
+
+
+    [⬆️ トップに戻る](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="2. 委任">
+    MagicBlock の Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を通じて permissioned account を委任し、低レイテンシーの Private Ephemeral Rollup 実行を有効にします。
+
+    <Validators />
+
+    <Tabs>
+      <Tab title={<span id="2-delegate">Rust SDK</span>}>
+        <DelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <DelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <DelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <DelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **ユースケース:**
+
+    - permissioned account に対する ER 実行を有効にする
+    - 状態変更を実行する特定のバリデータを指定する
+    - リアルタイムトランザクション処理のための委任を設定する
+
+    **重要:**
+
+    - `AUTHORITY_FLAG` に基づき、authority または `permissioned_account` のいずれかが署名する必要があります
+    - バリデータは ER の速度でトランザクションを処理します
+    - コミット頻度により Solana への状態同期の頻度が決まります
+    - **Private Ephemeral Rollup に委任された時点で permission は強制されます**。適切なフラグを持つメンバーだけがアカウント状態にアクセスまたは変更できます
+
+    [⬆️ トップに戻る](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="3. 更新">
+    MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` を通じて、permission account 内の既存メンバーまたはそのフラグを変更します。
+
+    <Tabs>
+      <Tab title={<span id="3-update">Rust SDK</span>}>
+        <UpdatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdatePermissionPinocchio />
+      </Tab>
+      <Tab title={<span id="4-request">Kit</span>}>
+        <UpdatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **ユースケース:**
+
+    - permission group に新しいメンバーを追加する
+    - メンバー削除によって権限を取り消す
+    - メンバーフラグを変更してアクセスを許可または制限する
+    - メンバーを `None` に設定してアカウントを一時的に可視化する
+
+    [⬆️ トップに戻る](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="4. リクエスト">
+    Private Ephemeral Rollup にリクエストする際は、まず認可を確立する必要があります:
+
+    <PerEndpoint />
+
+    **認可ステップ:**
+
+    1. **TEE RPC の完全性を検証する**: TDX quote と Intel 発行の証明書を使い、TEE RPC サーバーが正規の Intel TDX ハードウェア上で動作していることを確認する
+    2. **認可トークンを要求する**: challenge message に署名し、認可トークンを受け取る
+    3. **接続を作成する**: 認可トークンを header または query parameter として渡す
+
+    <Tabs>
+      <Tab title="Kit">
+        <AuthorizationKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <AuthorizationWeb3js />
+      </Tab>
+    </Tabs>
+
+    **アカウントの可視性:**
+
+    - **デフォルトでは**: すべてのアカウントは透過的で、認可された任意のユーザーがアクセスできます
+    - **権限設定後は**: アカウントが permission system によって保護されると、すべてのリクエストでアクセス制御ルールが強制されます
+    - 適切なフラグを持つメンバーだけが permissioned accounts とトランザクションにアクセスまたは変更できます
+
+    **要点:**
+
+    - リクエストはバリデータ上でリアルタイムに実行されます
+    - メンバーフラグが各ユーザーの実行可能な操作を決定します
+    - 実行中でも権限は動的に更新できます
+    - 更新は Private Ephemeral Rollup に即時反映されます
+
+    [⬆️ トップに戻る](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="5. コミットと委任解除">
+    Private Ephemeral Rollup 上の最新の permission state はアクセス制御を強制します。permission account を閉じる場合は、permission を Solana に委任解除する前に permission members を更新してください。
+
+    <Tabs>
+      <Tab title={<span id="5-commit-%26-undelegate">Rust SDK</span>}>
+        <CommitAndUndelegatePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CommitAndUndelegatePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CommitAndUndelegatePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CommitAndUndelegatePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    [⬆️ トップに戻る](#permission-lifecycle)
+
+  </Tab>
+
+  <Tab title="6. 閉じる">
+    permissioned account を閉じ、Solana 上の lamports を回収します。
+
+    <Tabs>
+      <Tab title={<span id="6-close">Rust SDK</span>}>
+        <ClosePermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <ClosePermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <ClosePermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <ClosePermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **ユースケース:**
+
+    - 未使用の permission accounts を整理する
+    - 閉じたアカウントから SOL を回収する
+
+    **重要:**
+
+    - permission は先に Solana へ委任解除する必要があります
+    - 委任済みの場合、閉じる前に `commit_and_undelegate` を呼び出します
+    - lamports は payer に返却されます
+
+    [⬆️ トップに戻る](#permission-lifecycle)
+
+  </Tab>
+</Tabs>
+
+---
+
+## ベストプラクティス
+
+1. **Authority 管理**: 常に少なくとも 1 人の信頼できるメンバーに `AUTHORITY_FLAG` を割り当てる
+2. **最小権限**: 各メンバーには必要なフラグだけを付与する
+3. **リアルタイム更新**: permission は委任解除せずに Private Ephemeral Rollup 上でリアルタイム更新でき、動的なアクセス制御調整が可能
+4. **クリーンアップ**: 未使用の permission accounts を委任解除して閉じ、SOL を解放する
+
+---
+
+## セキュリティ上の考慮事項
+
+- **署名者の検証**: `AUTHORITY_FLAG` を持つメンバー、または permissioned account を持つプログラムだけが変更を認可できます
+- **公開アカウント**: メンバーを `None` に設定すると、アカウントは公開可視状態になります
+- **デフォルト Authority**: デフォルトでは、permissioned account の所有者が permission account の members に permission authority として追加されます
+- **空のメンバー一覧**: `members` フィールドが空リストに設定されると、permissioned account は完全に制限されて非公開になります。permission を変更できるのは所有者だけです
+- **アクセス監査**: メンバーフラグを使ってアクセスを監査・制御します
+
+---
+
+<PerCards />

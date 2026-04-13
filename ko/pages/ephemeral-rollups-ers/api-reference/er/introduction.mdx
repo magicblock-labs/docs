@@ -1,0 +1,48 @@
+---
+title: "소개"
+description: "MagicBlock Router API 문서"
+---
+
+## 개요
+
+MagicBlock Router API는 거의 모든 표준 Solana RPC 메서드를 구현하고 Router 전용 메서드를 추가한 JSON-RPC API입니다. 단일 엔드포인트 뒤에서 노드 선택과 라우팅을 처리해 멀티 노드 구성을 단순화합니다.
+
+이 API는 계정의 위임 상태를 조회하고 요청 실행에 가장 적합한 가까운 노드를 식별하는 데 사용할 수 있습니다. 예를 들어 `getBlockhashForAccounts`는 제공된 계정과 그 위임 상태를 기반으로 적절한 노드에서 blockhash를 반환합니다.
+
+**Mainnet URL:** `https://router.magicblock.app`
+
+**Devnet URL:** `https://devnet-router.magicblock.app`
+
+**API Version:** 2.0
+
+## 주요 작업
+
+### 네트워크 정보
+- [**Get Routes**](/ko/pages/ephemeral-rollups-ers/api-reference/er/getRoutes) - 사용 가능한 라우팅 정보를 조회합니다
+- [**Get Identity**](/ko/pages/ephemeral-rollups-ers/api-reference/er/getIdentity) - 식별 정보를 가져옵니다
+
+### 계정 작업
+- [**Get Account Info**](/ko/pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo) - 계정 정보를 가져옵니다
+- [**Get Blockhash For Accounts**](/ko/pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts) - 특정 계정의 blockhash를 가져옵니다
+
+### 상태 및 위임
+- [**Get Signature Statuses**](/ko/pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses) - 트랜잭션 서명 상태를 확인합니다
+- [**Get Delegation Status**](/ko/pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus) - 위임 정보를 조회합니다
+
+## 주요 특징
+
+- **Solana RPC 지원 범위** - Router를 통해 거의 모든 표준 Solana RPC 메서드를 구현합니다
+- **Router 전용 메서드** - `getBlockhashForAccounts`, `getDelegationStatus` 같은 메서드를 추가합니다
+- **단순화된 멀티 노드 구성** - 여러 노드 엔드포인트를 직접 관리하는 대신 하나의 Router 엔드포인트를 사용합니다
+- **빠른 경로 조회** - 트랜잭션 라우팅 경로를 효율적으로 결정합니다
+- **계정 상태** - 현재 계정 정보와 잔액에 접근합니다
+- **트랜잭션 추적** - 트랜잭션 상태와 확인 여부를 모니터링합니다
+- **위임 조회** - Router를 통해 위임 관계를 확인합니다
+
+## 사용 사례
+
+- 계정 잔액과 상태를 조회합니다
+- 트랜잭션 확인 상태를 점검합니다
+- 트랜잭션 라우팅을 위한 경로 정보를 조회합니다
+- 위임 구성을 검증합니다
+- 멀티 노드 엔드포인트를 수동으로 관리하는 일을 줄입니다

@@ -1,0 +1,20 @@
+```rust
+// Undelegate + Action
+let magic_action = MagicInstructionBuilder {
+    payer: ctx.accounts.payer.to_account_info(),
+    magic_context: ctx.accounts.magic_context.to_account_info(),
+    magic_program: ctx.accounts.magic_program.to_account_info(),
+    magic_action: MagicAction::CommitAndUndelegate(CommitType::WithHandler {
+        commited_accounts: vec![ctx.accounts.counter.to_account_info()],
+        call_handlers: vec![action],
+    }),
+};
+
+// Action only
+let magic_action = MagicInstructionBuilder {
+    payer: ctx.accounts.payer.to_account_info(),
+    magic_context: ctx.accounts.magic_context.to_account_info(),
+    magic_program: ctx.accounts.magic_program.to_account_info(),
+    magic_action: MagicAction::BaseActions(vec![action]),
+};
+```

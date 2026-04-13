@@ -1,0 +1,183 @@
+---
+title: "Session Provider 与 Context"
+description:
+  "理解 SessionWalletProvider 及其提供的上下文用法，以便在应用组件间轻松访问会话钱包功能"
+---
+
+`SessionWalletProvider` 是一个高阶组件，它会包裹你的应用组件，并在整个应用中提供 `sessionWallet` 上下文。
+
+下面是如何使用 `SessionWalletProvider` 的示例：
+
+1. 创建一个名为 `components/SessionProvider.tsx` 的新文件
+
+```typescript
+// components/SessionProvider.tsx
+// The SessionProvider component initializes the SessionKeyManager and provides it to its children via context.
+// Wrap any component that needs access to the SessionKeyManager with this provider.
+
+import {
+  SessionWalletProvider,
+  useSessionKeyManager,
+} from "@magicblock-labs/gum-react-sdk";
+import {
+  AnchorWallet,
+  useAnchorWallet,
+  useConnection,
+} from "@solana/wallet-adapter-react";
+
+interface SessionProviderProps {
+  children: React.ReactNode;
+}
+
+const SessionProvider: React.FC<SessionProviderProps> = ({ children }) => {
+  const { connection } = useConnection();
+  const anchorWallet = useAnchorWallet() as AnchorWallet;
+  const cluster = "devnet"; // or "mainnet-beta", "testnet", "localnet"
+  //here the useSessionKeyManager takes in 3 properties
+  const sessionWallet = useSessionKeyManager(anchorWallet, connection, cluster);
+
+  return (
+    <SessionWalletProvider sessionWallet={sessionWallet}>
+      {children}
+    </SessionWalletProvider>
+  );
+};
+
+export default SessionProvider;
+```
+
+2. In your `_app.tsx` file, wrap the SessionProvider around the entire app to ensure it's accessible within every component:
+
+```typescript
+// pages/_app.tsx
+import SessionProvider from "@/components/SessionProvider";
+import { WalletContextProvider } from "@/contexts/WalletContextProvider";
+import "@/styles/globals.css";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import {
+  PhantomWalletAdapter,
+  SolflareWalletAdapter,
+} from "@solana/wallet-adapter-wallets";
+import { clusterApiUrl } from "@solana/web3.js";
+import type { AppProps } from "next/app";
+import React, { useMemo } from "react";
+import dotenv from "dotenv";
+
+// Use require instead of import since order matters
+require("@solana/wallet-adapter-react-ui/styles.css");
+
+dotenv.config();
+
+export default function App({ Component, pageProps }: AppProps) {
+  const network = WalletAdapterNetwork.Devnet;
+  const endpoint =
+    process.env.NEXT_PUBLIC_SOLANA_ENDPOINT || clusterApiUrl(network);
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter({ network }),
+      new SolflareWalletAdapter({ network }),
+    ],
+    [network]
+  );
+
+  return (
+    <WalletContextProvider
+      endpoint={endpoint}
+      network={network}
+      wallets={wallets}
+    >
+      <SessionProvider>
+        <Component {...pageProps} />
+      </SessionProvider>
+    </WalletContextProvider>
+  );
+}
+```
+
+_**注意：请确保所有 Solana wallet adapter 的 context 都位于 SessionProvider 的父级。**_
+
+3. 配置好 SessionWalletProvider 后，你就可以在组件中使用 `useSessionWallet` hook：
+
+### 在组件中使用 `useSessionWallet`
+
+`useSessionWallet` 是一个自定义 hook，用于访问 session wallet 的上下文值。任何被 SessionWalletProvider 包裹的组件都可以使用它。
+
+为了更好地理解 `useSessionWallet` 提供了什么，我们需要看看 `SessionWalletInterface`。它就是 `useSessionKeyManager` 返回的内容，包含使用 session keys，以及签名和发送交易所需的方法。
+
+```typescript
+interface SessionWalletInterface {
+  publicKey: PublicKey | null; // Public key associated with the session wallet
+  ownerPublicKey: PublicKey | null; // The Publickey of the session token authority(The creator of the session token)
+  isLoading: boolean; // Indicates whether the session wallet is loading
+  error: string | null; // An error message, if any
+  sessionToken: string | null; // Session token for the current session
+  signTransaction:
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T>)
+    | undefined; // Sign a single transaction
+  signAllTransactions:
+    | (<T extends Transaction>(
+        transactions: T[],
+        connection?: Connection,
+        sendOptions?: SendTransactionOptions
+      ) => Promise<T[]>)
+    | undefined; // Sign multiple transactions
+  signMessage: ((message: Uint8Array) => Promise<Uint8Array>) | undefined; // Sign a message
+  sendTransaction:
+    | (<T extends Transaction>(
+        transaction: T,
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string>)
+    | undefined; // Send a signed transaction
+  signAndSendTransaction:
+    | (<T extends Transaction>(
+        transactions: T | T[],
+        connection?: Connection,
+        options?: SendTransactionOptions
+      ) => Promise<string[]>)
+    | undefined; // Sign and send transactions
+  createSession: (
+    targetProgram: PublicKey, // Target Solana program
+    topUpLamports?: number, // Top up session wallet with lamports or not
+    validUntil?: number, // Duration of session token before expiration
+    sessionCreatedCallback?: (sessionInfo: {
+      sessionToken: string;
+      publicKey: string;
+    }) => void
+  ) => Promise<SessionWalletInterface | undefined>; // Create a new session
+  revokeSession: () => Promise<void>; // Revoke the current session
+  getSessionToken: () => Promise<string | null>; // Retrieve the current session token
+}
+```
+
+这可以帮助我们理解如何在代码中使用 sessionWallet 来创建 session tokens，并在不再需要时撤销它们。
+
+```typescript
+import { useSessionWallet } from "@magicblock-labs/gum-react-sdk";
+
+function YourComponent() {
+  const sessionWallet = useSessionWallet();
+
+  //create session token
+  const session = await sessionWallet.createSession(
+  // pass needed params here
+  );
+
+  //Revoke Session Wallet
+   const result = await sessionWallet.revokeSession();
+
+   //Access the session signer Publickey
+   sessionWallet.publicKey,
+
+   //To access the session token
+   sessionWallet.sessionToken
+
+  return (
+    // Your component JSX
+  );
+}
+```

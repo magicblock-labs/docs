@@ -1,0 +1,36 @@
+---
+title: "Hello Bolt"
+description: "项目脚手架"
+---
+
+要初始化一个新项目，只需运行：
+
+```bash
+bolt init <my_project>
+```
+
+这会创建一个新的 bolt workspace，你可以进入其中继续开发。下面是该目录中一些重要文件：
+
+- `.anchor` 文件夹：包含最新的程序日志以及用于测试的本地账本
+- `app` 文件夹：如果你使用 monorepo，可以在这个空目录中放置前端代码
+- `programs` 文件夹：这个目录包含你的 programs。它可以包含多个程序，但初始状态下只会有一个与 `<my_project>` 同名的程序。该程序已经包含一个带示例代码的 `lib.rs` 文件。
+- `tests` 文件夹：用于存放 E2E 测试。这里已经包含一个测试 `programs/<my_project>` 中示例代码的文件。
+- `migrations` 文件夹：你可以在这里保存程序的部署和迁移脚本。
+- `Anchor.toml` 文件：该文件用于配置整个 workspace 中 programs 的全局设置。初始情况下，它会配置：
+  - 你的 programs 在 localnet 上的地址（`[programs.localnet]`）
+  - 程序可推送到的 registry（`[registry]`）
+  - 测试中可使用的 provider（`[provider]`）
+  - 由 Anchor 代你执行的脚本（`[scripts]`）。运行 `anchor test` 时会执行测试脚本，你也可以使用 `anchor run <my_script>` 运行自己的脚本。
+
+使用以下命令运行示例单元测试：
+
+```bash
+bolt test
+```
+
+该命令会注册一个新的 World instance、创建一个 entity、附加一个 component，并在其上执行一个 system。你可以在 `tests` 文件夹中查看这个测试脚本作为参考。
+
+## Anchor 简介
+
+Bolt 构建在 Anchor 之上，除了支持所有 Anchor 命令外，还加入了一些扩展功能。
+完整的 Anchor 命令列表请参考 [Anchor 文档](https://www.anchor-lang.com/)。

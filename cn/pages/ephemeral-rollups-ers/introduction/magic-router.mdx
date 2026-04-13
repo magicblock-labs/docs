@@ -1,0 +1,98 @@
+---
+title: Magic Router
+description: 了解 MagicBlock 的 Magic Router 如何通过将交易路由到正确的执行环境来加速交易。
+---
+
+import MagicRouterSDK from "/cn/snippets/magic-router-sdk.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/Wc2XMAKtEug?si=bjitIDG7w5fY5zmK&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+---
+
+## 动态交易路由
+
+**MagicBlock 的 Magic Router** 是一个动态交易路由引擎。它会基于交易元数据智能决定交易应当在哪里执行，也就是 **Ephemeral Rollups** 或 **Solana**，从而加速交易处理。
+
+这消除了开发者手动编写路由逻辑的需求，显著提升了交易速度和开发体验。
+
+- ✅ **单一端点即可简单集成**：只需连接一个 RPC 端点。
+- ✅ **无缝钱包体验**：连接、签名、提交即可，无需关心底层细节。
+- ✅ **更快的确认速度**：Magic Router 会自动路由到当前最快的可用端点。
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router.png" />
+
+---
+
+## 快速入口
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  >
+    与 Anchor 程序集成
+  </Card>
+  <Card
+    title="Native Rust"
+    icon="rust"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
+    iconType="duotone"
+  >
+    与 Native Rust 程序集成
+  </Card>
+  <Card
+    title="API"
+    icon="server"
+    href="/cn/pages/ephemeral-rollups-ers/api-reference/er/getRoutes"
+    iconType="duotone"
+  >
+    体验 Magic Router API
+  </Card>
+</CardGroup>
+
+---
+
+## 代码片段
+
+<MagicRouterSDK />
+
+Magic Router 会分析每笔交易的元数据（例如 writable accounts、owner 和 signer），并自动将其路由到最近的专用端点：
+
+<img class="w-full h-auto max-w-5xl" src="/images/magic-router-scenarios.png" />
+1. **客户端 - 提交交易** dApp 或用户将交易发送到 Magic Router RPC 端点。
+
+2. **RPC - 检查元数据**
+   Magic Router 会检查交易元数据，并确认 writable accounts 的 owner。
+
+3. **验证器 - 智能路由与执行**
+   路由器会根据元数据决定将交易发送到：
+
+   - **Ephemeral Rollup**：用于快速、低延迟、零成本执行
+   - **Solana**：用于持久化、高吞吐执行
+
+---

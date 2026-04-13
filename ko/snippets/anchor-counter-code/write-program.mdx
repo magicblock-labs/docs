@@ -1,0 +1,65 @@
+```rust
+#[ephemeral]
+#[program]
+pub mod anchor_counter {
+    use super::*;
+
+    /// Initialize the counter.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        Ok(())
+    }
+
+    /// Increment the counter.
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+
+    /// Delegate the account to the delegation program
+    /// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
+    pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    // ...
+    }
+
+    /// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+    pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    // ...
+    }
+
+    /// Undelegate the account from the delegation program
+    pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    // ...
+    }
+}
+
+/// Context for initializing counter
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init_if_needed, payer = user, space = 8 + 8, seeds = [TEST_PDA_SEED], bump)]
+    pub counter: Account<'info, Counter>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+
+/// Context for incrementing counter
+#[derive(Accounts)]
+pub struct Increment<'info> {
+    #[account(mut, seeds = [TEST_PDA_SEED], bump)]
+    pub counter: Account<'info, Counter>,
+}
+
+/// Counter struct
+#[account]
+pub struct Counter {
+    pub count: u64,
+}
+
+/// Other context for delegation
+
+
+```

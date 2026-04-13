@@ -1,0 +1,46 @@
+---
+title: "委任、コミット、Undelegation"
+description: "トランザクション実行も状態同期も、すべてリアルタイム。"
+---
+
+import Validators from "/jp/snippets/notes/validators.mdx";
+
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
+
+[MagicBlock の Ephemeral Rollup](/jp/pages/overview/additional-information/whitepaper) は、**Solana Virtual Machine (SVM) のアカウントベース構造と並列実行** を活用して状態管理を最適化します。状態を **クラスター** として構成することで、ユーザーは **1 つまたは複数のアカウントをロック** し、状態実行を一時的に **専用の補助レイヤー** である “Ephemeral Rollup (ER)” に移せます。動的な fraud-proof メカニズムにより、分散型 Security Committee を通じた高速な状態 finalization が可能です。詳しくは[ホワイトペーパー](/public/Ephemeral_Rollups_Fraud_Proof.pdf)を参照してください。
+
+---
+
+## ER でリアルタイムにトランザクションを実行するためのアカウントライフサイクル
+
+<img
+  class="w-full h-auto max-w-5xl"
+  src="/images/magicblock-delegation-lifecycle.png"
+/>
+
+<Steps>
+  <Step title="アカウントを委任する">
+    状態アカウントはまず、account owner を [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` に変更し、ER validator、アカウント寿命、同期頻度などのパラメータを指定することで、特定の ER validator に委任される必要があります。
+    <Validators />
+
+  </Step>
+  <Step title="リアルタイムでトランザクションを実行する">
+    委任された状態アカウントは、ER 上で直接、または [Magic
+    Router](/jp/pages/ephemeral-rollups-ers/introduction/magic-router). The
+    Router](/jp/pages/ephemeral-rollups-ers/introduction/magic-router) を経由してリアルタイム更新されます。**ER 上で最初のトランザクションが、委任済みアカウントを** base layer から ephemeral rollup にクローンします。
+  </Step>
+  <Step title="状態をコミットする">
+    operator は ephemeral 状態を **定期的またはオンデマンドで** base layer にコミットします。これには新しい状態と関連ポインタが含まれます。アカウント状態は、ホワイトペーパーに記載された fraud-proof メカニズムで finalization されます。
+  </Step>
+  <Step title="継続的にリアルタイムでトランザクションを実行する">
+    委任済みアカウント状態は、ER 上で直接、または [Magic
+    Router](/jp/pages/ephemeral-rollups-ers/introduction/magic-router).
+  </Step>
+  <Step title="アカウントを Undelegate する">
+    委任済みアカウント状態は ER validator を通じて base layer にコミットされ、account owner は [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` から元の owner に戻されます。
+  </Step>
+</Steps>

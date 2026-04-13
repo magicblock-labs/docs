@@ -1,0 +1,12 @@
+---
+title: "映射与状态监听"
+description: "将 BOLT 与不同客户端集成"
+---
+
+标准化的 ECS 模式使游戏组件能够轻松与渲染引擎集成，从而展示游戏界面。Bolt 可以被视为一种开放、无需许可的后端替代方案，可用于构建多人游戏服务器。
+
+在可视化和渲染方面，你可以使用 Unity、Unreal Engine、Phaser 等现有引擎。
+
+Components 的标准化结构允许自动完成 components 与 entity 属性的映射，同时抽象掉序列化与反序列化过程。状态更新也可以被轻松执行和拦截，从而提供一种类似 Observer 模式的机制，用于监听状态变化并更新渲染结果。
+
+如果你使用 Unity 进行开发，[Solana Unity SDK](/Build/SolanaUnitySDK/overview) 能为你提供将游戏界面与 Bolt 连接所需的全部工具。

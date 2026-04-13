@@ -1,0 +1,88 @@
+---
+title: "使用示例"
+description:
+  "通过多个实用示例，学习如何使用 useSessionKeyManager 和 SessionWalletProvider 与你的 dApp 交互"
+---
+
+现在你已经设置好了 hooks 和 provider，接下来我们来看一些使用这些方法的示例。
+
+### 创建会话
+
+要创建会话，请调用 `sessionWallet` 上的 `createSession` 方法。该方法接收三个参数：
+
+1. `targetProgramPublicKey`: 一个 `PublicKey` 实例，表示你想交互的目标程序。
+2. `topUp`: 一个布尔值。如果你希望一开始为 session keypair 充值 `0.01 SOL`，则设为 `true`；如果不想充值，则设为 `false`。
+3. `expiryInMinutes`: 可选参数，表示会话的过期时间，单位为分钟。默认值为 60 分钟。
+
+```typescript
+const handleCreateSession = async () => {
+  const targetProgramPublicKey = new PublicKey(
+    "your_target_program_public_key"
+  );
+  const topUp = true;
+  const expiryInMinutes = 60;
+
+  const session = await sessionWallet.createSession(
+    targetProgramPublicKey,
+    topUp,
+    expiryInMinutes
+  );
+
+  // 你也可以指定想要充值到 session wallet 的具体金额
+  // 这会按指定金额充值，并在撤销时返还给 authority
+  const session = await sessionWallet.createSession(
+    targetProgramPublicKey,
+    topUp ? 10000000 : 0, // 0.01 SOL
+    expiryInMinutes
+  );
+
+  if (session) {
+    console.log("Session created:", session);
+  } else {
+    console.error("Failed to create session");
+  }
+};
+```
+
+调用 `createSession` 后，会在客户端生成并存储一个新的临时 keypair。随后会创建会话令牌，并与该 keypair 一起保存。这样一来，用户就可以使用这个生成的 keypair 安全地签署交易，而无需暴露真实钱包的私钥。
+
+### 签名并发送交易
+
+要签名并发送交易，请使用 `signAndSendTransaction` 方法。该方法会先用会话期间创建的临时 keypair 对交易签名，然后将签名后的交易发送到 Solana 网络。
+
+```typescript
+const handleSendTransaction = async () => {
+  const transaction = new Transaction();
+  // 向交易中添加指令
+  const txids = await sessionWallet.signAndSendTransaction(transaction);
+
+  if (txids && txids.length > 0) {
+    console.log("Transaction sent:", txids);
+  } else {
+    console.error("Failed to send transaction");
+  }
+};
+```
+
+`signAndSendTransaction` 方法通过确保真实钱包私钥不会暴露，提供了额外的安全层。交易会由保存在客户端的临时 keypair 来签名，从而保护用户的主钱包安全。
+
+### 撤销会话
+
+要撤销会话，请调用 `sessionWallet` 上的 `revokeSession` 方法。该方法会执行三项操作：
+
+1. 从客户端存储中移除临时 keypair 和会话令牌。
+2. 从合约中撤销该会话。
+3. 将 lamports 返还给 authority，并关闭 session token PDA。
+
+```typescript
+const handleRevokeSession = async () => {
+  await sessionWallet.revokeSession();
+  console.log("Session revoked");
+};
+```
+
+撤销会话可以确保临时 keypair 不再有效，也不能继续被使用。
+
+这些示例可以帮助你开始在应用中实现会话管理和钱包功能。
+
+_**请参考**_ [_**Example App**_](https://github.com/gumhq/gum-example-app) _**中的 “Create Post” 部分，以查看 Session Token 的实现方式。**_

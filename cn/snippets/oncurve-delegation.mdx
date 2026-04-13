@@ -1,0 +1,37 @@
+import OncurveDelegationWeb3jsCode from "/cn/snippets/oncurve-delegation-web3js.mdx";
+import OncurveDelegationKitCode from "/cn/snippets/oncurve-delegation-kit.mdx";
+import OncurveUndelegationWeb3jsCode from "/cn/snippets/oncurve-undelegation-web3js.mdx";
+import OncurveUndelegationKitCode from "/cn/snippets/oncurve-undelegation-kit.mdx";
+
+### 快速访问
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="wallet"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/oncurve-delegation"
+    iconType="duotone"
+  >
+    曲线内账户委托
+  </Card>
+</CardGroup>
+
+    委托曲线内账户所需的签名者：
+      1. 需要被委托的曲线内账户
+      2. 费用支付者
+
+    委托曲线内账户所需的指令：
+      1. 将 System Account 指派给 Delegation Program
+      2. 委托给 Delegation Program
+
+    <CodeGroup>
+      <OncurveDelegationKitCode />
+      <OncurveDelegationWeb3jsCode />
+    </CodeGroup>
+
+    仅通过 Magic Program 直接执行 commit 和 undelegate。
+
+    <CodeGroup>
+      <OncurveUndelegationKitCode />
+      <OncurveUndelegationWeb3jsCode />
+    </CodeGroup>

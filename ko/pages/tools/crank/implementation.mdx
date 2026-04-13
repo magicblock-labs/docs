@@ -1,0 +1,141 @@
+---
+title: "구현"
+description: "MagicBlock Ephemeral Rollups를 사용해 Solana program에 cranks를 구현하는 방법 알아보기"
+---
+
+## 개요
+
+이 가이드는 Anchor 프레임워크와 **MagicBlock의 Ephemeral Rollups(ER)** 를 사용해 cranks를 구현하는 방법을 설명합니다. 전체 흐름은 다음과 같습니다.
+
+1. Solana base layer에서 counter를 초기화합니다
+2. 더 빠른 실행을 위해 counter account를 Ephemeral Rollup에 delegate 합니다
+3. counter를 자동으로 increment 하는 crank task를 schedule 합니다
+4. 지정된 간격으로 crank를 자동 실행합니다
+5. 작업이 끝나면 account를 undelegate 하여 Solana base layer로 되돌립니다
+
+## 실행 흐름
+
+```
+1. User가 Solana base layer에서 `initialize()`를 호출합니다
+   └─> `count = 0`인 Counter PDA를 생성합니다
+
+2. User가 Solana base layer에서 `delegate()`를 호출합니다
+   └─> Counter account를 Ephemeral Rollup으로 이동합니다
+
+3. User가 Ephemeral Rollup에서 `schedule_increment()`를 호출합니다
+   └─> MagicBlock program으로 CPI
+       └─> 다음과 같이 task를 schedule:
+           - task_id: 1
+           - interval: 100ms
+           - iterations: 3
+           - instruction: increment()
+
+4. MagicBlock이 `increment()`를 3번 자동 실행합니다:
+   └─> 실행 1: `count = 1` (T+0ms)
+   └─> 실행 2: `count = 2` (T+100ms)
+   └─> 실행 3: `count = 3` (T+200ms)
+
+5. User가 Ephemeral Rollup에서 `undelegate()`를 호출합니다
+   └─> 변경 사항을 commit 하고 Counter를 Solana base layer로 되돌립니다
+```
+## 핵심 구성 요소
+
+### 스케줄 대상 함수
+예를 들어, counter에 대해 다음과 같은 단순한 increment instruction을 schedule 하고 싶다고 해보겠습니다.
+
+```rust
+pub fn increment(ctx: Context<Increment>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    if counter.count > 1000 {
+        counter.count = 0;
+    }
+    msg!("PDA {} count: {}", counter.key(), counter.count);
+    Ok(())
+}
+```
+
+
+### Increment 스케줄 함수
+
+crank scheduling의 핵심 로직은 다음과 같습니다.
+
+```rust
+pub fn schedule_increment(ctx: Context<ScheduleIncrement>, args: ScheduleIncrementArgs) -> Result<()> {
+    let increment_ix = Instruction {
+        program_id: crate::ID,
+        accounts: vec![AccountMeta::new(ctx.accounts.counter.key(), false)],
+         // Defining the instruction to call.
+        data: anchor_lang::InstructionData::data(&crate::instruction::Increment {}),
+    };
+    
+    let ix_data = bincode::serialize(&MagicBlockInstruction::ScheduleTask(
+        ScheduleTaskArgs {
+            task_id: args.task_id,
+            execution_interval_millis: args.execution_interval_millis,
+            iterations: args.iterations,
+            instructions: vec![increment_ix],
+        },
+    ))
+    .map_err(|err| {
+        msg!("ERROR: failed to serialize args {:?}", err);
+        ProgramError::InvalidArgument
+    })?;
+
+    let schedule_ix = Instruction::new_with_bytes(
+        MAGIC_PROGRAM_ID,
+        &ix_data,
+        vec![
+            AccountMeta::new(ctx.accounts.payer.key(), true),
+            AccountMeta::new(ctx.accounts.counter.key(), false),
+        ],
+    );
+    
+    invoke_signed(
+        &schedule_ix,
+        &[
+            ctx.accounts.payer.to_account_info(),
+            ctx.accounts.counter.to_account_info(),
+        ],
+        &[],
+    )?;
+    
+    Ok(())
+}
+```
+
+**핵심 포인트:**
+- counter를 increment 하는 instruction을 생성합니다
+- 이를 MagicBlock용 `ScheduleTask` instruction으로 serialize 합니다
+- CPI(Cross-Program Invocation)를 사용해 MagicBlock program을 호출합니다
+- 실제 scheduling과 execution은 MagicBlock program이 처리합니다
+
+### 스케줄 인자
+
+```rust
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct ScheduleIncrementArgs {
+    pub task_id: u64,                      // task의 고유 식별자
+    pub execution_interval_millis: u64,    // 실행 간격(밀리초)
+    pub iterations: u64,                   // 실행 횟수
+}
+```
+### ScheduleIncrement 컨텍스트
+
+```rust
+#[derive(Accounts)]
+pub struct ScheduleIncrement<'info> {
+    /// CHECK: used for CPI
+    #[account()]
+    pub magic_program: AccountInfo<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Passed to CPI - using AccountInfo to avoid Anchor re-serializing stale data after CPI
+    #[account(mut, seeds = [COUNTER_SEED], bump)]
+    pub counter: AccountInfo<'info>,
+    /// CHECK: used for CPI
+    pub program: AccountInfo<'info>,
+}
+```
+
+**중요**: CPI 호출 후 Anchor가 오래된 데이터를 다시 serialize 하지 않도록 `Account<Counter>` 대신 `AccountInfo`를 사용합니다.

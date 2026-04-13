@@ -1,0 +1,147 @@
+---
+title: "料金"
+description: "MagicBlock の料金体系は分散型クラウドインフラをモデルにしています。開発者にとって **予測しやすい計算コスト** を保ちながら、優先アクセスや専用リソースが必要な企業向けに **柔軟性** も提供します。"
+---
+
+import { ERCostSimulator } from "/snippets/components/ERCostSimulator.jsx";
+import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
+import ProductCards from "/jp/snippets/product-cards.mdx";
+
+---
+
+## 製品料金
+
+<Tabs>
+  <div id="ephemeral-rollup" />
+  <Tab title="Ephemeral Rollup">
+
+**Public nodes** では、無料トランザクションで摩擦なく MagicBlock の構築を始められます。料金が発生するのは、セッションを閉じるとき、またはデータを Solana にコミットするときだけです。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>料金種別</th>
+      <th>金額 (SOL)</th>
+      <th>説明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>基本料金</td>
+      <td>0</td>
+      <td>取引ごと (Tx)</td>
+    </tr>
+    <tr>
+      <td>セッション料金</td>
+      <td>0.0003</td>
+      <td>ER セッションごと（undelegation 時）</td>
+    </tr>
+    <tr>
+      <td>コミット料金</td>
+      <td>0.0001</td>
+      <td>Solana へのコミットごと</td>
+    </tr>
+  </tbody>
+</table>
+
+**Dedicated nodes** は企業や大規模チームに最適です。専用インフラにより、高い信頼性、予測可能なコスト、MEV 保護を提供します。
+
+[ER について詳しく見る →](/jp/pages/ephemeral-rollups-ers/how-to-guide/quickstart)
+
+### ER コストシミュレーター：30 日
+
+<ERCostSimulator />
+  </Tab>
+
+  <Tab title="Private Ephemeral Rollup">
+
+Private Ephemeral Rollup は、スマートコントラクトで定義したカスタムなプライベート計算をサポートします。
+
+カスタム PER ロジックには標準の ER 料金が適用されます。[Ephemeral Rollup の料金を見る →](#ephemeral-rollup)
+
+  </Tab>
+
+  <Tab title="VRF">
+
+VRF サービスは **オンチェーンで証明可能に公平なランダム性** を提供します。料金には証明生成とオンチェーン投稿が含まれます。
+
+> ⚠️ 注: コストにはランダム性を要求する取引そのものは含まれません。ER では無料ですが、Solana では priority fee に応じて変動します。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>VRF 種別</th>
+      <th>金額 (SOL)</th>
+      <th>説明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ER (&lt;50 ms)</td>
+      <td>無料</td>
+      <td>ランダム性リクエストごと</td>
+    </tr>
+    <tr>
+      <td>Solana (&lt;500 ms)</td>
+      <td>0.0008</td>
+      <td>ランダム性リクエストごと</td>
+    </tr>
+    <tr>
+      <td>Solana (1/2 seconds)</td>
+      <td>0.0005</td>
+      <td>ランダム性リクエストごと</td>
+    </tr>
+  </tbody>
+</table>
+
+### VRF コストシミュレーター：30 日
+
+<VRFCostSimulator />
+
+[VRF について詳しく見る →](/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)
+
+  </Tab>
+
+  <Tab title="Private Payments API">
+
+Private Payment API を使うと、Solana Mainnet や Private ER 上でプライベートなステーブルコイン送金を簡単に行えます。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>支払い種別</th>
+      <th>固定料金 (SOL)</th>
+      <th>従量料金</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Solana Mainnet</td>
+      <td>0.002</td>
+      <td>0.1%</td>
+    </tr>
+  </tbody>
+</table>
+
+<CardGroup cols={1}>
+  <Card
+    title="API リファレンス"
+    icon="book"
+    href="/jp/pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
+    iconType="duotone"
+  >
+    Private Payments API のエンドポイントを確認する
+  </Card>
+</CardGroup>
+  </Tab>
+</Tabs>
+
+---
+
+## カスタマーサポート
+
+**独自ノードの運用** に関するサポートが必要な場合は、こちらまでご連絡ください。
+
+📧 [development@magicblock.xyz](mailto:development@magicblock.xyz)
+
+<ProductCards />

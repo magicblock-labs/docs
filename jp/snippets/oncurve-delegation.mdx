@@ -1,0 +1,37 @@
+import OncurveDelegationWeb3jsCode from "/jp/snippets/oncurve-delegation-web3js.mdx";
+import OncurveDelegationKitCode from "/jp/snippets/oncurve-delegation-kit.mdx";
+import OncurveUndelegationWeb3jsCode from "/jp/snippets/oncurve-undelegation-web3js.mdx";
+import OncurveUndelegationKitCode from "/jp/snippets/oncurve-undelegation-kit.mdx";
+
+### クイックアクセス
+
+<CardGroup cols={2}>
+  <Card
+    title="GitHub"
+    icon="wallet"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/oncurve-delegation"
+    iconType="duotone"
+  >
+    オンカーブ委任
+  </Card>
+</CardGroup>
+
+    オンカーブアカウントを委任するために必要な署名者:
+      1. 委任対象のオンカーブアカウント
+      2. 手数料支払い者
+
+    オンカーブアカウントを委任するために必要な命令:
+      1. System Account を Delegation Program に割り当てる
+      2. Delegation Program に委任する
+
+    <CodeGroup>
+      <OncurveDelegationKitCode />
+      <OncurveDelegationWeb3jsCode />
+    </CodeGroup>
+
+    直接の commit と undelegate は Magic Program 経由でのみ行います。
+
+    <CodeGroup>
+      <OncurveUndelegationKitCode />
+      <OncurveUndelegationWeb3jsCode />
+    </CodeGroup>

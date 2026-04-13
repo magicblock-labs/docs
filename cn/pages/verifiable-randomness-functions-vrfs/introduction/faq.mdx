@@ -1,0 +1,20 @@
+---
+title: "常见问题"
+description: "关于可验证随机数的常见问题"
+---
+
+### 为什么不直接用区块哈希来生成随机数？
+
+区块哈希可能被矿工和验证器预测或操纵，因此并不适合用于公平的游戏逻辑。MagicBlock 的 VRF 可以证明随机数的生成独立于区块生产过程。
+
+### 随机数 callback 有多快？
+
+VRF 在 [ephemeral rollup](/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) 的执行窗口内运行，因此结果通常会在单轮交易中可用，无需外部轮询。
+
+### 我可以审计随机数 proof 吗？
+
+可以。每个请求都包含一个 proof，任何人都可以使用与 VRF signer 相同的密码学方法在链上验证它。这种透明性确保玩家能够确认其公平性。
+
+### 预言机由谁运行？
+
+EphemeralVrf 使用一组通过链上队列管理的许可型预言机。你可以将 rollup 委托给特定队列，从而由可信运营者完成你的请求。

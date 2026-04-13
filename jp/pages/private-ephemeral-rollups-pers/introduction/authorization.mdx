@@ -1,0 +1,28 @@
+---
+title: "認可"
+description: "ユーザーグループ向けに、オンチェーンのアカウント単位制限で認可アクセスをカスタマイズします。"
+---
+
+import PerCards from "/jp/snippets/per-cards.mdx";
+
+---
+
+### 認可モデル
+
+<img class="w-full h-auto max-w-5xl" src="/images/TEE_permission.png" />
+
+Private Ephemeral Rollups では、Permission Program を使ってアカウントおよびアカウントグループに対するきめ細かなプライバシー制御を管理します。これは Solana L1 上で動作し、動的に更新できます。
+
+- **Permission Groups**: CPI を通じて任意のメンバー構成と ID を持つグループを定義します。グループはユーザーと、その権限に従うアカウントをまとめます。
+- **Permissions**: グループに権限を追加します。現時点では 1 つの権限は委任済みアカウントへの読み取りアクセスを意味し、将来的には読み取りと書き込みの分離が追加される可能性があります。
+- **Access**: 権限制御された ER 状態へクライアントがアクセスするには、指定された公開鍵の所有を認証する必要があります。認証に成功すると、ER の照会に使うトークンが発行されます。
+
+import PerEndpoint from "/jp/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+このグループ抽象化により、多数のユーザーやアカウントに対する権限変更を単一トランザクションで原子的に実行できます。
+
+---
+
+<PerCards />

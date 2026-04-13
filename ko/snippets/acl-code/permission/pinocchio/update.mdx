@@ -1,0 +1,44 @@
+```rust
+use ephemeral_rollups_pinocchio::instruction::update_permission;
+use ephemeral_rollups_pinocchio::types::{
+    Member,
+    MemberFlags,
+    MembersArgs,
+};
+use pinocchio::AccountView;
+
+// Update permission with new member flags
+// Either authority or permissioned_account must sign based on AUTHORITY_FLAG
+let mut new_flags = MemberFlags::new();
+new_flags.set(MemberFlags::TX_LOGS);
+new_flags.set(MemberFlags::TX_BALANCES);
+
+let updated_member = Member {
+    flags: new_flags,
+    pubkey: user_address,
+};
+
+let members = vec![updated_member];
+let members_args = MembersArgs {
+    members: Some(&members),
+};
+
+// Prepare accounts: [authority, permissioned_account, permission]
+let accounts: &[&AccountView] = &[
+    &authority,
+    &permissioned_account,
+    &permission,
+];
+
+// Update the permission
+// Setting members to None makes the permission public (temporarily visible)
+// Pass signer_seeds if permissioned_account is a PDA owned by your program
+update_permission(
+    accounts,
+    &permission_program_id,
+    authority.is_signer(),
+    permissioned_account.is_signer(),
+    members_args,
+    signer_seeds, // Or None if permissioned_account is on-curve
+)?;
+```

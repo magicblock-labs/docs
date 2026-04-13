@@ -1,0 +1,72 @@
+---
+title: トラブルシューティング
+description: Magic Actions の一般的な問題を診断する
+---
+
+### ハンドラーが実行されない
+
+- `instruction discriminator` を確認する
+- 十分な `compute_units` を割り当てる
+
+### デシリアライズエラー
+
+- アクションコンテキスト内のコミット済みアカウントには `UncheckedAccount` を使う
+- 借用データに対して `try_deserialize` で手動デシリアライズする
+- アカウント discriminator が想定型と一致するか確認する
+
+### トランザクション失敗
+
+- すべてのアクションアカウントが `ShortAccountMeta` に含まれていることを確認する
+- `is_writable` フラグを実際の利用に合わせる
+- コミット内のすべてのアクションの compute budget を増やす
+
+### 制限事項と考慮点
+
+- ハンドラーはベースレイヤーで実行され、ベースレイヤー手数料を消費する
+- 標準的な Solana 制限が適用される（compute、アカウントロック）
+- 原子性: いずれかのアクションが失敗するとコミット全体が巻き戻る
+- 最初の 2 つのアクションアカウントは自動挿入される（`escrow`、`escrow_auth`）
+
+### 参考リンク
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollups"
+    icon="bolt"
+    href="/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    委任、コミット、委任解除
+  </Card>
+
+{" "}
+
+<Card
+  title="Magic Router"
+  icon="route"
+  href="/jp/pages/ephemeral-rollups-ers/introduction/magic-router"
+  iconType="duotone"
+>
+  Router の概要とフロー
+</Card>
+
+{" "}
+
+<Card
+  title="Magic Actions Example"
+  icon="code"
+  href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/magic-actions"
+  iconType="duotone"
+>
+  GitHub でリファレンス実装を見る
+</Card>
+
+  <Card
+    title="Community Support"
+    icon="telegram"
+    href="https://t.me/+78KHQkUsy0ViMzQ6"
+    iconType="duotone"
+  >
+    チームとコミュニティに相談する
+  </Card>
+</CardGroup>

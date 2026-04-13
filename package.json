@@ -5,12 +5,16 @@
   "scripts": {
     "dev": "mintlify dev",
     "build": "mintlify build",
-    "start": "mintlify serve"
+    "start": "mintlify serve",
+    "update": "mintlify update",
+    "localize:prepare": "node scripts/localize-with-openai.mjs --prepare-only",
+    "localize:translate": "node scripts/localize-with-openai.mjs --translate --concurrency=2",
+    "localize:check": "node scripts/check-localization.mjs"
   },
   "dependencies": {
     "recharts": "^3.3.0"
   },
   "devDependencies": {
-    "@mintlify/cli": "^4.0.791"
+    "@mintlify/cli": "^4.0.1110"
   }
 }
