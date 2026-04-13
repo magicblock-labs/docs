@@ -44,6 +44,14 @@ You can attach the [Web3.cs](https://github.com/magicblock-labs/Solana.Unity-SDK
   [here](https://github.com/garbles-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/WalletBase.cs)
 </Card>
 
+## Wallet Adapter
+
+To configure a wallet following the [Wallet Adapter](https://solana-mobile.github.io/mobile-wallet-adapter/spec/spec.html) standard use the [SolanaWalletAdapterWebGL](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/SolanaWalletAdapterWebGL.cs) wallet implementation.
+
+```csharp
+WalletBase wallet = new SolanaWalletAdapterWebGL(walletAdapterOptions, RpcCluster.DevNet, ...);
+```
+
 ## WalletConnect
 
 [WalletConnect](https://walletconnect.network/) enables your game to connect with a wide range of Solana wallets — including Binance Wallet, Jupiter Mobile, Trust, OKX Wallet, and many more — through a single integration.
@@ -52,14 +60,6 @@ On mobile, users can connect any supported wallet installed on their device. On 
 The integration is powered by [Reown AppKit for Unity](https://docs.reown.com/appkit/unity/core/usage#appkit-with-solana-unity-sdk), which provides an adapter package that plugs directly into the Solana Unity SDK. Once set up, all signing and session management go through AppKit while you continue using the same `Web3` APIs from `Solana.Unity.SDK`.
 
 For installation and setup instructions, see the [Reown AppKit documentation](https://docs.reown.com/appkit/unity/core/usage#appkit-with-solana-unity-sdk).
-
-## Wallet Adapter
-
-To configure a wallet following the [Wallet Adapter](https://solana-mobile.github.io/mobile-wallet-adapter/spec/spec.html) standard use the [SolanaWalletAdapterWebGL](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/Runtime/codebase/SolanaWalletAdapterWebGL.cs) wallet implementation.
-
-```csharp
-WalletBase wallet = new SolanaWalletAdapterWebGL(walletAdapterOptions, RpcCluster.DevNet, ...);
-```
 
 ## SMS
 
