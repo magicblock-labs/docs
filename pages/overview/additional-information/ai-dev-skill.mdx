@@ -1,0 +1,93 @@
+---
+title: AI Dev Skill
+description: Use the MagicBlock Dev Skill to bring MagicBlock-specific development patterns into Claude Code and Codex, including delegation flows, dual-connection architecture, cranks, VRF, and private payments.
+---
+
+<CardGroup cols={1}>
+  <Card
+    title="MagicBlock Dev Skill Repository"
+    icon="browser"
+    href="https://github.com/magicblock-labs/magicblock-dev-skill"
+    iconType="duotone"
+  >
+    View the repository, installation steps, and source files for the skill.
+  </Card>
+</CardGroup>
+
+## What It Is
+
+The MagicBlock Dev Skill is an AI development skill for Claude Code and Codex that packages proven MagicBlock development patterns into a reusable workflow. Instead of re-explaining the same integration details in every prompt, the skill gives your coding agent structured guidance for building on MagicBlock.
+
+It is designed for teams working on:
+
+- Ephemeral Rollups integration
+- Delegation and undelegation flows
+- Dual-connection Solana + MagicBlock architectures
+- High-performance transaction routing
+- Cranks for recurring automated transactions
+- VRF for provable randomness
+- Private payments flows
+- Anchor and TypeScript-based integrations
+
+## How To Use It
+
+### Install
+
+Claude Code quick install:
+
+```bash
+npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
+```
+
+Manual install:
+
+```bash
+git clone https://github.com/magicblock-labs/magicblock-dev-skill
+cd magicblock-dev-skill
+./install.sh
+```
+
+By default, `./install.sh` installs the skill to both personal skill directories:
+
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+
+You can also target a specific environment:
+
+```bash
+./install.sh --claude
+./install.sh --codex
+./install.sh --project
+./install.sh --project --codex
+./install.sh --path /custom/path/magicblock
+```
+
+`--project` installs into the current repository under `.claude/skills/magicblock` and/or `.codex/skills/magicblock`.
+
+### Use in Claude Code and Codex
+
+Once installed, the skill can activate automatically when you ask for MagicBlock or Ephemeral Rollups help.
+
+- In Claude Code, you can also invoke it directly with `/magicblock`.
+- In Codex, you can mention it explicitly by name, for example: `use the magicblock skill`.
+
+Example prompts:
+
+```text
+Add delegation hooks to my player account
+Change my roll_dice function to use VRF
+Set up a crank that updates game state every 100ms
+Help me integrate MagicBlock into my Anchor program
+```
+
+## What the Skill Adds
+
+The skill goes beyond a simple prompt template. Its main entrypoint and supporting references guide the agent toward MagicBlock-specific implementation details such as:
+
+- When to use the base layer connection vs. the ephemeral rollup connection
+- How to structure delegation, commit, and undelegation flows correctly
+- Common Anchor patterns for `#[ephemeral]`, `#[delegate]`, and `#[commit]`
+- VRF and crank setup for real-time apps and games
+- Environment variables, versions, and dependencies for MagicBlock development
+
+For the full skill, source files, and installation instructions, visit the [MagicBlock Dev Skill repository](https://github.com/magicblock-labs/magicblock-dev-skill).

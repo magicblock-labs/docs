@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "mintlify dev",
-    "build": "mintlify build",
-    "start": "mintlify serve",
+    "build": "mintlify validate",
+    "start": "mintlify dev",
+    "export": "mintlify export",
+    "validate": "mintlify validate",
     "update": "mintlify update",
     "localize:prepare": "node scripts/localize-with-openai.mjs --prepare-only",
     "localize:translate": "node scripts/localize-with-openai.mjs --translate --concurrency=2",
@@ -15,6 +17,6 @@
     "recharts": "^3.3.0"
   },
   "devDependencies": {
-    "@mintlify/cli": "^4.0.1110"
+    "@mintlify/cli": "^4.0.1124"
   }
 }
