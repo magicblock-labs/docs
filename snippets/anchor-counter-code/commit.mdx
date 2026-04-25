@@ -1,14 +1,31 @@
 ```rust
-/// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+
+/// Manually commit the counter state in the Ephemeral Rollup session.
+pub fn commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit(&[ctx.accounts.counter.to_account_info()])
+    .build_and_invoke()?;
+    Ok(())
+}
+
+/// Increment the counter and commit the new state in the same instruction.
 pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
     let counter = &mut ctx.accounts.counter;
     counter.count += 1;
-    commit_accounts(
-        &ctx.accounts.payer,
-        vec![&ctx.accounts.counter.to_account_info()],
-        &ctx.accounts.magic_context,
-        &ctx.accounts.magic_program,
-    )?;
+    // Serialize the Anchor account before the CPI sees it
+    counter.exit(&crate::ID)?;
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit(&[ctx.accounts.counter.to_account_info()])
+    .build_and_invoke()?;
     Ok(())
 }
 ```

@@ -143,7 +143,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
     cargo add ephemeral-rollups-sdk --features anchor
     ```
 
-    Import `delegate`, `commit`, `ephemeral`, `DelegateConfig`, `commit_accounts` and `commit_and_undelegate_accounts`:
+    Import `delegate`, `commit`, `ephemeral`, `DelegateConfig`, and `MagicIntentBundleBuilder` (which replaces the deprecated `commit_accounts` and `commit_and_undelegate_accounts` helpers):
 
     ```rust
     use ephemeral_rollups_sdk::anchor::{
@@ -152,10 +152,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
       ephemeral
     };
     use ephemeral_rollups_sdk::cpi::DelegateConfig;
-    use ephemeral_rollups_sdk::ephem::{
-      commit_accounts,
-      commit_and_undelegate_accounts
-      };
+    use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
     ```
 
     2.  Add `delegate` macro and instruction, `ephemeral` macro, and `undelegate` instruction to your program. Specify your preferred delegation config such as auto commits and specific ER validator:

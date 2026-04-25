@@ -1,20 +1,11 @@
 ```rust
-// Undelegate + Action
-let magic_action = MagicInstructionBuilder {
-    payer: ctx.accounts.payer.to_account_info(),
-    magic_context: ctx.accounts.magic_context.to_account_info(),
-    magic_program: ctx.accounts.magic_program.to_account_info(),
-    magic_action: MagicAction::CommitAndUndelegate(CommitType::WithHandler {
-        commited_accounts: vec![ctx.accounts.counter.to_account_info()],
-        call_handlers: vec![action],
-    }),
-};
-
-// Action only
-let magic_action = MagicInstructionBuilder {
-    payer: ctx.accounts.payer.to_account_info(),
-    magic_context: ctx.accounts.magic_context.to_account_info(),
-    magic_program: ctx.accounts.magic_program.to_account_info(),
-    magic_action: MagicAction::BaseActions(vec![action]),
-};
+// Commit, undelegate, AND execute actions — all atomically on base layer after the ER transaction seals.
+MagicIntentBundleBuilder::new(
+    ctx.accounts.payer.to_account_info(),
+    ctx.accounts.magic_context.to_account_info(),
+    ctx.accounts.magic_program.to_account_info(),
+)
+.commit_and_undelegate(&[ctx.accounts.counter.to_account_info()])
+.add_post_commit_actions([action])
+.build_and_invoke()?;
 ```

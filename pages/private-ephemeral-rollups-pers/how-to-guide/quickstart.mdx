@@ -9,10 +9,9 @@ import Construction from "/snippets/construction.mdx";
 import Software from "/snippets/software.mdx";
 import SolanaResources from "/snippets/solana-resources.mdx";
 
-import WriteProgramCode from "/snippets/per-rps-code/write-program.mdx";
-import DelegateCode from "/snippets/per-rps-code/delegate.mdx";
-import RestrictCode from "/snippets/per-rps-code/restrict.mdx";
-import AuthorizeCode from "/snippets/per-rps-code/authorize.mdx";
+import WriteProgramCode from "/snippets/per-counter-code/write-program.mdx";
+import DelegateCode from "/snippets/per-counter-code/delegate.mdx";
+import AuthorizeCode from "/snippets/per-counter-code/authorize.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 
 import QuickAccessPER from "/snippets/quick-access-per.mdx";
@@ -40,35 +39,34 @@ Build your program and upgrade it with permission and delegation hooks that util
   </Step>
   <Step
     title={
-      <a href="#2-restrict">
-        Add restrictions through permission hooks in your program.
+      <a href="#2-delegate-with-restriction">
+        Add delegation with restriction hooks in your program
       </a>
     }
   >
-    Add permission hooks that create and manage access control, [see
+    A single `delegate` instruction creates the permission account, delegates
+    it, and then delegates the permissioned account to the TEE validator. A
+    symmetric `undelegate` instruction releases both accounts atomically on the
+    way back to the base layer. [See access control
     details](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control).
-  </Step>
-  <Step title={<a href="#3-delegate">Add delegation hooks in your program</a>}>
-    Add delegation hooks for permissions and permissioned accounts to enforce
-    restrictions.
     <Validators />
   </Step>
-  <Step title={<a href="#4-deploy">Deploy your program on Solana</a>}>
+  <Step title={<a href="#3-deploy">Deploy your program on Solana</a>}>
     Deploy your Solana program using Anchor CLI.
   </Step>
   <Step
-    title={<a href="#5-authorize">Implement authorization in your client</a>}
+    title={<a href="#4-authorize">Implement authorization in your client</a>}
   >
     Sign user message to retrieve authorization token from TEE endpoint.
   </Step>
-  <Step title={<a href="#6-test">Execute transactions and test privacy</a>}>
+  <Step title={<a href="#5-test">Execute transactions and test privacy</a>}>
     Request for authorization token and send confidential transactions.
   </Step>
 </Steps>
 
 ---
 
-## Rock-Paper-Scissor Example
+## Private Counter Example
 
 <Software />
 <Note>
@@ -83,38 +81,32 @@ Build your program and upgrade it with permission and delegation hooks that util
 
 <Tabs>
     <Tab title="1. Write program">
-        A simple rock-paper-scissor program where player can make choices and reveal the outcome:
+        A simple counter program with `initialize` and `increment` instructions, identical in shape to the public counter — privacy is added in the next steps:
         <WriteProgramCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
-    <Tab title="2. Restrict">
-        Create and update account-level permissions with members through MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`, [see
-    details](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control):
-        <RestrictCode />
-        [⬆️ Back to Top](#code-snippets)
-    </Tab>
-        <Tab title="3. Delegate">
-        Enforce privacy of accounts through delegation to TEE validator via MagicBlock's Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`, both permission and permissioned_account must be delegated. 
+    <Tab title="2. Delegate with Restriction">
+        Two symmetric instructions handle the full privacy lifecycle through MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`. `delegate` creates the permission account, delegates it, and then delegates the counter to the TEE validator — all in one CPI flow. `undelegate` mirrors the reverse: it commits and undelegates both the permission account and the counter atomically in a single ER transaction. See [access control](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control) for the full lifecycle.
         <Validators />
         <DelegateCode />
 
         [⬆️ Back to Top](#code-snippets)
     </Tab>
-    <Tab title="4. Deploy">
+    <Tab title="3. Deploy">
         Now you’re program is upgraded and ready! Build and deploy to the desired cluster:
         ```bash
           anchor build && anchor deploy
         ```
         [⬆️ Back to Top](#code-snippets)
     </Tab>
-    <Tab title="5. Authorize">
+    <Tab title="4. Authorize">
         Set up interaction with ER RPC in TEE:
         1. Verify integrity of TEE RPC via `https://pccs.phala.network/tdx/certification/v4`
         2. Request an authorization token for user to interact with TEE endpoint
         <AuthorizeCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
-    <Tab title="6. Test">
+    <Tab title="5. Test">
         Test your program with the Private Ephemeral Rollup connection:
 
         `https://devnet-tee.magicblock.app?token=${token}`

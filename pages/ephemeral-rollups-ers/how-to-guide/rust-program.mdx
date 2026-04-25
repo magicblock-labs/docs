@@ -141,7 +141,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
     <Tab title="3. Commit">
     ### Committing while the PDA is delegated
 
-    The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
+    The ephemeral runtime allows committing the state of the PDA while it is delegated. This is done by building a `MagicIntentBundleBuilder` with the `commit` intent.
 
     <CardGroup cols={2}>
       <Card
@@ -169,8 +169,8 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
   <Tab title="4. Undelegate">
     ### Undelegating the PDA
 
-    Undelegating the PDA is done by calling the `commit_and_undelegate_accounts` as part of some instruction.
-    Undelegation commit the latest state and give back the ownership of the PDA to the owner program. After undelegating and finalizing the state, the validator will create a callback CPI into "undelegate" on the Base Layer.
+    Undelegating the PDA is done by building a `MagicIntentBundleBuilder` with the `commit_and_undelegate` intent as part of some instruction.
+    This commits the latest state and returns ownership of the PDA to the owner program. After undelegating and finalizing the state, the validator will create a callback CPI into `undelegate` on the base layer.
     <UndelegationCallbackNote />
     <CardGroup cols={2}>
       <Card

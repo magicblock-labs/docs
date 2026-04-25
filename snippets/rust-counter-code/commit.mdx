@@ -5,7 +5,7 @@ use solana_program::{
     entrypoint::ProgramResult,
     program_error::ProgramError,
 };
-use ephemeral_rollups_sdk::ephem::{commit_accounts};
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
 
 // For ER only
 pub fn process_commit(
@@ -25,12 +25,13 @@ pub fn process_commit(
         return Err(ProgramError::MissingRequiredSignature);
     }
 
-    commit_accounts(
-        initializer,
-        vec![counter_account],
-        magic_context,
-        magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        initializer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit(&[counter_account.clone()])
+    .build_and_invoke()?;
 
     Ok(())
 }

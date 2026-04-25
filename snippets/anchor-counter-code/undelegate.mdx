@@ -1,12 +1,16 @@
 ```rust
-/// Undelegate the account from the delegation program
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+
+/// Undelegate the account from the delegation program.
+/// Commits the latest state and returns ownership of the PDA back to the owner program.
 pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
-    commit_and_undelegate_accounts(
-        &ctx.accounts.payer,
-        vec![&ctx.accounts.counter.to_account_info()],
-        &ctx.accounts.magic_context,
-        &ctx.accounts.magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit_and_undelegate(&[ctx.accounts.counter.to_account_info()])
+    .build_and_invoke()?;
     Ok(())
 }
 ```
