@@ -232,7 +232,7 @@ use solana_program::{
     entrypoint::ProgramResult,
     program_error::ProgramError,
 };
-use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
 
 // For ER only
 pub fn process_commit(
@@ -296,7 +296,7 @@ use solana_program::{
     program_error::ProgramError,
 };
 use ephemeral_rollups_sdk::cpi::undelegate_account;
-use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
 
 // For ER only
 pub fn process_commit_and_undelegate(
