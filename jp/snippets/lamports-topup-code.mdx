@@ -1,0 +1,51 @@
+```typescript
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+import {
+  lamportsDelegatedTransferIx,
+  deriveLamportsPda,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+
+/**
+ * Top up a delegated account with lamports.
+ *
+ * The transaction is submitted on the BASE LAYER. The Ephemeral SPL Token
+ * program creates a single-use lamports PDA, funds it from the payer, and
+ * delegates it so the ER credits the destination's delegated balance.
+ */
+async function topUpDelegatedAccount(
+  connection: Connection,         // base-layer connection
+  payer: Keypair,
+  destination: PublicKey,         // delegated account to top up
+  amountLamports: bigint,
+) {
+  // Generate a fresh 32-byte salt per top-up.
+  // Re-using a salt collides with an existing lamports PDA and the call fails.
+  const salt = crypto.getRandomValues(new Uint8Array(32));
+
+  const [lamportsPda] = deriveLamportsPda(payer.publicKey, destination, salt);
+
+  const ix = await lamportsDelegatedTransferIx(
+    payer.publicKey,
+    destination,
+    amountLamports,
+    salt,
+  );
+
+  const tx = new Transaction().add(ix);
+  tx.feePayer = payer.publicKey;
+
+  // CRITICAL: send to the base-layer RPC, not the ER.
+  const sig = await sendAndConfirmTransaction(connection, tx, [payer], {
+    commitment: "confirmed",
+    skipPreflight: true,
+  });
+
+  return { sig, lamportsPda };
+}
+```

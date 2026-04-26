@@ -18,6 +18,7 @@ import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
 import MagicRouterSDK from "/snippets/magic-router-sdk.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 import MagicActionExample from "/snippets/magic-action-example.mdx";
+import LamportsTopupCode from "/snippets/lamports-topup-code.mdx";
 
 import UndelegationCallbackNote from "/snippets/notes/undelegation-callback-note.mdx";
 
@@ -238,6 +239,20 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
     [Learn more about Magic Action](/pages/ephemeral-rollups-ers/magic-actions/overview.mdx)
     <MagicActionExample />
 
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Top-up delegated account">
+    Top up a delegated account's lamports on the ER side. The transaction is submitted on the **base layer** and uses the Ephemeral SPL Token program to shuttle lamports to the destination's delegated balance via a single-use lamports PDA.
+
+    Common use case: keeping a delegated fee payer funded so it can keep paying its own commits past the default 10-commit sponsorship cap.
+
+    Notes:
+    - Generate a fresh 32-byte salt per top-up via `crypto.getRandomValues` — re-using a salt collides with an existing PDA.
+    - Submit to the base-layer RPC, not the ER.
+    - The destination must already be delegated.
+
+    <LamportsTopupCode />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>

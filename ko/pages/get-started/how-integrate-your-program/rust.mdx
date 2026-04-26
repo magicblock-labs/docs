@@ -1,6 +1,6 @@
 ---
 title: "Rust 예제"
-description: "Solana에서 카운터를 위임하고 증가시키는 간단한 Rust 프로그램 작성법 배우기"
+description: "Solana에서 카운터를 위임하고 증가시키는 간단한 Rust 프로그램을 작성하는 방법을 학습합니다"
 ---
 
 import Endpoints from "/ko/snippets/endpoints.mdx";
@@ -30,30 +30,30 @@ import Endpoints from "/ko/snippets/endpoints.mdx";
   />
 </div>
 
-이 가이드는 카운터를 증가시키는 간단한 네이티브 Rust 프로그램(Anchor 의존성 없음)을 작성하는 과정을 안내합니다. 이 프로그램을 Solana에 배포하고 Typescript 테스트 스크립트로 상호작용하는 방법도 배우게 됩니다.
+이 가이드에서는 Anchor를 사용하지 않는 네이티브 Rust로 카운터를 증가시키는 간단한 프로그램을 작성하는 과정을 안내합니다. Solana에 배포하는 방법과 TypeScript 테스트 스크립트를 사용하여 상호작용하는 방법을 학습하게 됩니다.
 
 ## 소프트웨어 패키지
 
-이 프로그램은 다음 소프트웨어 패키지로 개발 및 테스트되었습니다. 다른 소프트웨어도 호환될 수 있습니다.
+이 프로그램은 다음 소프트웨어 패키지로 개발 및 테스트되었습니다. 다른 소프트웨어 버전과도 호환될 수 있습니다.
 
-| 소프트웨어 | 버전 | 설치 가이드 |
-| ---------- | ------- | ------------------------------------------------------- |
-| **Solana** | 2.0.21  | [Solana 설치](https://docs.anza.xyz/cli/install)     |
-| **Rust**   | 1.82.0  | [Rust 설치](https://www.rust-lang.org/tools/install) |
+| 소프트웨어 | 버전     | 설치 가이드                                                     |
+| ---------- | -------- | --------------------------------------------------------------- |
+| **Solana** | 2.0.21   | [Install Solana](https://docs.anza.xyz/cli/install)             |
+| **Rust**   | 1.82.0   | [Install Rust](https://www.rust-lang.org/tools/install)         |
 
-## 빠른 보기
+## 빠른 접근
 
-바로 코드로 들어가고 싶다면:
+코드를 바로 살펴보고 싶다면:
 
 <CardGroup cols={2}>
   <Card
-    title="소스 코드: Native Rust Counter Program"
+    title="소스 코드: 네이티브 Rust 카운터 프로그램"
     icon="rust"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
     iconType="duotone"
   ></Card>
   <Card
-    title="소스 코드: Typescript 테스트 스크립트"
+    title="소스 코드: TypeScript 테스트 스크립트"
     icon="js"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
     iconType="duotone"
@@ -62,19 +62,19 @@ import Endpoints from "/ko/snippets/endpoints.mdx";
 
 ## 핵심 기능
 
-이 프로그램은 두 가지 주요 instruction을 구현합니다。
+이 프로그램은 두 가지 주요 인스트럭션을 구현합니다:
 
-1. `InitializeCounter`: 카운터를 초기화하고 0으로 설정 (Base Layer에서 호출)
-2. `IncreaseCounter`: 초기화된 카운터를 X만큼 증가 (Base Layer 또는 ER에서 호출)
+1. `InitializeCounter`: 카운터를 0으로 초기화 (베이스 레이어에서 호출)
+2. `IncreaseCounter`: 초기화된 카운터를 지정한 숫자만큼 증가 (베이스 레이어 또는 ER에서 호출)
 
-이 프로그램은 카운터의 위임과 위임 해제를 위한 전용 instruction도 구현합니다。
+또한 카운터의 위임과 위임 해제를 위한 전용 인스트럭션도 구현합니다:
 
-1. `Delegate`: 카운터를 Base Layer에서 ER로 위임 (Base Layer에서 호출)
-2. `CommitAndUndelegate`: 카운터를 ER에서 Base Layer로 동기화하도록 예약하고 ER에서 위임 해제 (ER에서 호출)
-3. `Commit`: 카운터를 ER에서 Base Layer로 동기화하도록 예약 (ER에서 호출)
-4. `Undelegate`: Base Layer에서 카운터를 위임 해제 (validator CPI를 통해 Base Layer에서 호출)
+1. `Delegate`: 카운터를 베이스 레이어에서 ER로 위임 (베이스 레이어에서 호출)
+2. `CommitAndUndelegate`: 카운터를 ER에서 베이스 레이어로 동기화하도록 예약하고 ER에서 카운터를 위임 해제 (ER에서 호출)
+3. `Commit`: 카운터를 ER에서 베이스 레이어로 동기화하도록 예약 (ER에서 호출)
+4. `Undelegate`: 베이스 레이어에서 카운터를 위임 해제 (validator가 CPI를 통해 베이스 레이어에서 호출)
 
-아래는 프로그램의 핵심 구조입니다。
+프로그램의 핵심 구조는 다음과 같습니다:
 
 ```rust
 pub enum ProgramInstruction {
@@ -131,22 +131,21 @@ impl ProgramInstruction {
 ```
 
 <Note>
-  "Undelegate" instruction은 정확한 discriminator를 가져야 합니다. 이것은
-  사용자가 직접 호출하지 않으며, Base Layer의 validator가 ER에서 계정을
-  undelegate 한 뒤 CPI callback으로 프로그램을 호출합니다.
+  여러분의 "Undelegate" 인스트럭션은 위와 동일한 discriminator를 사용해야 합니다. 이 인스트럭션을 직접 호출하는 일은 없습니다 — 베이스 레이어의 validator가 ER에서 계정의 위임을 해제한 후 CPI를 통해 이 인스트럭션을 콜백합니다.
 </Note>
 
-### Counter PDA 위임하기
+### 카운터 PDA 위임하기
 
-counter PDA를 위임하고 Ephemeral Rollup 세션에서 writable 하게 만들려면, 내부적으로 `delegate_account` 함수를 호출하는 instruction을 추가해야 합니다. `delegate_account` 는 delegation program으로 CPI를 수행하며, 검증이 끝나면 해당 계정의 소유권을 얻게 됩니다.
-이 단계가 끝나면 ephemeral validator가 counter PDA에서 트랜잭션을 처리하고 delegation program을 통해 상태 차이를 제안할 수 있게 됩니다。
+카운터 PDA를 위임하여 Ephemeral Rollup 세션 안에서 쓰기 가능하게 만들려면, 내부적으로 `delegate_account` 함수를 호출하는 인스트럭션을 추가해야 합니다. `delegate_account`는 위임 프로그램에 CPI를 수행하고, 검증이 완료되면 해당 계정의 소유권을 가져옵니다.
+이 단계 이후로 ephemeral validator가 카운터 PDA에 대한 트랜잭션을 처리하고 위임 프로그램을 통해 상태 변경을 제안할 수 있게 됩니다.
 
 <Card
-  title="트랜잭션 (Base Layer): Delegate"
+  title="트랜잭션(베이스 레이어): Delegate"
   icon="magnifying-glass"
   href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
   iconType="duotone"
->Solana Explorer에서 트랜잭션 상세 보기</Card>
+>Solana Explorer에서 트랜잭션 세부 정보 확인</Card>
+
 ```rust
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -159,8 +158,8 @@ use ephemeral_rollups_sdk::cpi::{delegate_account, DelegateAccounts, DelegateCon
 // For Base Layer only
 // Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
 pub fn process_delegate(
-\_program_id: &Pubkey,
-accounts: &[AccountInfo],
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
 ) -> ProgramResult {
 
     // Get accounts
@@ -198,32 +197,32 @@ accounts: &[AccountInfo],
     delegate_account(delegate_accounts, pda_seeds, delegate_config)?;
 
     Ok(())
-
 }
+```
 
-````
+### PDA가 위임된 동안 커밋하기
 
-### PDA가 위임된 상태에서 커밋하기
+ephemeral 런타임에서는 PDA가 위임된 동안 그 상태를 커밋할 수 있습니다. 이는 `commit` 인텐트를 가진 `MagicIntentBundleBuilder`를 구성하여 수행합니다.
 
-ephemeral runtime은 PDA가 위임된 상태에서도 그 상태를 커밋할 수 있게 해줍니다. 이는 `commit_accounts` 함수를 호출하여 수행됩니다.
 <CardGroup cols={2}>
   <Card
-    title="트랜잭션 (ER): Commit"
+    title="트랜잭션(ER): Commit"
     icon="magnifying-glass"
     href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
   <Card
-    title="트랜잭션 (Base layer): Commit"
+    title="트랜잭션(베이스 레이어): Commit"
     icon="magnifying-glass"
     href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
 </CardGroup>
+
 ```rust
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -231,7 +230,7 @@ use solana_program::{
     entrypoint::ProgramResult,
     program_error::ProgramError,
 };
-use ephemeral_rollups_sdk::ephem::{commit_accounts};
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
 
 // For ER only
 pub fn process_commit(
@@ -251,38 +250,39 @@ pub fn process_commit(
         return Err(ProgramError::MissingRequiredSignature);
     }
 
-    commit_accounts(
-        initializer,
-        vec![counter_account],
-        magic_context,
-        magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        initializer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit(&[counter_account.clone()])
+    .build_and_invoke()?;
 
     Ok(())
 }
-````
+```
 
 ### PDA 위임 해제하기
 
-PDA의 위임 해제는 어떤 instruction의 일부로 `commit_and_undelegate_accounts` 를 호출하여 수행합니다.
-undelegation은 최신 상태를 커밋하고 PDA의 소유권을 owner program에 반환합니다. 위임 해제와 상태 finalization이 끝나면 validator는 Base Layer에서 `"undelegate"` 로 CPI callback을 생성합니다。
+PDA의 위임 해제는 `commit_and_undelegate` 인텐트를 가진 `MagicIntentBundleBuilder`를 인스트럭션 안에서 구성하여 수행합니다.
+이렇게 하면 최신 상태가 커밋되고 PDA의 소유권이 소유자 프로그램으로 반환됩니다. ER에서 위임 해제와 상태 확정이 완료되면, validator가 베이스 레이어의 `undelegate` 인스트럭션을 콜백합니다.
 
 <CardGroup cols={2}>
   <Card
-    title="트랜잭션 (ER): Undelegate"
+    title="트랜잭션(ER): Undelegate"
     icon="magnifying-glass"
     href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
   <Card
-    title="트랜잭션 (Base layer): Undelegate"
+    title="트랜잭션(베이스 레이어): Undelegate"
     icon="magnifying-glass"
     href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
 </CardGroup>
 
@@ -293,20 +293,20 @@ use solana_program::{
     entrypoint::ProgramResult,
     program_error::ProgramError,
 };
-use ephemeral_rollups_sdk::cpi::{undelegate_account};
-use ephemeral_rollups_sdk::ephem::{commit_and_undelegate_accounts, commit_accounts};
+use ephemeral_rollups_sdk::cpi::undelegate_account;
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
 
 // For ER only
 pub fn process_commit_and_undelegate(
-\_program_id: &Pubkey,
-accounts: &[AccountInfo],
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
 ) -> ProgramResult {
-// Get accounts
-let account_info_iter = &mut accounts.iter();
-let initializer = next_account_info(account_info_iter)?;
-let counter_account = next_account_info(account_info_iter)?;
-let magic_program = next_account_info(account_info_iter)?;
-let magic_context = next_account_info(account_info_iter)?;
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let counter_account = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
 
     // Signer should be the same as the initializer
     if !initializer.is_signer {
@@ -315,29 +315,29 @@ let magic_context = next_account_info(account_info_iter)?;
     }
 
     // Commit and undelegate counter_account on ER
-    commit_and_undelegate_accounts(
-        initializer,
-        vec![counter_account],
-        magic_context,
-        magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        initializer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit_and_undelegate(&[counter_account.clone()])
+    .build_and_invoke()?;
 
     Ok(())
-
 }
 
 // For Base Layer CPI callback
 pub fn process_undelegate(
-program_id: &Pubkey,
-accounts: &[AccountInfo],
-pda_seeds: Vec<Vec<u8>>
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    pda_seeds: Vec<Vec<u8>>,
 ) -> ProgramResult {
-// Get accounts
-let account_info_iter = &mut accounts.iter();
-let delegated_pda = next_account_info(account_info_iter)?;
-let delegation_buffer = next_account_info(account_info_iter)?;
-let initializer = next_account_info(account_info_iter)?;
-let system_program = next_account_info(account_info_iter)?;
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let delegated_pda = next_account_info(account_info_iter)?;
+    let delegation_buffer = next_account_info(account_info_iter)?;
+    let initializer = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
 
     // CPI on Solana
     undelegate_account(
@@ -350,27 +350,25 @@ let system_program = next_account_info(account_info_iter)?;
     )?;
 
     Ok(())
-
 }
-
 ```
 
 ## 프로그램 테스트하기
 
-프로그램의 delegation 및 undelegation instruction을 호출하는 유효한 트랜잭션을 구성하세요.
-이 프로젝트의 전체 테스트는 [Typescript 테스트 스크립트](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests) 에서 확인할 수 있습니다.
+여러분의 프로그램에 있는 위임 및 위임 해제 관련 인스트럭션을 호출하는 유효한 트랜잭션을 구성합니다.
+프로젝트의 전체 테스트 코드는 [TypeScript 테스트 스크립트](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests)에서 확인할 수 있습니다.
 
 ### `delegation` 트랜잭션 테스트
 
-계정의 순서와 속성이 올바르고, 프로그램의 `delegation` instruction discriminator를 가진 instruction을 만드세요. 그런 다음 해당 instruction을 포함한 트랜잭션을 Base Layer(Solana) 네트워크로 보냅니다.
+올바른 계정 순서와 속성, 그리고 여러분 프로그램의 `delegation` 인스트럭션 discriminator를 조합하여 인스트럭션을 구성합니다. 그 인스트럭션을 포함한 트랜잭션을 베이스 레이어(Solana) 네트워크에 전송합니다.
 
 <Card
-  title="트랜잭션 (Base Layer): Delegate"
+  title="트랜잭션(베이스 레이어): Delegate"
   icon="magnifying-glass"
   href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
   iconType="duotone"
 >
-  Solana Explorer에서 트랜잭션 상세 보기
+  Solana Explorer에서 트랜잭션 세부 정보 확인
 </Card>
 
 ```typescript
@@ -452,26 +450,26 @@ const txHash = await web3.sendAndConfirmTransaction(
 );
 ```
 
-## `commit` 트랜잭션 테스트
+### `commit` 트랜잭션 테스트
 
-계정의 순서와 속성이 올바르고, 프로그램의 `commit` instruction discriminator를 가진 instruction을 만드세요. 그런 다음 해당 instruction을 포함한 트랜잭션을 ER 네트워크로 보냅니다.
+올바른 계정 순서와 속성, 그리고 여러분 프로그램의 `commit` 인스트럭션 discriminator를 조합하여 인스트럭션을 구성합니다. 그 인스트럭션을 포함한 트랜잭션을 ER 네트워크에 전송합니다.
 
 <CardGroup cols={2}>
   <Card
-    title="트랜잭션 (ER): Commit"
+    title="트랜잭션(ER): Commit"
     icon="magnifying-glass"
     href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
   <Card
-    title="트랜잭션 (Base layer): Commit"
+    title="트랜잭션(베이스 레이어): Commit"
     icon="magnifying-glass"
     href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
 </CardGroup>
 
@@ -528,26 +526,27 @@ const txHash = await web3.sendAndConfirmTransaction(
 
 ### `undelegation` 트랜잭션 테스트
 
-계정의 순서와 속성이 올바르고, 프로그램의 `undelegation` instruction discriminator를 가진 instruction을 만드세요. 그런 다음 해당 instruction을 포함한 트랜잭션을 ER 네트워크로 보냅니다.
+올바른 계정 순서와 속성, 그리고 여러분 프로그램의 `undelegation` 인스트럭션 discriminator를 조합하여 인스트럭션을 구성합니다. 그 인스트럭션을 포함한 트랜잭션을 ER 네트워크에 전송합니다.
 
 <CardGroup cols={2}>
   <Card
-    title="트랜잭션 (ER): Undelegate"
+    title="트랜잭션(ER): Undelegate"
     icon="magnifying-glass"
     href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
   <Card
-    title="트랜잭션 (Base layer): Undelegate"
+    title="트랜잭션(베이스 레이어): Undelegate"
     icon="magnifying-glass"
     href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
     iconType="duotone"
   >
-    Solana Explorer에서 트랜잭션 상세 보기
+    Solana Explorer에서 트랜잭션 세부 정보 확인
   </Card>
 </CardGroup>
+
 ```typescript
 import * as web3 from "@solana/web3.js"
 // Build commit and undelegation transaction
@@ -600,37 +599,35 @@ skipPreflight: true,
 commitment: "confirmed",
 }
 )
-
 ```
 
 ### Ephemeral 엔드포인트 설정
 
-Ephemeral Rollup 세션과 상호작용하려면 적절한 엔드포인트를 설정해야 합니다.
+Ephemeral Rollup 세션과 상호작용하려면 적절한 엔드포인트를 설정해야 합니다:
 
-- devnet에서는 다음 ephemeral 엔드포인트를 사용하세요.
+- devnet의 경우 다음 ephemeral 엔드포인트를 사용하세요:
 
   https://devnet.magicblock.app
 
-- mainnet의 경우 적절한 엔드포인트를 받기 위해 MagicBlock 팀에 문의해 주세요.
+- mainnet의 경우 적절한 엔드포인트를 받으려면 MagicBlock 팀에 문의하세요.
 
-- <a href="/ko/pages/get-started/how-integrate-your-program/local-setup">localhost</a> 의 경우, 적절한 환경 변수를 설정하여 ephemeral validator를 로컬에 설치하고 실행하세요.
+- <a href="/ko/pages/get-started/how-integrate-your-program/local-setup">localhost</a>의 경우 ephemeral validator를 다운로드하고 설치한 뒤 적절한 환경 변수와 함께 로컬에서 실행하세요.
 
-개발 또는 운영 환경에 맞게 클라이언트 구성을 업데이트하여 올바른 엔드포인트를 사용하세요.
+개발 또는 프로덕션 환경에 맞는 올바른 엔드포인트로 클라이언트 설정을 업데이트해야 합니다.
 
 <Endpoints/>
 
 <CardGroup cols={2}>
   <Card
-    title="소스 코드: Native Rust Counter Program"
+    title="소스 코드: 네이티브 Rust 카운터 프로그램"
     icon="rust"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
     iconType="duotone"
   ></Card>
   <Card
-    title="소스 코드: Typescript 테스트 스크립트"
+    title="소스 코드: TypeScript 테스트 스크립트"
     icon="js"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
     iconType="duotone"
   ></Card>
 </CardGroup>
-```

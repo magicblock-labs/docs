@@ -18,6 +18,7 @@ import OncurveDelegation from "/cn/snippets/oncurve-delegation.mdx";
 import MagicRouterSDK from "/cn/snippets/magic-router-sdk.mdx";
 import DelegationInfo from "/cn/snippets/delegation-info.mdx";
 import MagicActionExample from "/cn/snippets/magic-action-example.mdx";
+import LamportsTopupCode from "/cn/snippets/lamports-topup-code.mdx";
 
 import UndelegationCallbackNote from "/cn/snippets/notes/undelegation-callback-note.mdx";
 
@@ -243,6 +244,20 @@ import QuickAccessERFooter from "/cn/snippets/quick-access-er-footer.mdx";
     [了解更多 Magic Action](/cn/pages/ephemeral-rollups-ers/magic-actions/overview.mdx)
     <MagicActionExample />
 
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="为已委托账户补充余额">
+    为已委托账户补充 lamports。交易在 **base layer** 上提交，由 Ephemeral SPL Token 程序通过一个一次性的 lamports PDA，将 lamports 转送到目标账户在 ER 上的委托余额。
+
+    常见使用场景：给被委托的 fee payer 不断补充余额，以便在超过默认 10 次 commit 赞助额度后，该 PDA 仍能继续为自己的 commit 付费。
+
+    要点：
+    - 每次补充都需通过 `crypto.getRandomValues` 生成一个全新的 32 字节 salt —— 重复使用会与现有 PDA 冲突。
+    - 提交到 base-layer RPC，而不是 ER。
+    - 目标账户必须已被委托。
+
+    <LamportsTopupCode />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>

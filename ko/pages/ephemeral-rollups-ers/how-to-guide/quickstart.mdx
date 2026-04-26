@@ -18,6 +18,7 @@ import OncurveDelegation from "/ko/snippets/oncurve-delegation.mdx";
 import MagicRouterSDK from "/ko/snippets/magic-router-sdk.mdx";
 import DelegationInfo from "/ko/snippets/delegation-info.mdx";
 import MagicActionExample from "/ko/snippets/magic-action-example.mdx";
+import LamportsTopupCode from "/ko/snippets/lamports-topup-code.mdx";
 
 import UndelegationCallbackNote from "/ko/snippets/notes/undelegation-callback-note.mdx";
 
@@ -243,6 +244,20 @@ import QuickAccessERFooter from "/ko/snippets/quick-access-er-footer.mdx";
     [Magic Action 더 알아보기](/ko/pages/ephemeral-rollups-ers/magic-actions/overview.mdx)
     <MagicActionExample />
 
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="위임된 계정에 lamports 충전">
+    위임된 계정에 lamports를 충전합니다. 트랜잭션은 **base layer**에서 제출되며, Ephemeral SPL Token 프로그램이 일회성 lamports PDA를 통해 위임된 잔고로 lamports를 옮깁니다.
+
+    주요 용도: 위임된 fee payer에 자금을 충당해 기본으로 제공되는 10회의 commit 스폰서십 할당량을 넘어서도 위임된 fee payer 자체가 commit 비용을 지불할 수 있게 합니다.
+
+    참고 사항:
+    - 충전할 때마다 `crypto.getRandomValues`로 새로운 32바이트 salt를 생성합니다 — salt를 재사용하면 기존 PDA와 충돌합니다.
+    - ER가 아닌 **base layer의 RPC**에 제출합니다.
+    - 대상 계정은 이미 위임되어 있어야 합니다.
+
+    <LamportsTopupCode />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>

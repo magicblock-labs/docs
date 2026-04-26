@@ -18,6 +18,7 @@ import OncurveDelegation from "/jp/snippets/oncurve-delegation.mdx";
 import MagicRouterSDK from "/jp/snippets/magic-router-sdk.mdx";
 import DelegationInfo from "/jp/snippets/delegation-info.mdx";
 import MagicActionExample from "/jp/snippets/magic-action-example.mdx";
+import LamportsTopupCode from "/jp/snippets/lamports-topup-code.mdx";
 
 import UndelegationCallbackNote from "/jp/snippets/notes/undelegation-callback-note.mdx";
 
@@ -243,6 +244,20 @@ import QuickAccessERFooter from "/jp/snippets/quick-access-er-footer.mdx";
     [Magic Action について詳しく見る](/jp/pages/ephemeral-rollups-ers/magic-actions/overview.mdx)
     <MagicActionExample />
 
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="委任済みアカウントへの lamports チャージ">
+    委任済みアカウントに lamports を追加チャージします。トランザクションは **base layer** で提出し、Ephemeral SPL Token プログラムが使い捨ての lamports PDA を介して委任済み残高へ lamports を送り込みます。
+
+    主な用途：委任済み fee payer に資金を補充し、デフォルトで提供される 10 回の commit スポンサーシップ枠を超えても委任済み fee payer 自身で commit 費用を支払えるようにします。
+
+    ポイント：
+    - チャージごとに `crypto.getRandomValues` で新しい 32 バイトの salt を生成します — salt を使い回すと既存の PDA と衝突します。
+    - ER ではなく **base layer の RPC** に提出します。
+    - 送金先アカウントはすでに委任済みである必要があります。
+
+    <LamportsTopupCode />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
