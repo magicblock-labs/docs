@@ -1,0 +1,93 @@
+---
+title: AI 개발 Skill
+description: MagicBlock Dev Skill을 통해 위임 플로우, 듀얼 커넥션 아키텍처, cranks, VRF, private payments 등 MagicBlock에 특화된 개발 패턴을 Claude Code와 Codex로 가져오세요.
+---
+
+<CardGroup cols={1}>
+  <Card
+    title="MagicBlock Dev Skill 리포지토리"
+    icon="browser"
+    href="https://github.com/magicblock-labs/magicblock-dev-skill"
+    iconType="duotone"
+  >
+    리포지토리, 설치 단계, skill의 소스 파일을 확인해보세요.
+  </Card>
+</CardGroup>
+
+## 무엇인가
+
+MagicBlock Dev Skill은 Claude Code와 Codex를 위한 AI 개발 skill로, 검증된 MagicBlock 개발 패턴을 재사용 가능한 워크플로로 패키징한 것입니다. 매 프롬프트마다 동일한 통합 세부 정보를 다시 설명할 필요 없이, 이 skill이 코딩 에이전트에게 MagicBlock 위에서 빌드하기 위한 구조화된 가이드를 제공합니다.
+
+다음과 같은 작업을 수행하는 팀을 위해 설계되었습니다:
+
+- Ephemeral Rollups 통합
+- 위임 및 위임 해제 플로우
+- Solana + MagicBlock 듀얼 커넥션 아키텍처
+- 고성능 트랜잭션 라우팅
+- 주기적인 자동 트랜잭션을 위한 Cranks
+- 증명 가능한 랜덤성을 위한 VRF
+- Private payments 플로우
+- Anchor 및 TypeScript 기반 통합
+
+## 사용 방법
+
+### 설치
+
+Claude Code 빠른 설치:
+
+```bash
+npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
+```
+
+수동 설치:
+
+```bash
+git clone https://github.com/magicblock-labs/magicblock-dev-skill
+cd magicblock-dev-skill
+./install.sh
+```
+
+기본적으로 `./install.sh`은 skill을 두 개의 개인 skill 디렉토리에 모두 설치합니다:
+
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+
+특정 환경을 지정할 수도 있습니다:
+
+```bash
+./install.sh --claude
+./install.sh --codex
+./install.sh --project
+./install.sh --project --codex
+./install.sh --path /custom/path/magicblock
+```
+
+`--project`는 현재 리포지토리의 `.claude/skills/magicblock` 및/또는 `.codex/skills/magicblock` 아래에 설치합니다.
+
+### Claude Code와 Codex에서 사용하기
+
+설치가 완료되면, MagicBlock이나 Ephemeral Rollups 관련 도움을 요청할 때 skill이 자동으로 활성화될 수 있습니다.
+
+- Claude Code에서는 `/magicblock`으로 직접 호출할 수도 있습니다.
+- Codex에서는 예를 들어 `use the magicblock skill`처럼 이름으로 명시적으로 지정할 수 있습니다.
+
+프롬프트 예시:
+
+```text
+Add delegation hooks to my player account
+Change my roll_dice function to use VRF
+Set up a crank that updates game state every 100ms
+Help me integrate MagicBlock into my Anchor program
+```
+
+## 이 Skill이 제공하는 것
+
+이 skill은 단순한 프롬프트 템플릿 그 이상입니다. 메인 진입점과 보조 참고 자료가 MagicBlock에 특화된 구현 세부 사항으로 에이전트를 안내합니다. 예를 들어:
+
+- 베이스 레이어 연결과 ephemeral rollup 연결을 언제 사용해야 하는지
+- 위임, commit, 위임 해제 플로우를 올바르게 구성하는 방법
+- `#[ephemeral]`, `#[delegate]`, `#[commit]`의 일반적인 Anchor 패턴
+- 실시간 앱과 게임을 위한 VRF 및 crank 설정
+- MagicBlock 개발을 위한 환경 변수, 버전, 의존성
+
+전체 skill, 소스 파일, 설치 안내는 [MagicBlock Dev Skill 리포지토리](https://github.com/magicblock-labs/magicblock-dev-skill)에서 확인하세요.

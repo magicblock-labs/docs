@@ -4,9 +4,7 @@
 #[derive(Accounts)]
 pub struct DelegateInput<'info> {
     pub payer: Signer<'info>,
-    /// CHECK: Checked by the delegate program
-    pub validator: Option<AccountInfo<'info>>,
-    /// CHECK The pda to delegate
+    /// CHECK: The pda to delegate
     #[account(mut, del)]
     pub pda: AccountInfo<'info>,
 }
@@ -18,7 +16,7 @@ pub struct DelegateInput<'info> {
 pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
     ctx.accounts.delegate_pda(
         &ctx.accounts.payer,
-        &[TEST_PDA_SEED],
+        &[COUNTER_SEED],
         DelegateConfig {
             // Optionally set a specific validator from the first remaining account
             validator: ctx.remaining_accounts.first().map(|acc| acc.key()),

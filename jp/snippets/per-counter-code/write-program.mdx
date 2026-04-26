@@ -1,7 +1,7 @@
 ```rust
 #[ephemeral]
 #[program]
-pub mod public_counter {
+pub mod private_counter {
     use super::*;
 
     /// Initialize the counter.
@@ -18,26 +18,7 @@ pub mod public_counter {
         Ok(())
     }
 
-    /// Delegate the account to the delegation program
-    /// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
-    pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
-    // ...
-    }
-
-    /// Manually commit the counter state in the Ephemeral Rollup session.
-    pub fn commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
-    // ...
-    }
-
-    /// Increment the counter and commit in the same instruction.
-    pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
-    // ...
-    }
-
-    /// Undelegate the account from the delegation program.
-    pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
-    // ...
-    }
+    /// ... Other instructions for delegation, permission, and privacy
 }
 
 pub const COUNTER_SEED: &[u8] = b"counter";
@@ -65,5 +46,5 @@ pub struct Counter {
     pub count: u64,
 }
 
-/// Other context for delegation
+/// Other context and accounts for delegation and privacy ...
 ```

@@ -1,67 +1,105 @@
 ```typescript
-// Set ER Validator
-const ER_VALIDATOR = new web3.PublicKey(
-  "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
-); // Asia ER Validator
+const COUNTER_SEED = "counter";
 
 // Set Anchor providers
-const provider = anchor.AnchorProvider.env();
+const provider = new anchor.AnchorProvider(
+  new anchor.web3.Connection(
+    process.env.PROVIDER_ENDPOINT || "https://api.devnet.solana.com",
+    {
+      wsEndpoint: process.env.PROVIDER_WS_ENDPOINT || undefined,
+      commitment: "confirmed",
+    },
+  ),
+  anchor.Wallet.local(),
+);
 anchor.setProvider(provider);
+
 const providerEphemeralRollup = new anchor.AnchorProvider(
-  new anchor.web3.Connection("https://devnet-as.magicblock.app/", {
-    wsEndpoint: "wss://devnet.magicblock.app/",
-  }),
-  anchor.Wallet.local()
+  new anchor.web3.Connection(
+    process.env.EPHEMERAL_PROVIDER_ENDPOINT ||
+      "https://devnet-as.magicblock.app/",
+    {
+      wsEndpoint:
+        process.env.EPHEMERAL_WS_ENDPOINT || "wss://devnet-as.magicblock.app/",
+      commitment: "confirmed",
+    },
+  ),
+  anchor.Wallet.local(),
 );
 
-// Set program and pda
-const program = anchor.workspace.AnchorCounter as Program<AnchorCounter>;
-const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
-  [Buffer.from(SEED_TEST_PDA)],
-  program.programId
+// Set program and PDA
+const program = anchor.workspace.PublicCounter as Program<PublicCounter>;
+const [counterPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+  [Buffer.from(COUNTER_SEED)],
+  program.programId,
 );
 
-// Initialize Counter on Base Layer
+// Initialize counter on base layer
 let initTx = await program.methods
-  .increment()
+  .initialize()
   .accounts({
-    counter: pda,
+    user: provider.wallet.publicKey,
   })
   .transaction();
-initTx.feePayer = provider.wallet.publicKey;
-initTx.recentBlockhash = (
-  await provider.connection.getLatestBlockhash()
-).blockhash;
-initTx = await provider.connection.signTransaction(initTx);
-const dinitTxHash = await provider.sendAndConfirm(initTx);
+const initTxHash = await provider.sendAndConfirm(initTx, [
+  provider.wallet.payer,
+]);
 
-// Delegate Counter on Base Layer to ER
-let delTx = await program.methods
+// Increment counter on base layer
+let incBaseTx = await program.methods
   .increment()
+  .accounts({
+    counter: counterPDA,
+  })
+  .transaction();
+const incBaseTxHash = await provider.sendAndConfirm(incBaseTx, [
+  provider.wallet.payer,
+]);
+
+// Delegate counter to ER
+// Pin a specific validator by passing it in remaining_accounts
+const ER_VALIDATOR = new anchor.web3.PublicKey(
+  "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57", // Asia ER validator
+);
+let delTx = await program.methods
+  .delegate()
   .accounts({
     payer: provider.wallet.publicKey,
-    validator: ER_VALIDATOR,
-    pda: pda,
+    pda: counterPDA,
   })
+  .remainingAccounts([
+    { pubkey: ER_VALIDATOR, isSigner: false, isWritable: false },
+  ])
   .transaction();
-delTx.feePayer = provider.connection.wallet.publicKey;
-delTx.recentBlockhash = (
-  await provider.connection.getLatestBlockhash()
-).blockhash;
-delTx = await provider.wallet.signTransaction(delTx);
-const delTxHash = await provider.sendAndConfirm(delTx);
+const delTxHash = await provider.sendAndConfirm(delTx, [
+  provider.wallet.payer,
+]);
 
-// Increment Counter in real-time on ER
-let incTx = await program.methods
+// Increment counter in real time on ER
+let incErTx = await program.methods
   .increment()
   .accounts({
-    counter: pda,
+    counter: counterPDA,
   })
   .transaction();
-incTx.feePayer = providerEphemeralRollup.wallet.publicKey;
-incTx.recentBlockhash = (
+incErTx.feePayer = providerEphemeralRollup.wallet.publicKey;
+incErTx.recentBlockhash = (
   await providerEphemeralRollup.connection.getLatestBlockhash()
 ).blockhash;
-incTx = await providerEphemeralRollup.wallet.signTransaction(incTx);
-const incTxHash = await providerEphemeralRollup.sendAndConfirm(incTx);
+incErTx = await providerEphemeralRollup.wallet.signTransaction(incErTx);
+const incErTxHash = await providerEphemeralRollup.sendAndConfirm(incErTx);
+
+// Commit and undelegate counter from ER back to base layer
+let undelTx = await program.methods
+  .undelegate()
+  .accounts({
+    payer: providerEphemeralRollup.wallet.publicKey,
+  })
+  .transaction();
+undelTx.feePayer = providerEphemeralRollup.wallet.publicKey;
+undelTx.recentBlockhash = (
+  await providerEphemeralRollup.connection.getLatestBlockhash()
+).blockhash;
+undelTx = await providerEphemeralRollup.wallet.signTransaction(undelTx);
+const undelTxHash = await providerEphemeralRollup.sendAndConfirm(undelTx);
 ```

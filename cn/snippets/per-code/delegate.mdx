@@ -21,18 +21,19 @@ pub mod private_payments {
 
     /// Commits and undelegates the deposit account from the ephemeral rollups program.
     ///
-    /// Uses the ephemeral rollups SDK to commit and undelegate the deposit account.
+    /// Uses the `MagicIntentBundleBuilder` to commit and undelegate in one instruction.
     #[session_auth_or(
         ctx.accounts.user.key() == ctx.accounts.deposit.user,
         ErrorCode::Unauthorized
     )]
     pub fn undelegate(ctx: Context<UndelegateDeposit>) -> Result<()> {
-        commit_and_undelegate_accounts(
-            &ctx.accounts.payer,
-            vec![&ctx.accounts.deposit.to_account_info()],
-            &ctx.accounts.magic_context,
-            &ctx.accounts.magic_program,
-        )?;
+        MagicIntentBundleBuilder::new(
+            ctx.accounts.payer.to_account_info(),
+            ctx.accounts.magic_context.to_account_info(),
+            ctx.accounts.magic_program.to_account_info(),
+        )
+        .commit_and_undelegate(&[ctx.accounts.deposit.to_account_info()])
+        .build_and_invoke()?;
         Ok(())
     }
 

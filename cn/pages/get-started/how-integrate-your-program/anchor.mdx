@@ -36,11 +36,11 @@ import Endpoints from "/cn/snippets/endpoints.mdx";
 
 该程序使用以下软件包开发和测试。其他软件版本也可能兼容。
 
-| 软件 | 版本 | 安装指南 |
-| ---------- | ------- | --------------------------------------------------------------- |
-| **Solana** | 2.1.21  | [安装 Solana](https://docs.anza.xyz/cli/install)             |
-| **Rust**   | 1.82.0  | [安装 Rust](https://www.rust-lang.org/tools/install)         |
-| **Anchor** | 0.31.1  | [安装 Anchor](https://www.anchor-lang.com/docs/installation) |
+| 软件       | 版本   | 安装指南                                                        |
+| ---------- | ------ | --------------------------------------------------------------- |
+| **Solana** | 2.1.21 | [安装 Solana](https://docs.anza.xyz/cli/install)                |
+| **Rust**   | 1.82.0 | [安装 Rust](https://www.rust-lang.org/tools/install)            |
+| **Anchor** | 0.31.1 | [安装 Anchor](https://www.anchor-lang.com/docs/installation)    |
 
 ## 快速查看源代码
 
@@ -54,9 +54,9 @@ import Endpoints from "/cn/snippets/endpoints.mdx";
     iconType="duotone"
   ></Card>
   <Card
-    title="源代码：React 客户端"
+    title="在线示例应用"
     icon="react"
-    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    href="https://counter-example.magicblock.app/"
     iconType="duotone"
   ></Card>
 </CardGroup>
@@ -77,7 +77,7 @@ import Endpoints from "/cn/snippets/endpoints.mdx";
 ```rust
 #[ephemeral]
 #[program]
-pub mod anchor_counter {
+pub mod public_counter {
     use super::*;
 
     /// Initialize the counter.
@@ -98,14 +98,12 @@ pub mod anchor_counter {
 }
 ```
 
-这里没有什么特别之处，只是一个简单的 Anchor 计数器程序。唯一的区别是我们加入了 `delegate` macro，用来注入一些与 delegation program 交互的实用逻辑。
+这里没有什么特别之处，只是一个简单的、用于递增计数器的 Anchor 程序。唯一的区别是我们引入了 `delegate` 宏，用来注入与委托程序交互所需的逻辑。
 
 ### 委托 Counter PDA
 
-为了委托 counter PDA，并使其在 Ephemeral Rollup 会话中可写，我们需要添加一个 instruction，
-其内部会调用 `delegate_account` 函数。`delegate_account` 会通过 CPI 调用 delegation program，
-在验证通过后 delegation program 将获得该账户的所有权。
-完成这一步后，ephemeral validator 就可以开始在 counter PDA 上处理交易，并通过 delegation program 提交状态差异。
+为了将 counter PDA 委托出去，使其在 Ephemeral Rollup 会话中变为可写，我们需要添加一个内部调用 `delegate_account` 函数的 instruction。`delegate_account` 会通过 CPI 调用委托程序，验证通过后会接管该账户的所有权。
+完成这一步后，临时验证者就可以开始处理 counter PDA 上的交易，并通过委托程序提交状态差异。
 
 <Card
   title="交易（Base Layer）：Delegate"
@@ -113,7 +111,7 @@ pub mod anchor_counter {
   href="https://solscan.io/tx/5tyEk8gkdP88xe8GL7X12f9WGZfYZtmDbuXozvqkpea4rphXPiNp91vAzmSjsyUR399wimBYazEszKSH35sidPRH?cluster=devnet"
   iconType="duotone"
 >
-  在 Solana Explorer 中查看交易详情
+  在 Solana Explorer 上查看交易详情
 </Card>
 ```rust
 /// Add delegate function to the context
@@ -133,19 +131,20 @@ pub struct DelegateInput<'info> {
 pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
     ctx.accounts.delegate_pda(
         &ctx.accounts.payer,
-        &[TEST_PDA_SEED],
+        &[COUNTER_SEED],
         DelegateConfig {
-            commit_frequency_ms: 30_000,
-            validator: Some(pubkey!("MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57")), // Asia ER, please set based on ER validator.
-        }
+            // Optionally set a specific validator from the first remaining account
+            validator: ctx.remaining_accounts.first().map(|acc| acc.key()),
+            ..Default::default()
+        },
     )?;
     Ok(())
 }
 ```
 
-### 在 PDA 已委托时进行提交
+### 在 PDA 已被委托时进行 commit
 
-ephemeral runtime 允许在 PDA 已委托时提交其状态。这通过调用 `commit_accounts` 函数来完成。
+Ephemeral 运行时允许在 PDA 处于委托状态时提交其状态。这通过构建一个带有 `commit` intent 的 `MagicIntentBundleBuilder` 并执行它来完成。
 
 <CardGroup cols={2}>
   <Card
@@ -154,36 +153,41 @@ ephemeral runtime 允许在 PDA 已委托时提交其状态。这通过调用 `c
     href="https://solscan.io/tx/335F5UcgAW3P8wSaVoEPiBoxeykw9wR1kcJLWUnd9sHmxymCgGvLtxaGDy6ZKDgJw2ku9jtRqwVNY85DuAHvs9GT?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
   <Card
-    title="交易（Base layer）：Commit"
+    title="交易（Base Layer）：Commit"
     icon="magnifying-glass"
     href="https://solscan.io/tx/3xzMGbj2fwFCnGp6r7wyMv5LExmL6SXaEbt52DmxA3Wx1LyksuXpPJS4AAPtqoSeJe3aF7oY3jFNiEhBQKwhzRGN?cluster=devnet"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
 </CardGroup>
 ```rust
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+
 /// Increment the counter and manually commit the account in the Ephemeral Rollup session.
 pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
     let counter = &mut ctx.accounts.counter;
     counter.count += 1;
-    commit_accounts(
-        &ctx.accounts.payer,
-        vec![&ctx.accounts.counter.to_account_info()],
-        &ctx.accounts.magic_context,
-        &ctx.accounts.magic_program,
-    )?;
+    // Serialize the Anchor account before the CPI sees it
+    counter.exit(&crate::ID)?;
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit(&[ctx.accounts.counter.to_account_info()])
+    .build_and_invoke()?;
     Ok(())
 }
 ````
 
-### 取消委托 PDA
+### 解除 PDA 的委托
 
-取消委托 PDA 是通过在某个 instruction 中调用 `commit_and_undelegate_accounts` 来完成的。
-undelegation 会提交最新状态，并将 PDA 的所有权归还给 owner program。
+解除 PDA 委托是通过构建一个带有 `commit_and_undelegate` intent 的 `MagicIntentBundleBuilder` 来完成的。
+该操作会提交最新状态，并将 PDA 的所有权交还给所属程序。
 
 <CardGroup cols={2}>
   <Card
@@ -192,69 +196,71 @@ undelegation 会提交最新状态，并将 PDA 的所有权归还给 owner prog
     href="https://solscan.io/tx/3MN6Avygk3FwsuQPoKHzpLo9kBBommHwRHTdgxBooDwsaNHgSYr1yaDXYEe63Eii5DCVbtaK89Yyrhy3dSGhHmvw?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
   <Card
-    title="交易（Base layer）：Undelegate"
+    title="交易（Base Layer）：Undelegate"
     icon="magnifying-glass"
     href="https://solscan.io/tx/2YwzNQh632bJu8TSP9GPsXmh7o78KgMMM9QPNbdaAzamtjGZfmT4o7bkG2PtpCWp7aJmmxpxTXr4Qo36k5EjgPab?cluster=devnet"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
 </CardGroup>
 
 ```rust
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+
 /// Undelegate the account from the delegation program
 pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
-    commit_and_undelegate_accounts(
-        &ctx.accounts.payer,
-        vec![&ctx.accounts.counter.to_account_info()],
-        &ctx.accounts.magic_context,
-        &ctx.accounts.magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit_and_undelegate(&[ctx.accounts.counter.to_account_info()])
+    .build_and_invoke()?;
     Ok(())
 }
 ```
 
-## 连接 React 客户端
+## 接入 React 客户端
 
-React 客户端是一个简单的界面，让你能够与 Anchor 程序交互。
-它使用 Anchor bindings 与程序交互，并使用 MagicBlock SDK 与 Ephemeral Rollup 会话交互。
+React 客户端是一个简单的界面，让你可以与 Anchor 程序进行交互。
+它使用 Anchor 绑定与程序通信，并通过 MagicBlock SDK 与 Ephemeral Rollup 会话交互。源代码与程序放在一起，位于 [`anchor-counter/app`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter/app)。
 
 {" "}
 
 <Card
-  title="源代码：React 客户端"
+  title="在线示例应用"
   icon="react"
-  href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+  href="https://counter-example.magicblock.app/"
   iconType="duotone"
 ></Card>
 
 <iframe
-  src="https://main--ephemeral-counter.netlify.app/"
+  src="https://counter-example.magicblock.app/"
   width="100%"
   height="500"
   frameborder="0"
 ></iframe>
 
 <Warning>
-  iframe 仅适用于部分钱包（例如 Backpack）。你也可以直接访问已部署的演示：
-  https://main--ephemeral-counter.netlify.app/
+  iframe 仅适用于部分钱包（如 Backpack）。如果遇到问题，可在此直接体验在线 demo：https://counter-example.magicblock.app/
 </Warning>
 
 ### Ephemeral 端点配置
 
-要与 Ephemeral Rollup 会话交互，你需要配置正确的端点：
+要与 Ephemeral Rollup 会话进行交互，你需要配置正确的端点：
 
-- 对于 devnet，请使用以下 ephemeral 端点：
+- 对于 devnet，使用以下 ephemeral 端点：
 
   https://devnet.magicblock.app
 
-- 对于 mainnet，请联系 MagicBlock 团队以获取相应端点。
-- 对于 <a href="/cn/pages/get-started/how-integrate-your-program/local-setup">localhost</a>，请下载、安装并在本地运行 ephemeral validator，同时配置相应环境变量。
+- 对于 mainnet，请联系 MagicBlock 团队获取相应端点。
+- 对于 <a href="/cn/pages/get-started/how-integrate-your-program/local-setup">localhost</a>，请下载并安装 ephemeral validator，并使用相应的环境变量在本地运行。
 
-请确保根据你的开发或生产环境更新客户端配置，使用正确的端点。
+请确保根据你的开发或生产环境，将客户端配置更新为正确的端点。
 
 <Endpoints />
 
@@ -266,9 +272,9 @@ React 客户端是一个简单的界面，让你能够与 Anchor 程序交互。
     iconType="duotone"
   ></Card>
   <Card
-    title="源代码：React 客户端"
+    title="在线示例应用"
     icon="react"
-    href="https://github.com/GabrielePicco/ephemeral-counter-ui"
+    href="https://counter-example.magicblock.app/"
     iconType="duotone"
   ></Card>
 </CardGroup>

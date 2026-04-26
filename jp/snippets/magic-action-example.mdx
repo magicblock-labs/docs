@@ -5,24 +5,24 @@ import OtherActionsCode from "/jp/snippets/magic-action-code/other-actions-code.
 
 ### 1) アクション命令を作成する
 
-`update_leaderboard` 命令はコミット直後にベースレイヤーで実行されます。
+`update_leaderboard` 命令はコミット完了直後にベースレイヤーで実行されます。アカウントコンテキストに付与された `#[action]` 属性により、コミット後アクションから呼び出し可能であることが示されます。
 
 <ActionCode />
 
 ### 2) アクション付きコミット命令を構築する
 
-`commit_and_update_leaderboard` コミット命令は ER 上で実行され、アクション付きコミットを予約します。
+`commit_and_update_leaderboard` コミット命令は ER 上で実行されます。`MagicIntentBundleBuilder` を使用してコミットとコミット後アクションの両方を `magic_context` に予約します — ER トランザクションがベースレイヤーへ確定されるとき、両者は同時に適用されます。
 
 <CommitWithActionCode />
 
 ### 複数のアクションを実行する
 
-複数のアカウントをコミットし、複数のアクションを連鎖させることができます。アクションは順番に実行されます。
+複数のアカウントをコミットし、複数のアクションを 1 回の呼び出しで連鎖させることができます。アクションは `add_post_commit_actions` に渡された順序で順次実行されます。
 
 <MultipleActionCode />
 
-### その他のアクション
+### 委任解除と一緒にアクションを実行する
 
-アクションは委任解除と一緒に実行することも、コミットなしで実行することもできます。
+アクションは委任解除にも連鎖できます — counter のコミット、委任解除、アクションすべてが同一の ER トランザクション内でアトミックに実行されます。
 
 <OtherActionsCode />

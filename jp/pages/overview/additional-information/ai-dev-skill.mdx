@@ -1,0 +1,93 @@
+---
+title: AI 開発 Skill
+description: MagicBlock Dev Skill を使って、委任フロー、デュアルコネクションアーキテクチャ、cranks、VRF、private payments など、MagicBlock 固有の開発パターンを Claude Code と Codex に取り込みます。
+---
+
+<CardGroup cols={1}>
+  <Card
+    title="MagicBlock Dev Skill リポジトリ"
+    icon="browser"
+    href="https://github.com/magicblock-labs/magicblock-dev-skill"
+    iconType="duotone"
+  >
+    リポジトリ、インストール手順、skill のソースファイルをご覧ください。
+  </Card>
+</CardGroup>
+
+## これは何か
+
+MagicBlock Dev Skill は Claude Code と Codex 向けの AI 開発 skill であり、実証済みの MagicBlock 開発パターンを再利用可能なワークフローとしてパッケージ化したものです。プロンプトのたびに同じ統合の詳細を説明し直す必要はなく、この skill がコーディングエージェントに対し MagicBlock 上で構築するための構造化されたガイダンスを与えます。
+
+以下のような取り組みを行うチームを想定しています：
+
+- Ephemeral Rollups の統合
+- 委任および委任解除のフロー
+- Solana + MagicBlock のデュアルコネクション アーキテクチャ
+- 高性能なトランザクションルーティング
+- 定期的な自動トランザクションのための Cranks
+- 検証可能なランダム性のための VRF
+- Private payments のフロー
+- Anchor および TypeScript ベースの統合
+
+## 使い方
+
+### インストール
+
+Claude Code でのクイックインストール：
+
+```bash
+npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
+```
+
+手動インストール：
+
+```bash
+git clone https://github.com/magicblock-labs/magicblock-dev-skill
+cd magicblock-dev-skill
+./install.sh
+```
+
+デフォルトでは、`./install.sh` は skill を 2 つの個人用 skill ディレクトリの両方にインストールします：
+
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+
+特定の環境を指定することもできます：
+
+```bash
+./install.sh --claude
+./install.sh --codex
+./install.sh --project
+./install.sh --project --codex
+./install.sh --path /custom/path/magicblock
+```
+
+`--project` は現在のリポジトリの `.claude/skills/magicblock` および/または `.codex/skills/magicblock` 配下にインストールします。
+
+### Claude Code と Codex での利用
+
+インストール後、MagicBlock や Ephemeral Rollups に関するヘルプを求めたときに skill が自動的に有効化されることがあります。
+
+- Claude Code では `/magicblock` で直接呼び出すこともできます。
+- Codex では、例えば `use the magicblock skill` のように名前で明示的に指定できます。
+
+プロンプト例：
+
+```text
+Add delegation hooks to my player account
+Change my roll_dice function to use VRF
+Set up a crank that updates game state every 100ms
+Help me integrate MagicBlock into my Anchor program
+```
+
+## この Skill が提供するもの
+
+この skill は単純なプロンプトテンプレートにとどまりません。メインのエントリポイントと参考資料が、MagicBlock 固有の実装詳細にエージェントを導きます。例えば：
+
+- ベースレイヤー接続を使うべきか、ephemeral rollup 接続を使うべきかの判断
+- 委任、commit、委任解除フローの正しい組み立て方
+- `#[ephemeral]`、`#[delegate]`、`#[commit]` の典型的な Anchor パターン
+- リアルタイムアプリやゲームに向けた VRF と crank の設定
+- MagicBlock 開発に必要な環境変数、バージョン、依存関係
+
+skill 全体、ソースファイル、インストール手順については、[MagicBlock Dev Skill リポジトリ](https://github.com/magicblock-labs/magicblock-dev-skill)をご覧ください。

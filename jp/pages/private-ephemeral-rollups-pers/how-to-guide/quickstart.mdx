@@ -1,6 +1,6 @@
 ---
 title: "クイックスタート"
-description: "MagicBlock の ER と Intel TDX 上の Trusted Execution Environment を通じて、任意の Solana プログラム状態アカウントにプライバシーを有効化します。"
+description: "MagicBlock の ER と Intel TDX 上の Trusted Execution Environment を通じて、任意の Solana プログラムのステートアカウントにプライバシーを付与します。"
 ---
 
 import Endpoints from "/jp/snippets/endpoints.mdx";
@@ -9,10 +9,9 @@ import Construction from "/jp/snippets/construction.mdx";
 import Software from "/jp/snippets/software.mdx";
 import SolanaResources from "/jp/snippets/solana-resources.mdx";
 
-import WriteProgramCode from "/jp/snippets/per-rps-code/write-program.mdx";
-import DelegateCode from "/jp/snippets/per-rps-code/delegate.mdx";
-import RestrictCode from "/jp/snippets/per-rps-code/restrict.mdx";
-import AuthorizeCode from "/jp/snippets/per-rps-code/authorize.mdx";
+import WriteProgramCode from "/jp/snippets/per-counter-code/write-program.mdx";
+import DelegateCode from "/jp/snippets/per-counter-code/delegate.mdx";
+import AuthorizeCode from "/jp/snippets/per-counter-code/authorize.mdx";
 import DelegationInfo from "/jp/snippets/delegation-info.mdx";
 
 import QuickAccessPER from "/jp/snippets/quick-access-per.mdx";
@@ -22,99 +21,84 @@ import PerCards from "/jp/snippets/per-cards.mdx";
 
 <QuickAccessPER />
 <Note>
-  MagicBlock の Private Ephemeral Rollup は、ノードレベルの IP ジオフェンシング、
-  OFAC 制裁リスト、および制限法域に基づくコンプライアンスを入口で強制し、
-  いかなるトランザクションも受理または実行される前に適用します。
-  [詳しく見る](/jp/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)
+  MagicBlock の Private Ephemeral Rollup は、入口の段階で、トランザクションが受け付けられたり実行されたりする前に、
+  ノードレベルでの IP ジオフェンシング、OFAC 制裁リスト、制限対象の管轄区域に基づくコンプライアンス制御を実施します。[詳細はこちら](/jp/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)
 </Note>
 
 ---
 
-<div id="quickstart" />
-## ステップごとのガイド
+## ステップ・バイ・ステップ ガイド
 
-プログラムを構築し、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を利用する権限および委任フックで拡張します。
+プログラムを構築し、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を利用するパーミッションおよび委任フックを追加してアップグレードします：
 
 <Steps>
-  <Step title={<a href="#1-プログラムを書く">プログラムを書く</a>}>
-    いつもどおりに Solana プログラムを書きます。
+  <Step title={<a href="#1-write-program">プログラムを書く</a>}>
+    通常通り Solana プログラムを書きます。
   </Step>
   <Step
     title={
-      <a href="#2-制限を追加する">
-        プログラム内の権限フックを通じて制限を追加する
+      <a href="#2-delegate-with-restriction">
+        制限付き委任フックをプログラムに追加する
       </a>
     }
   >
-    アクセス制御を作成・管理する権限フックを追加します。[詳細を見る](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
-  </Step>
-  <Step title={<a href="#3-委任する">プログラムに委任フックを追加する</a>}>
-    権限と permissioned accounts に対する委任フックを追加し、制限を強制します。
+    1 つの `delegate` 命令でパーミッションアカウントの作成、その委任、そしてパーミッション制御下のアカウントの TEE バリデーターへの委任までをまとめて行います。対称的な `undelegate` 命令は、ベースレイヤーへ戻る際に両方のアカウントを原子的に解放します。[アクセス制御の詳細を見る](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
     <Validators />
   </Step>
-  <Step title={<a href="#4-デプロイする">Solana にプログラムをデプロイする</a>}>
+  <Step title={<a href="#3-deploy">Solana にプログラムをデプロイする</a>}>
     Anchor CLI を使って Solana プログラムをデプロイします。
   </Step>
   <Step
-    title={<a href="#5-認可する">クライアントに認可を実装する</a>}
+    title={<a href="#4-authorize">クライアントに認可の仕組みを実装する</a>}
   >
-    ユーザーメッセージに署名し、TEE エンドポイントから認可トークンを取得します。
+    ユーザーにメッセージを署名してもらい、TEE エンドポイントから認可トークンを取得します。
   </Step>
-  <Step title={<a href="#6-テストする">トランザクションを実行してプライバシーを検証する</a>}>
-    認可トークンを取得し、機密トランザクションを送信します。
+  <Step title={<a href="#5-test">トランザクションを実行してプライバシーを検証する</a>}>
+    認可トークンをリクエストし、機密トランザクションを送信します。
   </Step>
 </Steps>
 
 ---
 
-<div id="rock-paper-scissors-example" />
-## じゃんけんサンプル
+## Private Counter サンプル
 
 <Software />
 <Note>
-  最新の Permission Program には
-  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk) の SDK バージョンが必要です。
-  詳細は[移行ガイド](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103)を参照してください。
+  最新の Permission Program は SDK バージョン
+  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk) が必要です。詳細は[マイグレーションガイド](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103)を参照してください。
 </Note>
 
-<div id="code-snippets" />
-<div id="code-snippets-section" />
 ### コードスニペット
 
 <Tabs>
     <Tab title="1. プログラムを書く">
-        プレイヤーが手を選び、結果を公開するシンプルなじゃんけんプログラム:
+        `initialize` と `increment` 命令を持つシンプルな counter プログラムです。形は public な counter とまったく同じで、プライバシー機能は次のステップで追加します：
         <WriteProgramCode />
         [⬆️ トップに戻る](#code-snippets)
     </Tab>
-    <Tab title="2. 制限を追加する">
-        MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` を通じて、メンバー付きのアカウントレベル権限を作成・更新します。[詳細を見る](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control):
-        <RestrictCode />
-        [⬆️ トップに戻る](#code-snippets)
-    </Tab>
-    <Tab title="3. 委任する">
-        MagicBlock の Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を通じて TEE バリデータへ委任し、アカウントのプライバシーを強制します。`permission` と `permissioned_account` の両方を委任する必要があります。
+    <Tab title="2. 制限付き委任">
+        対称的な 2 つの命令が、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を通じてプライバシーのライフサイクル全体を担当します。`delegate` はパーミッションアカウントの作成、その委任、そして counter の TEE バリデーターへの委任までを 1 つの CPI フローでまとめて実行します。`undelegate` はその逆をミラーリングし、1 つの ER トランザクション内でパーミッションアカウントと counter の両方を原子的にコミット・委任解除します。ライフサイクル全体については[アクセス制御](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)を参照してください。
         <Validators />
         <DelegateCode />
 
         [⬆️ トップに戻る](#code-snippets)
     </Tab>
-    <Tab title="4. デプロイする">
-        これでプログラムのアップグレードが完了しました。目的のクラスターにビルドしてデプロイしましょう:
+    <Tab title="3. デプロイ">
+        プログラムのアップグレードが完了し、準備が整いました！希望するクラスタ向けにビルドしてデプロイします：
         ```bash
           anchor build && anchor deploy
         ```
         [⬆️ トップに戻る](#code-snippets)
     </Tab>
-    <Tab title="5. 認可する">
-        TEE 内の ER RPC との接続を設定します:
-        1. `https://pccs.phala.network/tdx/certification/v4` を通じて TEE RPC の完全性を検証する
-        2. ユーザーが TEE エンドポイントとやり取りするための認可トークンを要求する
+    <Tab title="4. 認可">
+        TEE 内の ER RPC との対話を準備します：
+        1. `https://pccs.phala.network/tdx/certification/v4` を使って TEE RPC の完全性を検証します
+        2. ユーザーが TEE エンドポイントとやり取りするための認可トークンをリクエストします
         <AuthorizeCode />
         [⬆️ トップに戻る](#code-snippets)
     </Tab>
-    <Tab title="6. テストする">
-        Private Ephemeral Rollup 接続でプログラムをテストします:
+    <Tab title="5. テスト">
+        Private Ephemeral Rollup 接続でプログラムをテストします：
 
         `https://devnet-tee.magicblock.app?token=${token}`
 
@@ -135,8 +119,7 @@ import PerCards from "/jp/snippets/per-cards.mdx";
 
 ---
 
-<div id="magicblock-products" />
-## MagicBlock 製品
+## MagicBlock プロダクト
 
 import ProductCards from "/jp/snippets/product-cards.mdx";
 

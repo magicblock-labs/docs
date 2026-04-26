@@ -5,24 +5,24 @@ import OtherActionsCode from "/cn/snippets/magic-action-code/other-actions-code.
 
 ### 1) 创建 action 指令
 
-`update_leaderboard` 指令会在提交后立即于基础层执行。
+`update_leaderboard` 指令会在提交完成后立即于基础层执行。其账户上下文上的 `#[action]` 属性将其标记为可由提交后 action 调用。
 
 <ActionCode />
 
 ### 2) 构建带有 action 的提交指令
 
-`commit_and_update_leaderboard` 提交指令在 ER 上执行，并安排带 action 的提交。
+`commit_and_update_leaderboard` 提交指令在 ER 上运行。它使用 `MagicIntentBundleBuilder` 将提交和提交后 action 一起调度到 `magic_context` 上 —— 当 ER 交易回到基础层完成结算时，两者会一起被应用。
 
 <CommitWithActionCode />
 
 ### 执行多个 action
 
-你可以提交多个账户并串联多个 action。各个 action 会按顺序执行。
+你可以一次提交多个账户并串联多个 action。Action 按其传入 `add_post_commit_actions` 的顺序依次执行。
 
 <MultipleActionCode />
 
-### 其他 action
+### 解除委托时执行 action
 
-Actions 也可以在取消委托时执行，或者在没有任何提交的情况下执行。
+Action 也可以串联到解除委托上 —— counter 提交、解除委托以及 action 全部在同一个 ER 交易中原子地执行。
 
 <OtherActionsCode />

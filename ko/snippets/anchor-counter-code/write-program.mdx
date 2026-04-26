@@ -1,7 +1,7 @@
 ```rust
 #[ephemeral]
 #[program]
-pub mod anchor_counter {
+pub mod public_counter {
     use super::*;
 
     /// Initialize the counter.
@@ -24,32 +24,38 @@ pub mod anchor_counter {
     // ...
     }
 
-    /// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+    /// Manually commit the counter state in the Ephemeral Rollup session.
+    pub fn commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    // ...
+    }
+
+    /// Increment the counter and commit in the same instruction.
     pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
     // ...
     }
 
-    /// Undelegate the account from the delegation program
+    /// Undelegate the account from the delegation program.
     pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
     // ...
     }
 }
 
+pub const COUNTER_SEED: &[u8] = b"counter";
+
 /// Context for initializing counter
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init_if_needed, payer = user, space = 8 + 8, seeds = [TEST_PDA_SEED], bump)]
+    #[account(init_if_needed, payer = user, space = 8 + 8, seeds = [COUNTER_SEED], bump)]
     pub counter: Account<'info, Counter>,
     #[account(mut)]
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 
-
 /// Context for incrementing counter
 #[derive(Accounts)]
 pub struct Increment<'info> {
-    #[account(mut, seeds = [TEST_PDA_SEED], bump)]
+    #[account(mut, seeds = [COUNTER_SEED], bump)]
     pub counter: Account<'info, Counter>,
 }
 
@@ -60,6 +66,4 @@ pub struct Counter {
 }
 
 /// Other context for delegation
-
-
 ```

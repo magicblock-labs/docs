@@ -1,0 +1,93 @@
+---
+title: AI 开发 Skill
+description: 使用 MagicBlock Dev Skill 将 MagicBlock 专属的开发模式带入 Claude Code 和 Codex，包括委托流程、双连接架构、cranks、VRF 以及 private payments。
+---
+
+<CardGroup cols={1}>
+  <Card
+    title="MagicBlock Dev Skill 仓库"
+    icon="browser"
+    href="https://github.com/magicblock-labs/magicblock-dev-skill"
+    iconType="duotone"
+  >
+    查看仓库、安装步骤以及该 skill 的源文件。
+  </Card>
+</CardGroup>
+
+## 它是什么
+
+MagicBlock Dev Skill 是一个面向 Claude Code 和 Codex 的 AI 开发 skill，将经过验证的 MagicBlock 开发模式打包成可复用的工作流。无需在每次 prompt 中反复解释同样的集成细节，这个 skill 会为你的编码 agent 提供面向 MagicBlock 构建的结构化指导。
+
+它专为以下场景设计：
+
+- Ephemeral Rollups 集成
+- 委托与解除委托流程
+- Solana + MagicBlock 的双连接架构
+- 高性能交易路由
+- 用于定时自动交易的 Cranks
+- 用于可证明随机性的 VRF
+- Private payments 流程
+- 基于 Anchor 与 TypeScript 的集成
+
+## 如何使用
+
+### 安装
+
+Claude Code 快速安装：
+
+```bash
+npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
+```
+
+手动安装：
+
+```bash
+git clone https://github.com/magicblock-labs/magicblock-dev-skill
+cd magicblock-dev-skill
+./install.sh
+```
+
+默认情况下，`./install.sh` 会将该 skill 同时安装到两个个人 skill 目录：
+
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+
+你也可以指定目标环境：
+
+```bash
+./install.sh --claude
+./install.sh --codex
+./install.sh --project
+./install.sh --project --codex
+./install.sh --path /custom/path/magicblock
+```
+
+`--project` 会将 skill 安装到当前仓库的 `.claude/skills/magicblock` 和/或 `.codex/skills/magicblock` 下。
+
+### 在 Claude Code 和 Codex 中使用
+
+安装完成后，当你寻求 MagicBlock 或 Ephemeral Rollups 相关帮助时，该 skill 会自动激活。
+
+- 在 Claude Code 中，你也可以通过 `/magicblock` 直接调用它。
+- 在 Codex 中，你可以按名称显式指定，例如：`use the magicblock skill`。
+
+示例 prompt：
+
+```text
+Add delegation hooks to my player account
+Change my roll_dice function to use VRF
+Set up a crank that updates game state every 100ms
+Help me integrate MagicBlock into my Anchor program
+```
+
+## 该 Skill 提供的内容
+
+这个 skill 远不止一个简单的 prompt 模板。它的主入口及支持参考资料会引导 agent 关注 MagicBlock 专属的实现细节，例如：
+
+- 何时使用基础层连接，何时使用 ephemeral rollup 连接
+- 如何正确组织委托、commit 和解除委托流程
+- `#[ephemeral]`、`#[delegate]` 和 `#[commit]` 的常用 Anchor 模式
+- 面向实时应用和游戏的 VRF 与 crank 配置
+- MagicBlock 开发所需的环境变量、版本和依赖项
+
+完整的 skill、源文件和安装说明请访问 [MagicBlock Dev Skill 仓库](https://github.com/magicblock-labs/magicblock-dev-skill)。

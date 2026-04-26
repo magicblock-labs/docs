@@ -5,24 +5,24 @@ import OtherActionsCode from "/ko/snippets/magic-action-code/other-actions-code.
 
 ### 1) 액션 명령 생성
 
-`update_leaderboard` 명령은 커밋 직후 베이스 레이어에서 실행됩니다.
+`update_leaderboard` 명령은 커밋이 완료된 직후 베이스 레이어에서 실행됩니다. 계정 컨텍스트에 부여된 `#[action]` 어트리뷰트는 이 명령이 커밋 후 액션에서 호출 가능함을 나타냅니다.
 
 <ActionCode />
 
 ### 2) 액션이 포함된 커밋 명령 구성
 
-`commit_and_update_leaderboard` 커밋 명령은 ER에서 실행되며 액션이 포함된 커밋을 예약합니다.
+`commit_and_update_leaderboard` 커밋 명령은 ER에서 실행됩니다. `MagicIntentBundleBuilder`를 사용해 커밋과 커밋 후 액션을 모두 `magic_context`에 예약하며 — ER 트랜잭션이 베이스 레이어로 확정될 때 두 작업이 함께 적용됩니다.
 
 <CommitWithActionCode />
 
 ### 여러 액션 실행
 
-여러 계정을 커밋하고 여러 액션을 연결할 수 있습니다. 액션은 순차적으로 실행됩니다.
+여러 계정을 커밋하고 한 번의 호출로 여러 액션을 연결할 수 있습니다. 액션은 `add_post_commit_actions`에 전달된 순서대로 순차 실행됩니다.
 
 <MultipleActionCode />
 
-### 다른 액션
+### 위임 해제와 함께 액션 실행
 
-액션은 위임 해제와 함께 실행할 수도 있고, 별도 커밋 없이 실행할 수도 있습니다.
+액션은 위임 해제에도 연결할 수 있습니다 — counter 커밋, 위임 해제, 액션 실행이 모두 동일한 ER 트랜잭션 안에서 원자적으로 처리됩니다.
 
 <OtherActionsCode />

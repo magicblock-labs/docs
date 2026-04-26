@@ -1,6 +1,6 @@
 ---
 title: "Rust 示例"
-description: "学习如何编写一个在 Solana 上委托并递增计数器的简单 Rust 程序"
+description: "学习如何编写一个简单的、用于在 Solana 上委托并递增计数器的 Rust 程序"
 ---
 
 import Endpoints from "/cn/snippets/endpoints.mdx";
@@ -30,30 +30,30 @@ import Endpoints from "/cn/snippets/endpoints.mdx";
   />
 </div>
 
-本指南将带你编写一个简单的原生 Rust 程序（不依赖 Anchor），用于递增计数器。你将学习如何将该程序部署到 Solana 上，并通过 Typescript 测试脚本与之交互。
+本指南将带你编写一个简单的、不依赖 Anchor 的原生 Rust 程序，用来递增计数器。你将学习如何把这个程序部署到 Solana 上，并使用 TypeScript 测试脚本与之交互。
 
 ## 软件包
 
 该程序使用以下软件包开发和测试。其他软件版本也可能兼容。
 
-| 软件 | 版本 | 安装指南 |
-| ---------- | ------- | ------------------------------------------------------- |
-| **Solana** | 2.0.21  | [安装 Solana](https://docs.anza.xyz/cli/install)     |
-| **Rust**   | 1.82.0  | [安装 Rust](https://www.rust-lang.org/tools/install) |
+| 软件       | 版本   | 安装指南                                                |
+| ---------- | ------ | ------------------------------------------------------- |
+| **Solana** | 2.0.21 | [安装 Solana](https://docs.anza.xyz/cli/install)        |
+| **Rust**   | 1.82.0 | [安装 Rust](https://www.rust-lang.org/tools/install)    |
 
-## 快速查看
+## 快速访问
 
 如果你想直接进入代码：
 
 <CardGroup cols={2}>
   <Card
-    title="源代码：Native Rust Counter 程序"
+    title="源代码：原生 Rust Counter 程序"
     icon="rust"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
     iconType="duotone"
   ></Card>
   <Card
-    title="源代码：Typescript 测试脚本"
+    title="源代码：TypeScript 测试脚本"
     icon="js"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
     iconType="duotone"
@@ -64,15 +64,15 @@ import Endpoints from "/cn/snippets/endpoints.mdx";
 
 该程序实现了两个主要 instruction：
 
-1. `InitializeCounter`：初始化并将计数器设为 0（在 Base Layer 调用）
-2. `IncreaseCounter`：将已初始化的计数器增加 X（可在 Base Layer 或 ER 调用）
+1. `InitializeCounter`：初始化计数器并将其设为 0（在基础层调用）
+2. `IncreaseCounter`：将已初始化的计数器递增指定数量（在基础层或 ER 上调用）
 
-该程序还为计数器的委托与取消委托实现了专用 instruction：
+该程序还实现了用于委托和解除委托 counter 的专用 instruction：
 
-1. `Delegate`：将计数器从 Base Layer 委托到 ER（在 Base Layer 调用）
-2. `CommitAndUndelegate`：安排将计数器从 ER 同步回 Base Layer，并在 ER 上取消委托（在 ER 调用）
-3. `Commit`：安排将计数器从 ER 同步回 Base Layer（在 ER 调用）
-4. `Undelegate`：在 Base Layer 上取消委托计数器（通过 validator CPI 在 Base Layer 调用）
+1. `Delegate`：将 counter 从基础层委托到 ER（在基础层调用）
+2. `CommitAndUndelegate`：调度从 ER 同步 counter 到基础层，并在 ER 上解除 counter 的委托（在 ER 上调用）
+3. `Commit`：调度从 ER 同步 counter 到基础层（在 ER 上调用）
+4. `Undelegate`：在基础层上解除 counter 的委托（由 validator 通过 CPI 在基础层调用）
 
 下面是程序的核心结构：
 
@@ -131,24 +131,21 @@ impl ProgramInstruction {
 ```
 
 <Note>
-  你的 “Undelegate” instruction 必须使用完全一致的 discriminator。它不会
-  由你主动调用，而是由 Base Layer 上的 validator 在 ER 中完成账户
-  undelegate 后，通过 CPI 回调进入你的程序。
+  你的 "Undelegate" 指令必须使用上述精确的 discriminator。该指令不会由你直接调用，
+  而是由基础层上的 validator 在解除你账户在 ER 上的委托后，通过 CPI 回调到你的程序。
 </Note>
 
 ### 委托 Counter PDA
 
-为了委托 counter PDA，并使其在 Ephemeral Rollup 会话中可写，我们需要添加一个 instruction，
-其内部会调用 `delegate_account` 函数。`delegate_account` 会通过 CPI 调用 delegation program，
-在验证通过后 delegation program 将获得该账户的所有权。
-完成这一步后，ephemeral validator 就可以开始在 counter PDA 上处理交易，并通过 delegation program 提交状态差异。
+为了将 counter PDA 委托出去，使其在 Ephemeral Rollup 会话中变为可写，我们需要添加一个内部调用 `delegate_account` 函数的 instruction。`delegate_account` 会通过 CPI 调用委托程序，验证通过后会接管该账户的所有权。
+完成这一步后，临时验证者就可以开始处理 counter PDA 上的交易，并通过委托程序提交状态差异。
 
 <Card
   title="交易（Base Layer）：Delegate"
   icon="magnifying-glass"
   href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
   iconType="duotone"
->在 Solana Explorer 中查看交易详情</Card>
+>在 Solana Explorer 上查看交易详情</Card>
 ```rust
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -205,9 +202,9 @@ accounts: &[AccountInfo],
 
 ````
 
-### 在 PDA 已委托时进行提交
+### 在 PDA 已被委托时进行 commit
 
-ephemeral runtime 允许在 PDA 已委托时提交其状态。这通过调用 `commit_accounts` 函数来完成。
+Ephemeral 运行时允许在 PDA 处于委托状态时提交其状态。这通过构建一个带有 `commit` intent 的 `MagicIntentBundleBuilder` 来完成。
 <CardGroup cols={2}>
   <Card
     title="交易（ER）：Commit"
@@ -215,15 +212,15 @@ ephemeral runtime 允许在 PDA 已委托时提交其状态。这通过调用 `c
     href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
   <Card
-    title="交易（Base layer）：Commit"
+    title="交易（Base Layer）：Commit"
     icon="magnifying-glass"
     href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
 </CardGroup>
 ```rust
@@ -233,7 +230,7 @@ use solana_program::{
     entrypoint::ProgramResult,
     program_error::ProgramError,
 };
-use ephemeral_rollups_sdk::ephem::{commit_accounts};
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
 
 // For ER only
 pub fn process_commit(
@@ -253,21 +250,22 @@ pub fn process_commit(
         return Err(ProgramError::MissingRequiredSignature);
     }
 
-    commit_accounts(
-        initializer,
-        vec![counter_account],
-        magic_context,
-        magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        initializer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit(&[counter_account.clone()])
+    .build_and_invoke()?;
 
     Ok(())
 }
 ````
 
-### 取消委托 PDA
+### 解除 PDA 的委托
 
-取消委托 PDA 是通过在某个 instruction 中调用 `commit_and_undelegate_accounts` 来完成的。
-undelegation 会提交最新状态，并将 PDA 的所有权归还给 owner program。完成 undelegation 和状态最终确认后，validator 会在 Base Layer 上触发一个对 `"undelegate"` 的 CPI 回调。
+解除 PDA 委托是在某个 instruction 中通过构建一个带有 `commit_and_undelegate` intent 的 `MagicIntentBundleBuilder` 来完成的。
+该操作会提交最新状态，并将 PDA 的所有权交还给所属程序。在 ER 上完成解除委托并最终化状态后，validator 会回调到基础层上的 `undelegate` 指令。
 
 <CardGroup cols={2}>
   <Card
@@ -276,15 +274,15 @@ undelegation 会提交最新状态，并将 PDA 的所有权归还给 owner prog
     href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
   <Card
-    title="交易（Base layer）：Undelegate"
+    title="交易（Base Layer）：Undelegate"
     icon="magnifying-glass"
     href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
 </CardGroup>
 
@@ -295,8 +293,8 @@ use solana_program::{
     entrypoint::ProgramResult,
     program_error::ProgramError,
 };
-use ephemeral_rollups_sdk::cpi::{undelegate_account};
-use ephemeral_rollups_sdk::ephem::{commit_and_undelegate_accounts, commit_accounts};
+use ephemeral_rollups_sdk::cpi::undelegate_account;
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
 
 // For ER only
 pub fn process_commit_and_undelegate(
@@ -317,12 +315,13 @@ let magic_context = next_account_info(account_info_iter)?;
     }
 
     // Commit and undelegate counter_account on ER
-    commit_and_undelegate_accounts(
-        initializer,
-        vec![counter_account],
-        magic_context,
-        magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        initializer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit_and_undelegate(&[counter_account.clone()])
+    .build_and_invoke()?;
 
     Ok(())
 
@@ -332,7 +331,7 @@ let magic_context = next_account_info(account_info_iter)?;
 pub fn process_undelegate(
 program_id: &Pubkey,
 accounts: &[AccountInfo],
-pda_seeds: Vec<Vec<u8>>
+pda_seeds: Vec<Vec<u8>>,
 ) -> ProgramResult {
 // Get accounts
 let account_info_iter = &mut accounts.iter();
@@ -359,12 +358,12 @@ let system_program = next_account_info(account_info_iter)?;
 
 ## 测试程序
 
-构建能够调用程序中 delegation 和 undelegation instruction 的有效交易。
-该项目的完整测试可以在 [Typescript 测试脚本](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests) 中找到。
+构建出可调用你程序中委托与解除委托相关 instruction 的有效交易。
+该项目的完整测试代码可在 [TypeScript 测试脚本](https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests) 中查看。
 
 ### 测试 `delegation` 交易
 
-创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `delegation` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 Base Layer（Solana）网络。
+按正确的账户顺序与属性，并附上你程序中 `delegation` 的 instruction discriminator，构造一条 instruction。然后将包含该 instruction 的交易发送到基础层（Solana）网络。
 
 <Card
   title="交易（Base Layer）：Delegate"
@@ -372,7 +371,7 @@ let system_program = next_account_info(account_info_iter)?;
   href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
   iconType="duotone"
 >
-  在 Solana Explorer 中查看交易详情
+  在 Solana Explorer 上查看交易详情
 </Card>
 
 ```typescript
@@ -456,7 +455,7 @@ const txHash = await web3.sendAndConfirmTransaction(
 
 ## 测试 `commit` 交易
 
-创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `commit` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 ER 网络。
+按正确的账户顺序与属性，并附上你程序中 `commit` 的 instruction discriminator，构造一条 instruction。然后将包含该 instruction 的交易发送到 ER 网络。
 
 <CardGroup cols={2}>
   <Card
@@ -465,15 +464,15 @@ const txHash = await web3.sendAndConfirmTransaction(
     href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
   <Card
-    title="交易（Base layer）：Commit"
+    title="交易（Base Layer）：Commit"
     icon="magnifying-glass"
     href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
 </CardGroup>
 
@@ -530,7 +529,7 @@ const txHash = await web3.sendAndConfirmTransaction(
 
 ### 测试 `undelegation` 交易
 
-创建一个 instruction，确保账户顺序与属性正确，并使用程序中 `undelegation` 的 instruction discriminator。然后将包含该 instruction 的交易发送到 ER 网络。
+按正确的账户顺序与属性，并附上你程序中 `undelegation` 的 instruction discriminator，构造一条 instruction。然后将包含该 instruction 的交易发送到 ER 网络。
 
 <CardGroup cols={2}>
   <Card
@@ -539,15 +538,15 @@ const txHash = await web3.sendAndConfirmTransaction(
     href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
   <Card
-    title="交易（Base layer）：Undelegate"
+    title="交易（Base Layer）：Undelegate"
     icon="magnifying-glass"
     href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
     iconType="duotone"
   >
-    在 Solana Explorer 中查看交易详情
+    在 Solana Explorer 上查看交易详情
   </Card>
 </CardGroup>
 ```typescript
@@ -607,29 +606,29 @@ commitment: "confirmed",
 
 ### Ephemeral 端点配置
 
-要与 Ephemeral Rollup 会话交互，你需要配置正确的端点：
+要与 Ephemeral Rollup 会话进行交互，你需要配置正确的端点：
 
-- 对于 devnet，请使用以下 ephemeral 端点：
+- 对于 devnet，使用以下 ephemeral 端点：
 
   https://devnet.magicblock.app
 
-- 对于 mainnet，请联系 MagicBlock 团队以获取相应端点。
+- 对于 mainnet，请联系 MagicBlock 团队获取相应端点。
 
-- 对于 <a href="/cn/pages/get-started/how-integrate-your-program/local-setup">localhost</a>，请下载、安装并在本地运行 ephemeral validator，同时配置相应环境变量。
+- 对于 <a href="/cn/pages/get-started/how-integrate-your-program/local-setup">localhost</a>，请下载并安装 ephemeral validator，并使用相应的环境变量在本地运行。
 
-请确保根据你的开发或生产环境更新客户端配置，使用正确的端点。
+请确保根据你的开发或生产环境，将客户端配置更新为正确的端点。
 
 <Endpoints/>
 
 <CardGroup cols={2}>
   <Card
-    title="源代码：Native Rust Counter 程序"
+    title="源代码：原生 Rust Counter 程序"
     icon="rust"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rust-counter"
     iconType="duotone"
   ></Card>
   <Card
-    title="源代码：Typescript 测试脚本"
+    title="源代码：TypeScript 测试脚本"
     icon="js"
     href="https://github.com/magicblock-labs/magicblock-engine-examples/blob/main/rust-counter/tests"
     iconType="duotone"

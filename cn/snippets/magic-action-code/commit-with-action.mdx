@@ -1,7 +1,7 @@
 ```rust
 // commit action instruction on ER
 pub fn commit_and_update_leaderboard(ctx: Context<CommitAndUpdateLeaderboard>) -> Result<()> {
-    // Create action instruction
+    // Build the post-commit action that updates the leaderboard on base layer
     let instruction_data =
         anchor_lang::InstructionData::data(&crate::instruction::UpdateLeaderboard {});
     let action_args = ActionArgs::new(instruction_data);
@@ -19,23 +19,20 @@ pub fn commit_and_update_leaderboard(ctx: Context<CommitAndUpdateLeaderboard>) -
         destination_program: crate::ID,
         accounts: action_accounts,
         args: action_args,
-        escrow_authority: ctx.accounts.payer.to_account_info(), // Signer authorized to pay transaction fees for action from escrow PDA
+        // Signer that pays transaction fees for the action from its escrow PDA
+        escrow_authority: ctx.accounts.payer.to_account_info(),
         compute_units: 200_000,
     };
 
-    // Build commit and action instruction
-    let magic_action = MagicInstructionBuilder {
-        payer: ctx.accounts.payer.to_account_info(),
-        magic_context: ctx.accounts.magic_context.to_account_info(),
-        magic_program: ctx.accounts.magic_program.to_account_info(),
-        magic_action: MagicAction::Commit(CommitType::WithHandler {
-            commited_accounts: vec![ctx.accounts.counter.to_account_info()],
-            call_handlers: vec![action],
-        }),
-    };
-
-    // Invoke
-    magic_action.build_and_invoke()?;
+    // Schedule commit + post-commit action on magic_context
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit(&[ctx.accounts.counter.to_account_info()])
+    .add_post_commit_actions([action])
+    .build_and_invoke()?;
 
     Ok(())
 }
@@ -47,7 +44,7 @@ pub struct CommitAndUpdateLeaderboard<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    #[account(mut, seeds = [TEST_PDA_SEED], bump)]
+    #[account(mut, seeds = [COUNTER_SEED], bump)]
     pub counter: Account<'info, Counter>,
 
     /// CHECK: Leaderboard PDA - not mut here, writable set in handler
