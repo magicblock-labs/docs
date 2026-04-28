@@ -3,7 +3,7 @@
   "info": {
     "title": "Private Payments API",
     "version": "0.1.0",
-    "description": "Fetch the SPL token balance for the owner's ATA on the ephemeral RPC."
+    "description": "Fetch the SPL token balance for the owner's ATA on the ephemeral RPC. Requires authentication via the Private Ephemeral Rollup login flow."
   },
   "servers": [
     {
@@ -15,24 +15,50 @@
     "/v1/spl/private-balance": {
       "get": {
         "summary": "Private Balance",
+        "description": "Reads the owner's associated token account on the ephemeral RPC. Requires an `Authorization: Bearer <token>` header obtained from `/v1/spl/login`.",
         "parameters": [
           {
-            "name": "owner",
+            "name": "authorization",
+            "in": "header",
+            "required": true,
+            "description": "Required. Authentication token issued by `/v1/spl/login`. Format: `Bearer <token>`.",
+            "schema": {
+              "type": "string",
+              "example": "Bearer 1234567890"
+            }
+          },
+          {
+            "name": "address",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" }
+            "description": "Owner wallet pubkey.",
+            "schema": {
+              "type": "string",
+              "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+            }
+          },
+          {
+            "name": "mint",
+            "in": "query",
+            "required": true,
+            "description": "SPL mint pubkey.",
+            "schema": {
+              "type": "string",
+              "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            }
           },
           {
             "name": "cluster",
             "in": "query",
             "required": false,
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "mint",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "string" }
+            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC.",
+            "schema": {
+              "anyOf": [
+                { "type": "string", "enum": ["mainnet", "devnet"] },
+                { "type": "string" }
+              ],
+              "example": "mainnet"
+            }
           }
         ],
         "responses": {
@@ -43,19 +69,26 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "balance": { "type": "string" },
-                    "decimals": { "type": "integer" }
-                  }
+                    "address": { "type": "string" },
+                    "mint": { "type": "string" },
+                    "ata": { "type": "string" },
+                    "location": { "type": "string", "enum": ["base", "ephemeral"] },
+                    "balance": { "type": "string", "description": "Base-unit balance as a string." }
+                  },
+                  "required": ["address", "mint", "ata", "location", "balance"]
+                },
+                "example": {
+                  "address": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "ata": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                  "location": "ephemeral",
+                  "balance": "1000000"
                 }
               }
             }
           },
-          "400": {
-            "description": "Query error"
-          },
-          "422": {
-            "description": "Validation error"
-          }
+          "400": { "description": "Missing auth token (`MISSING_AUTH_TOKEN`) or other query error" },
+          "422": { "description": "Validation error" }
         }
       }
     }

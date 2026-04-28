@@ -1,0 +1,215 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Get a swap quote. Proxies the configured Triton Metis Swap API."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/v1/swap/quote": {
+      "get": {
+        "summary": "Swap Quote",
+        "description": "Returns a swap quote between two SPL mints. The quote response can be passed as-is into `POST /v1/swap/swap` to build the swap transaction.",
+        "parameters": [
+          {
+            "name": "inputMint",
+            "in": "query",
+            "required": true,
+            "description": "Input token mint address.",
+            "schema": { "type": "string", "example": "So11111111111111111111111111111111111111112" }
+          },
+          {
+            "name": "outputMint",
+            "in": "query",
+            "required": true,
+            "description": "Output token mint address.",
+            "schema": { "type": "string", "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" }
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": true,
+            "description": "Raw amount to swap before decimals are applied, as an unsigned integer string.",
+            "schema": { "type": "string", "pattern": "^\\d+$", "example": "1000000" }
+          },
+          {
+            "name": "slippageBps",
+            "in": "query",
+            "required": false,
+            "description": "Slippage threshold in basis points.",
+            "schema": { "type": "integer", "minimum": 0, "example": 50 }
+          },
+          {
+            "name": "swapMode",
+            "in": "query",
+            "required": false,
+            "description": "Use `ExactIn` for fixed input amount or `ExactOut` for fixed output amount.",
+            "schema": { "type": "string", "enum": ["ExactIn", "ExactOut"], "example": "ExactIn" }
+          },
+          {
+            "name": "dexes",
+            "in": "query",
+            "required": false,
+            "description": "Optional comma-separated list of DEX labels to include.",
+            "schema": { "type": "string", "example": "Raydium,Orca+V2" }
+          },
+          {
+            "name": "excludeDexes",
+            "in": "query",
+            "required": false,
+            "description": "Optional comma-separated list of DEX labels to exclude.",
+            "schema": { "type": "string", "example": "Meteora+DLMM" }
+          },
+          {
+            "name": "restrictIntermediateTokens",
+            "in": "query",
+            "required": false,
+            "description": "Restrict intermediate tokens to a more stable set.",
+            "schema": { "type": "boolean", "example": true }
+          },
+          {
+            "name": "onlyDirectRoutes",
+            "in": "query",
+            "required": false,
+            "description": "Limit routing to a single hop.",
+            "schema": { "type": "boolean", "example": false }
+          },
+          {
+            "name": "asLegacyTransaction",
+            "in": "query",
+            "required": false,
+            "description": "Request a legacy transaction-compatible route.",
+            "schema": { "type": "boolean", "example": false }
+          },
+          {
+            "name": "platformFeeBps",
+            "in": "query",
+            "required": false,
+            "description": "Optional platform fee in basis points.",
+            "schema": { "type": "integer", "minimum": 0, "example": 20 }
+          },
+          {
+            "name": "maxAccounts",
+            "in": "query",
+            "required": false,
+            "description": "Approximate maximum account budget for the route.",
+            "schema": { "type": "integer", "minimum": 0, "example": 64 }
+          },
+          {
+            "name": "instructionVersion",
+            "in": "query",
+            "required": false,
+            "description": "Instruction format to target.",
+            "schema": { "type": "string", "enum": ["V1", "V2"], "example": "V1" }
+          },
+          {
+            "name": "dynamicSlippage",
+            "in": "query",
+            "required": false,
+            "description": "Keep for compatibility with upstream quote parameters.",
+            "schema": { "type": "boolean", "example": false }
+          },
+          {
+            "name": "forJitoBundle",
+            "in": "query",
+            "required": false,
+            "description": "Exclude routes that are incompatible with Jito bundles.",
+            "schema": { "type": "boolean", "example": false }
+          },
+          {
+            "name": "supportDynamicIntermediateTokens",
+            "in": "query",
+            "required": false,
+            "description": "Allow dynamic selection of intermediate tokens.",
+            "schema": { "type": "boolean", "example": false }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Swap quote",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "inputMint": { "type": "string" },
+                    "inAmount": { "type": "string" },
+                    "outputMint": { "type": "string" },
+                    "outAmount": { "type": "string" },
+                    "otherAmountThreshold": { "type": "string" },
+                    "swapMode": { "type": "string", "enum": ["ExactIn", "ExactOut"] },
+                    "slippageBps": { "type": "integer", "minimum": 0 },
+                    "priceImpactPct": { "type": "string" },
+                    "routePlan": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "swapInfo": { "type": "object", "additionalProperties": true },
+                          "percent": { "type": "integer", "minimum": 0 },
+                          "bps": { "type": ["integer", "null"], "minimum": 0 }
+                        }
+                      }
+                    },
+                    "instructionVersion": { "type": ["string", "null"], "enum": ["V1", "V2", null] },
+                    "platformFee": { "type": ["object", "null"], "additionalProperties": true },
+                    "contextSlot": { "type": "integer", "minimum": 0 },
+                    "timeTaken": { "type": "number" }
+                  },
+                  "additionalProperties": true,
+                  "required": ["inputMint", "inAmount", "outputMint", "outAmount", "otherAmountThreshold", "swapMode", "slippageBps", "priceImpactPct", "routePlan"]
+                },
+                "example": {
+                  "inputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "inAmount": "1000000",
+                  "outputMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                  "outAmount": "999519",
+                  "otherAmountThreshold": "994522",
+                  "swapMode": "ExactIn",
+                  "slippageBps": 50,
+                  "priceImpactPct": "0",
+                  "routePlan": [
+                    {
+                      "swapInfo": {
+                        "ammKey": "DB3sUCP2H4icbeKmK6yb6nUxU5ogbcRHtGuq7W2RoRwW",
+                        "label": "HumidiFi",
+                        "inputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                        "outputMint": "So11111111111111111111111111111111111111112",
+                        "inAmount": "1000000",
+                        "outAmount": "11687625"
+                      },
+                      "percent": 100,
+                      "bps": null
+                    },
+                    {
+                      "swapInfo": {
+                        "ammKey": "4rJggoVMajEUtipev1XhSMjESYk8Zibz6CDHPtUe1mem",
+                        "label": "GoonFi V2",
+                        "inputMint": "So11111111111111111111111111111111111111112",
+                        "outputMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                        "inAmount": "11687625",
+                        "outAmount": "999519"
+                      },
+                      "percent": 100,
+                      "bps": null
+                    }
+                  ],
+                  "contextSlot": 414697033,
+                  "timeTaken": 0.001218
+                }
+              }
+            }
+          },
+          "500": { "description": "Configuration error (e.g. missing `METIS_SWAP_API_URL`)" },
+          "502": { "description": "Upstream error" }
+        }
+      }
+    }
+  }
+}

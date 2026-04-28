@@ -20,11 +20,16 @@ import PrivatePaymentApiCard from "/snippets/private-payment-api-card.mdx";
 
 ## Overview
 
-The Private Payments API builds unsigned SPL token transactions for deposits, transfers, withdrawals, and mint initialization across Solana and MagicBlock ephemeral rollups. It also exposes balance and mint-initialization status queries. The canonical public reference is available at [payments.magicblock.app/reference](https://payments.magicblock.app/reference).
+The Private Payments API builds unsigned SPL token transactions for deposits, transfers, withdrawals, swaps, and mint initialization across Solana and MagicBlock ephemeral rollups. It also exposes balance queries, mint-initialization status, and a wallet challenge/login flow that issues bearer tokens for reading private data. The canonical public reference is available at [payments.magicblock.app/reference](https://payments.magicblock.app/reference).
 
 ### Meta
 
 - [**Health**](/pages/private-ephemeral-rollups-pers/api-reference/per/health) - Check API health and availability
+
+### Auth
+
+- [**Challenge**](/pages/private-ephemeral-rollups-pers/api-reference/per/challenge) - Generate a challenge string for the wallet to sign
+- [**Login**](/pages/private-ephemeral-rollups-pers/api-reference/per/login) - Exchange a signed challenge for a bearer token
 
 ### SPL
 
@@ -33,8 +38,13 @@ The Private Payments API builds unsigned SPL token transactions for deposits, tr
 - [**Withdraw SPL Tokens**](/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - Build an unsigned withdrawal transaction back to Solana
 - [**Initialize Mint**](/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - Build an unsigned transaction that initializes a validator-scoped transfer queue for a mint
 - [**Balance**](/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - Get the base-chain SPL token balance for an address
-- [**Private Balance**](/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - Get the ephemeral-rollup SPL token balance for an address
+- [**Private Balance**](/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - Get the ephemeral-rollup SPL token balance for an address (auth required)
 - [**Is Mint Initialized**](/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - Check whether a mint has a validator-scoped transfer queue on the ephemeral RPC
+
+### Swap
+
+- [**Swap Quote**](/pages/private-ephemeral-rollups-pers/api-reference/per/quote) - Get a swap quote between two SPL mints
+- [**Swap**](/pages/private-ephemeral-rollups-pers/api-reference/per/swap) - Build an unsigned swap transaction (public pass-through or private with scheduled transfer)
 
 ### MCP
 
@@ -49,10 +59,11 @@ The Private Payments API builds unsigned SPL token transactions for deposits, tr
 └────────────────────────────────────────────┘
                      ↓
 ┌────────────────────────────────────────────┐
-│ 2. Transfer                               │
+│ 2. Transfer / Swap                        │
 ├────────────────────────────────────────────┤
-│ • Build SPL transfer                      │
+│ • Build SPL transfer or swap              │
 │ • base/ephemeral → base/ephemeral         │
+│ • public or private (delayed + split)     │
 └────────────────────────────────────────────┘
                      ↓
 ┌────────────────────────────────────────────┐
@@ -62,6 +73,15 @@ The Private Payments API builds unsigned SPL token transactions for deposits, tr
 │ • ephemeral rollup → Solana base balance  │
 └────────────────────────────────────────────┘
 ```
+
+## Auth Flow
+
+Endpoints that read private data inside the Private Ephemeral Rollup require a bearer token:
+
+1. `GET /v1/spl/challenge?pubkey=<wallet>` returns a `challenge` string
+2. The wallet signs the challenge
+3. `POST /v1/spl/login` with `{ pubkey, challenge, signature }` returns a `token`
+4. Pass `Authorization: Bearer <token>` on `/v1/spl/private-balance` (required) and on `/v1/spl/transfer` requests that need to connect to the Private Ephemeral Rollup (optional)
 
 ## Response Format
 
@@ -79,3 +99,11 @@ Successful transaction-building endpoints return an unsigned transaction payload
   "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
 }
 ```
+
+The expected client flow is:
+
+1. Call the API
+2. Decode `transactionBase64`
+3. Optionally adjust the transaction if the client needs to
+4. Sign with the required wallet(s)
+5. Send to the RPC indicated by `sendTo` (`"base"` or `"ephemeral"`)

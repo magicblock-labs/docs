@@ -15,6 +15,7 @@
     "/v1/spl/deposit": {
       "post": {
         "summary": "Deposit SPL Tokens",
+        "description": "Wraps the SDK `delegateSpl(...)` flow. The API generates `shuttleId` server-side and pins `escrowIndex` to `0`.",
         "requestBody": {
           "required": true,
           "content": {
@@ -22,15 +23,48 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "owner": { "type": "string" },
-                  "cluster": { "type": "string" },
-                  "mint": { "type": "string" },
-                  "amount": { "type": "integer", "minimum": 1 },
-                  "validator": { "type": "string" },
-                  "initIfMissing": { "type": "boolean" },
-                  "initVaultIfMissing": { "type": "boolean" }
+                  "owner": {
+                    "type": "string",
+                    "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+                  },
+                  "cluster": {
+                    "anyOf": [
+                      { "type": "string", "enum": ["mainnet", "devnet"] },
+                      { "type": "string" }
+                    ],
+                    "example": "mainnet",
+                    "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+                  },
+                  "mint": {
+                    "type": "string",
+                    "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                    "description": "Optional. Defaults to Solana USDC on mainnet: `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`. On devnet it defaults to devnet USDC: `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`."
+                  },
+                  "amount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1,
+                    "description": "Base-unit amount as an integer JSON value with minimum 1."
+                  },
+                  "validator": {
+                    "type": "string",
+                    "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                    "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
+                  },
+                  "initIfMissing": { "type": "boolean", "description": "Optional. Initialize the transfer queue if missing." },
+                  "initVaultIfMissing": { "type": "boolean", "description": "Optional. Initialize the vault if missing." },
+                  "initAtasIfMissing": { "type": "boolean", "description": "Optional. Initialize associated token accounts if missing." },
+                  "idempotent": { "type": "boolean", "description": "Optional. When `true`, the API uses idempotent variants for any preparatory init instructions." }
                 },
-                "required": ["owner", "amount"]
+                "required": ["owner", "amount"],
+                "example": {
+                  "owner": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                  "amount": 1,
+                  "initIfMissing": true,
+                  "initVaultIfMissing": true,
+                  "initAtasIfMissing": true,
+                  "idempotent": true
+                }
               }
             }
           }
@@ -43,29 +77,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "kind": { "type": "string" },
+                    "kind": { "type": "string", "enum": ["deposit"] },
+                    "version": { "type": "string", "enum": ["legacy", "v0"] },
                     "transactionBase64": { "type": "string" },
-                    "sendTo": { "type": "string" },
+                    "sendTo": { "type": "string", "enum": ["base", "ephemeral"] },
                     "recentBlockhash": { "type": "string" },
                     "lastValidBlockHeight": { "type": "integer" },
-                    "instructionCount": { "type": "integer" },
-                    "requiredSigners": {
-                      "type": "array",
-                      "items": { "type": "string" }
-                    },
+                    "instructionCount": { "type": "integer", "minimum": 0 },
+                    "requiredSigners": { "type": "array", "items": { "type": "string" } },
                     "validator": { "type": "string" }
                   },
-                  "required": ["kind", "transactionBase64", "requiredSigners"]
+                  "required": ["kind", "version", "transactionBase64", "sendTo", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners"]
+                },
+                "example": {
+                  "kind": "deposit",
+                  "version": "legacy",
+                  "transactionBase64": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAIDKmcfsS5XfSOLaLlaBHJry50iH2Ufk2TMz4STC2fHzIcFKkerg3q2DD3Yn8TISmGeKoxSLz+BiP7iQ4pYqXYXsgu8D8C7R8ovdMQRLpSrE8+jxjTl3BfqywPNGiPNfnh8eS+smowIxqKDcCjw5liNXQkkCbBSDCBDFwtrgCKqoQ0DAgEBBAECAwQCAQEEAgIDBAIBAQQDAgME",
+                  "sendTo": "base",
+                  "recentBlockhash": "9A4VhP8M8fQZxP4h7rB6mP6eM8w2pJkYh7QdZk7V4r2x",
+                  "lastValidBlockHeight": 284512337,
+                  "instructionCount": 3,
+                  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"],
+                  "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
                 }
               }
             }
           },
-          "400": {
-            "description": "Build error"
-          },
-          "422": {
-            "description": "Validation error"
-          }
+          "400": { "description": "Build error" },
+          "422": { "description": "Validation error" }
         }
       }
     }

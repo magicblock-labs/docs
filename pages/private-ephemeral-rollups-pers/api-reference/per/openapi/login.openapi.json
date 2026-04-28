@@ -1,0 +1,93 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Exchange a signed challenge for an authentication token that allows reading private data inside the Private Ephemeral Rollup."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/v1/spl/login": {
+      "post": {
+        "summary": "Login",
+        "description": "Verifies the wallet's signature over the challenge issued by `/v1/spl/challenge` and returns an authentication token. Pass the token as `Authorization: Bearer <token>` on `/v1/spl/private-balance` and on `/v1/spl/transfer` requests that need to connect to the Private Ephemeral Rollup.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pubkey": {
+                    "type": "string",
+                    "description": "The public key of the wallet that will read private data.",
+                    "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+                  },
+                  "challenge": {
+                    "type": "string",
+                    "description": "The challenge string returned by `/v1/spl/challenge`.",
+                    "example": "1234567890"
+                  },
+                  "signature": {
+                    "type": "string",
+                    "description": "The wallet's signature over the challenge string.",
+                    "example": "1234567890"
+                  },
+                  "cluster": {
+                    "anyOf": [
+                      { "type": "string", "enum": ["mainnet", "devnet"] },
+                      { "type": "string" }
+                    ],
+                    "example": "mainnet",
+                    "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+                  },
+                  "mock": {
+                    "type": "boolean",
+                    "description": "Optional. When `true`, the API uses a mock login flow for testing. Defaults to `false`.",
+                    "example": false
+                  }
+                },
+                "required": ["pubkey", "challenge", "signature"],
+                "example": {
+                  "pubkey": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
+                  "challenge": "1234567890",
+                  "signature": "1234567890"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "The authentication token provided by the Private Ephemeral Rollup."
+                    }
+                  },
+                  "required": ["token"]
+                },
+                "example": {
+                  "token": "1234567890"
+                }
+              }
+            }
+          },
+          "403": { "description": "Signature verification failed" },
+          "422": { "description": "Validation error" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    }
+  }
+}

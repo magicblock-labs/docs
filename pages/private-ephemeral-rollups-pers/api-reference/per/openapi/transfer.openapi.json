@@ -15,6 +15,19 @@
     "/v1/spl/transfer": {
       "post": {
         "summary": "Transfer SPL Tokens",
+        "description": "Transfer SPL tokens publicly or privately through an ephemeral rollup. Accepts an optional `Authorization: Bearer <token>` header obtained from the `/v1/spl/login` flow when the request needs to read or write data inside the Private Ephemeral Rollup.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "description": "Optional. Authentication token for requests that need to connect to the Private Ephemeral Rollup. Format: `Bearer <token>`.",
+            "schema": {
+              "type": "string",
+              "example": "Bearer 1234567890"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -22,30 +35,146 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "owner": { "type": "string" },
-                  "destination": { "type": "string" },
-                  "cluster": { "type": "string" },
-                  "mint": { "type": "string" },
-                  "amount": { "type": "integer", "minimum": 1 },
-                  "privacy": { "type": "string" },
-                  "validator": { "type": "string" },
-                  "memo": { "type": "string" }
+                  "from": {
+                    "type": "string",
+                    "description": "Sender wallet pubkey.",
+                    "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient wallet pubkey.",
+                    "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+                  },
+                  "cluster": {
+                    "anyOf": [
+                      { "type": "string", "enum": ["mainnet", "devnet"] },
+                      { "type": "string" }
+                    ],
+                    "example": "mainnet",
+                    "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+                  },
+                  "mint": {
+                    "type": "string",
+                    "description": "SPL mint pubkey.",
+                    "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                  },
+                  "amount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1000000,
+                    "description": "Base-unit amount as an integer JSON value with minimum 1."
+                  },
+                  "visibility": {
+                    "type": "string",
+                    "enum": ["public", "private"],
+                    "description": "Use `public` for a transparent SPL transfer or `private` to route through the Private Ephemeral Rollup."
+                  },
+                  "fromBalance": {
+                    "type": "string",
+                    "enum": ["base", "ephemeral"],
+                    "description": "Where the sender's balance is held. Drives which RPC the API uses for blockhash and where the client should submit."
+                  },
+                  "toBalance": {
+                    "type": "string",
+                    "enum": ["base", "ephemeral"],
+                    "description": "Where the recipient should receive the funds."
+                  },
+                  "validator": {
+                    "type": "string",
+                    "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                    "description": "Optional. When this transfer route needs a validator and none is provided, the API resolves it from the selected ephemeral RPC via `getIdentity`."
+                  },
+                  "initIfMissing": { "type": "boolean", "description": "Optional. Initialize the transfer queue if missing." },
+                  "initAtasIfMissing": { "type": "boolean", "description": "Optional. Initialize associated token accounts if missing." },
+                  "initVaultIfMissing": { "type": "boolean", "description": "Optional. Initialize the vault if missing. Defaults to `false`." },
+                  "memo": {
+                    "type": "string",
+                    "example": "Order #1042",
+                    "description": "Optional. Appends a final Memo Program instruction with this UTF-8 message."
+                  },
+                  "minDelayMs": {
+                    "type": "string",
+                    "pattern": "^\\d+$",
+                    "example": "0",
+                    "description": "Optional. Private transfer only. Defaults to `0`. Earliest (ms) the queued transfer may settle."
+                  },
+                  "maxDelayMs": {
+                    "type": "string",
+                    "pattern": "^\\d+$",
+                    "example": "0",
+                    "description": "Optional. Private transfer only. Defaults to `0` when omitted, or to `minDelayMs` when only `minDelayMs` is set. Must be >= `minDelayMs`."
+                  },
+                  "clientRefId": {
+                    "type": "string",
+                    "pattern": "^\\d+$",
+                    "example": "42",
+                    "description": "Optional. Private transfer only. Encrypted client reference ID that can be used to confirm a payment."
+                  },
+                  "split": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 15,
+                    "example": 1,
+                    "description": "Optional. Private transfer only. Defaults to `1`. Number of queue entries to split the transfer across. Must be between 1 and 15 and cannot exceed `amount`."
+                  },
+                  "gasless": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Optional. When `true`, the API uses the configured sponsor as transaction fee payer and prepends a relay-fee token transfer to the sponsor ATA."
+                  },
+                  "legacy": {
+                    "type": "boolean",
+                    "description": "Optional. Defaults to `false`. When `true`, skips lookup-table compilation and returns a legacy transaction. Private `base -> base` transfers may otherwise return a v0 transaction when a useful lookup table is configured."
+                  }
                 },
-                "required": ["owner", "destination", "amount"]
+                "required": ["from", "to", "mint", "amount", "visibility", "fromBalance", "toBalance"],
+                "example": {
+                  "from": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                  "to": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "amount": 1000000,
+                  "visibility": "private",
+                  "fromBalance": "base",
+                  "toBalance": "base",
+                  "initIfMissing": true,
+                  "initAtasIfMissing": true,
+                  "initVaultIfMissing": false,
+                  "memo": "Order #1042",
+                  "minDelayMs": "0",
+                  "maxDelayMs": "0",
+                  "clientRefId": "42",
+                  "split": 1,
+                  "gasless": true
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Unsigned serialized transaction"
+            "description": "Unsigned serialized transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "kind": { "type": "string", "enum": ["transfer"] },
+                    "version": { "type": "string", "enum": ["legacy", "v0"] },
+                    "transactionBase64": { "type": "string" },
+                    "sendTo": { "type": "string", "enum": ["base", "ephemeral"] },
+                    "recentBlockhash": { "type": "string" },
+                    "lastValidBlockHeight": { "type": "integer" },
+                    "instructionCount": { "type": "integer", "minimum": 0 },
+                    "requiredSigners": { "type": "array", "items": { "type": "string" } },
+                    "validator": { "type": "string" }
+                  },
+                  "required": ["kind", "version", "transactionBase64", "sendTo", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners"]
+                }
+              }
+            }
           },
-          "400": {
-            "description": "Build error"
-          },
-          "422": {
-            "description": "Validation error"
-          }
+          "400": { "description": "Build error or unsupported transfer route (`UNSUPPORTED_TRANSFER_ROUTE`)" },
+          "422": { "description": "Validation error" }
         }
       }
     }

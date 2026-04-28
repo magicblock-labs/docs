@@ -18,59 +18,32 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "ok"
-            ]
+            "enum": ["ok"]
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "UnsignedTransactionResponse": {
         "type": "object",
         "properties": {
           "kind": {
             "type": "string",
-            "enum": [
-              "deposit",
-              "withdraw",
-              "transfer"
-            ]
+            "enum": ["deposit", "withdraw", "transfer"]
           },
           "version": {
             "type": "string",
-            "enum": [
-              "legacy"
-            ]
+            "enum": ["legacy", "v0"]
           },
-          "transactionBase64": {
-            "type": "string"
-          },
-          "sendTo": {
-            "$ref": "#/components/schemas/BalanceLocation"
-          },
-          "recentBlockhash": {
-            "type": "string"
-          },
-          "lastValidBlockHeight": {
-            "type": "integer"
-          },
-          "instructionCount": {
-            "type": "integer",
-            "minimum": 0
-          },
+          "transactionBase64": { "type": "string" },
+          "sendTo": { "$ref": "#/components/schemas/BalanceLocation" },
+          "recentBlockhash": { "type": "string" },
+          "lastValidBlockHeight": { "type": "integer" },
+          "instructionCount": { "type": "integer", "minimum": 0 },
           "requiredSigners": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "example": "So11111111111111111111111111111111111111112"
-            }
+            "items": { "type": "string", "example": "So11111111111111111111111111111111111111112" }
           },
-          "validator": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
-          }
+          "validator": { "type": "string", "example": "So11111111111111111111111111111111111111112" }
         },
         "required": [
           "kind",
@@ -85,10 +58,7 @@
       },
       "BalanceLocation": {
         "type": "string",
-        "enum": [
-          "base",
-          "ephemeral"
-        ]
+        "enum": ["base", "ephemeral"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -96,23 +66,14 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": {
-                "type": "string"
-              },
-              "message": {
-                "type": "string"
-              },
+              "code": { "type": "string" },
+              "message": { "type": "string" },
               "details": {}
             },
-            "required": [
-              "code",
-              "message"
-            ]
+            "required": ["code", "message"]
           }
         },
-        "required": [
-          "error"
-        ]
+        "required": ["error"]
       },
       "ValidationErrorResponse": {
         "type": "object",
@@ -120,58 +81,30 @@
           "error": {
             "type": "object",
             "properties": {
-              "code": {
-                "type": "string",
-                "enum": [
-                  "VALIDATION_ERROR"
-                ]
-              },
-              "message": {
-                "type": "string"
-              },
+              "code": { "type": "string", "enum": ["VALIDATION_ERROR"] },
+              "message": { "type": "string" },
               "issues": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "code": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
+                    "code": { "type": "string" },
+                    "message": { "type": "string" },
                     "path": {
                       "type": "array",
                       "items": {
-                        "anyOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "number"
-                          }
-                        ]
+                        "anyOf": [{ "type": "string" }, { "type": "number" }]
                       }
                     }
                   },
-                  "required": [
-                    "code",
-                    "message",
-                    "path"
-                  ]
+                  "required": ["code", "message", "path"]
                 }
               }
             },
-            "required": [
-              "code",
-              "message",
-              "issues"
-            ]
+            "required": ["code", "message", "issues"]
           }
         },
-        "required": [
-          "error"
-        ]
+        "required": ["error"]
       },
       "DepositRequest": {
         "type": "object",
@@ -182,16 +115,8 @@
           },
           "cluster": {
             "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "mainnet",
-                  "devnet"
-                ]
-              },
-              {
-                "type": "string"
-              }
+              { "type": "string", "enum": ["mainnet", "devnet"] },
+              { "type": "string" }
             ],
             "example": "mainnet",
             "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
@@ -212,23 +137,12 @@
             "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
             "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
           },
-          "initIfMissing": {
-            "type": "boolean"
-          },
-          "initVaultIfMissing": {
-            "type": "boolean"
-          },
-          "initAtasIfMissing": {
-            "type": "boolean"
-          },
-          "idempotent": {
-            "type": "boolean"
-          }
+          "initIfMissing": { "type": "boolean" },
+          "initVaultIfMissing": { "type": "boolean" },
+          "initAtasIfMissing": { "type": "boolean" },
+          "idempotent": { "type": "boolean" }
         },
-        "required": [
-          "owner",
-          "amount"
-        ],
+        "required": ["owner", "amount"],
         "example": {
           "owner": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
           "amount": 1,
@@ -247,16 +161,8 @@
           },
           "cluster": {
             "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "mainnet",
-                  "devnet"
-                ]
-              },
-              {
-                "type": "string"
-              }
+              { "type": "string", "enum": ["mainnet", "devnet"] },
+              { "type": "string" }
             ],
             "example": "mainnet",
             "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
@@ -277,25 +183,12 @@
             "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
             "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
           },
-          "initIfMissing": {
-            "type": "boolean"
-          },
-          "initAtasIfMissing": {
-            "type": "boolean"
-          },
-          "escrowIndex": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "idempotent": {
-            "type": "boolean"
-          }
+          "initIfMissing": { "type": "boolean" },
+          "initAtasIfMissing": { "type": "boolean" },
+          "escrowIndex": { "type": "integer", "minimum": 0 },
+          "idempotent": { "type": "boolean" }
         },
-        "required": [
-          "owner",
-          "mint",
-          "amount"
-        ],
+        "required": ["owner", "mint", "amount"],
         "example": {
           "owner": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
           "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -305,32 +198,15 @@
       },
       "InitializeMintResponse": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/UnsignedTransactionResponse"
-          },
+          { "$ref": "#/components/schemas/UnsignedTransactionResponse" },
           {
             "type": "object",
             "properties": {
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "initializeMint"
-                ]
-              },
-              "transferQueue": {
-                "type": "string",
-                "example": "So11111111111111111111111111111111111111112"
-              },
-              "rentPda": {
-                "type": "string",
-                "example": "So11111111111111111111111111111111111111112"
-              }
+              "kind": { "type": "string", "enum": ["initializeMint"] },
+              "transferQueue": { "type": "string", "example": "So11111111111111111111111111111111111111112" },
+              "rentPda": { "type": "string", "example": "So11111111111111111111111111111111111111112" }
             },
-            "required": [
-              "validator",
-              "transferQueue",
-              "rentPda"
-            ]
+            "required": ["validator", "transferQueue", "rentPda"]
           }
         ]
       },
@@ -347,16 +223,8 @@
           },
           "cluster": {
             "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "mainnet",
-                  "devnet"
-                ]
-              },
-              {
-                "type": "string"
-              }
+              { "type": "string", "enum": ["mainnet", "devnet"] },
+              { "type": "string" }
             ],
             "example": "mainnet",
             "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
@@ -367,10 +235,7 @@
             "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
           }
         },
-        "required": [
-          "payer",
-          "mint"
-        ],
+        "required": ["payer", "mint"],
         "example": {
           "payer": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
           "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -380,63 +245,34 @@
       "TransferRequest": {
         "type": "object",
         "properties": {
-          "from": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
-          },
-          "to": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
-          },
+          "from": { "type": "string", "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE" },
+          "to": { "type": "string", "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L" },
           "cluster": {
             "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "mainnet",
-                  "devnet"
-                ]
-              },
-              {
-                "type": "string"
-              }
+              { "type": "string", "enum": ["mainnet", "devnet"] },
+              { "type": "string" }
             ],
             "example": "mainnet",
             "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
           },
-          "mint": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
-          },
+          "mint": { "type": "string", "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" },
           "amount": {
             "type": "integer",
             "minimum": 1,
             "example": 1000000,
             "description": "Base-unit amount as an integer JSON value with minimum 1."
           },
-          "visibility": {
-            "$ref": "#/components/schemas/TransferVisibility"
-          },
-          "fromBalance": {
-            "$ref": "#/components/schemas/BalanceLocation"
-          },
-          "toBalance": {
-            "$ref": "#/components/schemas/BalanceLocation"
-          },
+          "visibility": { "$ref": "#/components/schemas/TransferVisibility" },
+          "fromBalance": { "$ref": "#/components/schemas/BalanceLocation" },
+          "toBalance": { "$ref": "#/components/schemas/BalanceLocation" },
           "validator": {
             "type": "string",
             "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
             "description": "Optional. When this transfer route needs a validator and none is provided, the API resolves it from the selected ephemeral RPC via `getIdentity`."
           },
-          "initIfMissing": {
-            "type": "boolean"
-          },
-          "initAtasIfMissing": {
-            "type": "boolean"
-          },
-          "initVaultIfMissing": {
-            "type": "boolean"
-          },
+          "initIfMissing": { "type": "boolean" },
+          "initAtasIfMissing": { "type": "boolean" },
+          "initVaultIfMissing": { "type": "boolean" },
           "memo": {
             "type": "string",
             "example": "Order #1042",
@@ -454,23 +290,30 @@
             "example": "0",
             "description": "Optional. Private transfer only. Defaults to 0 when omitted, or to minDelayMs when minDelayMs is set."
           },
+          "clientRefId": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "example": "42",
+            "description": "Optional. Private transfer only. Encrypted client reference ID that can be used to confirm a payment."
+          },
           "split": {
             "type": "integer",
             "exclusiveMinimum": 0,
             "maximum": 15,
             "example": 1,
             "description": "Optional. Private transfer only. Defaults to 1. Must be between 1 and 15."
+          },
+          "gasless": {
+            "type": "boolean",
+            "example": true,
+            "description": "Optional. When true, the API uses the configured sponsor as transaction fee payer and prepends a relay-fee token transfer to the sponsor ATA."
+          },
+          "legacy": {
+            "type": "boolean",
+            "description": "Optional. Defaults to false. When true, skips lookup-table compilation and returns a legacy transaction."
           }
         },
-        "required": [
-          "from",
-          "to",
-          "mint",
-          "amount",
-          "visibility",
-          "fromBalance",
-          "toBalance"
-        ],
+        "required": ["from", "to", "mint", "amount", "visibility", "fromBalance", "toBalance"],
         "example": {
           "from": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
           "to": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
@@ -481,129 +324,190 @@
           "toBalance": "base",
           "initIfMissing": true,
           "initAtasIfMissing": true,
-          "initVaultIfMissing": true,
+          "initVaultIfMissing": false,
           "memo": "Order #1042",
           "minDelayMs": "0",
           "maxDelayMs": "0",
-          "split": 1
+          "clientRefId": "42",
+          "split": 1,
+          "gasless": true
         }
       },
       "TransferVisibility": {
         "type": "string",
-        "enum": [
-          "public",
-          "private"
-        ]
+        "enum": ["public", "private"]
       },
       "BalanceResponse": {
         "type": "object",
         "properties": {
-          "address": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
-          },
-          "mint": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
-          },
-          "ata": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
-          },
-          "location": {
-            "$ref": "#/components/schemas/BalanceLocation"
-          },
-          "balance": {
-            "type": "string"
-          }
+          "address": { "type": "string", "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L" },
+          "mint": { "type": "string", "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" },
+          "ata": { "type": "string", "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE" },
+          "location": { "$ref": "#/components/schemas/BalanceLocation" },
+          "balance": { "type": "string" }
         },
-        "required": [
-          "address",
-          "mint",
-          "ata",
-          "location",
-          "balance"
-        ]
+        "required": ["address", "mint", "ata", "location", "balance"]
       },
       "MintInitializationResponse": {
         "type": "object",
         "properties": {
-          "mint": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
+          "mint": { "type": "string" },
+          "validator": { "type": "string" },
+          "transferQueue": { "type": "string" },
+          "initialized": { "type": "boolean" }
+        },
+        "required": ["mint", "validator", "transferQueue", "initialized"]
+      },
+      "ChallengeResponse": {
+        "type": "object",
+        "properties": {
+          "challenge": { "type": "string", "example": "1234567890" }
+        },
+        "required": ["challenge"]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "pubkey": { "type": "string", "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L" },
+          "challenge": { "type": "string", "example": "1234567890" },
+          "signature": { "type": "string", "example": "1234567890" },
+          "cluster": {
+            "anyOf": [
+              { "type": "string", "enum": ["mainnet", "devnet"] },
+              { "type": "string" }
+            ],
+            "example": "mainnet"
           },
-          "validator": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
+          "mock": { "type": "boolean", "example": false }
+        },
+        "required": ["pubkey", "challenge", "signature"]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string", "example": "1234567890" }
+        },
+        "required": ["token"]
+      },
+      "SwapMode": { "type": "string", "enum": ["ExactIn", "ExactOut"] },
+      "InstructionVersion": { "type": "string", "enum": ["V1", "V2"] },
+      "QuoteResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "inputMint": { "type": "string" },
+          "inAmount": { "type": "string", "pattern": "^\\d+$" },
+          "outputMint": { "type": "string" },
+          "outAmount": { "type": "string", "pattern": "^\\d+$" },
+          "otherAmountThreshold": { "type": "string", "pattern": "^\\d+$" },
+          "swapMode": { "$ref": "#/components/schemas/SwapMode" },
+          "slippageBps": { "type": "integer", "minimum": 0 },
+          "priceImpactPct": { "type": "string" },
+          "routePlan": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "swapInfo": { "type": "object", "additionalProperties": true },
+                "percent": { "type": "integer", "minimum": 0 },
+                "bps": { "type": ["integer", "null"], "minimum": 0 }
+              }
+            }
           },
-          "transferQueue": {
-            "type": "string",
-            "example": "So11111111111111111111111111111111111111112"
+          "instructionVersion": { "anyOf": [{ "$ref": "#/components/schemas/InstructionVersion" }, { "type": "null" }] },
+          "platformFee": { "anyOf": [{ "type": "object", "additionalProperties": true }, { "type": "null" }] },
+          "contextSlot": { "type": "integer", "minimum": 0 },
+          "timeTaken": { "type": "number" }
+        },
+        "required": ["inputMint", "inAmount", "outputMint", "outAmount", "otherAmountThreshold", "swapMode", "slippageBps", "priceImpactPct", "routePlan"]
+      },
+      "SwapRequest": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "userPublicKey": { "type": "string", "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE" },
+          "quoteResponse": { "$ref": "#/components/schemas/QuoteResponse" },
+          "payer": { "type": "string" },
+          "wrapAndUnwrapSol": { "type": "boolean" },
+          "useSharedAccounts": { "type": "boolean" },
+          "feeAccount": { "type": "string" },
+          "trackingAccount": { "type": "string" },
+          "prioritizationFeeLamports": {
+            "anyOf": [
+              { "type": "integer", "minimum": 0 },
+              { "type": "object", "additionalProperties": true }
+            ]
           },
-          "initialized": {
-            "type": "boolean"
+          "asLegacyTransaction": { "type": "boolean" },
+          "destinationTokenAccount": { "type": "string" },
+          "nativeDestinationAccount": { "type": "string" },
+          "dynamicComputeUnitLimit": { "type": "boolean" },
+          "skipUserAccountsRpcCalls": { "type": "boolean" },
+          "dynamicSlippage": { "type": "boolean" },
+          "computeUnitPriceMicroLamports": { "type": "integer", "minimum": 0 },
+          "blockhashSlotsToExpiry": { "type": "integer", "minimum": 0 },
+          "positiveSlippage": { "type": "object", "additionalProperties": true },
+          "visibility": {
+            "type": "string",
+            "enum": ["public", "private"],
+            "description": "`public` (default) proxies Jupiter/Metis as-is. `private` routes the output through a scheduled private transfer."
+          },
+          "destination": { "type": "string", "description": "Required when `visibility=\"private\"`." },
+          "minDelayMs": { "type": "string", "pattern": "^\\d+$", "description": "Required when `visibility=\"private\"`." },
+          "maxDelayMs": { "type": "string", "pattern": "^\\d+$", "description": "Required when `visibility=\"private\"`. Max 600000." },
+          "split": { "type": "integer", "minimum": 1, "maximum": 14, "description": "Required when `visibility=\"private\"`." },
+          "clientRefId": { "type": "string", "pattern": "^\\d+$" },
+          "validator": { "type": "string" }
+        },
+        "required": ["userPublicKey", "quoteResponse"]
+      },
+      "SwapResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "swapTransaction": { "type": "string" },
+          "lastValidBlockHeight": { "type": "integer", "minimum": 0 },
+          "prioritizationFeeLamports": { "type": "integer", "minimum": 0 },
+          "privateTransfer": {
+            "type": "object",
+            "description": "Present only when `visibility=\"private\"`.",
+            "properties": {
+              "stashAta": { "type": "string" },
+              "hydraCrankPda": { "type": "string" },
+              "shuttleId": { "type": "integer", "minimum": 0 }
+            },
+            "required": ["stashAta", "hydraCrankPda", "shuttleId"]
           }
         },
-        "required": [
-          "mint",
-          "validator",
-          "transferQueue",
-          "initialized"
-        ]
+        "required": ["swapTransaction"]
       },
       "McpResponse": {
         "type": "object",
         "properties": {
-          "jsonrpc": {
-            "type": "string",
-            "enum": [
-              "2.0"
-            ]
-          },
+          "jsonrpc": { "type": "string", "enum": ["2.0"] },
           "id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ]
+            "anyOf": [{ "type": "string" }, { "type": "number" }, { "type": "null" }]
           },
           "result": {},
           "error": {
             "type": "object",
             "properties": {
-              "code": {
-                "type": "number"
-              },
-              "message": {
-                "type": "string"
-              }
+              "code": { "type": "number" },
+              "message": { "type": "string" }
             },
-            "required": [
-              "code",
-              "message"
-            ],
+            "required": ["code", "message"],
             "additionalProperties": {}
           }
         },
-        "required": [
-          "jsonrpc"
-        ],
+        "required": ["jsonrpc"],
         "additionalProperties": {},
         "example": {
           "jsonrpc": "2.0",
           "id": 3,
           "result": {
             "content": [
-              {
-                "type": "text",
-                "text": "Built an unsigned SPL deposit transaction."
-              }
+              { "type": "text", "text": "Built an unsigned SPL deposit transaction." }
             ],
             "structuredContent": {
               "kind": "deposit",
@@ -613,31 +517,140 @@
               "recentBlockhash": "9A4VhP8M8fQZxP4h7rB6mP6eM8w2pJkYh7QdZk7V4r2x",
               "lastValidBlockHeight": 284512337,
               "instructionCount": 3,
-              "requiredSigners": [
-                "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
-              ],
+              "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"],
               "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
             }
           }
         }
       }
     },
-    "parameters": {}
+    "parameters": {},
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Authentication token issued by `POST /v1/spl/login`."
+      }
+    }
   },
   "paths": {
     "/health": {
       "get": {
-        "tags": [
-          "Meta"
-        ],
+        "tags": ["Meta"],
         "responses": {
           "200": {
             "description": "Health check",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/HealthResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/spl/challenge": {
+      "get": {
+        "tags": ["Auth"],
+        "description": "Generate a challenge string for the wallet to sign.",
+        "parameters": [
+          {
+            "name": "pubkey",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L" },
+            "description": "The public key of the wallet that will read private data."
+          },
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "enum": ["mainnet", "devnet"] },
+                { "type": "string" }
+              ],
+              "example": "mainnet"
+            }
+          },
+          {
+            "name": "mock",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean", "example": false }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge string",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChallengeResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/spl/login": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Login the wallet to the Private Ephemeral Rollup.",
+        "requestBody": {
+          "required": true,
+          "description": "Login request",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Signature verification failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           }
@@ -646,18 +659,14 @@
     },
     "/v1/spl/deposit": {
       "post": {
-        "tags": [
-          "SPL"
-        ],
+        "tags": ["SPL"],
         "description": "Deposit SPL tokens from Solana into an ephemeral rollup.",
         "requestBody": {
           "required": true,
           "description": "Deposit request",
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DepositRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/DepositRequest" }
             }
           }
         },
@@ -666,9 +675,7 @@
             "description": "Unsigned serialized transaction",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnsignedTransactionResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/UnsignedTransactionResponse" },
                 "example": {
                   "kind": "deposit",
                   "version": "legacy",
@@ -677,9 +684,7 @@
                   "recentBlockhash": "9A4VhP8M8fQZxP4h7rB6mP6eM8w2pJkYh7QdZk7V4r2x",
                   "lastValidBlockHeight": 284512337,
                   "instructionCount": 3,
-                  "requiredSigners": [
-                    "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
-                  ],
+                  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"],
                   "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
                 }
               }
@@ -689,9 +694,7 @@
             "description": "Build error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -699,9 +702,7 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
               }
             }
           }
@@ -710,18 +711,14 @@
     },
     "/v1/spl/withdraw": {
       "post": {
-        "tags": [
-          "SPL"
-        ],
+        "tags": ["SPL"],
         "description": "Withdraw SPL tokens from an ephemeral rollup back to Solana.",
         "requestBody": {
           "required": true,
           "description": "Withdraw request",
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WithdrawRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/WithdrawRequest" }
             }
           }
         },
@@ -730,9 +727,7 @@
             "description": "Unsigned serialized transaction",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnsignedTransactionResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/UnsignedTransactionResponse" },
                 "example": {
                   "kind": "withdraw",
                   "version": "legacy",
@@ -741,9 +736,7 @@
                   "recentBlockhash": "7YH7nE6qj8vH3L9pR5uM2cD1xK4sT8wQ6bN3fJ2mP9z",
                   "lastValidBlockHeight": 284512451,
                   "instructionCount": 2,
-                  "requiredSigners": [
-                    "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
-                  ],
+                  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"],
                   "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
                 }
               }
@@ -753,9 +746,7 @@
             "description": "Build error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -763,9 +754,7 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
               }
             }
           }
@@ -774,18 +763,14 @@
     },
     "/v1/spl/initialize-mint": {
       "post": {
-        "tags": [
-          "SPL"
-        ],
+        "tags": ["SPL"],
         "description": "Build an unsigned base-chain transaction that initializes and delegates a validator-scoped transfer queue for a mint.",
         "requestBody": {
           "required": true,
           "description": "Initialize mint request",
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InitializeMintRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/InitializeMintRequest" }
             }
           }
         },
@@ -794,9 +779,7 @@
             "description": "Unsigned serialized transaction",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InitializeMintResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/InitializeMintResponse" },
                 "example": {
                   "kind": "initializeMint",
                   "version": "legacy",
@@ -805,9 +788,7 @@
                   "recentBlockhash": "9A4VhP8M8fQZxP4h7rB6mP6eM8w2pJkYh7QdZk7V4r2x",
                   "lastValidBlockHeight": 284512337,
                   "instructionCount": 4,
-                  "requiredSigners": [
-                    "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
-                  ],
+                  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"],
                   "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
                   "transferQueue": "BuBHLbaPmYmgvMiZ8uZb96RjBtmWzJY52u7Di5urNf6M",
                   "rentPda": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
@@ -819,9 +800,7 @@
             "description": "Build error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -829,9 +808,7 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
               }
             }
           }
@@ -840,18 +817,23 @@
     },
     "/v1/spl/transfer": {
       "post": {
-        "tags": [
-          "SPL"
+        "tags": ["SPL"],
+        "description": "Transfer SPL tokens publicly or privately through an ephemeral rollup. Pass an optional `Authorization: Bearer <token>` header for transfers that need to connect to the Private Ephemeral Rollup.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "example": "Bearer 1234567890" },
+            "description": "Optional. Authentication token for requests that need to connect to the Private Ephemeral Rollup."
+          }
         ],
-        "description": "Transfer SPL tokens publicly or privately through an ephemeral rollup.",
         "requestBody": {
           "required": true,
           "description": "Transfer request",
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TransferRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/TransferRequest" }
             }
           }
         },
@@ -860,19 +842,15 @@
             "description": "Unsigned serialized transaction",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnsignedTransactionResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/UnsignedTransactionResponse" }
               }
             }
           },
           "400": {
-            "description": "Build error",
+            "description": "Build error or unsupported transfer route (`UNSUPPORTED_TRANSFER_ROUTE`)",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -880,9 +858,7 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
               }
             }
           }
@@ -891,52 +867,33 @@
     },
     "/v1/spl/balance": {
       "get": {
-        "tags": [
-          "SPL"
-        ],
+        "tags": ["SPL"],
         "description": "Get the balance for the owner's ATA on the base RPC.",
         "parameters": [
           {
-            "schema": {
-              "type": "string",
-              "default": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
-              "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
-            },
-            "required": true,
             "name": "address",
-            "in": "query"
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L" }
           },
           {
+            "name": "mint",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" }
+          },
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
             "schema": {
               "anyOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "mainnet",
-                    "devnet"
-                  ]
-                },
-                {
-                  "type": "string"
-                }
+                { "type": "string", "enum": ["mainnet", "devnet"] },
+                { "type": "string" }
               ],
-              "example": "mainnet",
-              "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+              "example": "mainnet"
             },
-            "required": false,
-            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC.",
-            "name": "cluster",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": "string",
-              "default": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            },
-            "required": true,
-            "name": "mint",
-            "in": "query"
+            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
           }
         ],
         "responses": {
@@ -944,9 +901,7 @@
             "description": "Base-chain token balance",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BalanceResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/BalanceResponse" },
                 "example": {
                   "address": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
                   "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -961,9 +916,7 @@
             "description": "Query error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -971,9 +924,7 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
               }
             }
           }
@@ -982,52 +933,41 @@
     },
     "/v1/spl/private-balance": {
       "get": {
-        "tags": [
-          "SPL"
-        ],
-        "description": "Get the balance for the owner's ATA on the ephemeral RPC.",
+        "tags": ["SPL"],
+        "description": "Get the balance for the owner's ATA on the ephemeral RPC. Requires authentication via the Private Ephemeral Rollup login flow.",
+        "security": [{ "BearerAuth": [] }],
         "parameters": [
           {
-            "schema": {
-              "type": "string",
-              "default": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
-              "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
-            },
+            "name": "authorization",
+            "in": "header",
             "required": true,
-            "name": "address",
-            "in": "query"
+            "schema": { "type": "string", "example": "Bearer 1234567890" },
+            "description": "Required. Authentication token issued by `POST /v1/spl/login`."
           },
           {
+            "name": "address",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L" }
+          },
+          {
+            "name": "mint",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" }
+          },
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
             "schema": {
               "anyOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "mainnet",
-                    "devnet"
-                  ]
-                },
-                {
-                  "type": "string"
-                }
+                { "type": "string", "enum": ["mainnet", "devnet"] },
+                { "type": "string" }
               ],
-              "example": "mainnet",
-              "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+              "example": "mainnet"
             },
-            "required": false,
-            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC.",
-            "name": "cluster",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": "string",
-              "default": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            },
-            "required": true,
-            "name": "mint",
-            "in": "query"
+            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
           }
         ],
         "responses": {
@@ -1035,9 +975,7 @@
             "description": "Ephemeral token balance",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BalanceResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/BalanceResponse" },
                 "example": {
                   "address": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
                   "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -1049,12 +987,10 @@
             }
           },
           "400": {
-            "description": "Query error",
+            "description": "Missing auth token (`MISSING_AUTH_TOKEN`) or other query error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -1062,9 +998,7 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
               }
             }
           }
@@ -1073,52 +1007,33 @@
     },
     "/v1/spl/is-mint-initialized": {
       "get": {
-        "tags": [
-          "SPL"
-        ],
+        "tags": ["SPL"],
         "description": "Check whether the validator-scoped transfer queue exists for a mint on the ephemeral RPC.",
         "parameters": [
           {
-            "schema": {
-              "type": "string",
-              "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            },
-            "required": true,
             "name": "mint",
-            "in": "query"
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" }
           },
           {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
             "schema": {
               "anyOf": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "mainnet",
-                    "devnet"
-                  ]
-                },
-                {
-                  "type": "string"
-                }
+                { "type": "string", "enum": ["mainnet", "devnet"] },
+                { "type": "string" }
               ],
-              "example": "mainnet",
-              "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
-            },
-            "required": false,
-            "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC.",
-            "name": "cluster",
-            "in": "query"
+              "example": "mainnet"
+            }
           },
           {
-            "schema": {
-              "type": "string",
-              "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
-              "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
-            },
-            "required": false,
-            "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`.",
             "name": "validator",
-            "in": "query"
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57" },
+            "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
           }
         ],
         "responses": {
@@ -1126,9 +1041,7 @@
             "description": "Mint transfer queue initialization status",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MintInitializationResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/MintInitializationResponse" },
                 "example": {
                   "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
                   "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
@@ -1142,9 +1055,7 @@
             "description": "Query error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -1152,9 +1063,106 @@
             "description": "Validation error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/swap/quote": {
+      "get": {
+        "tags": ["Swap"],
+        "description": "Get a swap quote between two SPL mints. Proxies the configured Triton Metis Swap API.",
+        "parameters": [
+          { "name": "inputMint", "in": "query", "required": true, "schema": { "type": "string", "example": "So11111111111111111111111111111111111111112" } },
+          { "name": "outputMint", "in": "query", "required": true, "schema": { "type": "string", "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" } },
+          { "name": "amount", "in": "query", "required": true, "schema": { "type": "string", "pattern": "^\\d+$", "example": "1000000" } },
+          { "name": "slippageBps", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0, "example": 50 } },
+          { "name": "swapMode", "in": "query", "required": false, "schema": { "$ref": "#/components/schemas/SwapMode" } },
+          { "name": "dexes", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "excludeDexes", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "restrictIntermediateTokens", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "onlyDirectRoutes", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "asLegacyTransaction", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "platformFeeBps", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0 } },
+          { "name": "maxAccounts", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 0 } },
+          { "name": "instructionVersion", "in": "query", "required": false, "schema": { "$ref": "#/components/schemas/InstructionVersion" } },
+          { "name": "dynamicSlippage", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "forJitoBundle", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "supportDynamicIntermediateTokens", "in": "query", "required": false, "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Swap quote",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QuoteResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Configuration error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/swap/swap": {
+      "post": {
+        "tags": ["Swap"],
+        "description": "Build an unsigned swap transaction from a quote. Supports `visibility=\"public\"` (default upstream pass-through) and `visibility=\"private\"` (forces output into a program-owned stash ATA and appends a `schedule_private_transfer` instruction).",
+        "requestBody": {
+          "required": true,
+          "description": "Swap request",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SwapRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Swap transaction",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SwapResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (missing or conflicting private-transfer fields)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Configuration error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           }
@@ -1163,27 +1171,20 @@
     },
     "/mcp": {
       "post": {
-        "tags": [
-          "MCP"
-        ],
-        "description": "Stateless Streamable HTTP MCP endpoint.\n\nImplementation details:\n- Each `POST /mcp` request creates a fresh `McpServer`, handles the JSON-RPC exchange, then closes it.\n- The transport runs with `sessionIdGenerator: undefined` and `enableJsonResponse: true`, so this server does not issue or require `mcp-session-id` headers.\n- `GET /mcp` returns the info document and `GET /.well-known/mcp.json` returns the discovery document.\n- Clients can use `Accept: application/json` with `Content-Type: application/json`.\n\nTypical flow:\n1. `initialize`\n2. `notifications/initialized`\n3. `tools/list` or `tools/call`\n\nInitialize request example:\n```json\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"initialize\",\n  \"params\": {\n    \"protocolVersion\": \"2025-11-25\",\n    \"capabilities\": {},\n    \"clientInfo\": {\n      \"name\": \"curl-example\",\n      \"version\": \"1.0.0\"\n    }\n  }\n}\n```\n\nInitialize response example:\n```json\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"result\": {\n    \"protocolVersion\": \"2025-11-25\",\n    \"capabilities\": {\n      \"tools\": {\n        \"listChanged\": true\n      }\n    },\n    \"serverInfo\": {\n      \"name\": \"spl-private-payments-api\",\n      \"version\": \"0.1.0\"\n    }\n  }\n}\n```\n\nTool call request example:\n```json\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 3,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"spl.deposit\",\n    \"arguments\": {\n      \"owner\": \"3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE\",\n      \"amount\": 1,\n      \"initIfMissing\": true,\n      \"initAtasIfMissing\": true,\n      \"initVaultIfMissing\": true,\n      \"idempotent\": true\n    }\n  }\n}\n```",
+        "tags": ["MCP"],
+        "description": "Stateless Streamable HTTP MCP endpoint.\n\nImplementation details:\n- Each `POST /mcp` request creates a fresh `McpServer`, handles the JSON-RPC exchange, then closes it.\n- The transport runs with `sessionIdGenerator: undefined` and `enableJsonResponse: true`, so this server does not issue or require `mcp-session-id` headers.\n- `GET /mcp` returns the info document and `GET /.well-known/mcp.json` returns the discovery document.\n- Clients can use `Accept: application/json` with `Content-Type: application/json`.\n\nTypical flow:\n1. `initialize`\n2. `notifications/initialized`\n3. `tools/list` or `tools/call`",
         "responses": {
           "200": {
             "description": "MCP JSON-RPC response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/McpResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/McpResponse" },
                 "example": {
                   "jsonrpc": "2.0",
                   "id": 3,
                   "result": {
                     "content": [
-                      {
-                        "type": "text",
-                        "text": "Built an unsigned SPL deposit transaction."
-                      }
+                      { "type": "text", "text": "Built an unsigned SPL deposit transaction." }
                     ],
                     "structuredContent": {
                       "kind": "deposit",
@@ -1193,9 +1194,7 @@
                       "recentBlockhash": "9A4VhP8M8fQZxP4h7rB6mP6eM8w2pJkYh7QdZk7V4r2x",
                       "lastValidBlockHeight": 284512337,
                       "instructionCount": 3,
-                      "requiredSigners": [
-                        "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
-                      ],
+                      "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"],
                       "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
                     }
                   }
@@ -1203,22 +1202,15 @@
               }
             }
           },
-          "202": {
-            "description": "Notification accepted; no response body is returned."
-          },
+          "202": { "description": "Notification accepted; no response body is returned." },
           "400": {
             "description": "Invalid JSON or invalid JSON-RPC request",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/McpResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/McpResponse" },
                 "example": {
                   "jsonrpc": "2.0",
-                  "error": {
-                    "code": -32700,
-                    "message": "Parse error"
-                  },
+                  "error": { "code": -32700, "message": "Parse error" },
                   "id": null
                 }
               }
@@ -1228,17 +1220,7 @@
             "description": "Content-Type must be application/json",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/McpResponse"
-                },
-                "example": {
-                  "jsonrpc": "2.0",
-                  "error": {
-                    "code": -32000,
-                    "message": "Unsupported Media Type: Content-Type must be application/json"
-                  },
-                  "id": null
-                }
+                "schema": { "$ref": "#/components/schemas/McpResponse" }
               }
             }
           },
@@ -1246,17 +1228,7 @@
             "description": "MCP JSON-RPC error response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/McpResponse"
-                },
-                "example": {
-                  "jsonrpc": "2.0",
-                  "error": {
-                    "code": -32603,
-                    "message": "Internal server error"
-                  },
-                  "id": null
-                }
+                "schema": { "$ref": "#/components/schemas/McpResponse" }
               }
             }
           }
@@ -1270,34 +1242,14 @@
                 "type": "object",
                 "additionalProperties": true,
                 "properties": {
-                  "jsonrpc": {
-                    "type": "string",
-                    "enum": [
-                      "2.0"
-                    ]
-                  },
+                  "jsonrpc": { "type": "string", "enum": ["2.0"] },
                   "id": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "number"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
+                    "anyOf": [{ "type": "string" }, { "type": "number" }, { "type": "null" }]
                   },
-                  "method": {
-                    "type": "string"
-                  },
+                  "method": { "type": "string" },
                   "params": {}
                 },
-                "required": [
-                  "jsonrpc",
-                  "method"
-                ]
+                "required": ["jsonrpc", "method"]
               },
               "example": {
                 "jsonrpc": "2.0",
@@ -1306,10 +1258,7 @@
                 "params": {
                   "protocolVersion": "2025-11-25",
                   "capabilities": {},
-                  "clientInfo": {
-                    "name": "curl-example",
-                    "version": "1.0.0"
-                  }
+                  "clientInfo": { "name": "curl-example", "version": "1.0.0" }
                 }
               }
             }
