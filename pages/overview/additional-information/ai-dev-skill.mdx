@@ -1,6 +1,6 @@
 ---
 title: AI Dev Skill
-description: Use the MagicBlock Dev Skill to bring MagicBlock-specific development patterns into Claude Code and Codex, including delegation flows, dual-connection architecture, cranks, VRF, and private payments.
+description: Use the MagicBlock Dev Skill to bring MagicBlock-specific development patterns into Claude Code, Claude.ai, Codex, Cursor, Windsurf, Cline, Continue, and other AI coding agents — including delegation flows, Magic Actions, dual-connection architecture, cranks, VRF, lamports top-up, commit sponsorship, and private payments with swaps.
 ---
 
 <CardGroup cols={1}>
@@ -16,7 +16,7 @@ description: Use the MagicBlock Dev Skill to bring MagicBlock-specific developme
 
 ## What It Is
 
-The MagicBlock Dev Skill is an AI development skill for Claude Code and Codex that packages proven MagicBlock development patterns into a reusable workflow. Instead of re-explaining the same integration details in every prompt, the skill gives your coding agent structured guidance for building on MagicBlock.
+The MagicBlock Dev Skill is an AI development skill that packages proven MagicBlock development patterns into a reusable workflow across multiple AI coding agents. Instead of re-explaining the same integration details in every prompt, the skill gives your coding agent structured guidance for building on MagicBlock.
 
 It is designed for teams working on:
 
@@ -26,20 +26,37 @@ It is designed for teams working on:
 - High-performance transaction routing
 - Cranks for recurring automated transactions
 - VRF for provable randomness
-- Private payments flows
+- Magic Actions — base-layer instructions chained atomically to an ER commit
+- Topping up a delegated account's lamports via `lamportsDelegatedTransferIx`
+- Commit sponsorship and lifting the default 10-commit cap with `magic_fee_vault`
+- Private payments — deposits, transfers, withdrawals, and swaps via the Payments API, including the challenge/login bearer-token flow for private reads
 - Anchor and TypeScript-based integrations
 
-## How To Use It
+## Supported Agents
 
-### Install
+The skill supports a wide range of AI coding agents through a single installer. Pick the one you use:
 
-Claude Code quick install:
+| Agent | Install location |
+| --- | --- |
+| Claude Code | `~/.claude/skills/magicblock/` |
+| Claude.ai (chat / desktop) | Upload `dist/magicblock.zip` via Skills UI |
+| Codex | `~/.codex/skills/magicblock/` |
+| Cursor | `.cursor/rules/magicblock.mdc` |
+| Windsurf | `.windsurf/rules/magicblock.md` |
+| Cline | `.clinerules/magicblock.md` |
+| Continue | `.continue/rules/magicblock.md` |
+| Cross-tool standard | `AGENTS.md` at the project root |
+| Chat-only (DeepSeek, ChatGPT default, etc.) | Paste `dist/system-prompt.md` as a system prompt |
+
+## How To Install
+
+### Claude Code quick install
 
 ```bash
 npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
 ```
 
-Manual install:
+### Manual install
 
 ```bash
 git clone https://github.com/magicblock-labs/magicblock-dev-skill
@@ -47,29 +64,60 @@ cd magicblock-dev-skill
 ./install.sh
 ```
 
-By default, `./install.sh` installs the skill to both personal skill directories:
+By default, `./install.sh` installs the skill into both Claude Code and Codex personal skill directories.
 
-- `~/.claude/skills/magicblock`
-- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+### Target a specific agent
 
-You can also target a specific environment:
+Global / per-user targets:
 
 ```bash
 ./install.sh --claude
 ./install.sh --codex
-./install.sh --project
-./install.sh --project --codex
+```
+
+Project-scoped targets (always install into the current directory):
+
+```bash
+./install.sh --cursor       # .cursor/rules/magicblock.mdc
+./install.sh --windsurf     # .windsurf/rules/magicblock.md
+./install.sh --cline        # .clinerules/magicblock.md
+./install.sh --continue     # .continue/rules/magicblock.md
+./install.sh --agents-md    # ./AGENTS.md
+```
+
+Combined:
+
+```bash
+./install.sh --all          # everything for the current project
+./install.sh --project      # Claude + Codex into .claude/.codex inside the project
 ./install.sh --path /custom/path/magicblock
 ```
 
-`--project` installs into the current repository under `.claude/skills/magicblock` and/or `.codex/skills/magicblock`.
+### Claude.ai upload
 
-### Use in Claude Code and Codex
+```bash
+./build.sh
+```
 
-Once installed, the skill can activate automatically when you ask for MagicBlock or Ephemeral Rollups help.
+Then upload `dist/magicblock.zip` via Settings → Capabilities → Skills in Claude.ai.
 
-- In Claude Code, you can also invoke it directly with `/magicblock`.
-- In Codex, you can mention it explicitly by name, for example: `use the magicblock skill`.
+### Chat-only platforms (DeepSeek, ChatGPT default, Claude.ai default)
+
+```bash
+./build.sh
+cat dist/system-prompt.md
+```
+
+Paste the output into the platform's system prompt, custom instructions, or project context field.
+
+### Use in your agent
+
+Once installed, the skill activates automatically when you ask for MagicBlock or Ephemeral Rollups help.
+
+- In Claude Code, you can invoke it directly with `/magicblock`
+- In Codex, mention it explicitly by name: `use the magicblock skill`
+- In Cursor / Windsurf / Cline / Continue, the rule's description triggers contextually when you mention MagicBlock topics
+- For chat-only platforms, the skill is loaded once via the system prompt and persists for the session
 
 Example prompts:
 
@@ -77,6 +125,9 @@ Example prompts:
 Add delegation hooks to my player account
 Change my roll_dice function to use VRF
 Set up a crank that updates game state every 100ms
+Add a Magic Action that updates my onchain leaderboard after every commit
+Top up my delegated fee payer with lamports
+Build a private USDC transfer flow using the Payments API
 Help me integrate MagicBlock into my Anchor program
 ```
 
@@ -85,8 +136,13 @@ Help me integrate MagicBlock into my Anchor program
 The skill goes beyond a simple prompt template. Its main entrypoint and supporting references guide the agent toward MagicBlock-specific implementation details such as:
 
 - When to use the base layer connection vs. the ephemeral rollup connection
-- How to structure delegation, commit, and undelegation flows correctly
+- How to structure delegation, commit, and undelegation flows correctly with `MagicIntentBundleBuilder` (SDK 0.11+)
 - Common Anchor patterns for `#[ephemeral]`, `#[delegate]`, and `#[commit]`
+- Magic Actions: scheduling base-layer instructions inside an ER transaction via `MagicIntentBundleBuilder.add_post_commit_actions(...)` so they execute atomically once the commit is sealed back
+- Topping up delegated accounts with `lamportsDelegatedTransferIx` (single-use lamports PDA, submitted on base layer, credited on the ER)
+- Lifting the default 10-commit sponsorship cap by attaching a `magic_fee_vault` PDA and delegated fee payer to the intent bundle
+- Private Ephemeral Rollups (PER) patterns — delegating the permission account alongside the permissioned account so member updates execute on the ER
+- Private Payments API workflows including the challenge → login → bearer-token flow for reading private balances and the public/private swap modes
 - VRF and crank setup for real-time apps and games
 - Environment variables, versions, and dependencies for MagicBlock development
 
