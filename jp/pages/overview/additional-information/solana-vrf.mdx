@@ -1,0 +1,78 @@
+---
+title: "検証可能なランダムネスのための Solana VRF"
+description: "Solana VRF を使って、Solana ゲーム、抽選、ガチャ、マッチメイキング、リアルタイムアプリ向けに証明可能に公平なランダムネスを要求します。"
+---
+
+MagicBlock の Solana VRF は、Solana プログラムに検証可能なランダムネスプリミティブを提供します。ゲームプレイ、抽選、マッチメイキング、その他ブロックハッシュやアプリサーバーを信頼せずに公平な結果を必要とするリアルタイムフローに適しています。
+
+<CardGroup cols={2}>
+  <Card
+    title="構築を始める"
+    icon="book"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    MagicBlock VRF SDK で Solana VRF のリクエストとコールバックの流れを構築します。
+  </Card>
+
+  <Card
+    title="技術詳細"
+    icon="diagram-project"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/introduction/technical-details"
+    iconType="duotone"
+  >
+    リクエスト、証明、オラクルキュー、コールバックの仕組みを確認します。
+  </Card>
+
+  <Card
+    title="セキュリティと監査"
+    icon="shield-check"
+    href="/jp/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    監査レポートとセキュリティノートを読みます。
+  </Card>
+
+  <Card
+    title="オープンソース VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    プログラム、SDK、証明実装、サンプルを確認します。
+  </Card>
+</CardGroup>
+
+## Solana VRF とは？
+
+Solana VRF は、Solana プログラム向けの検証可能ランダム関数実装です。プログラムがランダムネスを要求し、オラクルが暗号学的証明付きのランダム値を計算し、MagicBlock VRF プログラムがその証明を検証してからあなたのプログラムへコールバックします。
+
+この証明により結果は監査可能になります。ユーザーとプログラムは、ランダムな結果がバリデータ、サーバー、ゲーム運営者によって後から選ばれたものではなく、コミット済みリクエストから生成されたことを確認できます。
+
+## MagicBlock Solana VRF を使う理由
+
+- **Solana プログラム向け**：`ephemeral_vrf_sdk` でランダムネスを要求し、自分のコールバック命令で結果を消費できます。
+- **リアルタイムアプリ向け**：MagicBlock の ephemeral rollup 実行モデルにより、ゲームやインタラクティブなフローへ低遅延でランダムネスを届けます。
+- **検証可能な設計**：コールバックロジックが実行される前に、証明がオンチェーンで検証されます。
+- **オープンソースかつ監査済み**：VRF プログラムは公開されており、監査情報はセキュリティドキュメントから確認できます。
+
+## Solana VRF の仕組み
+
+1. プログラムが `caller_seed`、コールバック discriminator、コールバックアカウントを含むランダムネスリクエストを送信します。
+2. リクエストはオラクルキューに追加されます。
+3. 検証済みオラクルがランダム値と証明を計算します。
+4. MagicBlock VRF プログラムが証明を検証します。
+5. コールバックがランダムバイトを受け取り、サイコロ、ドロップ、抽選当選者などのゲームやアプリロジックに変換します。
+
+## 一般的なユースケース
+
+- アイテムドロップとガチャ
+- マッチメイキングとシャッフル
+- 抽選とギブアウェイ
+- ランダムなリソース生成
+- ランダムなキャラクター属性や NFT trait
+- 監査可能な公平性が必要な Solana アプリ
+
+## 適切なガイドから始める
+
+リクエスト命令とコールバック命令を実装する準備ができたら、[Solana VRF クイックスタート](/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)を使用してください。本番前には、[セキュリティガイド](/jp/pages/verifiable-randomness-functions-vrfs/introduction/security)でコールバック検証、署名者チェック、監査リンクを確認してください。

@@ -1,35 +1,38 @@
 ---
 title: "Security"
-description: "MagicBlock's VRF program is audited and generates verifiable randomness"
+description: "How Solana VRF randomness proofs are verified"
 ---
 
-MagicBlock exposes randomness through [**VRF Program**](https://github.com/magicblock-labs/ephemeral-vrf/) – a Solana VRF implementation that uses a network of oracles to compute and verify random values. The protocol follows [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381), leveraging Curve25519's Ristretto group and Schnorr‑style signatures for proofs. See the [Technical Details](./technical-details) page for integration specifics.
-
-Upon randomness request, the VRF program computes a [unique hashId](https://github.com/magicblock-labs/ephemeral-vrf/blob/main/program/src/request_randomness.rs#L71) from various inputs and stores it in the onchain oracle queue:
-
-```rust
-    let combined_hash = hashv(&[
-        &args.caller_seed,
-        &slot.to_le_bytes(),
-        &slothash,
-        &args.callback_discriminator,
-        &args.callback_program_id.to_bytes(),
-        &time.to_le_bytes(),
-        &idx.to_le_bytes(),
-    ]);
-```
-
-Verified oracles sign the unique queue items with their private key, the resulted signature or `randomness proof` is verifiable onchain:
-
-<img height="300" src="/images/vrf-proof.png" />
-
-The `randomness proof` is cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
+Solana VRF proofs are cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
 
 ```rust
 #[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
 pub vrf_program_identity: Signer<'info>,
 ```
 
-Only the official MagicBlock oracle can trigger the callback, preventing spoofed or manipulated results. Invalid proofs automatically fail, and other programs cannot front‑run the request.
+Only the official MagicBlock oracle can trigger the callback, preventing spoofed or manipulated results. Invalid proofs automatically fail, and other programs cannot front-run the request.
 
-EphemeralVrf checks for conditions like `InvalidProof` and `Unauthorized` so incorrect signatures or unauthorized callers are rejected before your game logic runs.
+EphemeralVrf checks for conditions like `InvalidProof` and `Unauthorized` so incorrect signatures or unauthorized callers are rejected before your game logic runs. The VRF program has a published audit, so treat that report as the source of truth before going live.
+
+Avoid letting users provide the entire `caller_seed` directly. Combine it with game state or timestamps to prevent seed grinding. Because everything executes inside the deterministic rollup, the random value cannot be reused or delayed.
+This enforcement happens within the same [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) that executes your game logic.
+
+<CardGroup cols={2}>
+  <Card
+    title="Security & Audits"
+    icon="shield-check"
+    href="/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    Read the audit report and security notes.
+  </Card>
+
+  <Card
+    title="Solana VRF"
+    icon="dice"
+    href="/pages/overview/additional-information/solana-vrf"
+    iconType="duotone"
+  >
+    Return to the Solana VRF overview.
+  </Card>
+</CardGroup>

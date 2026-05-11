@@ -1,7 +1,9 @@
 ---
 title: "技術詳細"
-description: "MagicBlock が検証可能なランダムネスをどのように統合しているか"
+description: "Solana VRF が MagicBlock とどのように統合されるか"
 ---
+
+製品概要については [Solana VRF](/jp/pages/overview/additional-information/solana-vrf) を参照してください。
 
 ランタイムの概要については [Ephemeral Rollup ドキュメント](/jp/pages/get-started/introduction/ephemeral-rollup) を参照してください。
 
@@ -23,6 +25,25 @@ MagicBlock は `ephemeral_vrf_sdk` を通じて、ランダムネスを第一級
 4. 証明が検証された後、VRF プログラムはあらかじめ定義された関数を通じてあなたのプログラムへコールバックし、ランダムネスを「消費」させます。
 
 <Note>
-  EphemeralVrf のコードベースは現在も活発に開発中で、まだ監査されていません。
-  本番の rollup に統合する前に、十分にテストしてください。
+  VRF プログラムには公開済みの監査があります。本番 rollup に統合する前に、レポートを確認し十分にテストしてください。
 </Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="クイックスタート"
+    icon="book"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Solana VRF のセットアップガイドに従ってください。
+  </Card>
+
+  <Card
+    title="オープンソース VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    オープンソースの VRF プログラムとサンプルを確認します。
+  </Card>
+</CardGroup>

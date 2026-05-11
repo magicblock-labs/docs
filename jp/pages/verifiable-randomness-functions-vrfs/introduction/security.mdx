@@ -1,29 +1,9 @@
 ---
 title: "セキュリティ"
-description: "MagicBlock の VRF プログラムは監査済みで、検証可能なランダムネスを生成します"
+description: "Solana VRF のランダムネス証明がどのように検証されるか"
 ---
 
-MagicBlock は [**VRF Program**](https://github.com/magicblock-labs/ephemeral-vrf/) を通じて乱数機能を提供しています。これは、オラクルネットワークを使ってランダム値を計算および検証する Solana VRF 実装です。プロトコルは [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381) に従い、Curve25519 の Ristretto グループと Schnorr 形式の署名を使って証明を生成します。統合の詳細は[技術詳細](./technical-details)ページを参照してください。
-
-乱数リクエストが発生すると、VRF プログラムは複数の入力から[一意な hashId](https://github.com/magicblock-labs/ephemeral-vrf/blob/main/program/src/request_randomness.rs#L71) を計算し、それをオンチェーンのオラクルキューに保存します。
-
-```rust
-    let combined_hash = hashv(&[
-        &args.caller_seed,
-        &slot.to_le_bytes(),
-        &slothash,
-        &args.callback_discriminator,
-        &args.callback_program_id.to_bytes(),
-        &time.to_le_bytes(),
-        &idx.to_le_bytes(),
-    ]);
-```
-
-検証済みオラクルは、この一意なキュー項目に秘密鍵で署名します。生成された署名、つまり `randomness proof` はオンチェーンで検証できます。
-
-<img height="300" src="/images/vrf-proof.png" />
-
-`randomness proof` は入力 `caller_seed` と MagicBlock の VRF 署名者 ID に暗号学的に結びついています。コールバック側では次の制約でこれを強制します。
+Solana VRF の証明は、入力 `caller_seed` と MagicBlock の VRF signer identity に暗号学的に結びついています。コールバック側では次の制約でこれを強制します。
 
 ```rust
 #[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
@@ -32,4 +12,27 @@ pub vrf_program_identity: Signer<'info>,
 
 公式の MagicBlock オラクルだけがコールバックを発火できるため、偽造や改ざんされた結果を防げます。無効な証明は自動的に失敗し、他のプログラムがリクエストをフロントランすることもできません。
 
-EphemeralVrf は `InvalidProof` や `Unauthorized` のような条件を検査するため、不正な署名や未認可の呼び出し元はゲームロジックが動く前に拒否されます。
+EphemeralVrf は `InvalidProof` や `Unauthorized` のような条件を検査するため、不正な署名や未認可の呼び出し元はゲームロジックが動く前に拒否されます。VRF プログラムには公開済みの監査があるため、本番前にはそのレポートを安全性の根拠として確認してください。
+
+ユーザーに `caller_seed` 全体をそのまま与えさせるのは避けてください。seed grinding を防ぐため、ゲーム状態やタイムスタンプと組み合わせます。すべてが決定論的 rollup 内で実行されるため、ランダム値を再利用したり遅延させたりすることはできません。
+この強制検証は、ゲームロジックを実行するのと同じ [ephemeral rollup](/jp/pages/get-started/introduction/ephemeral-rollup) 内で行われます。
+
+<CardGroup cols={2}>
+  <Card
+    title="セキュリティと監査"
+    icon="shield-check"
+    href="/jp/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    監査レポートとセキュリティノートを読みます。
+  </Card>
+
+  <Card
+    title="Solana VRF"
+    icon="dice"
+    href="/jp/pages/overview/additional-information/solana-vrf"
+    iconType="duotone"
+  >
+    Solana VRF 概要に戻ります。
+  </Card>
+</CardGroup>

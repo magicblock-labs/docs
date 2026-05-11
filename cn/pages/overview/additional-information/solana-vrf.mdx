@@ -1,0 +1,78 @@
+---
+title: "用于可验证随机数的 Solana VRF"
+description: "使用 Solana VRF 为 Solana 游戏、抽奖、抽卡、匹配和实时应用请求可证明公平的随机数。"
+---
+
+MagicBlock 的 Solana VRF 为 Solana 程序提供可验证随机数原语，适用于游戏玩法、彩票、匹配和其他需要公平结果且不能信任区块哈希或应用服务器的实时流程。
+
+<CardGroup cols={2}>
+  <Card
+    title="开始构建"
+    icon="book"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    使用 MagicBlock VRF SDK 构建 Solana VRF 请求和回调流程。
+  </Card>
+
+  <Card
+    title="技术细节"
+    icon="diagram-project"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/introduction/technical-details"
+    iconType="duotone"
+  >
+    了解请求、证明、预言机队列和回调的工作方式。
+  </Card>
+
+  <Card
+    title="安全与审计"
+    icon="shield-check"
+    href="/cn/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    阅读审计报告和安全说明。
+  </Card>
+
+  <Card
+    title="开源 VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    查看程序、SDK、证明实现和示例。
+  </Card>
+</CardGroup>
+
+## 什么是 Solana VRF？
+
+Solana VRF 是面向 Solana 程序的可验证随机函数实现。你的程序请求随机数，预言机计算随机值并附带密码学证明，MagicBlock VRF 程序会先验证该证明，再回调你的程序。
+
+该证明让结果可审计。用户和程序可以确认随机结果来自已提交的请求，而不是由验证器、服务器或游戏运营方事后选择。
+
+## 为什么使用 MagicBlock Solana VRF？
+
+- **为 Solana 程序构建**：通过 `ephemeral_vrf_sdk` 请求随机数，并在你自己的回调指令中消费结果。
+- **面向实时应用设计**：MagicBlock 的 ephemeral rollup 执行模型为游戏和交互式流程提供低延迟随机数交付。
+- **默认可验证**：证明会在链上验证，然后才执行你的回调逻辑。
+- **开源且经过审计**：VRF 程序公开可查，审计覆盖请参阅安全文档。
+
+## Solana VRF 如何工作
+
+1. 你的程序提交一个随机数请求，其中包含 `caller_seed`、回调 discriminator 和回调账户。
+2. 请求被加入预言机队列等待处理。
+3. 已验证的预言机计算随机值和证明。
+4. MagicBlock VRF 程序验证该证明。
+5. 你的回调接收随机字节，并将其转换为游戏或应用逻辑，例如掷骰子、掉落物或抽奖获胜者。
+
+## 常见用例
+
+- 掉落物和抽卡
+- 匹配和洗牌
+- 抽奖和赠送活动
+- 随机资源生成
+- 随机角色属性或 NFT 特征
+- 任何需要可审计公平性的 Solana 应用
+
+## 从正确的指南开始
+
+准备实现请求和回调指令时，请使用 [Solana VRF 快速开始](/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)。上线前，请使用[安全指南](/cn/pages/verifiable-randomness-functions-vrfs/introduction/security)检查回调验证、签名者校验和审计链接。

@@ -1,6 +1,6 @@
 ---
 title: "빠른 시작"
-description: "Solana에서 MagicBlock VRF SDK를 사용해 온체인 검증 가능 랜덤니스를 요청하고 사용하는 방법을 알아봅니다."
+description: "MagicBlock VRF SDK로 Solana VRF 온체인 랜덤니스를 요청하고 소비하는 방법을 알아봅니다."
 ---
 
 import Endpoints from "/ko/snippets/endpoints.mdx";
@@ -24,6 +24,12 @@ import QuickAccessVRF from "/ko/snippets/quick-access-vrf.mdx";
 ---
 
 <Note>
+  제품 개요가 먼저 필요하다면 <a href="/ko/pages/overview/additional-information/solana-vrf">Solana VRF</a> 페이지에서 시작한 뒤 이 빠른 시작을 진행하세요.
+</Note>
+
+---
+
+<Note>
   로컬 머신에서 VRF를 엔드투엔드로 실행하고 싶나요? 전체 로컬 스택, Surfpool 대안, 로컬 <code>vrf-oracle</code> 흐름은 <a href="/ko/pages/get-started/how-integrate-your-program/local-setup">Local Validator Setup</a> 가이드를 참고하세요.
 </Note>
 
@@ -40,7 +46,7 @@ import QuickAccessVRF from "/ko/snippets/quick-access-vrf.mdx";
   </Step>
   <Step
     title={
-      <a href="#2-request-%26-consume-randomnness">
+      <a href="#2-request-%26-consume-randomness">
         랜덤니스 요청 및 소비 명령 추가.
       </a>
     }
@@ -88,7 +94,7 @@ import QuickAccessVRF from "/ko/snippets/quick-access-vrf.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title="2. Request & Consume Randomnness">
+  <Tab title="2. Request & Consume Randomness">
 
     1. Add `ephemeral_vrf_sdk` with Anchor features to your program
 

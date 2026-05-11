@@ -1,6 +1,6 @@
 ---
 title: "기술 세부 사항"
-description: "MagicBlock이 검증 가능 랜덤니스를 통합하는 방법"
+description: "Solana VRF가 MagicBlock과 통합되는 방식"
 ---
 
 랜덤 값은 Curve25519의 Ristretto group 위에 구축된 VRF를 통해 생성되며, [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)에 설명된 Schnorr 유사 서명을 사용해 증명됩니다. proof와 출력은 MagicBlock VRF signer PDA의 서명된 callback으로 rollup에 반환됩니다. 여러분의 프로그램은 caller를 검증한 뒤 게임 로직에서 랜덤니스를 사용합니다.
@@ -17,7 +17,9 @@ description: "MagicBlock이 검증 가능 랜덤니스를 통합하는 방법"
 2. 랜덤니스 request가 queue에 들어가면 oracle이 request를 처리하고 랜덤니스 계산을 수행합니다.
 3. 완료되면 결과와 proof를 MagicBlock VRF program에 반환합니다. proof를 검증한 뒤 VRF program은 사전 정의된 함수를 통해 여러분의 프로그램으로 callback하여 랜덤니스를 “consume”합니다.
 
-<Note>MagicBlock의 VRF Program은 오픈소스이며 감사를 거쳤습니다.</Note>
+<Note>
+  MagicBlock의 VRF Program은 오픈소스이며 감사를 거쳤습니다. 제품 요약은 <a href="/ko/pages/overview/additional-information/solana-vrf">Solana VRF 개요</a>를 참고하세요.
+</Note>
 
 <CardGroup cols={2}>
   <Card

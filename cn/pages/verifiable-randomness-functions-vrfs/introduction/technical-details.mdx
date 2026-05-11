@@ -1,6 +1,6 @@
 ---
 title: "技术细节"
-description: "MagicBlock 如何集成可验证随机数"
+description: "Solana VRF 如何与 MagicBlock 集成"
 ---
 
 随机数通过构建在 Curve25519 的 Ristretto group 之上的 VRF 生成，并使用 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381) 所描述的类 Schnorr 签名进行证明。proof 和输出会通过来自 MagicBlock VRF signer PDA 的已签名 callback 返回给 rollup。你的程序会先验证 caller，然后在游戏逻辑中使用该随机数。
@@ -17,7 +17,9 @@ description: "MagicBlock 如何集成可验证随机数"
 2. 一旦你的随机数请求进入队列，某个预言机就会提取该请求并执行随机数计算。
 3. 完成后，它会将结果和 proof 返回给 MagicBlock VRF program。VRF program 验证 proof 后，会通过预定义函数回调你的程序，从而“消费”该随机数。
 
-<Note>MagicBlock 的 VRF Program 是开源且经过审计的。</Note>
+<Note>
+  MagicBlock 的 VRF Program 是开源且经过审计的。请参阅 <a href="/cn/pages/overview/additional-information/solana-vrf">Solana VRF 概览</a>了解产品摘要。
+</Note>
 
 <CardGroup cols={2}>
   <Card

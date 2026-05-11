@@ -1,6 +1,6 @@
 ---
 title: "クイックスタート"
-description: "Solana 上で MagicBlock VRF SDK を使い、オンチェーンで検証可能なランダムネスを要求して利用する方法を学びます。"
+description: "MagicBlock VRF SDK を使って Solana VRF のオンチェーンランダムネスを要求し利用する方法を学びます。"
 ---
 
 import Endpoints from "/jp/snippets/endpoints.mdx";
@@ -24,6 +24,12 @@ import QuickAccessVRF from "/jp/snippets/quick-access-vrf.mdx";
 ---
 
 <Note>
+  先に製品概要を確認したい場合は、<a href="/jp/pages/overview/additional-information/solana-vrf">Solana VRF</a> ページから始めてから、このクイックスタートに進んでください。
+</Note>
+
+---
+
+<Note>
   手元のマシンで VRF をエンドツーエンド実行したいですか？完全ローカルスタック、Surfpool の代替、ローカル <code>vrf-oracle</code> フローについては <a href="/jp/pages/get-started/how-integrate-your-program/local-setup">Local Validator Setup</a> ガイドを使ってください。
 </Note>
 
@@ -40,7 +46,7 @@ import QuickAccessVRF from "/jp/snippets/quick-access-vrf.mdx";
   </Step>
   <Step
     title={
-      <a href="#2-request-%26-consume-randomnness">
+      <a href="#2-request-%26-consume-randomness">
         ランダムネス要求と消費の命令を追加する。
       </a>
     }
@@ -88,7 +94,7 @@ import QuickAccessVRF from "/jp/snippets/quick-access-vrf.mdx";
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title="2. Request & Consume Randomnness">
+  <Tab title="2. Request & Consume Randomness">
 
     1. Add `ephemeral_vrf_sdk` with Anchor features to your program
 

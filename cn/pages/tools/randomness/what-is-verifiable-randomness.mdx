@@ -1,12 +1,12 @@
 ---
 title: "什么是可验证随机性？"
-description: "为链上逻辑提供可证明公平的随机性"
+description: "了解 Solana VRF 如何为 Solana 程序和链上逻辑提供可证明公平的随机数。"
 ---
 
-可验证随机性为链上程序提供了一个不可篡改的随机来源。
+Solana VRF 为链上程序提供了一个不可篡改的随机来源。
 与基于时间戳或区块哈希生成的伪随机值不同，它在链下生成，并会附带任何人都可在链上验证的密码学证明。
 
-MagicBlock 通过 **EphemeralVrf** 提供这项能力。这是一个 Solana VRF 实现，使用预言机网络来计算并验证随机值。该协议遵循 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)，并利用 Curve25519 的 Ristretto 群和 Schnorr 风格签名生成证明。有关集成细节，请参阅[技术细节](./technical-details)页面。
+MagicBlock 通过 **EphemeralVrf** 提供这项能力。这是一个 Solana VRF 实现，使用预言机网络来计算并验证随机值。该协议遵循 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)，并利用 Curve25519 的 Ristretto 群和 Schnorr 风格签名生成证明。产品背景请先阅读 [Solana VRF 概览](/cn/pages/overview/additional-information/solana-vrf)，集成细节请参阅[技术细节](./technical-details)页面。
 
 MagicBlock rollup 通过 `ephemeral_vrf_sdk` 获取这类随机性，
 它完全运行在 [ephemeral rollup](/cn/pages/get-started/introduction/ephemeral-rollup)
@@ -14,7 +14,36 @@ MagicBlock rollup 通过 `ephemeral_vrf_sdk` 获取这类随机性，
 
 这使程序能够在无需信任单一参与方的情况下，实现掉落、抽卡或匹配等机制。返回的凭证可以证明该随机数是公平生成且不可操纵的。
 
-#### 示例用例
+<CardGroup cols={2}>
+  <Card
+    title="Solana VRF 快速开始"
+    icon="book"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    构建 Solana VRF 的请求和回调流程。
+  </Card>
+
+  <Card
+    title="产品概览"
+    icon="book"
+    href="/cn/pages/overview/additional-information/solana-vrf"
+    iconType="duotone"
+  >
+    了解 Solana VRF 如何融入 MagicBlock 产品体系。
+  </Card>
+
+  <Card
+    title="开源 VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    查看开源 VRF 程序和示例。
+  </Card>
+</CardGroup>
+
+## 示例用例
 
 - 可证明公平的盲盒或宝箱掉落
 - 安全的抽卡系统

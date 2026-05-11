@@ -1,7 +1,9 @@
 ---
 title: "기술 세부 사항"
-description: "MagicBlock이 검증 가능한 랜덤니스를 어떻게 통합하는지"
+description: "Solana VRF가 MagicBlock과 통합되는 방식"
 ---
+
+제품 개요는 [Solana VRF](/ko/pages/overview/additional-information/solana-vrf)를 참고하세요.
 
 런타임 개요는 [Ephemeral Rollup 문서](/ko/pages/get-started/introduction/ephemeral-rollup)를 참고하세요.
 
@@ -23,6 +25,25 @@ MagicBlock은 `ephemeral_vrf_sdk` 를 통해 랜덤니스를 일급 프리미티
 4. 증명이 검증되면 VRF 프로그램이 미리 정의된 함수로 여러분의 프로그램을 다시 호출해 랜덤니스를 “소비”하게 합니다.
 
 <Note>
-  EphemeralVrf 코드베이스는 아직 활발히 개발 중이며 감사를 받지 않았습니다.
-  프로덕션 rollup에 통합하기 전에 충분히 테스트하세요.
+  VRF 프로그램에는 공개 감사가 있습니다. 프로덕션 rollup에 통합하기 전에 보고서를 검토하고 충분히 테스트하세요.
 </Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="빠른 시작"
+    icon="book"
+    href="/ko/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Solana VRF 설정 가이드를 따르세요.
+  </Card>
+
+  <Card
+    title="오픈소스 VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    오픈소스 VRF 프로그램과 예제를 확인합니다.
+  </Card>
+</CardGroup>

@@ -1,7 +1,9 @@
 ---
 title: "Technical Details"
-description: "How MagicBlock integrates verifiable randomness"
+description: "How Solana VRF integrates with MagicBlock"
 ---
+
+For the product overview, see [Solana VRF](/pages/overview/additional-information/solana-vrf).
 
 See the [Ephemeral Rollup documentation](/pages/get-started/introduction/ephemeral-rollup) for an overview of the runtime.
 
@@ -23,6 +25,26 @@ The flow starts with a “Request for randomness”.
 4. After verifying the proof, the VRF program will call back into your program into a predefined function that will “consume” the randomness.
 
 <Note>
-  The EphemeralVrf codebase is still under active development and has not been
-  audited. Test thoroughly before integrating it into production rollups.
+  The VRF program has a published audit. Review the report and test thoroughly
+  before integrating it into production rollups.
 </Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart"
+    icon="book"
+    href="/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Follow the Solana VRF setup guide.
+  </Card>
+
+  <Card
+    title="Open Source VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    Inspect the open-source VRF program and examples on GitHub.
+  </Card>
+</CardGroup>

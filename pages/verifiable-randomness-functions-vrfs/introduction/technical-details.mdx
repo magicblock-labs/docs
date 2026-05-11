@@ -1,6 +1,6 @@
 ---
 title: "Technical Details"
-description: "How MagicBlock integrates verifiable randomness"
+description: "How Solana VRF integrates with MagicBlock"
 ---
 
 Random numbers are generated via a VRF built on Curve25519's Ristretto group and proven using a Schnorr-like signature as described in [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381). The proof and output are returned to the rollup with a signed callback from the MagicBlock VRF signer PDA. Your program verifies the caller and then uses the randomness in gameplay logic.
@@ -17,7 +17,9 @@ The flow starts with a “Request for randomness”.
 2. Once your randomness request is in the queue, an oracle will release the request and perform the randomness computation.
 3. Upon completion, it returns the result and proof to the MagicBlock VRF program. After verifying the proof, the VRF program will callback into your program into a predefined function that will “consume” the randomness.
 
-<Note>MagicBlock's VRF Program is open-source and audited.</Note>
+<Note>
+  MagicBlock's VRF Program is open-source and audited. See the <a href="/pages/overview/additional-information/solana-vrf">Solana VRF overview</a> for the product summary.
+</Note>
 
 <CardGroup cols={2}>
   <Card

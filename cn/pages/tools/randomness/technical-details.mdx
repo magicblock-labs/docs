@@ -1,7 +1,9 @@
 ---
 title: "技术细节"
-description: "MagicBlock 如何集成可验证随机性"
+description: "Solana VRF 如何与 MagicBlock 集成"
 ---
+
+如需产品概览，请参阅 [Solana VRF](/cn/pages/overview/additional-information/solana-vrf)。
 
 有关运行时概览，请参阅 [Ephemeral Rollup 文档](/cn/pages/get-started/introduction/ephemeral-rollup)。
 
@@ -23,6 +25,25 @@ MagicBlock 通过 `ephemeral_vrf_sdk` 将随机性作为一等原语提供。Rol
 4. 在验证证明后，VRF 程序会回调你的程序中预先定义的函数来“消费”随机性。
 
 <Note>
-  EphemeralVrf 代码库仍在积极开发中，尚未经过审计。
-  在集成到生产 rollup 之前，请务必充分测试。
+  VRF 程序已有公开审计。集成到生产 rollup 前，请先阅读报告并充分测试。
 </Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="快速开始"
+    icon="book"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    按照 Solana VRF 设置指南进行集成。
+  </Card>
+
+  <Card
+    title="开源 VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    查看开源 VRF 程序和示例。
+  </Card>
+</CardGroup>

@@ -1,0 +1,78 @@
+---
+title: "Solana VRF"
+description: "Use MagicBlock Solana VRF to request provably fair randomness"
+---
+
+MagicBlock's Solana VRF gives Solana programs a verifiable randomness primitive for gameplay, lotteries, matchmaking, and other real-time flows that need fair outcomes without trusting blockhashes or app servers.
+
+<CardGroup cols={2}>
+  <Card
+    title="Start Building"
+    icon="book"
+    href="/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Build a Solana VRF request and callback flow with the MagicBlock VRF SDK.
+  </Card>
+
+  <Card
+    title="Technical Details"
+    icon="diagram-project"
+    href="/pages/verifiable-randomness-functions-vrfs/introduction/technical-details"
+    iconType="duotone"
+  >
+    See how requests, proofs, oracle queues, and callbacks work.
+  </Card>
+
+  <Card
+    title="Security & Audits"
+    icon="shield-check"
+    href="/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    Read the audit report and security notes.
+  </Card>
+
+  <Card
+    title="Open Source VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    Inspect the program, SDK, proof implementation, and examples on GitHub.
+  </Card>
+</CardGroup>
+
+## What is Solana VRF?
+
+Solana VRF is a verifiable random function implementation for Solana programs. Your program requests randomness, an oracle computes a random value with a cryptographic proof, and the MagicBlock VRF program verifies that proof before calling back into your program.
+
+That proof makes the result auditable. Users and programs can verify that a random outcome was produced from the committed request instead of being chosen after the fact by a validator, server, or game operator.
+
+## Why use MagicBlock Solana VRF?
+
+- **Built for Solana programs**: request randomness through the `ephemeral_vrf_sdk` and consume the result in your own callback instruction.
+- **Designed for real-time apps**: MagicBlock's ephemeral rollup execution model keeps randomness delivery low-latency for games and interactive flows.
+- **Verifiable by design**: proofs are validated on-chain before your callback logic runs.
+- **Open source and audited**: the VRF program is public, with audit coverage linked from the security docs.
+
+## How Solana VRF works
+
+1. Your program submits a randomness request with a `caller_seed`, callback discriminator, and callback accounts.
+2. The request is added to an oracle queue for fulfillment.
+3. A verified oracle computes the random value and proof.
+4. The MagicBlock VRF program verifies the proof.
+5. Your callback receives the random bytes and converts them into game or app logic, such as dice rolls, loot drops, or raffle winners.
+
+## Common use cases
+
+- Loot drops and gacha
+- Matchmaking and shuffling
+- Raffles and giveaways
+- Randomized resource generation
+- Random character attributes or NFT traits
+- Any Solana app that needs auditable fairness
+
+## Start with the right guide
+
+Use the [Solana VRF quickstart](/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart) when you are ready to implement request and callback instructions. Use the [security guide](/pages/verifiable-randomness-functions-vrfs/introduction/security) to review callback validation, signer checks, and audit links before going live.

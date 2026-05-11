@@ -1,12 +1,12 @@
 ---
 title: "What is Verifiable Randomness?"
-description: "Provably fair randomness for on-chain logic"
+description: "Learn how Solana VRF provides provably fair randomness for Solana programs and on-chain logic."
 ---
 
-Verifiable randomness provides a tamper-proof source of chance for on-chain programs.
+Solana VRF provides a tamper-proof source of chance for on-chain programs.
 Unlike pseudorandom values derived from timestamps or block hashes, it is generated off-chain and delivered alongside a cryptographic proof that anyone can verify on-chain.
 
-MagicBlock exposes this capability through **EphemeralVrf** – a Solana VRF implementation that uses a network of oracles to compute and verify random values. The protocol follows [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381), leveraging Curve25519's Ristretto group and Schnorr‑style signatures for proofs. See the [Technical Details](./technical-details) page for integration specifics.
+MagicBlock exposes this capability through **EphemeralVrf** - a Solana VRF implementation that uses a network of oracles to compute and verify random values. The protocol follows [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381), leveraging Curve25519's Ristretto group and Schnorr-style signatures for proofs. Start with the [Solana VRF overview](/pages/overview/additional-information/solana-vrf) for product context, or see the [Technical Details](./technical-details) page for integration specifics.
 
 MagicBlock rollups access this randomness through the `ephemeral_vrf_sdk`,
 which runs entirely within the [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup)
@@ -14,11 +14,39 @@ execution window.
 
 This lets programs implement mechanics like loot drops, gacha pulls, or matchmaking without trusting a single party. The receipt proves that the number was produced fairly and cannot be manipulated.
 
-#### Example use cases
+<CardGroup cols={2}>
+  <Card
+    title="Solana VRF Quickstart"
+    icon="book"
+    href="/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Build the request and callback flow for Solana VRF.
+  </Card>
+
+  <Card
+    title="Product Overview"
+    icon="book"
+    href="/pages/overview/additional-information/solana-vrf"
+    iconType="duotone"
+  >
+    See how Solana VRF fits into MagicBlock's product surface.
+  </Card>
+
+  <Card
+    title="Open Source VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    Inspect the open-source VRF program and examples on GitHub.
+  </Card>
+</CardGroup>
+
+## Example use cases
 
 - Provably fair loot boxes or chest drops
 - Secure gacha systems
 - Randomized spawn or resource generation
 - Chain-verified PvP matchmaking
 - Trustless raffles or giveaways
-

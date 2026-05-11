@@ -1,0 +1,78 @@
+---
+title: "검증 가능한 랜덤니스를 위한 Solana VRF"
+description: "Solana VRF로 Solana 게임, 추첨, 가챠, 매치메이킹, 실시간 앱에 증명 가능하게 공정한 랜덤니스를 요청하세요."
+---
+
+MagicBlock의 Solana VRF는 Solana 프로그램에 검증 가능한 랜덤니스 프리미티브를 제공합니다. 게임플레이, 복권, 매치메이킹, 그리고 blockhash나 앱 서버를 신뢰하지 않고 공정한 결과가 필요한 실시간 흐름에 적합합니다.
+
+<CardGroup cols={2}>
+  <Card
+    title="구축 시작"
+    icon="book"
+    href="/ko/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    MagicBlock VRF SDK로 Solana VRF 요청과 콜백 흐름을 구축합니다.
+  </Card>
+
+  <Card
+    title="기술 세부 사항"
+    icon="diagram-project"
+    href="/ko/pages/verifiable-randomness-functions-vrfs/introduction/technical-details"
+    iconType="duotone"
+  >
+    요청, 증명, 오라클 큐, 콜백이 어떻게 작동하는지 확인합니다.
+  </Card>
+
+  <Card
+    title="보안 및 감사"
+    icon="shield-check"
+    href="/ko/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    감사 보고서와 보안 노트를 읽습니다.
+  </Card>
+
+  <Card
+    title="오픈소스 VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-vrf"
+    iconType="duotone"
+  >
+    프로그램, SDK, 증명 구현, 예제를 확인합니다.
+  </Card>
+</CardGroup>
+
+## Solana VRF란?
+
+Solana VRF는 Solana 프로그램을 위한 검증 가능한 랜덤 함수 구현입니다. 프로그램이 랜덤니스를 요청하면, 오라클이 암호학적 증명과 함께 랜덤 값을 계산하고, MagicBlock VRF 프로그램이 그 증명을 검증한 뒤 여러분의 프로그램을 콜백합니다.
+
+이 증명은 결과를 감사 가능하게 만듭니다. 사용자와 프로그램은 무작위 결과가 검증자, 서버, 게임 운영자가 사후에 선택한 것이 아니라 커밋된 요청에서 생성되었음을 확인할 수 있습니다.
+
+## MagicBlock Solana VRF를 사용하는 이유
+
+- **Solana 프로그램용으로 구축**: `ephemeral_vrf_sdk`로 랜덤니스를 요청하고 자체 콜백 명령에서 결과를 소비합니다.
+- **실시간 앱에 맞춘 설계**: MagicBlock의 ephemeral rollup 실행 모델은 게임과 인터랙티브 흐름에 낮은 지연 시간으로 랜덤니스를 전달합니다.
+- **검증 가능한 설계**: 콜백 로직이 실행되기 전에 증명이 온체인에서 검증됩니다.
+- **오픈소스 및 감사 완료**: VRF 프로그램은 공개되어 있으며 감사 범위는 보안 문서에서 확인할 수 있습니다.
+
+## Solana VRF 작동 방식
+
+1. 프로그램이 `caller_seed`, 콜백 discriminator, 콜백 계정을 포함한 랜덤니스 요청을 제출합니다.
+2. 요청이 처리를 위해 오라클 큐에 추가됩니다.
+3. 검증된 오라클이 랜덤 값과 증명을 계산합니다.
+4. MagicBlock VRF 프로그램이 증명을 검증합니다.
+5. 콜백이 랜덤 바이트를 받아 주사위 굴림, 아이템 드롭, 추첨 당첨자 같은 게임 또는 앱 로직으로 변환합니다.
+
+## 일반적인 사용 사례
+
+- 아이템 드롭과 가챠
+- 매치메이킹과 셔플
+- 추첨과 경품 이벤트
+- 무작위 자원 생성
+- 무작위 캐릭터 속성 또는 NFT 특성
+- 감사 가능한 공정성이 필요한 모든 Solana 앱
+
+## 올바른 가이드로 시작하기
+
+요청 및 콜백 명령을 구현할 준비가 되면 [Solana VRF 빠른 시작](/ko/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart)을 사용하세요. 출시 전에는 [보안 가이드](/ko/pages/verifiable-randomness-functions-vrfs/introduction/security)에서 콜백 검증, 서명자 검사, 감사 링크를 확인하세요.
