@@ -6,7 +6,7 @@ description: "了解 Solana VRF 如何为 Solana 程序和链上逻辑提供可�
 Solana VRF 为链上程序提供了一个不可篡改的随机来源。
 与基于时间戳或区块哈希生成的伪随机值不同，它在链下生成，并会附带任何人都可在链上验证的密码学证明。
 
-MagicBlock 通过 **EphemeralVrf** 提供这项能力。这是一个 Solana VRF 实现，使用预言机网络来计算并验证随机值。该协议遵循 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)，并利用 Curve25519 的 Ristretto 群和 Schnorr 风格签名生成证明。产品背景请先阅读 [Solana VRF 概览](/cn/pages/overview/additional-information/solana-vrf)，集成细节请参阅[技术细节](./technical-details)页面。
+MagicBlock 通过 **EphemeralVrf** 提供这项能力。这是一个 Solana VRF 实现，使用预言机网络来计算并验证随机值。该协议遵循 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)，并利用 Curve25519 的 Ristretto 群和 Schnorr 风格签名生成证明。产品背景请先阅读 [Solana VRF 概览](/cn/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf)，集成细节请参阅[技术细节](./technical-details)页面。
 
 MagicBlock rollup 通过 `ephemeral_vrf_sdk` 获取这类随机性，
 它完全运行在 [ephemeral rollup](/cn/pages/get-started/introduction/ephemeral-rollup)
@@ -27,7 +27,7 @@ MagicBlock rollup 通过 `ephemeral_vrf_sdk` 获取这类随机性，
   <Card
     title="产品概览"
     icon="book"
-    href="/cn/pages/overview/additional-information/solana-vrf"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
     iconType="duotone"
   >
     了解 Solana VRF 如何融入 MagicBlock 产品体系。

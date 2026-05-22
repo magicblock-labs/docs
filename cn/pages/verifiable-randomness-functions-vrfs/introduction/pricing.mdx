@@ -1,0 +1,59 @@
+---
+title: "定价"
+description: "MagicBlock Solana VRF 可证明公平随机数请求的定价。"
+---
+
+import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
+
+MagicBlock Solana VRF 按已完成的随机数请求计费。费用涵盖证明生成与已验证结果的上链发布。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>VRF 类型</th>
+      <th>金额 (SOL)</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ER (&lt;50 ms)</td>
+      <td>免费</td>
+      <td>每次随机性请求</td>
+    </tr>
+    <tr>
+      <td>Solana (&lt;500 ms)</td>
+      <td>0.0008</td>
+      <td>每次随机性请求</td>
+    </tr>
+    <tr>
+      <td>Solana (1/2 seconds)</td>
+      <td>0.0005</td>
+      <td>每次随机性请求</td>
+    </tr>
+  </tbody>
+</table>
+
+## VRF 成本模拟器：30 天
+
+<VRFCostSimulator />
+
+<CardGroup cols={2}>
+  <Card
+    title="开始构建"
+    icon="book"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    使用 MagicBlock VRF SDK 构建 Solana VRF 请求和回调流程。
+  </Card>
+
+  <Card
+    title="Solana VRF"
+    icon="dice"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
+    iconType="duotone"
+  >
+    返回 Solana VRF 概览。
+  </Card>
+</CardGroup>

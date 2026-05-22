@@ -1,0 +1,59 @@
+---
+title: "料金"
+description: "MagicBlock Solana VRF の証明可能に公平なランダムネスリクエストの料金です。"
+---
+
+import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
+
+MagicBlock Solana VRF は、完了したランダムネスリクエストごとに課金されます。料金には、証明生成と検証済み結果のオンチェーン投稿が含まれます。
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>VRF 種別</th>
+      <th>金額 (SOL)</th>
+      <th>説明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ER (&lt;50 ms)</td>
+      <td>無料</td>
+      <td>ランダムネスリクエストごと</td>
+    </tr>
+    <tr>
+      <td>Solana (&lt;500 ms)</td>
+      <td>0.0008</td>
+      <td>ランダムネスリクエストごと</td>
+    </tr>
+    <tr>
+      <td>Solana (1/2 seconds)</td>
+      <td>0.0005</td>
+      <td>ランダムネスリクエストごと</td>
+    </tr>
+  </tbody>
+</table>
+
+## VRF コストシミュレーター：30 日
+
+<VRFCostSimulator />
+
+<CardGroup cols={2}>
+  <Card
+    title="構築を始める"
+    icon="book"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    MagicBlock VRF SDK で Solana VRF のリクエストとコールバックの流れを構築します。
+  </Card>
+
+  <Card
+    title="Solana VRF"
+    icon="dice"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
+    iconType="duotone"
+  >
+    Solana VRF 概要に戻ります。
+  </Card>
+</CardGroup>

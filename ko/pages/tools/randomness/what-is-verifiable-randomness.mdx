@@ -6,7 +6,7 @@ description: "Solana VRF가 Solana 프로그램과 온체인 로직에 증명 �
 Solana VRF는 온체인 프로그램에 변조 불가능한 확률 소스를 제공합니다.
 타임스탬프나 블록 해시에서 파생된 의사난수와 달리, 이는 오프체인에서 생성되며 누구나 온체인에서 검증할 수 있는 암호학적 증명과 함께 전달됩니다.
 
-MagicBlock은 **EphemeralVrf** 를 통해 이 기능을 제공합니다. 이는 오라클 네트워크를 사용해 무작위 값을 계산하고 검증하는 Solana VRF 구현입니다. 이 프로토콜은 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)을 따르며, Curve25519의 Ristretto 그룹과 Schnorr 스타일 서명을 활용해 증명을 생성합니다. 제품 배경은 [Solana VRF 개요](/ko/pages/overview/additional-information/solana-vrf)에서 시작하고, 통합 세부 사항은 [Technical Details](./technical-details) 페이지를 참고하세요.
+MagicBlock은 **EphemeralVrf** 를 통해 이 기능을 제공합니다. 이는 오라클 네트워크를 사용해 무작위 값을 계산하고 검증하는 Solana VRF 구현입니다. 이 프로토콜은 [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381)을 따르며, Curve25519의 Ristretto 그룹과 Schnorr 스타일 서명을 활용해 증명을 생성합니다. 제품 배경은 [Solana VRF 개요](/ko/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf)에서 시작하고, 통합 세부 사항은 [Technical Details](./technical-details) 페이지를 참고하세요.
 
 MagicBlock rollup은 `ephemeral_vrf_sdk` 를 통해 이 랜덤니스에 접근하며,
 이는 [ephemeral rollup](/ko/pages/get-started/introduction/ephemeral-rollup)
@@ -27,7 +27,7 @@ MagicBlock rollup은 `ephemeral_vrf_sdk` 를 통해 이 랜덤니스에 접근�
   <Card
     title="제품 개요"
     icon="book"
-    href="/ko/pages/overview/additional-information/solana-vrf"
+    href="/ko/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
     iconType="duotone"
   >
     Solana VRF가 MagicBlock 제품 표면에 어떻게 맞는지 확인합니다.
