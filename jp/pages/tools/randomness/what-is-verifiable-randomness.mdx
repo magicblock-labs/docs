@@ -6,7 +6,7 @@ description: "Solana VRF が Solana プログラムとオンチェーンロジ�
 Solana VRF は、オンチェーンプログラムに対して改ざん耐性のある乱数ソースを提供します。
 タイムスタンプやブロックハッシュから導かれる疑似乱数とは異なり、これはオフチェーンで生成され、誰でもオンチェーンで検証できる暗号学的証明とともに提供されます。
 
-MagicBlock は **EphemeralVrf** を通じてこの機能を提供します。これは、オラクルネットワークを使ってランダム値を計算および検証する Solana VRF 実装です。プロトコルは [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381) に従い、Curve25519 の Ristretto グループと Schnorr 形式の署名を利用して証明を生成します。製品背景は [Solana VRF 概要](/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf)から始め、統合の詳細は[技術詳細](./technical-details)ページを参照してください。
+MagicBlock は **MagicBlock Solana VRF** を通じてこの機能を提供します。これは、オラクルネットワークを使ってランダム値を計算および検証する Solana VRF 実装です。プロトコルは [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381) に従い、Curve25519 の Ristretto グループと Schnorr 形式の署名を利用して証明を生成します。製品背景は [Solana VRF 概要](/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf)から始め、統合の詳細は[技術詳細](./technical-details)ページを参照してください。
 
 MagicBlock rollup は `ephemeral_vrf_sdk` を通じてこのランダムネスにアクセスします。
 これは [ephemeral rollup](/jp/pages/get-started/introduction/ephemeral-rollup)

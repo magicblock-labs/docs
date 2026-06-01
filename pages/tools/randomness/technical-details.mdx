@@ -7,7 +7,7 @@ For the product overview, see [Solana VRF](/pages/verifiable-randomness-function
 
 See the [Ephemeral Rollup documentation](/pages/get-started/introduction/ephemeral-rollup) for an overview of the runtime.
 
-MagicBlock exposes randomness as a first-class primitive through the `ephemeral_vrf_sdk`. Rollup programs call `create_request_randomness_ix` (the `RequestRandomness` instruction) with a `caller_seed` and a callback such as `consume_randomness`. An oracle from the EphemeralVrf network then executes the `ProvideRandomness` instruction to deliver the result.
+MagicBlock exposes randomness as a first-class primitive through the `ephemeral_vrf_sdk`. Rollup programs call `create_request_randomness_ix` (the `RequestRandomness` instruction) with a `caller_seed` and a callback such as `consume_randomness`. An oracle from the MagicBlock Solana VRF network then executes the `ProvideRandomness` instruction to deliver the result.
 
 Random numbers are generated via a VRF built on Curve25519's Ristretto group and proven using a Schnorr-like signature as described in RFC&nbsp;9381. The proof and output are returned to the rollup with a signed callback from the MagicBlock VRF signer PDA. Your program verifies the caller and then uses the randomness in gameplay logic.
 

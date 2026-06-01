@@ -12,7 +12,7 @@ pub vrf_program_identity: Signer<'info>,
 
 只有 MagicBlock 官方预言机才能触发 callback，从而防止伪造或被操纵的结果。无效证明会自动失败，其他程序也无法抢跑该请求。
 
-EphemeralVrf 会检查诸如 `InvalidProof` 和 `Unauthorized` 等条件，因此错误签名或未经授权的调用者会在你的游戏逻辑执行之前被拒绝。VRF 程序已有公开审计，正式上线前应以该报告作为安全事实来源。
+MagicBlock Solana VRF 会检查诸如 `InvalidProof` 和 `Unauthorized` 等条件，因此错误签名或未经授权的调用者会在你的游戏逻辑执行之前被拒绝。VRF 程序已有公开审计，正式上线前应以该报告作为安全事实来源。
 
 避免让用户直接提供完整的 `caller_seed`。应将其与游戏状态或时间戳结合，以防止 seed grinding。由于一切都在确定性的 rollup 中执行，因此随机值无法被重复利用或延迟执行。
 这套约束机制会在执行你游戏逻辑的同一个 [ephemeral rollup](/cn/pages/get-started/introduction/ephemeral-rollup) 内完成。

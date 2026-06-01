@@ -12,7 +12,7 @@ pub vrf_program_identity: Signer<'info>,
 
 公式の MagicBlock オラクルだけがコールバックを発火できるため、偽造や改ざんされた結果を防げます。無効な証明は自動的に失敗し、他のプログラムがリクエストをフロントランすることもできません。
 
-EphemeralVrf は `InvalidProof` や `Unauthorized` のような条件を検査するため、不正な署名や未認可の呼び出し元はゲームロジックが動く前に拒否されます。VRF プログラムには公開済みの監査があるため、本番前にはそのレポートを安全性の根拠として確認してください。
+MagicBlock Solana VRF は `InvalidProof` や `Unauthorized` のような条件を検査するため、不正な署名や未認可の呼び出し元はゲームロジックが動く前に拒否されます。VRF プログラムには公開済みの監査があるため、本番前にはそのレポートを安全性の根拠として確認してください。
 
 ユーザーに `caller_seed` 全体をそのまま与えさせるのは避けてください。seed grinding を防ぐため、ゲーム状態やタイムスタンプと組み合わせます。すべてが決定論的 rollup 内で実行されるため、ランダム値を再利用したり遅延させたりすることはできません。
 この強制検証は、ゲームロジックを実行するのと同じ [ephemeral rollup](/jp/pages/get-started/introduction/ephemeral-rollup) 内で行われます。

@@ -7,7 +7,7 @@ description: "Solana VRF が MagicBlock とどのように統合されるか"
 
 ランタイムの概要については [Ephemeral Rollup ドキュメント](/jp/pages/get-started/introduction/ephemeral-rollup) を参照してください。
 
-MagicBlock は `ephemeral_vrf_sdk` を通じて、ランダムネスを第一級のプリミティブとして提供します。Rollup プログラムは `caller_seed` と `consume_randomness` のようなコールバックを使って `create_request_randomness_ix`（`RequestRandomness` 命令）を呼び出します。その後、EphemeralVrf ネットワークのオラクルが `ProvideRandomness` 命令を実行して結果を返します。
+MagicBlock は `ephemeral_vrf_sdk` を通じて、ランダムネスを第一級のプリミティブとして提供します。Rollup プログラムは `caller_seed` と `consume_randomness` のようなコールバックを使って `create_request_randomness_ix`（`RequestRandomness` 命令）を呼び出します。その後、MagicBlock Solana VRF ネットワークのオラクルが `ProvideRandomness` 命令を実行して結果を返します。
 
 乱数は Curve25519 の Ristretto グループ上に構築された VRF によって生成され、RFC&nbsp;9381 に記載された Schnorr 風署名で証明されます。証明と出力は、MagicBlock VRF signer PDA からの署名付きコールバックによって rollup に返されます。プログラムは呼び出し元を検証し、その後ゲームロジックでランダムネスを使用します。
 
