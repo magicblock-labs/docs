@@ -90,11 +90,11 @@ Build your program, delegate state to the TEE validator, and create an `Ephemera
         The full privacy lifecycle is split across two layers: the **base layer** delegates the counter to a TEE validator; the **ER** then creates / updates / closes its own `EphemeralPermission` account, signed by the delegated PDA itself.
 
         - `initialize` pre-funds the counter PDA with rent for the ephemeral permission, so step 3+ never need a separate lamports-top-up.
-        - `delegate` delegates only the counter to the TEE validator (no base-layer permission CPI).
+        - `delegate` delegates only the counter to the TEE validator.
         - `init_permission` runs on the ER — the delegated PDA signs a [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) using its program seeds and pays the rent. Idempotent.
         - `set_privacy(is_private)` toggles privacy on the ER via [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk). When private, only the counter's `authority` is in the member list with `TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` — every other wallet is blocked at the TEE ingress.
         - `close_permission` refunds the rent back to the PDA when the permission is no longer needed (optional).
-        - `undelegate` commits and undelegates the counter via `MagicIntentBundleBuilder` — no separate permission undelegation step.
+        - `undelegate` commits and undelegates the counter via `MagicIntentBundleBuilder`.
 
         See [access control](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control) for the full lifecycle and the per-language snippet variants.
         <Validators />

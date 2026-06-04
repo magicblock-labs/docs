@@ -90,11 +90,11 @@ import PerCards from "/jp/snippets/per-cards.mdx";
         自身が署名して専用の `EphemeralPermission` アカウントを作成 / 更新 / 閉じます。
 
         - `initialize` は ephemeral permission のレントを counter PDA に事前にチャージするので、ステップ 3 以降で別途 lamports を補充する必要はありません。
-        - `delegate` は counter のみを TEE バリデーターへ委任します（Base Layer の permission CPI は不要）。
+        - `delegate` は counter のみを TEE バリデーターへ委任します。
         - `init_permission` は ER 上で実行されます — 委任済みの PDA がプログラムシードを用いて [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) を発行し、レントを支払います。べき等です。
         - `set_privacy(is_private)` は ER 上で [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) を介してプライバシーを切り替えます。非公開時は counter の `authority` のみがメンバーリストに含まれ、`TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` が設定されます — 他のすべてのウォレットは TEE のイングレスでブロックされます。
         - `close_permission` は permission が不要になったときにレントを PDA に返します（オプション）。
-        - `undelegate` は `MagicIntentBundleBuilder` 経由で counter をコミットし委任解除します — permission の委任解除手順は不要です。
+        - `undelegate` は `MagicIntentBundleBuilder` 経由で counter をコミットし委任解除します。
 
         ライフサイクル全体および言語別のスニペットは[アクセス制御](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)を参照してください。
         <Validators />

@@ -89,11 +89,11 @@ import PerCards from "/cn/snippets/per-cards.mdx";
         其专属的 `EphemeralPermission` 账户。
 
         - `initialize` 为 counter PDA 预先充入 ephemeral permission 的租金，使后续步骤无需再单独补充 lamports。
-        - `delegate` 仅将 counter 委托给 TEE validator（无需任何 Base Layer 的 permission CPI）。
+        - `delegate` 仅将 counter 委托给 TEE validator。
         - `init_permission` 在 ER 上运行 —— 已委托的 PDA 使用其程序种子签发 [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk)，并支付租金。幂等。
         - `set_privacy(is_private)` 通过 [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) 在 ER 上切换隐私标志。私密时，仅 counter 的 `authority` 出现在成员列表中，带有 `TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` 标志 —— 其他所有钱包都会在 TEE 入口处被拒绝。
         - `close_permission` 当不再需要 permission 时，将租金退还给 PDA（可选）。
-        - `undelegate` 通过 `MagicIntentBundleBuilder` 提交并取消 counter 的委托 —— 无需单独的 permission 取消委托步骤。
+        - `undelegate` 通过 `MagicIntentBundleBuilder` 提交并取消 counter 的委托。
 
         完整生命周期及各语言代码片段请参阅[访问控制](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
         <Validators />
