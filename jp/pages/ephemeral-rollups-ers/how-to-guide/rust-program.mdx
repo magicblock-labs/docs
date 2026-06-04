@@ -101,6 +101,8 @@ import QuickAccesERRust from "/jp/snippets/quick-access-er-rust.mdx";
     2. `CommitAndUndelegate`: カウンターを ER から Base Layer に同期するようスケジュールし、ER 上で undelegate する（ER で呼ばれる）
     3. `Commit`: カウンターを ER から Base Layer に同期するようスケジュールする（ER で呼ばれる）
     4. `Undelegate`: Base Layer 上でカウンターを undelegate する（validator CPI を通じて Base Layer で呼ばれる）
+    5. `IncrementAndCommit`: 1 つの ER トランザクションでインクリメントとコミットを行う（ER で呼ばれる）
+    6. `IncrementAndUndelegate`: 1 つの ER トランザクションでインクリメント、コミット、委任解除を行う（ER で呼ばれる）
     <UndelegationCallbackNote />
 
     以下がプログラムの基本構造です。

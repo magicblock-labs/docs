@@ -1,62 +1,58 @@
 ```rust
-use ephemeral_rollups_sdk::access_control::instructions::{
-    CommitAndUndelegatePermissionCpiBuilder, CreatePermissionCpiBuilder,
-    DelegatePermissionCpiBuilder,
+use anchor_lang::system_program::{transfer, Transfer};
+use ephemeral_rollups_sdk::{
+    access_control::{
+        instructions::{
+            CloseEphemeralPermissionCpi, CreateEphemeralPermissionCpi,
+            UpdateEphemeralPermissionCpi,
+        },
+        structs::{
+            EphemeralMembersArgs, EphemeralPermission, Member,
+            TX_BALANCES_FLAG, TX_LOGS_FLAG, TX_MESSAGE_FLAG,
+        },
+    },
+    anchor::{commit, delegate, ephemeral},
+    cpi::DelegateConfig,
+    ephem::MagicIntentBundleBuilder,
 };
-use ephemeral_rollups_sdk::access_control::structs::{Member, MembersArgs, PERMISSION_SEED};
-use ephemeral_rollups_sdk::anchor::{commit, delegate, ephemeral};
-use ephemeral_rollups_sdk::consts::PERMISSION_PROGRAM_ID;
-use ephemeral_rollups_sdk::cpi::DelegateConfig;
-use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
 
 #[ephemeral] // Adds undelegation instruction for the ER validator
 #[program]
 pub mod private_counter {
     use super::*;
 
-    /// Delegate the counter privately:
-    /// 1. Create the permission account
-    /// 2. Delegate the permission account
-    /// 3. Delegate the counter itself
-    pub fn delegate(
-        ctx: Context<DelegateCounterPrivately>,
-        members: Option<Vec<Member>>,
-    ) -> Result<()> {
-        let validator = ctx.accounts.validator.as_ref();
+    /// Initialize on the base layer. Pre-funds the counter PDA with enough
+    /// lamports to cover the ephemeral permission rent that will be paid on
+    /// the ER (rent = ~32 lamports/byte × (size + 60); use
+    /// `EphemeralPermission::size_of(N)` for the exact byte count).
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.authority.to_account_info(),
+                    to: ctx.accounts.counter.to_account_info(),
+                },
+            ),
+            ephemeral_rollups_sdk::ephemeral_accounts::rent(
+                EphemeralPermission::size_of(1) as u32,
+            ),
+        )?;
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        counter.authority = ctx.accounts.authority.key();
+        Ok(())
+    }
 
-        // 1. Create the permission account (skip if it already exists).
-        if ctx.accounts.permission.data_is_empty() {
-            CreatePermissionCpiBuilder::new(&ctx.accounts.permission_program)
-                .permissioned_account(&ctx.accounts.counter.to_account_info())
-                .permission(&ctx.accounts.permission.to_account_info())
-                .payer(&ctx.accounts.payer.to_account_info())
-                .system_program(&ctx.accounts.system_program.to_account_info())
-                .args(MembersArgs { members })
-                .invoke_signed(&[&[COUNTER_SEED, &[ctx.bumps.counter]]])?;
-        }
-
-        // 2. Delegate the permission account (skip if already delegated).
-        if ctx.accounts.permission.owner != &ephemeral_rollups_sdk::id() {
-            DelegatePermissionCpiBuilder::new(&ctx.accounts.permission_program.to_account_info())
-                .permissioned_account(&ctx.accounts.counter.to_account_info(), true)
-                .permission(&ctx.accounts.permission.to_account_info())
-                .payer(&ctx.accounts.payer.to_account_info())
-                .authority(&ctx.accounts.counter.to_account_info(), false)
-                .system_program(&ctx.accounts.system_program.to_account_info())
-                .owner_program(&ctx.accounts.permission_program.to_account_info())
-                .delegation_buffer(&ctx.accounts.buffer_permission.to_account_info())
-                .delegation_metadata(&ctx.accounts.delegation_metadata_permission.to_account_info())
-                .delegation_record(&ctx.accounts.delegation_record_permission.to_account_info())
-                .delegation_program(&ctx.accounts.delegation_program.to_account_info())
-                .validator(validator)
-                .invoke_signed(&[&[COUNTER_SEED, &[ctx.bumps.counter]]])?;
-        }
-
-        // 3. Delegate the counter (skip if already delegated).
+    /// Delegate the counter to the (TEE) ER. No permission CPI here —
+    /// the EphemeralPermission is created directly on the ER via
+    /// `init_permission` (next instruction).
+    pub fn delegate(ctx: Context<DelegateCounterPrivately>) -> Result<()> {
         if ctx.accounts.counter.owner != &ephemeral_rollups_sdk::id() {
+            let validator = ctx.accounts.validator.as_ref();
             ctx.accounts.delegate_counter(
-                &ctx.accounts.payer,
-                &[COUNTER_SEED],
+                &ctx.accounts.authority,
+                &[COUNTER_SEED, ctx.accounts.authority.key().as_ref()],
                 DelegateConfig {
                     validator: validator.map(|v| v.key()),
                     ..Default::default()
@@ -66,25 +62,96 @@ pub mod private_counter {
         Ok(())
     }
 
-    /// Undelegate the counter privately:
-    /// 1. Commit and undelegate the permission account via the Permission Program
-    /// 2. Commit and undelegate the counter via the ephemeral rollups SDK
-    ///
-    /// Both intents are scheduled on `magic_context` in the same ER transaction
-    /// and applied together when the transaction is sealed back to the base layer.
-    pub fn undelegate(ctx: Context<UndelegateCounter>) -> Result<()> {
-        // 1. Commit and undelegate the permission account
-        CommitAndUndelegatePermissionCpiBuilder::new(
-            &ctx.accounts.permission_program.to_account_info(),
-        )
-        .authority(&ctx.accounts.payer.to_account_info(), true)
-        .permissioned_account(&ctx.accounts.counter.to_account_info(), true)
-        .permission(&ctx.accounts.permission.to_account_info())
-        .magic_context(&ctx.accounts.magic_context.to_account_info())
-        .magic_program(&ctx.accounts.magic_program.to_account_info())
-        .invoke_signed(&[&[COUNTER_SEED, &[ctx.bumps.counter]]])?;
+    /// Create the ephemeral permission directly on the ER. Payer = the
+    /// counter PDA (delegated), which carries its base-layer lamports onto
+    /// the ER and signs via its program seeds. Idempotent: skip if the
+    /// permission account already exists. Starts public; flip with
+    /// `set_privacy`.
+    pub fn init_permission(ctx: Context<PermissionContext>) -> Result<()> {
+        if ctx.accounts.permission.lamports() > 0 {
+            return Ok(());
+        }
+        let signers = [
+            COUNTER_SEED,
+            ctx.accounts.counter.authority.as_ref(),
+            &[ctx.bumps.counter],
+        ];
+        CreateEphemeralPermissionCpi {
+            payer: ctx.accounts.counter.to_account_info(),
+            permissioned_account: ctx.accounts.counter.to_account_info(),
+            permission: ctx.accounts.permission.to_account_info(),
+            vault: ctx.accounts.ephemeral_vault.to_account_info(),
+            magic_program: ctx.accounts.magic_program.to_account_info(),
+            permission_program: ctx.accounts.permission_program.to_account_info(),
+            args: EphemeralMembersArgs {
+                is_private: false,
+                members: vec![],
+            },
+        }
+        .invoke_signed(&[&signers])?;
+        Ok(())
+    }
 
-        // 2. Commit and undelegate the counter
+    /// Toggle the privacy flag on the ER. When private, only the counter's
+    /// `authority` is allowed to read state via the TEE (logs, messages,
+    /// balances). The authority is the only member; the member list is
+    /// rebuilt every call so the authority can never lock itself out.
+    pub fn set_privacy(ctx: Context<PermissionContext>, is_private: bool) -> Result<()> {
+        let signers = [
+            COUNTER_SEED,
+            ctx.accounts.counter.authority.as_ref(),
+            &[ctx.bumps.counter],
+        ];
+        let members = if is_private {
+            vec![Member {
+                flags: TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG,
+                pubkey: ctx.accounts.counter.authority,
+            }]
+        } else {
+            vec![]
+        };
+        UpdateEphemeralPermissionCpi {
+            payer: ctx.accounts.counter.to_account_info(),
+            permissioned_account: ctx.accounts.counter.to_account_info(),
+            permission: ctx.accounts.permission.to_account_info(),
+            vault: ctx.accounts.ephemeral_vault.to_account_info(),
+            magic_program: ctx.accounts.magic_program.to_account_info(),
+            permission_program: ctx.accounts.permission_program.to_account_info(),
+            authority: ctx.accounts.counter.to_account_info(),
+            authority_is_signer: false, // PDA signs via the seeds above
+            args: EphemeralMembersArgs { is_private, members },
+        }
+        .invoke_signed(&[&signers])?;
+        Ok(())
+    }
+
+    /// Close the ephemeral permission account on the ER, refunding rent to
+    /// the counter PDA (the payer that originally deposited it).
+    pub fn close_permission(ctx: Context<PermissionContext>) -> Result<()> {
+        let signers = [
+            COUNTER_SEED,
+            ctx.accounts.counter.authority.as_ref(),
+            &[ctx.bumps.counter],
+        ];
+        CloseEphemeralPermissionCpi {
+            payer: ctx.accounts.counter.to_account_info(),
+            permissioned_account: ctx.accounts.counter.to_account_info(),
+            permission: ctx.accounts.permission.to_account_info(),
+            vault: ctx.accounts.ephemeral_vault.to_account_info(),
+            magic_program: ctx.accounts.magic_program.to_account_info(),
+            permission_program: ctx.accounts.permission_program.to_account_info(),
+            authority: ctx.accounts.counter.to_account_info(),
+            authority_is_signer: false,
+        }
+        .invoke_signed(&[&signers])?;
+        Ok(())
+    }
+
+    /// Commit + undelegate the counter when private execution is done. No
+    /// separate permission undelegation step — ephemeral permissions are
+    /// confined to the ER and were already cleaned up via `close_permission`
+    /// (if called).
+    pub fn undelegate(ctx: Context<UndelegateCounter>) -> Result<()> {
         MagicIntentBundleBuilder::new(
             ctx.accounts.payer.to_account_info(),
             ctx.accounts.magic_context.to_account_info(),
@@ -94,75 +161,5 @@ pub mod private_counter {
         .build_and_invoke()?;
         Ok(())
     }
-}
-
-/// Delegate context for the counter and its permission account.
-#[delegate] // Enable delegation
-#[derive(Accounts)]
-pub struct DelegateCounterPrivately<'info> {
-    pub payer: Signer<'info>,
-    /// CHECK: The PDA to delegate
-    #[account(mut, del, seeds = [COUNTER_SEED], bump)]
-    pub counter: AccountInfo<'info>,
-    /// CHECK: Permission account for the counter PDA
-    #[account(
-        mut,
-        seeds = [PERMISSION_SEED, counter.key().as_ref()],
-        bump,
-        seeds::program = permission_program.key()
-    )]
-    pub permission: AccountInfo<'info>,
-    /// CHECK: Buffer for permission delegation
-    #[account(
-        mut,
-        seeds = [ephemeral_rollups_sdk::pda::DELEGATE_BUFFER_TAG, permission.key().as_ref()],
-        bump,
-        seeds::program = PERMISSION_PROGRAM_ID
-    )]
-    pub buffer_permission: AccountInfo<'info>,
-    /// CHECK: Delegation record for permission
-    #[account(
-        mut,
-        seeds = [ephemeral_rollups_sdk::pda::DELEGATION_RECORD_TAG, permission.key().as_ref()],
-        bump,
-        seeds::program = ephemeral_rollups_sdk::id()
-    )]
-    pub delegation_record_permission: AccountInfo<'info>,
-    /// CHECK: Delegation metadata for permission
-    #[account(
-        mut,
-        seeds = [ephemeral_rollups_sdk::pda::DELEGATION_METADATA_TAG, permission.key().as_ref()],
-        bump,
-        seeds::program = ephemeral_rollups_sdk::id()
-    )]
-    pub delegation_metadata_permission: AccountInfo<'info>,
-    /// CHECK: Permission Program
-    #[account(address = PERMISSION_PROGRAM_ID)]
-    pub permission_program: AccountInfo<'info>,
-    pub system_program: Program<'info, System>,
-    /// CHECK: Checked by the delegate program
-    pub validator: Option<AccountInfo<'info>>,
-}
-
-/// Undelegate context for the counter and its permission account.
-/// `#[commit]` injects `magic_context` and `magic_program`.
-#[commit]
-#[derive(Accounts)]
-pub struct UndelegateCounter<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-    #[account(mut, seeds = [COUNTER_SEED], bump)]
-    pub counter: Account<'info, Counter>,
-    /// CHECK: Checked by the permission program
-    #[account(
-        mut,
-        seeds = [PERMISSION_SEED, counter.key().as_ref()],
-        bump,
-        seeds::program = permission_program.key()
-    )]
-    pub permission: AccountInfo<'info>,
-    /// CHECK: Permission Program
-    #[account(address = PERMISSION_PROGRAM_ID)]
-    pub permission_program: UncheckedAccount<'info>,
 }
 ```

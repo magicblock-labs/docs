@@ -31,7 +31,7 @@ import PerCards from "/snippets/per-cards.mdx";
 
 ## Step-By-Step Guide
 
-Build your program and upgrade it with permission and delegation hooks that utilize MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
+Build your program, delegate state to the TEE validator, and create an `EphemeralPermission` account directly on the ER via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
 
 <Steps>
   <Step title={<a href="#1-write-program">Write your program</a>}>
@@ -39,16 +39,17 @@ Build your program and upgrade it with permission and delegation hooks that util
   </Step>
   <Step
     title={
-      <a href="#2-delegate-with-restriction">
-        Add delegation with restriction hooks in your program
+      <a href="#2-delegate-and-create-permission">
+        Delegate and create permission
       </a>
     }
   >
-    A single `delegate` instruction creates the permission account, delegates
-    it, and then delegates the permissioned account to the TEE validator. A
-    symmetric `undelegate` instruction releases both accounts atomically on the
-    way back to the base layer. [See access control
-    details](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control).
+    `delegate` delegates the counter to the TEE validator on the base layer.
+    `init_permission` then runs on the ER — the delegated PDA signs as PDA and
+    pays its own ephemeral permission rent (pre-funded at `initialize` time).
+    `set_privacy` flips the public/private flag on demand. No base-layer
+    permission account to create, delegate, or commit-and-undelegate. [See
+    access control details](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control).
     <Validators />
   </Step>
   <Step title={<a href="#3-deploy">Deploy your program on Solana</a>}>
@@ -70,11 +71,11 @@ Build your program and upgrade it with permission and delegation hooks that util
 
 <Software />
 <Note>
-  The latest Permission Program requires SDK version
-  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk). See
-  [migration
-  guide](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103) for
-  details.
+  The EphemeralPermission flow shown below requires `ephemeral-rollups-sdk`
+  v0.14+ (introduces `CreateEphemeralPermissionCpi` /
+  `UpdateEphemeralPermissionCpi` / `CloseEphemeralPermissionCpi`). For older
+  SDK and Anchor versions, see
+  [legacy examples](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/00-LEGACY_EXAMPLES).
 </Note>
 
 ### Code Snippets
@@ -85,8 +86,17 @@ Build your program and upgrade it with permission and delegation hooks that util
         <WriteProgramCode />
         [⬆️ Back to Top](#code-snippets)
     </Tab>
-    <Tab title="2. Delegate with Restriction">
-        Two symmetric instructions handle the full privacy lifecycle through MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`. `delegate` creates the permission account, delegates it, and then delegates the counter to the TEE validator — all in one CPI flow. `undelegate` mirrors the reverse: it commits and undelegates both the permission account and the counter atomically in a single ER transaction. See [access control](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control) for the full lifecycle.
+    <Tab title="2. Delegate and create permission">
+        The full privacy lifecycle is split across two layers: the **base layer** delegates the counter to a TEE validator; the **ER** then creates / updates / closes its own `EphemeralPermission` account, signed by the delegated PDA itself.
+
+        - `initialize` pre-funds the counter PDA with rent for the ephemeral permission, so step 3+ never need a separate lamports-top-up.
+        - `delegate` delegates only the counter to the TEE validator (no base-layer permission CPI).
+        - `init_permission` runs on the ER — the delegated PDA signs a [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) using its program seeds and pays the rent. Idempotent.
+        - `set_privacy(is_private)` toggles privacy on the ER via [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk). When private, only the counter's `authority` is in the member list with `TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` — every other wallet is blocked at the TEE ingress.
+        - `close_permission` refunds the rent back to the PDA when the permission is no longer needed (optional).
+        - `undelegate` commits and undelegates the counter via `MagicIntentBundleBuilder` — no separate permission undelegation step.
+
+        See [access control](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control) for the full lifecycle and the per-language snippet variants.
         <Validators />
         <DelegateCode />
 

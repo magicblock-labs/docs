@@ -38,7 +38,7 @@ const userKeypair = initializeSolSignerKeypair();
 
 // Get pda
 let [counterPda, bump] = PublicKey.findProgramAddressSync(
-  [Buffer.from("counter_account"), userKeypair.publicKey.toBuffer()],
+  [Buffer.from("counter"), userKeypair.publicKey.toBuffer()],
   PROGRAM_ID
 );
 ```

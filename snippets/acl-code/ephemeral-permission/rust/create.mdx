@@ -1,0 +1,28 @@
+```rust
+use ephemeral_rollups_sdk::access_control::{
+    instructions::CreateEphemeralPermissionCpi,
+    structs::{EphemeralMembersArgs, Member},
+};
+
+// `permissioned_account` (here a counter PDA) signs as PDA via seeds; pass the
+// same seeds you used for `find_program_address` to derive it.
+let seeds: &[&[u8]] = &[
+    COUNTER_SEED,
+    permissioned_account_authority.as_ref(),
+    &[bump],
+];
+
+CreateEphemeralPermissionCpi {
+    payer: &counter_account_info,                // pays ephemeral rent
+    permissioned_account: &counter_account_info, // what the permission gates
+    permission: &permission_account_info,
+    vault: &ephemeral_vault_account_info,
+    magic_program: &magic_program_account_info,
+    permission_program: &permission_program_account_info,
+    args: EphemeralMembersArgs {
+        is_private: false,   // start public — flip via UpdateEphemeralPermission
+        members: vec![],
+    },
+}
+.invoke_signed(&[seeds])?;
+```

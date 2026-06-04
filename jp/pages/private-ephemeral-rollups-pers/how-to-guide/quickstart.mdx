@@ -29,7 +29,7 @@ import PerCards from "/jp/snippets/per-cards.mdx";
 
 ## ステップ・バイ・ステップ ガイド
 
-プログラムを構築し、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を利用するパーミッションおよび委任フックを追加してアップグレードします：
+プログラムを構築し、ステートを TEE バリデーターへ委任し、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を経由して ER 上に直接 `EphemeralPermission` アカウントを作成します：
 
 <Steps>
   <Step title={<a href="#1-write-program">プログラムを書く</a>}>
@@ -37,12 +37,17 @@ import PerCards from "/jp/snippets/per-cards.mdx";
   </Step>
   <Step
     title={
-      <a href="#2-delegate-with-restriction">
-        制限付き委任フックをプログラムに追加する
+      <a href="#2-委任と-permission-の作成">
+        委任と permission の作成
       </a>
     }
   >
-    1 つの `delegate` 命令でパーミッションアカウントの作成、その委任、そしてパーミッション制御下のアカウントの TEE バリデーターへの委任までをまとめて行います。対称的な `undelegate` 命令は、ベースレイヤーへ戻る際に両方のアカウントを原子的に解放します。[アクセス制御の詳細を見る](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
+    `delegate` は Base Layer 上で counter を TEE バリデーターへ委任します。続けて
+    `init_permission` が ER 上で実行され、委任済みの PDA が PDA として署名し、
+    自身の ephemeral permission レントを支払います（`initialize` 時に事前にチャージ済み）。
+    `set_privacy` で必要に応じて公開 / 非公開フラグを切り替えます。Base Layer に
+    permission アカウントを作成・委任・commit-and-undelegate する必要はありません。
+    [アクセス制御の詳細を見る](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
     <Validators />
   </Step>
   <Step title={<a href="#3-deploy">Solana にプログラムをデプロイする</a>}>
@@ -64,8 +69,11 @@ import PerCards from "/jp/snippets/per-cards.mdx";
 
 <Software />
 <Note>
-  最新の Permission Program は SDK バージョン
-  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk) が必要です。詳細は[マイグレーションガイド](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103)を参照してください。
+  以下に示す EphemeralPermission フローは `ephemeral-rollups-sdk` v0.14+ が必要です
+  （`CreateEphemeralPermissionCpi` / `UpdateEphemeralPermissionCpi` /
+  `CloseEphemeralPermissionCpi` が導入されました）。古い SDK や Anchor バージョンの場合は
+  [legacy examples](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/00-LEGACY_EXAMPLES)
+  を参照してください。
 </Note>
 
 ### コードスニペット
@@ -76,8 +84,19 @@ import PerCards from "/jp/snippets/per-cards.mdx";
         <WriteProgramCode />
         [⬆️ トップに戻る](#code-snippets)
     </Tab>
-    <Tab title="2. 制限付き委任">
-        対称的な 2 つの命令が、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を通じてプライバシーのライフサイクル全体を担当します。`delegate` はパーミッションアカウントの作成、その委任、そして counter の TEE バリデーターへの委任までを 1 つの CPI フローでまとめて実行します。`undelegate` はその逆をミラーリングし、1 つの ER トランザクション内でパーミッションアカウントと counter の両方を原子的にコミット・委任解除します。ライフサイクル全体については[アクセス制御](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)を参照してください。
+    <Tab title="2. 委任と permission の作成">
+        プライバシーのライフサイクル全体は 2 つのレイヤーに分かれます。**Base Layer**
+        では counter を TEE バリデーターに委任し、その後 **ER** 上で、委任済みの PDA
+        自身が署名して専用の `EphemeralPermission` アカウントを作成 / 更新 / 閉じます。
+
+        - `initialize` は ephemeral permission のレントを counter PDA に事前にチャージするので、ステップ 3 以降で別途 lamports を補充する必要はありません。
+        - `delegate` は counter のみを TEE バリデーターへ委任します（Base Layer の permission CPI は不要）。
+        - `init_permission` は ER 上で実行されます — 委任済みの PDA がプログラムシードを用いて [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) を発行し、レントを支払います。べき等です。
+        - `set_privacy(is_private)` は ER 上で [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) を介してプライバシーを切り替えます。非公開時は counter の `authority` のみがメンバーリストに含まれ、`TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` が設定されます — 他のすべてのウォレットは TEE のイングレスでブロックされます。
+        - `close_permission` は permission が不要になったときにレントを PDA に返します（オプション）。
+        - `undelegate` は `MagicIntentBundleBuilder` 経由で counter をコミットし委任解除します — permission の委任解除手順は不要です。
+
+        ライフサイクル全体および言語別のスニペットは[アクセス制御](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)を参照してください。
         <Validators />
         <DelegateCode />
 
