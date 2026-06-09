@@ -29,7 +29,7 @@ import PerCards from "/cn/snippets/per-cards.mdx";
 
 ## 分步指南
 
-构建你的程序，并通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 和 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 添加权限与委托钩子来升级它：
+构建你的程序，将状态委托给 TEE validator，并通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 和 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 直接在 ER 上创建 `EphemeralPermission` 账户：
 
 <Steps>
   <Step title={<a href="#1-write-program">编写你的程序</a>}>
@@ -37,12 +37,17 @@ import PerCards from "/cn/snippets/per-cards.mdx";
   </Step>
   <Step
     title={
-      <a href="#2-delegate-with-restriction">
-        在程序中加入「委托与权限限制」钩子
+      <a href="#2-委托并创建-permission">
+        委托并创建 permission
       </a>
     }
   >
-    一个 `delegate` 指令即可创建 permission 账户、对其进行委托，然后再将受权限管控的账户委托给 TEE validator。一个对称的 `undelegate` 指令则在回到基础层时原子地释放这两个账户。[查看访问控制详情](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
+    `delegate` 在 Base Layer 上将 counter 委托给 TEE validator。`init_permission`
+    接着在 ER 上运行 —— 已委托的 PDA 作为 PDA 签名，并支付自身的 ephemeral
+    permission 租金（在 `initialize` 时预先充值）。`set_privacy` 按需切换
+    公开 / 私密标志。无需在 Base Layer 上创建、委托或
+    commit-and-undelegate 任何 permission 账户。
+    [查看访问控制详情](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
     <Validators />
   </Step>
   <Step title={<a href="#3-deploy">在 Solana 上部署你的程序</a>}>
@@ -64,8 +69,10 @@ import PerCards from "/cn/snippets/per-cards.mdx";
 
 <Software />
 <Note>
-  最新的 Permission Program 需要 SDK 版本
-  [>=0.8.0](https://github.com/magicblock-labs/ephemeral-rollups-sdk)。详情请参阅[迁移指南](https://github.com/magicblock-labs/ephemeral-rollups-sdk/pull/103)。
+  以下展示的 EphemeralPermission 流程需要 `ephemeral-rollups-sdk` v0.14+（引入
+  `CreateEphemeralPermissionCpi` / `UpdateEphemeralPermissionCpi` /
+  `CloseEphemeralPermissionCpi`）。旧版 SDK 与 Anchor 版本请参阅
+  [legacy examples](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/00-LEGACY_EXAMPLES)。
 </Note>
 
 ### 代码片段
@@ -76,8 +83,19 @@ import PerCards from "/cn/snippets/per-cards.mdx";
         <WriteProgramCode />
         [⬆️ 回到顶部](#code-snippets)
     </Tab>
-    <Tab title="2. 委托与权限限制">
-        两个对称的指令通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 和 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 处理完整的隐私生命周期。`delegate` 会创建 permission 账户、对其进行委托，并将 counter 委托给 TEE validator —— 全部在一次 CPI 流程中完成。`undelegate` 则镜像地反向执行：在一次 ER 交易中原子地提交并解除 permission 账户和 counter 的委托。完整生命周期请参阅[访问控制](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
+    <Tab title="2. 委托并创建 permission">
+        完整的隐私生命周期分布在两层：**Base Layer** 将 counter 委托给 TEE
+        validator；**ER** 随后由已委托的 PDA 自行签名，创建 / 更新 / 关闭
+        其专属的 `EphemeralPermission` 账户。
+
+        - `initialize` 为 counter PDA 预先充入 ephemeral permission 的租金，使后续步骤无需再单独补充 lamports。
+        - `delegate` 仅将 counter 委托给 TEE validator。
+        - `init_permission` 在 ER 上运行 —— 已委托的 PDA 使用其程序种子签发 [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk)，并支付租金。幂等。
+        - `set_privacy(is_private)` 通过 [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) 在 ER 上切换隐私标志。私密时，仅 counter 的 `authority` 出现在成员列表中，带有 `TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` 标志 —— 其他所有钱包都会在 TEE 入口处被拒绝。
+        - `close_permission` 当不再需要 permission 时，将租金退还给 PDA（可选）。
+        - `undelegate` 通过 `MagicIntentBundleBuilder` 提交并取消 counter 的委托。
+
+        完整生命周期及各语言代码片段请参阅[访问控制](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
         <Validators />
         <DelegateCode />
 

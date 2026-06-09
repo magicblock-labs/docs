@@ -101,6 +101,8 @@ import QuickAccesERRust from "/cn/snippets/quick-access-er-rust.mdx";
     2. `CommitAndUndelegate`：安排将计数器从 ER 同步回 Base Layer，并在 ER 上取消委托（在 ER 调用）
     3. `Commit`：安排将计数器从 ER 同步回 Base Layer（在 ER 调用）
     4. `Undelegate`：在 Base Layer 上取消委托计数器（通过 validator CPI 在 Base Layer 调用）
+    5. `IncrementAndCommit`：在一次 ER 交易中执行增量并提交（在 ER 调用）
+    6. `IncrementAndUndelegate`：在一次 ER 交易中执行增量、提交并取消委托（在 ER 调用）
     <UndelegationCallbackNote />
 
     下面是程序的核心结构：

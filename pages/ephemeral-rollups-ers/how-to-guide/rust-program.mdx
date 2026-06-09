@@ -102,6 +102,8 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
     2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
     3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
     4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
+    5. `IncrementAndCommit`: Increments and commits in a single ER transaction (called on ER)
+    6. `IncrementAndUndelegate`: Increments, commits, and undelegates in a single ER transaction (called on ER)
     <UndelegationCallbackNote />
 
     Here's the core structure of our program:

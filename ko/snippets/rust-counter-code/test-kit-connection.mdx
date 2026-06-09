@@ -41,6 +41,6 @@ const userPubkey = await getAddressFromPublicKey(userKeypair.publicKey);
 const addressEncoder = getAddressEncoder();
 const [counterPda, bump] = await getProgramDerivedAddress({
   programAddress: PROGRAM_ID,
-  seeds: [Buffer.from("counter_account"), addressEncoder.encode(userPubkey)],
+  seeds: [Buffer.from("counter"), addressEncoder.encode(userPubkey)],
 });
 ```

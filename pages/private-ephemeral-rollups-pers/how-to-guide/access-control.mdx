@@ -3,41 +3,33 @@ title: "Access Control"
 description: "Learn how to manage fine-grained access control and member permissions in Private Ephemeral Rollups."
 ---
 
-import CreatePermissionRust from "/snippets/acl-code/permission/rust/create.mdx";
-import UpdatePermissionRust from "/snippets/acl-code/permission/rust/update.mdx";
-import DelegatePermissionRust from "/snippets/acl-code/permission/rust/delegate.mdx";
-import CommitAndUndelegatePermissionRust from "/snippets/acl-code/permission/rust/commit_and_undelegate.mdx";
-import ClosePermissionRust from "/snippets/acl-code/permission/rust/close.mdx";
+import CreateEphemeralPermissionAnchor from "/snippets/acl-code/ephemeral-permission/anchor/create.mdx";
+import UpdateEphemeralPermissionAnchor from "/snippets/acl-code/ephemeral-permission/anchor/update.mdx";
+import CloseEphemeralPermissionAnchor from "/snippets/acl-code/ephemeral-permission/anchor/close.mdx";
 
-import CreatePermissionWeb3js from "/snippets/acl-code/permission/web3js/create.mdx";
-import UpdatePermissionWeb3js from "/snippets/acl-code/permission/web3js/update.mdx";
-import DelegatePermissionWeb3js from "/snippets/acl-code/permission/web3js/delegate.mdx";
-import CommitAndUndelegatePermissionWeb3js from "/snippets/acl-code/permission/web3js/commit_and_undelegate.mdx";
-import ClosePermissionWeb3js from "/snippets/acl-code/permission/web3js/close.mdx";
+import CreateEphemeralPermissionRust from "/snippets/acl-code/ephemeral-permission/rust/create.mdx";
+import UpdateEphemeralPermissionRust from "/snippets/acl-code/ephemeral-permission/rust/update.mdx";
+import CloseEphemeralPermissionRust from "/snippets/acl-code/ephemeral-permission/rust/close.mdx";
 
-import CreatePermissionKit from "/snippets/acl-code/permission/kit/create.mdx";
-import UpdatePermissionKit from "/snippets/acl-code/permission/kit/update.mdx";
-import DelegatePermissionKit from "/snippets/acl-code/permission/kit/delegate.mdx";
-import CommitAndUndelegatePermissionKit from "/snippets/acl-code/permission/kit/commit_and_undelegate.mdx";
-import ClosePermissionKit from "/snippets/acl-code/permission/kit/close.mdx";
+import CreateEphemeralPermissionPinocchio from "/snippets/acl-code/ephemeral-permission/pinocchio/create.mdx";
+import UpdateEphemeralPermissionPinocchio from "/snippets/acl-code/ephemeral-permission/pinocchio/update.mdx";
+import CloseEphemeralPermissionPinocchio from "/snippets/acl-code/ephemeral-permission/pinocchio/close.mdx";
 
-import CreatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/create.mdx";
-import UpdatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/update.mdx";
-import DelegatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/delegate.mdx";
-import CommitAndUndelegatePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/commit_and_undelegate.mdx";
-import ClosePermissionPinocchio from "/snippets/acl-code/permission/pinocchio/close.mdx";
+import CreateEphemeralPermissionKit from "/snippets/acl-code/ephemeral-permission/kit/create.mdx";
+import UpdateEphemeralPermissionKit from "/snippets/acl-code/ephemeral-permission/kit/update.mdx";
+import CloseEphemeralPermissionKit from "/snippets/acl-code/ephemeral-permission/kit/close.mdx";
+
+import CreateEphemeralPermissionWeb3js from "/snippets/acl-code/ephemeral-permission/web3js/create.mdx";
+import UpdateEphemeralPermissionWeb3js from "/snippets/acl-code/ephemeral-permission/web3js/update.mdx";
+import CloseEphemeralPermissionWeb3js from "/snippets/acl-code/ephemeral-permission/web3js/close.mdx";
 
 import MemberFlagsRust from "/snippets/acl-code/member/rust.mdx";
 import MemberFlagsWeb3js from "/snippets/acl-code/member/web3js.mdx";
 import MemberFlagsKit from "/snippets/acl-code/member/kit.mdx";
 import MemberFlagsPinocchio from "/snippets/acl-code/member/pinocchio.mdx";
 
-import AuthorizationWeb3js from "/snippets/acl-code/authorization/web3js.mdx";
-import AuthorizationKit from "/snippets/acl-code/authorization/kit.mdx";
-
 import PerCards from "/snippets/per-cards.mdx";
 import AclCards from "/snippets/acl-cards.mdx";
-import PerEndpoint from "/snippets/per-endpoint.mdx";
 import Validators from "/snippets/notes/validators.mdx";
 
 ---
@@ -87,231 +79,153 @@ Member flags define fine-grained permissions for each member. Flags can be combi
 </Tabs>
 ---
 
-## Permission Lifecycle
+## Ephemeral Permission
 
-The typical lifecycle of a permissioned account requires interaction with MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` and Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`:
+<Note>
+  `EphemeralPermission` accounts live entirely on the Ephemeral Rollup and are
+  paid for by the delegated PDA — no base-layer permission account to create,
+  delegate, or commit-and-undelegate. Three CPI ops cover the full lifecycle:
+  **Create**, **Update**, **Close** — all PDA-signed by the data account on
+  the ER, via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`.
+</Note>
+
+**Prerequisite — delegate the data PDA.** Only the data account is delegated to
+the TEE validator (on the base layer, via MagicBlock's Delegation Program
+`DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`). Once delegated, the PDA signs
+all three permission ops on the ER using its program seeds and pays the
+ephemeral permission rent — so it must be pre-funded at `initialize` time. See
+[Quickstart](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart#2-delegate-and-create-permission)
+for the end-to-end flow.
+
+<Validators />
 
 <Steps>
-  <Step title={<a href="#1-create">Create Permission</a>}>
-    Initialize a new permission account with initial members and their flags.
+  <Step title={<a href="#1-create-ephemeral-permission">Create Ephemeral Permission</a>}>
+    Initialize a new `EphemeralPermission` account on the ER with initial
+    members and the privacy flag. Idempotent — skip if it already exists.
   </Step>
-  <Step title={<a href="#2-delegate">Delegate Permission</a>}>
-    Delegate the permission to Private Ephemeral Rollup to enable enforcement
-    and real-time access control.
-    <Validators />
+  <Step title={<a href="#2-update-ephemeral-permission">Update Ephemeral Permission</a>}>
+    Toggle the privacy flag, or add / remove / reflag members. Updates take
+    effect immediately on the ER.
   </Step>
-  <Step title={<a href="#3-update">Update Permission</a>}>
-    Add, remove, or modify member permissions as needed. Updates can be made in
-    real-time on Private Ephemeral Rollup.
-  </Step>
-  <Step title={<a href="#4-request">Make Request</a>}>
-    Before making requests, verify TEE RPC integrity and obtain an authorization
-    token. Only members with appropriate flags can access or modify the account
-    state.
-  </Step>
-  <Step title={<a href="#5-commit-%26-undelegate">Commit and Undelegate</a>}>
-    Sync the final state back to Solana and return the account to Base Layer
-    control.
-  </Step>
-  <Step title={<a href="#6-close">Close Permission</a>}>
-    Close the permission account and reclaim its lamports when no longer needed.
+  <Step title={<a href="#3-close-ephemeral-permission">Close Ephemeral Permission</a>}>
+    Close the `EphemeralPermission` account on the ER and refund the rent to
+    the data PDA when the permission is no longer needed.
   </Step>
 </Steps>
 
 ---
 
-## Permission Operations
+## Ephemeral Permission Operations
 
 <Tabs>
-  <Tab title="1. Create">
-    Once you've created your program, you can add permission and delegation hooks to control access to your accounts. For example, see [Quickstart](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart).
-    
-    Create a new permission account with initial members and their flags via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`.
+  <Tab title="1. Create Ephemeral Permission">
+    Initialize a new `EphemeralPermission` account on the ER via
+    `CreateEphemeralPermissionCpi`. Payer = the delegated data PDA, which
+    signs with its program seeds and covers the rent from the lamports
+    pre-funded at `initialize` time.
 
     <Tabs>
+      <Tab title="Anchor">
+        <CreateEphemeralPermissionAnchor />
+      </Tab>
       <Tab title="Rust SDK">
-        <CreatePermissionRust />
+        <CreateEphemeralPermissionRust />
       </Tab>
       <Tab title="Pinocchio">
-        <CreatePermissionPinocchio />
+        <CreateEphemeralPermissionPinocchio />
       </Tab>
       <Tab title="Kit">
-        <CreatePermissionKit />
+        <CreateEphemeralPermissionKit />
       </Tab>
       <Tab title="Web3.js">
-        <CreatePermissionWeb3js />
+        <CreateEphemeralPermissionWeb3js />
       </Tab>
     </Tabs>
 
     **Use Cases:**
 
-    - Initialize access control for a new delegated account
-    - Set up authority members and their permissions
-    - Define who can view transaction details
+    - Bootstrap access control for a newly delegated PDA on the ER
+    - Start public (`is_private: false`, empty members) and tighten later via Update
 
-
-    [⬆️ Back to Top](#permission-lifecycle)
+    [⬆️ Back to Top](#ephemeral-permission)
 
   </Tab>
 
-  <Tab title="2. Delegate">
-    Delegate a permissioned account to enable low-latency Private Ephemeral Rollup execution via MagicBlock's Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`.
-
-    <Validators />
+  <Tab title="2. Update Ephemeral Permission">
+    Flip the privacy flag and rewrite the member list via
+    `UpdateEphemeralPermissionCpi`. Rebuild the full member list every call
+    (including the authority) so the data PDA can never lock itself out.
 
     <Tabs>
+      <Tab title="Anchor">
+        <UpdateEphemeralPermissionAnchor />
+      </Tab>
       <Tab title="Rust SDK">
-        <DelegatePermissionRust />
+        <UpdateEphemeralPermissionRust />
       </Tab>
       <Tab title="Pinocchio">
-        <DelegatePermissionPinocchio />
+        <UpdateEphemeralPermissionPinocchio />
       </Tab>
       <Tab title="Kit">
-        <DelegatePermissionKit />
+        <UpdateEphemeralPermissionKit />
       </Tab>
       <Tab title="Web3.js">
-        <DelegatePermissionWeb3js />
+        <UpdateEphemeralPermissionWeb3js />
       </Tab>
     </Tabs>
 
     **Use Cases:**
 
-    - Enable ER execution for a permissioned account
-    - Designate a specific validator to execute state changes
-    - Set up delegation for real-time transaction processing
+    - Toggle `is_private` on demand (e.g. private play, public reveal)
+    - Add new viewers with `TX_LOGS | TX_MESSAGE | TX_BALANCES` flags
+    - Revoke a member by omitting them from the next call's member list
 
-    **Important:**
-
-    - Either the authority or permissioned_account must sign based on AUTHORITY_FLAG
-    - The validator processes transactions at ER speed
-    - Commit frequency determines how often state syncs to Solana
-    - **Once delegated to Private Ephemeral Rollup, the permission is enforced** - only members with appropriate flags can access or modify the account state
-
-    [⬆️ Back to Top](#permission-lifecycle)
+    [⬆️ Back to Top](#ephemeral-permission)
 
   </Tab>
 
-  <Tab title="3. Update">
-    Modify existing members or their flags in a permission account via MagicBlock's Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`.
+  <Tab title="3. Close Ephemeral Permission">
+    Close the `EphemeralPermission` account on the ER via
+    `CloseEphemeralPermissionCpi`. Rent is refunded to the data PDA (the
+    original payer). Optional — only call when the permission is no longer
+    needed.
 
     <Tabs>
+      <Tab title="Anchor">
+        <CloseEphemeralPermissionAnchor />
+      </Tab>
       <Tab title="Rust SDK">
-        <UpdatePermissionRust />
+        <CloseEphemeralPermissionRust />
       </Tab>
       <Tab title="Pinocchio">
-        <UpdatePermissionPinocchio />
+        <CloseEphemeralPermissionPinocchio />
       </Tab>
       <Tab title="Kit">
-        <UpdatePermissionKit />
+        <CloseEphemeralPermissionKit />
       </Tab>
       <Tab title="Web3.js">
-        <UpdatePermissionWeb3js />
+        <CloseEphemeralPermissionWeb3js />
       </Tab>
     </Tabs>
 
     **Use Cases:**
 
-    - Add new members to a permission group
-    - Revoke permissions by removing members
-    - Change member flags to grant/restrict access
-    - Set members to `None` to make account temporarily visible
+    - Reclaim ephemeral rent before undelegating the data PDA
+    - Tear down access control once private execution is finished
 
-    [⬆️ Back to Top](#permission-lifecycle)
-
-  </Tab>
-
-  <Tab title="4. Request">
-    When making requests to Private Ephemeral Rollup, you must first establish authorization:
-
-    <PerEndpoint />
-
-    **Authorization Steps:**
-
-    1. **Verify TEE RPC Integrity**: Verify the TEE RPC server runs on genuine Intel TDX hardware using its TDX quote and Intel-issued attestation certificates
-    2. **Request Authorization Token**: Sign a challenge message to receive an authorization token
-    3. **Create Connection**: Pass the authorization token inside header or as query parameter
-
-    <Tabs>
-      <Tab title="Kit">
-        <AuthorizationKit />
-      </Tab>
-      <Tab title="Web3.js">
-        <AuthorizationWeb3js />
-      </Tab>
-    </Tabs>
-
-    **Account Visibility:**
-
-    - **By default**: All accounts are transparent and accessible to any authorized user
-    - **With permissions**: Once an account is permissioned through the permission system, access control rules are enforced during every request
-    - Only members with appropriate flags can access or modify permissioned accounts and transactions
-
-    **Key Points:**
-
-    - Requests are executed in real-time on the validator
-    - Member flags determine what each user can do
-    - Permissions can be updated dynamically during execution
-    - Updates take effect immediately on the Private Ephemeral Rollup
-
-    [⬆️ Back to Top](#permission-lifecycle)
-
-  </Tab>
-
-  <Tab title="5. Commit & Undelegate">
-    The latest permission state on Private Ephemeral Rollup enforces access control. For closing permission account, update permission members before undelegating permission to Solana.
-
-    <Tabs>
-      <Tab title="Rust SDK">
-        <CommitAndUndelegatePermissionRust />
-      </Tab>
-      <Tab title="Pinocchio">
-        <CommitAndUndelegatePermissionPinocchio />
-      </Tab>
-      <Tab title="Kit">
-        <CommitAndUndelegatePermissionKit />
-      </Tab>
-      <Tab title="Web3.js">
-        <CommitAndUndelegatePermissionWeb3js />
-      </Tab>
-    </Tabs>
-
-    [⬆️ Back to Top](#permission-lifecycle)
-
-  </Tab>
-
-  <Tab title="6. Close">
-    Close a permissioned account and reclaim its lamports on Solana.
-
-    <Tabs>
-      <Tab title="Rust SDK">
-        <ClosePermissionRust />
-      </Tab>
-      <Tab title="Pinocchio">
-        <ClosePermissionPinocchio />
-      </Tab>
-      <Tab title="Kit">
-        <ClosePermissionKit />
-      </Tab>
-      <Tab title="Web3.js">
-        <ClosePermissionWeb3js />
-      </Tab>
-    </Tabs>
-
-    **Use Cases:**
-
-    - Clean up unused permission accounts
-    - Reclaim SOL from closed accounts
-
-    **Important:**
-
-    - The permission must be undelegated to Solana first
-    - If delegated, call `commit_and_undelegate` before closing
-    - Lamports are returned to the payer
-
-    [⬆️ Back to Top](#permission-lifecycle)
+    [⬆️ Back to Top](#ephemeral-permission)
 
   </Tab>
 </Tabs>
+
+<Tip>
+  Reference implementations:
+  [`private-counter`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter)
+  (Anchor)
+  and
+  [`pinocchio-private-counter`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/pinocchio-private-counter).
+</Tip>
 
 ---
 

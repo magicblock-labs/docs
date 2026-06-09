@@ -101,6 +101,8 @@ import QuickAccesERRust from "/ko/snippets/quick-access-er-rust.mdx";
     2. `CommitAndUndelegate`: 카운터를 ER에서 Base Layer로 동기화하도록 예약하고 ER에서 위임 해제 (ER에서 호출)
     3. `Commit`: 카운터를 ER에서 Base Layer로 동기화하도록 예약 (ER에서 호출)
     4. `Undelegate`: Base Layer에서 카운터를 위임 해제 (validator CPI를 통해 Base Layer에서 호출)
+    5. `IncrementAndCommit`: 단일 ER 트랜잭션에서 증가와 커밋을 수행 (ER에서 호출)
+    6. `IncrementAndUndelegate`: 단일 ER 트랜잭션에서 증가, 커밋, 위임 해제를 수행 (ER에서 호출)
     <UndelegationCallbackNote />
 
     아래는 프로그램의 핵심 구조입니다。
