@@ -1,6 +1,6 @@
 ---
 title: AI Dev Skill
-description: Use the MagicBlock Dev Skill to bring MagicBlock-specific development patterns into Claude Code, Claude.ai, Codex, Cursor, Windsurf, Cline, Continue, and other AI coding agents — including delegation flows, Magic Actions, dual-connection architecture, cranks, VRF, lamports top-up, commit sponsorship, and private payments with swaps.
+description: MagicBlock Ephemeral Rollups development skill for AI coding agents, with MagicBlock-specific patterns for delegation, Magic Actions, cranks, VRF, lamports top-up, commit sponsorship, private payments with swaps, and dual-connection architecture.
 ---
 
 <CardGroup cols={1}>
@@ -14,43 +14,34 @@ description: Use the MagicBlock Dev Skill to bring MagicBlock-specific developme
   </Card>
 </CardGroup>
 
+## Quick install
+
+```bash
+npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
+```
+
 ## What It Is
 
-The MagicBlock Dev Skill is an AI development skill that packages proven MagicBlock development patterns into a reusable workflow across multiple AI coding agents. Instead of re-explaining the same integration details in every prompt, the skill gives your coding agent structured guidance for building on MagicBlock.
+The MagicBlock Dev Skill is an AI development skill that packages MagicBlock-specific patterns into a reusable workflow that activates when you ask for MagicBlock or Ephemeral Rollups help. Instead of re-explaining the same integration details in every prompt, the skill gives your coding agent structured guidance for building on MagicBlock.
 
 It is designed for teams working on:
 
-- Ephemeral Rollups integration
-- Delegation and undelegation flows
+- MagicBlock Ephemeral Rollups integration
+- Delegating and undelegating Solana accounts
 - Dual-connection Solana + MagicBlock architectures
-- High-performance transaction routing
+- High-performance, low-latency transaction flows
 - Cranks for recurring automated transactions
 - VRF for provable randomness
 - Magic Actions — base-layer instructions chained atomically to an ER commit
 - Topping up a delegated account's lamports via `lamportsDelegatedTransferIx`
 - Commit sponsorship and lifting the default 10-commit cap with `magic_fee_vault`
 - Private payments — deposits, transfers, withdrawals, and swaps via the Payments API, including the challenge/login bearer-token flow for private reads
+- Gaming and real-time app development on Solana
 - Anchor and TypeScript-based integrations
 
-## Supported Agents
+## Installation
 
-The skill supports a wide range of AI coding agents through a single installer. Pick the one you use:
-
-| Agent | Install location |
-| --- | --- |
-| Claude Code | `~/.claude/skills/magicblock/` |
-| Claude.ai (chat / desktop) | Upload `dist/magicblock.zip` via Skills UI |
-| Codex | `~/.codex/skills/magicblock/` |
-| Cursor | `.cursor/rules/magicblock.mdc` |
-| Windsurf | `.windsurf/rules/magicblock.md` |
-| Cline | `.clinerules/magicblock.md` |
-| Continue | `.continue/rules/magicblock.md` |
-| Cross-tool standard | `AGENTS.md` at the project root |
-| Chat-only (DeepSeek, ChatGPT default, etc.) | Paste `dist/system-prompt.md` as a system prompt |
-
-## How To Install
-
-### Claude Code quick install
+### Quick install
 
 ```bash
 npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
@@ -64,9 +55,12 @@ cd magicblock-dev-skill
 ./install.sh
 ```
 
-By default, `./install.sh` installs the skill into both Claude Code and Codex personal skill directories.
+By default, `./install.sh` installs the skill to both personal skill directories:
 
-### Target a specific agent
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+
+### Targeting specific agents
 
 Global / per-user targets:
 
@@ -93,33 +87,31 @@ Combined:
 ./install.sh --path /custom/path/magicblock
 ```
 
-### Claude.ai upload
+The single-file targets for Cursor, Windsurf, Cline, Continue, and `AGENTS.md` are generated from `dist/` artifacts. `install.sh` runs `./build.sh` automatically if `dist/` is missing.
+
+### Building dist artifacts manually
 
 ```bash
 ./build.sh
 ```
 
-Then upload `dist/magicblock.zip` via Settings → Capabilities → Skills in Claude.ai.
+Produces:
 
-### Chat-only platforms (DeepSeek, ChatGPT default, Claude.ai default)
+- `dist/AGENTS.md` - full flattened skill (`SKILL.md` plus all references)
+- `dist/system-prompt.md` - trimmed `SKILL.md` plus reference URLs for chat-only platforms
+- `dist/magicblock.cursor.mdc` - Cursor-formatted rule with `.mdc` frontmatter
+- `dist/magicblock.zip` - zipped `skill/` folder for Claude.ai upload
 
-```bash
-./build.sh
-cat dist/system-prompt.md
-```
+## Usage
 
-Paste the output into the platform's system prompt, custom instructions, or project context field.
+The skill activates automatically when you ask about MagicBlock or Ephemeral Rollups.
 
-### Use in your agent
+- In Claude Code, you can also invoke it directly with `/magicblock`.
+- In Codex, mention it explicitly by name, for example: `use the magicblock skill`.
+- In Cursor / Windsurf / Cline / Continue, the rule's description triggers contextually when you mention MagicBlock topics.
+- For chat-only platforms, load `dist/system-prompt.md` once as the system prompt, custom instructions, or project context.
 
-Once installed, the skill activates automatically when you ask for MagicBlock or Ephemeral Rollups help.
-
-- In Claude Code, you can invoke it directly with `/magicblock`
-- In Codex, mention it explicitly by name: `use the magicblock skill`
-- In Cursor / Windsurf / Cline / Continue, the rule's description triggers contextually when you mention MagicBlock topics
-- For chat-only platforms, the skill is loaded once via the system prompt and persists for the session
-
-Example prompts:
+Examples:
 
 ```text
 Add delegation hooks to my player account

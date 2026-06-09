@@ -1,6 +1,6 @@
 ---
-title: AI 开发 Skill
-description: 使用 MagicBlock Dev Skill 将 MagicBlock 专属的开发模式带入 Claude Code、Claude.ai、Codex、Cursor、Windsurf、Cline、Continue 等 AI 编码 agent —— 包括委托流程、Magic Actions、双连接架构、cranks、VRF、lamports 充值、commit 赞助以及包含 swaps 的 private payments。
+title: MagicBlock Dev Skill
+description: 面向 AI 编码 agent 的 MagicBlock Ephemeral Rollups 开发 skill,包含委托、Magic Actions、cranks、VRF、lamports 充值、commit 赞助、带 swaps 的 private payments 以及双连接架构等 MagicBlock 专属模式。
 ---
 
 <CardGroup cols={1}>
@@ -16,41 +16,26 @@ description: 使用 MagicBlock Dev Skill 将 MagicBlock 专属的开发模式带
 
 ## 它是什么
 
-MagicBlock Dev Skill 是一个 AI 开发 skill,将经过验证的 MagicBlock 开发模式打包成可在多种 AI 编码 agent 上复用的工作流。无需在每次 prompt 中反复解释同样的集成细节,这个 skill 会为你的编码 agent 提供面向 MagicBlock 构建的结构化指导。
+MagicBlock Dev Skill 是一个 AI 开发 skill,将 MagicBlock 专属模式打包成可复用工作流,当你请求 MagicBlock 或 Ephemeral Rollups 帮助时自动激活。无需在每次 prompt 中反复解释同样的集成细节,这个 skill 会为你的编码 agent 提供面向 MagicBlock 构建的结构化指导。
 
 它专为以下场景设计:
 
-- Ephemeral Rollups 集成
-- 委托与解除委托流程
+- MagicBlock Ephemeral Rollups 集成
+- Solana 账户的委托与解除委托
 - Solana + MagicBlock 的双连接架构
-- 高性能交易路由
+- 高性能、低延迟交易流程
 - 用于定时自动交易的 Cranks
 - 用于可证明随机性的 VRF
 - Magic Actions —— 与 ER commit 原子绑定的基础层指令
 - 通过 `lamportsDelegatedTransferIx` 为委托账户充值 lamports
 - Commit 赞助以及通过 `magic_fee_vault` 突破默认的 10 次 commit 上限
 - Private payments —— 通过 Payments API 进行存款、转账、提现和 swaps,包括用于读取私密数据的 challenge/login bearer token 流程
+- Solana 上的游戏和实时应用开发
 - 基于 Anchor 与 TypeScript 的集成
 
-## 支持的 Agent
+## 安装
 
-该 skill 通过一个统一的安装脚本支持多种 AI 编码 agent。选择你正在使用的 agent:
-
-| Agent | 安装位置 |
-| --- | --- |
-| Claude Code | `~/.claude/skills/magicblock/` |
-| Claude.ai(chat / desktop) | 通过 Skills UI 上传 `dist/magicblock.zip` |
-| Codex | `~/.codex/skills/magicblock/` |
-| Cursor | `.cursor/rules/magicblock.mdc` |
-| Windsurf | `.windsurf/rules/magicblock.md` |
-| Cline | `.clinerules/magicblock.md` |
-| Continue | `.continue/rules/magicblock.md` |
-| 跨工具标准 | 项目根目录的 `AGENTS.md` |
-| 仅 Chat 平台(DeepSeek、ChatGPT default 等) | 将 `dist/system-prompt.md` 粘贴为 system prompt |
-
-## 如何安装
-
-### Claude Code 快速安装
+### 快速安装
 
 ```bash
 npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
@@ -64,9 +49,12 @@ cd magicblock-dev-skill
 ./install.sh
 ```
 
-默认情况下,`./install.sh` 会同时将该 skill 安装到 Claude Code 和 Codex 的个人 skill 目录。
+默认情况下,`./install.sh` 会将该 skill 安装到两个个人 skill 目录:
 
-### 指定特定的 agent
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+
+### 指定特定 agent
 
 全局 / 个人级目标:
 
@@ -93,33 +81,31 @@ cd magicblock-dev-skill
 ./install.sh --path /custom/path/magicblock
 ```
 
-### Claude.ai 上传
+Cursor、Windsurf、Cline、Continue 和 `AGENTS.md` 这些单文件目标由 `dist/` artifact 生成。如果 `dist/` 缺失,`install.sh` 会自动运行 `./build.sh`。
+
+### 手动构建 dist artifact
 
 ```bash
 ./build.sh
 ```
 
-然后在 Claude.ai 中通过 Settings → Capabilities → Skills 上传 `dist/magicblock.zip`。
+生成:
 
-### 仅 Chat 平台(DeepSeek、ChatGPT default、Claude.ai default)
+- `dist/AGENTS.md` - 完整展开的 skill(`SKILL.md` 加所有 references)
+- `dist/system-prompt.md` - 精简版 `SKILL.md` 加 reference URL,用于仅 Chat 平台
+- `dist/magicblock.cursor.mdc` - 带 `.mdc` frontmatter 的 Cursor rule
+- `dist/magicblock.zip` - 用于 Claude.ai 上传的压缩版 `skill/` 文件夹
 
-```bash
-./build.sh
-cat dist/system-prompt.md
-```
+## 使用
 
-将输出粘贴到该平台的 system prompt、custom instructions 或 project context 字段。
+当你询问 MagicBlock 或 Ephemeral Rollups 时,该 skill 会自动激活。
 
-### 在 agent 中使用
+- 在 Claude Code 中,你也可以通过 `/magicblock` 直接调用它。
+- 在 Codex 中,可以按名称显式指定,例如:`use the magicblock skill`。
+- 在 Cursor / Windsurf / Cline / Continue 中,当你提及 MagicBlock 主题时,规则的描述会根据上下文自动触发。
+- 对于仅 Chat 平台,将 `dist/system-prompt.md` 作为 system prompt、custom instructions 或 project context 加载一次即可。
 
-安装完成后,当你寻求 MagicBlock 或 Ephemeral Rollups 相关帮助时,该 skill 会自动激活。
-
-- 在 Claude Code 中,你可以通过 `/magicblock` 直接调用它
-- 在 Codex 中,你可以按名称显式指定:`use the magicblock skill`
-- 在 Cursor / Windsurf / Cline / Continue 中,当你提及 MagicBlock 主题时,规则的描述会根据上下文自动触发
-- 对于仅 Chat 平台,该 skill 通过 system prompt 加载一次后会在整个会话中保持有效
-
-示例 prompt:
+示例:
 
 ```text
 Add delegation hooks to my player account

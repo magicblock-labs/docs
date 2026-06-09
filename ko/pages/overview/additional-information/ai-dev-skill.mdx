@@ -1,6 +1,6 @@
 ---
-title: AI 개발 Skill
-description: MagicBlock Dev Skill을 통해 Claude Code, Claude.ai, Codex, Cursor, Windsurf, Cline, Continue 등 AI 코딩 에이전트에 MagicBlock 특화 개발 패턴을 가져옵니다 — 위임 플로우, Magic Actions, 듀얼 커넥션 아키텍처, cranks, VRF, lamports 충전, commit 스폰서십, swaps를 포함한 private payments 등을 포함합니다.
+title: MagicBlock Dev Skill
+description: AI 코딩 에이전트를 위한 MagicBlock Ephemeral Rollups 개발 skill입니다. 위임, Magic Actions, cranks, VRF, lamports 충전, commit 스폰서십, swaps를 포함한 private payments, 듀얼 커넥션 아키텍처 같은 MagicBlock 특화 패턴을 포함합니다.
 ---
 
 <CardGroup cols={1}>
@@ -16,41 +16,26 @@ description: MagicBlock Dev Skill을 통해 Claude Code, Claude.ai, Codex, Curso
 
 ## 무엇인가
 
-MagicBlock Dev Skill은 AI 개발 skill로, 검증된 MagicBlock 개발 패턴을 여러 AI 코딩 에이전트에서 재사용 가능한 워크플로로 패키징한 것입니다. 매 프롬프트마다 동일한 통합 세부 정보를 다시 설명할 필요 없이, 이 skill이 코딩 에이전트에게 MagicBlock 위에서 빌드하기 위한 구조화된 가이드를 제공합니다.
+MagicBlock Dev Skill은 AI 개발 skill로, MagicBlock 특화 패턴을 재사용 가능한 워크플로로 패키징한 것입니다. MagicBlock이나 Ephemeral Rollups 관련 도움을 요청하면 자동으로 활성화됩니다. 매 프롬프트마다 동일한 통합 세부 정보를 다시 설명할 필요 없이, 이 skill이 코딩 에이전트에게 MagicBlock 위에서 빌드하기 위한 구조화된 가이드를 제공합니다.
 
 다음과 같은 작업을 수행하는 팀을 위해 설계되었습니다:
 
-- Ephemeral Rollups 통합
-- 위임 및 위임 해제 플로우
+- MagicBlock Ephemeral Rollups 통합
+- Solana 계정 위임 및 위임 해제
 - Solana + MagicBlock 듀얼 커넥션 아키텍처
-- 고성능 트랜잭션 라우팅
+- 고성능, 저지연 트랜잭션 플로우
 - 주기적인 자동 트랜잭션을 위한 Cranks
 - 증명 가능한 랜덤성을 위한 VRF
 - Magic Actions — ER commit에 원자적으로 연결되는 베이스 레이어 명령
 - `lamportsDelegatedTransferIx`를 통한 위임 계정의 lamports 충전
 - Commit 스폰서십과 `magic_fee_vault`를 사용해 기본 10 commit 한도를 늘리는 방법
 - Private payments — Payments API를 통한 입금, 전송, 출금, swaps, 프라이빗 읽기를 위한 challenge/login bearer 토큰 플로우 포함
+- Solana 기반 게임 및 실시간 앱 개발
 - Anchor 및 TypeScript 기반 통합
 
-## 지원되는 Agent
+## 설치
 
-이 skill은 단일 설치 스크립트로 다양한 AI 코딩 에이전트를 지원합니다. 사용 중인 에이전트를 선택하세요:
-
-| Agent | 설치 위치 |
-| --- | --- |
-| Claude Code | `~/.claude/skills/magicblock/` |
-| Claude.ai(chat / desktop) | Skills UI를 통해 `dist/magicblock.zip` 업로드 |
-| Codex | `~/.codex/skills/magicblock/` |
-| Cursor | `.cursor/rules/magicblock.mdc` |
-| Windsurf | `.windsurf/rules/magicblock.md` |
-| Cline | `.clinerules/magicblock.md` |
-| Continue | `.continue/rules/magicblock.md` |
-| 크로스 툴 표준 | 프로젝트 루트의 `AGENTS.md` |
-| Chat 전용 (DeepSeek, ChatGPT default 등) | `dist/system-prompt.md`를 시스템 프롬프트로 붙여넣기 |
-
-## 설치 방법
-
-### Claude Code 빠른 설치
+### 빠른 설치
 
 ```bash
 npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
@@ -64,7 +49,10 @@ cd magicblock-dev-skill
 ./install.sh
 ```
 
-기본적으로 `./install.sh`는 Claude Code와 Codex의 개인 skill 디렉토리에 모두 설치합니다.
+기본적으로 `./install.sh`는 skill을 두 개인 skill 디렉토리에 설치합니다:
+
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
 
 ### 특정 에이전트 지정
 
@@ -93,33 +81,31 @@ cd magicblock-dev-skill
 ./install.sh --path /custom/path/magicblock
 ```
 
-### Claude.ai 업로드
+Cursor, Windsurf, Cline, Continue, `AGENTS.md` 단일 파일 대상은 `dist/` artifact에서 생성됩니다. `dist/`가 없으면 `install.sh`가 자동으로 `./build.sh`를 실행합니다.
+
+### dist artifact 수동 빌드
 
 ```bash
 ./build.sh
 ```
 
-그런 다음 Claude.ai의 Settings → Capabilities → Skills 에서 `dist/magicblock.zip`을 업로드하세요.
+생성물:
 
-### Chat 전용 플랫폼 (DeepSeek, ChatGPT default, Claude.ai default)
+- `dist/AGENTS.md` - 전체가 펼쳐진 skill(`SKILL.md`와 모든 references)
+- `dist/system-prompt.md` - Chat 전용 플랫폼을 위한 축약된 `SKILL.md`와 reference URL
+- `dist/magicblock.cursor.mdc` - `.mdc` frontmatter가 포함된 Cursor rule
+- `dist/magicblock.zip` - Claude.ai 업로드용으로 압축된 `skill/` 폴더
 
-```bash
-./build.sh
-cat dist/system-prompt.md
-```
+## 사용
 
-출력을 해당 플랫폼의 시스템 프롬프트, custom instructions, 또는 project context 필드에 붙여넣으세요.
+MagicBlock이나 Ephemeral Rollups에 대해 질문하면 skill이 자동으로 활성화됩니다.
 
-### 에이전트에서 사용하기
+- Claude Code에서는 `/magicblock`으로도 직접 호출할 수 있습니다.
+- Codex에서는 이름으로 명시적으로 지정할 수 있습니다. 예: `use the magicblock skill`
+- Cursor / Windsurf / Cline / Continue에서는 MagicBlock 주제를 언급할 때 규칙의 설명에 따라 컨텍스트로 트리거됩니다.
+- Chat 전용 플랫폼에서는 `dist/system-prompt.md`를 시스템 프롬프트, custom instructions, 또는 project context로 한 번 로드합니다.
 
-설치가 완료되면, MagicBlock이나 Ephemeral Rollups 관련 도움을 요청할 때 skill이 자동으로 활성화됩니다.
-
-- Claude Code에서는 `/magicblock`으로 직접 호출할 수 있습니다
-- Codex에서는 이름으로 명시적으로 지정할 수 있습니다:`use the magicblock skill`
-- Cursor / Windsurf / Cline / Continue에서는 MagicBlock 주제를 언급할 때 규칙의 설명에 따라 컨텍스트로 트리거됩니다
-- Chat 전용 플랫폼의 경우, 시스템 프롬프트로 한 번 로드하면 세션 동안 유지됩니다
-
-프롬프트 예시:
+예시:
 
 ```text
 Add delegation hooks to my player account

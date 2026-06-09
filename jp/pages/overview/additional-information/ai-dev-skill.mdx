@@ -1,6 +1,6 @@
 ---
-title: AI 開発 Skill
-description: MagicBlock Dev Skill を使って、Claude Code、Claude.ai、Codex、Cursor、Windsurf、Cline、Continue などの AI コーディングエージェントに MagicBlock 固有の開発パターンを取り込みます — 委任フロー、Magic Actions、デュアルコネクションアーキテクチャ、cranks、VRF、lamports トップアップ、commit スポンサーシップ、swaps を含む private payments など。
+title: MagicBlock Dev Skill
+description: AI コーディングエージェント向けの MagicBlock Ephemeral Rollups 開発 skill。委任、Magic Actions、cranks、VRF、lamports トップアップ、commit スポンサーシップ、swaps を含む private payments、デュアルコネクションアーキテクチャなどの MagicBlock 固有パターンを含みます。
 ---
 
 <CardGroup cols={1}>
@@ -16,41 +16,26 @@ description: MagicBlock Dev Skill を使って、Claude Code、Claude.ai、Codex
 
 ## これは何か
 
-MagicBlock Dev Skill は AI 開発 skill であり、実証済みの MagicBlock 開発パターンを複数の AI コーディングエージェントで再利用可能なワークフローとしてパッケージ化したものです。プロンプトのたびに同じ統合の詳細を説明し直す必要はなく、この skill がコーディングエージェントに対し MagicBlock 上で構築するための構造化されたガイダンスを与えます。
+MagicBlock Dev Skill は AI 開発 skill であり、MagicBlock 固有のパターンを再利用可能なワークフローとしてパッケージ化したものです。MagicBlock や Ephemeral Rollups について質問すると自動的に有効化されます。プロンプトのたびに同じ統合の詳細を説明し直す必要はなく、この skill がコーディングエージェントに対し MagicBlock 上で構築するための構造化されたガイダンスを与えます。
 
 以下のような取り組みを行うチームを想定しています:
 
-- Ephemeral Rollups の統合
-- 委任および委任解除のフロー
+- MagicBlock Ephemeral Rollups の統合
+- Solana アカウントの委任および委任解除
 - Solana + MagicBlock のデュアルコネクション アーキテクチャ
-- 高性能なトランザクションルーティング
+- 高性能かつ低レイテンシなトランザクションフロー
 - 定期的な自動トランザクションのための Cranks
 - 検証可能なランダム性のための VRF
 - Magic Actions — ER commit にアトミックに連結されるベースレイヤー命令
 - `lamportsDelegatedTransferIx` を使った委任アカウントへの lamports トップアップ
 - Commit スポンサーシップ、および `magic_fee_vault` でデフォルトの 10 commit 上限を引き上げる方法
 - Private payments — Payments API を介した入金、送金、出金、swaps、プライベート読み取り用の challenge/login bearer トークンフローを含む
+- Solana 上のゲームおよびリアルタイムアプリ開発
 - Anchor および TypeScript ベースの統合
 
-## サポートされている Agent
+## インストール
 
-この skill は単一のインストーラーで多くの AI コーディングエージェントに対応します。お使いのエージェントを選んでください:
-
-| Agent | インストール先 |
-| --- | --- |
-| Claude Code | `~/.claude/skills/magicblock/` |
-| Claude.ai(chat / desktop) | Skills UI で `dist/magicblock.zip` をアップロード |
-| Codex | `~/.codex/skills/magicblock/` |
-| Cursor | `.cursor/rules/magicblock.mdc` |
-| Windsurf | `.windsurf/rules/magicblock.md` |
-| Cline | `.clinerules/magicblock.md` |
-| Continue | `.continue/rules/magicblock.md` |
-| クロスツール標準 | プロジェクトルートの `AGENTS.md` |
-| Chat 専用(DeepSeek、ChatGPT default など) | `dist/system-prompt.md` をシステムプロンプトに貼り付け |
-
-## インストール方法
-
-### Claude Code でのクイックインストール
+### クイックインストール
 
 ```bash
 npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
@@ -64,7 +49,10 @@ cd magicblock-dev-skill
 ./install.sh
 ```
 
-デフォルトでは、`./install.sh` は Claude Code と Codex の個人用 skill ディレクトリに同時にインストールします。
+デフォルトでは、`./install.sh` は skill を次の 2 つの個人用 skill ディレクトリにインストールします。
+
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
 
 ### 特定のエージェントを指定する
 
@@ -93,33 +81,31 @@ cd magicblock-dev-skill
 ./install.sh --path /custom/path/magicblock
 ```
 
-### Claude.ai へのアップロード
+Cursor、Windsurf、Cline、Continue、`AGENTS.md` の単一ファイルターゲットは `dist/` artifact から生成されます。`dist/` がない場合、`install.sh` は自動で `./build.sh` を実行します。
+
+### dist artifact を手動でビルドする
 
 ```bash
 ./build.sh
 ```
 
-その後、Claude.ai の Settings → Capabilities → Skills から `dist/magicblock.zip` をアップロードしてください。
+生成されるもの:
 
-### Chat 専用プラットフォーム(DeepSeek、ChatGPT default、Claude.ai default)
+- `dist/AGENTS.md` - 完全に展開された skill(`SKILL.md` とすべての references)
+- `dist/system-prompt.md` - Chat 専用プラットフォーム向けの短縮版 `SKILL.md` と reference URL
+- `dist/magicblock.cursor.mdc` - `.mdc` frontmatter 付きの Cursor rule
+- `dist/magicblock.zip` - Claude.ai アップロード用に圧縮された `skill/` フォルダ
 
-```bash
-./build.sh
-cat dist/system-prompt.md
-```
+## 利用
 
-出力をプラットフォームのシステムプロンプト、custom instructions、または project context フィールドに貼り付けてください。
+MagicBlock や Ephemeral Rollups について質問すると、この skill は自動的に有効化されます。
 
-### エージェントでの利用
+- Claude Code では `/magicblock` でも直接呼び出せます。
+- Codex では名前で明示的に指定できます。例: `use the magicblock skill`
+- Cursor / Windsurf / Cline / Continue では、MagicBlock のトピックに触れたときにルールの説明文がコンテキストに応じて発火します。
+- Chat 専用プラットフォームでは、`dist/system-prompt.md` をシステムプロンプト、custom instructions、または project context として一度ロードします。
 
-インストール後、MagicBlock や Ephemeral Rollups に関するヘルプを求めたときに skill が自動的に有効化されます。
-
-- Claude Code では `/magicblock` で直接呼び出せます
-- Codex では名前で明示的に指定できます:`use the magicblock skill`
-- Cursor / Windsurf / Cline / Continue では、MagicBlock のトピックに触れたときにルールの説明文がコンテキストに応じて発火します
-- Chat 専用プラットフォームでは、システムプロンプトで一度ロードすればセッション中ずっと有効です
-
-プロンプト例:
+例:
 
 ```text
 Add delegation hooks to my player account
