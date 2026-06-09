@@ -1,0 +1,22 @@
+```rust
+use ephemeral_rollups_sdk::access_control::instructions::CloseEphemeralPermissionCpi;
+
+let seeds: &[&[u8]] = &[
+    COUNTER_SEED,
+    permissioned_account_authority.as_ref(),
+    &[bump],
+];
+
+// Refunds the permission's rent to `payer` (the counter PDA).
+CloseEphemeralPermissionCpi {
+    payer: &counter_account_info,
+    permissioned_account: &counter_account_info,
+    permission: &permission_account_info,
+    vault: &ephemeral_vault_account_info,
+    magic_program: &magic_program_account_info,
+    permission_program: &permission_program_account_info,
+    authority: &counter_account_info,
+    authority_is_signer: false,
+}
+.invoke_signed(&[seeds])?;
+```

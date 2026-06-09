@@ -1,0 +1,25 @@
+```rust
+use ephemeral_rollups_pinocchio::acl::CloseEphemeralPermission;
+use pinocchio::cpi::{Seed, Signer};
+
+let bump_seed = [bump];
+let seeds_array: [Seed; 3] = [
+    Seed::from(b"counter"),
+    Seed::from(authority.address().as_ref()),
+    Seed::from(&bump_seed),
+];
+let signer = Signer::from(&seeds_array);
+
+// Refunds the permission's rent to `payer` (the counter PDA).
+CloseEphemeralPermission {
+    payer: counter_account,
+    permissioned_account: counter_account,
+    permission,
+    vault,
+    magic_program,
+    permission_program,
+    authority: counter_account,
+    authority_is_signer: false,
+}
+.invoke_signed(&[signer])?;
+```

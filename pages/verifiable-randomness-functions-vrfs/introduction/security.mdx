@@ -14,8 +14,9 @@ Only the official MagicBlock oracle can trigger the callback, preventing spoofed
 
 MagicBlock Solana VRF checks for conditions like `InvalidProof` and `Unauthorized` so incorrect signatures or unauthorized callers are rejected before your game logic runs. The VRF program has a published audit, so treat that report as the source of truth before going live.
 
-Avoid letting users provide the entire `caller_seed` directly. Combine it with game state or timestamps to prevent seed grinding. Because everything executes inside the deterministic rollup, the random value cannot be reused or delayed.
-This enforcement happens within the same [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) that executes your game logic.
+Because everything executes inside the same deterministic [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) that runs your game logic, the random value cannot be reused or delayed.
+
+For actionable integration guidance — seed selection, callback validation, and state management — see [Best Practices](/pages/verifiable-randomness-functions-vrfs/how-to-guide/best-practices).
 
 <CardGroup cols={2}>
   <Card

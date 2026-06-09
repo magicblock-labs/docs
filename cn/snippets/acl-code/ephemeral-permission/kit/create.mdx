@@ -1,0 +1,33 @@
+```typescript
+import {
+  MAGIC_PROGRAM_ID,
+  PERMISSION_PROGRAM_ID,
+  EPHEMERAL_VAULT_ID,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { pipe, createTransactionMessage, appendTransactionMessageInstructions } from "@solana/kit";
+
+// EphemeralPermissions are created on the ER by the delegated PDA (via the
+// user-program's wrapper instruction). Submit to the ER connection, not base.
+const initIx = await counterProgram.methods
+  .initPermission()
+  .accountsPartial({
+    authority: tempKeypair.address,
+    counter: counterPda,
+    permission: permissionPda,
+    permissionProgram: PERMISSION_PROGRAM_ID,
+    ephemeralVault: EPHEMERAL_VAULT_ID,
+    magicProgram: MAGIC_PROGRAM_ID,
+  })
+  .instruction();
+
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => appendTransactionMessageInstructions([initIx], tx),
+);
+const sig = await ephemeralConnection.sendAndConfirmTransaction(
+  transactionMessage,
+  [tempKeypair],
+  { commitment: "confirmed" },
+);
+console.log("init_permission tx:", sig);
+```

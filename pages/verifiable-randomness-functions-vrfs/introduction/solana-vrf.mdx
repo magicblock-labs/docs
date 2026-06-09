@@ -64,6 +64,8 @@ That proof makes the result auditable. Users and programs can verify that a rand
 
 ## Why use MagicBlock Solana VRF?
 
+Traditional randomness sources fall short on-chain: users cannot verify how off-chain numbers were generated, validators or operators can influence blockhash-based outcomes, and off-chain delivery does not always align with on-chain execution timing. Solana VRF addresses this:
+
 - **Built for Solana programs**: request randomness through the `ephemeral_vrf_sdk` and consume the result in your own callback instruction.
 - **Designed for real-time apps**: MagicBlock's ephemeral rollup execution model keeps randomness delivery low-latency for games and interactive flows.
 - **Verifiable by design**: proofs are validated on-chain before your callback logic runs.
