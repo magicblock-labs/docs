@@ -117,6 +117,21 @@ import QuickAccessVRF from "/ko/snippets/quick-access-vrf.mdx";
 
     <RequestConsumeRandomnessCode />
 
+    <Note>
+      **VRF SDK 상수**(`ephemeral_vrf_sdk::consts`) — 주소를 하드코딩하지 말고 프로그램과 클라이언트/테스트 코드 모두에서 이 상수들을 참조하세요:
+
+      | 상수 | 용도 | 주소 |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF 프로그램 | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | 콜백 signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | 베이스 레이어 큐(Mainnet/Devnet) | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER 큐(Mainnet/Devnet) | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | 베이스 레이어 큐(Localnet) | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER 큐(Localnet) | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      트랜잭션이 실행되는 위치에 맞는 큐를 `oracle_queue` 로 전달하세요. Mainnet 과 Devnet 은 동일한 큐 주소를 사용하며, Localnet 은 테스트 큐를 사용합니다.
+    </Note>
+
     > `Request Randomness` is the process of generating a random `hashId` with the relevant callback instruction for the verified oracles to be triggered.
 
     > `Consume Randomness` is the process of using the verifiable randomness by your program which is provided and triggered through verified oracle.
@@ -138,6 +153,21 @@ import QuickAccessVRF from "/ko/snippets/quick-access-vrf.mdx";
     ```bash
     anchor test --skip-build --skip-deploy --skip-local-validator
     ```
+    <Note>
+      **VRF SDK 상수**(`ephemeral_vrf_sdk::consts`) — 주소를 하드코딩하지 말고 프로그램과 클라이언트/테스트 코드 모두에서 이 상수들을 참조하세요:
+
+      | 상수 | 용도 | 주소 |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF 프로그램 | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | 콜백 signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | 베이스 레이어 큐(Mainnet/Devnet) | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER 큐(Mainnet/Devnet) | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | 베이스 레이어 큐(Localnet) | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER 큐(Localnet) | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      트랜잭션이 실행되는 위치에 맞는 큐를 `oracle_queue` 로 전달하세요. Mainnet 과 Devnet 은 동일한 큐 주소를 사용하며, Localnet 은 테스트 큐를 사용합니다.
+    </Note>
+
     Run the following test:
     <TestCode />
     [⬆️ Back to Top](#code-snippets)

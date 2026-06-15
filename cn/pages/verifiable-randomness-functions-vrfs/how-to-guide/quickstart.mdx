@@ -117,6 +117,21 @@ import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
 
     <RequestConsumeRandomnessCode />
 
+    <Note>
+      **VRF SDK 常量**（`ephemeral_vrf_sdk::consts`）——请引用这些常量而不要硬编码地址，在程序和客户端/测试代码中均适用：
+
+      | 常量 | 用途 | 地址 |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF 程序 | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | 回调 signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | 基础层队列（Mainnet/Devnet） | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER 队列（Mainnet/Devnet） | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | 基础层队列（Localnet） | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER 队列（Localnet） | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      将与交易运行位置相匹配的队列作为 `oracle_queue` 传入。Mainnet 和 Devnet 使用相同的队列地址；Localnet 使用测试队列。
+    </Note>
+
     > `Request Randomness` 是生成一个随机 `hashId` 并附带相关回调指令的过程，用于触发已验证预言机。
 
     > `Consume Randomness` 是你的程序使用可验证随机数的过程，该随机数由已验证预言机提供并触发。
@@ -137,6 +152,21 @@ import QuickAccessVRF from "/cn/snippets/quick-access-vrf.mdx";
     ```bash
     anchor test --skip-build --skip-deploy --skip-local-validator
     ```
+    <Note>
+      **VRF SDK 常量**（`ephemeral_vrf_sdk::consts`）——请引用这些常量而不要硬编码地址，在程序和客户端/测试代码中均适用：
+
+      | 常量 | 用途 | 地址 |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF 程序 | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | 回调 signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | 基础层队列（Mainnet/Devnet） | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER 队列（Mainnet/Devnet） | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | 基础层队列（Localnet） | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER 队列（Localnet） | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      将与交易运行位置相匹配的队列作为 `oracle_queue` 传入。Mainnet 和 Devnet 使用相同的队列地址；Localnet 使用测试队列。
+    </Note>
+
     运行以下测试：
     <TestCode />
     [⬆️ 返回顶部](#code-snippets)

@@ -21,6 +21,20 @@ description: "Solana VRF가 MagicBlock과 통합되는 방식"
   MagicBlock의 VRF Program은 오픈소스이며 감사를 거쳤습니다. 제품 요약은 <a href="/ko/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf">Solana VRF 개요</a>를 참고하세요.
 </Note>
 
+## 오라클 큐
+
+모든 랜덤니스 request는 **오라클 큐(oracle queue)** 계정(`RequestRandomnessParams` 의 `oracle_queue` 필드)을 지정합니다. 모든 Solana 계정과 마찬가지로 이 큐도 Solana 에 존재하지만, **위임된(delegated)** 큐는 ephemeral rollup 내부에서만 직접 쓸 수 있고 **위임되지 않은** 큐는 베이스 레이어에서 직접 쓸 수 있습니다. 트랜잭션이 실행되는 위치에 맞는 큐에서 랜덤니스를 요청하세요 — Solana 에서는 베이스 레이어 큐를, ephemeral rollup 내부에서는 위임된 큐를 사용합니다. 가능하면 주소를 하드코딩하지 말고 `ephemeral_vrf_sdk::consts` 의 상수를 참조하세요.
+
+| 네트워크 | 베이스 레이어 큐                                                            | 위임된 큐(ephemeral rollup)                                                              |
+| -------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Mainnet  | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Devnet   | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Localnet | `DEFAULT_TEST_QUEUE`<br />`GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb`     | `DEFAULT_EPHEMERAL_TEST_QUEUE`<br />`Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT`        |
+
+<Note>
+  Mainnet 과 Devnet 은 동일한 기본 큐 주소를 사용합니다 — 연결하는 클러스터만 다릅니다. Localnet 은 로컬 검증자가 Devnet 에서 복제하는 전용 **테스트 큐**를 사용하며, `DEFAULT_TEST_QUEUE` / `DEFAULT_EPHEMERAL_TEST_QUEUE` 상수는 VRF SDK 에 포함되어 있습니다.
+</Note>
+
 <CardGroup cols={2}>
   <Card
     title="Audit"

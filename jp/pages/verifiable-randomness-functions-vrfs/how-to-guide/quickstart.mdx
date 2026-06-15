@@ -117,6 +117,21 @@ import QuickAccessVRF from "/jp/snippets/quick-access-vrf.mdx";
 
     <RequestConsumeRandomnessCode />
 
+    <Note>
+      **VRF SDK 定数**（`ephemeral_vrf_sdk::consts`）——アドレスをハードコードせず、プログラムとクライアント/テストコードの両方でこれらの定数を参照してください：
+
+      | 定数 | 用途 | アドレス |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF プログラム | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | コールバック signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | ベースレイヤーキュー（Mainnet/Devnet） | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER キュー（Mainnet/Devnet） | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | ベースレイヤーキュー（Localnet） | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER キュー（Localnet） | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      トランザクションが実行される場所に合ったキューを `oracle_queue` として渡してください。Mainnet と Devnet は同じキューアドレスを使用し、Localnet はテストキューを使用します。
+    </Note>
+
     > `Request Randomness` is the process of generating a random `hashId` with the relevant callback instruction for the verified oracles to be triggered.
 
     > `Consume Randomness` is the process of using the verifiable randomness by your program which is provided and triggered through verified oracle.
@@ -138,6 +153,21 @@ import QuickAccessVRF from "/jp/snippets/quick-access-vrf.mdx";
     ```bash
     anchor test --skip-build --skip-deploy --skip-local-validator
     ```
+    <Note>
+      **VRF SDK 定数**（`ephemeral_vrf_sdk::consts`）——アドレスをハードコードせず、プログラムとクライアント/テストコードの両方でこれらの定数を参照してください：
+
+      | 定数 | 用途 | アドレス |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF プログラム | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | コールバック signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | ベースレイヤーキュー（Mainnet/Devnet） | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER キュー（Mainnet/Devnet） | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | ベースレイヤーキュー（Localnet） | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER キュー（Localnet） | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      トランザクションが実行される場所に合ったキューを `oracle_queue` として渡してください。Mainnet と Devnet は同じキューアドレスを使用し、Localnet はテストキューを使用します。
+    </Note>
+
     Run the following test:
     <TestCode />
     [⬆️ Back to Top](#code-snippets)

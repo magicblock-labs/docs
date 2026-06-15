@@ -28,6 +28,20 @@ MagicBlock 通过 `ephemeral_vrf_sdk` 将随机性作为一等原语提供。Rol
   VRF 程序已有公开审计。集成到生产 rollup 前，请先阅读报告并充分测试。
 </Note>
 
+## 预言机队列
+
+每个随机数请求都会指定一个**预言机队列（oracle queue）**账户（即 `RequestRandomnessParams` 的 `oracle_queue` 字段）。与所有 Solana 账户一样，该队列同样存放在 Solana 上；但**已委托（delegated）**的队列只能在 ephemeral rollup 内部直接写入，而**未委托**的队列则可在基础层直接写入。请使用与交易运行位置相匹配的队列来发起随机数请求——在 Solana 上使用基础层队列，在 ephemeral rollup 内部则使用已委托的队列。请尽可能引用 `ephemeral_vrf_sdk::consts` 中的常量，而不要硬编码地址。
+
+| 网络     | 基础层队列                                                                  | 已委托队列（ephemeral rollup）                                                           |
+| -------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Mainnet  | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Devnet   | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Localnet | `DEFAULT_TEST_QUEUE`<br />`GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb`     | `DEFAULT_EPHEMERAL_TEST_QUEUE`<br />`Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT`        |
+
+<Note>
+  Mainnet 和 Devnet 使用相同的默认队列地址——区别仅在于你所连接的集群。Localnet 使用专用的**测试队列**，由本地验证器从 Devnet 克隆而来；`DEFAULT_TEST_QUEUE` / `DEFAULT_EPHEMERAL_TEST_QUEUE` 常量随 VRF SDK 一起提供。
+</Note>
+
 <CardGroup cols={2}>
   <Card
     title="快速开始"
