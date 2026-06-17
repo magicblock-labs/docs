@@ -15,6 +15,7 @@ import UndelegateCode from "/snippets/anchor-counter-code/undelegate.mdx";
 import TestCode from "/snippets/anchor-counter-code/test.mdx";
 import ResizeCode from "/snippets/anchor-counter-code/resize.mdx";
 import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
+import DelegateWithActionsCode from "/snippets/anchor-counter-code/delegate-with-actions.mdx";
 import MagicRouterSDK from "/snippets/magic-router-sdk.mdx";
 import DelegationInfo from "/snippets/delegation-info.mdx";
 import MagicActionExample from "/snippets/magic-action-example.mdx";
@@ -221,6 +222,9 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
   <Tab title="Magic Router">
 
     <MagicRouterSDK />
+
+    [Learn more about Magic Router](/pages/ephemeral-rollups-ers/introduction/magic-router)
+
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
@@ -239,7 +243,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
       </CardGroup>
     Attach one or more instructions that run automatically on the Solana base layer immediately after an Ephemeral Rollup
     (ER) commit.
-    [Learn more about Magic Action](/pages/ephemeral-rollups-ers/magic-actions/overview.mdx)
+    [Learn more about Magic Action](/pages/ephemeral-rollups-ers/magic-actions/overview)
     <MagicActionExample />
 
     [⬆️ Back to Top](#advanced-code-snippets)
@@ -261,6 +265,35 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
   </Tab>
   <Tab title="On-Curve Delegation">
     <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Delegation Actions">
+      ### Quick Access
+
+      <CardGroup cols={2}>
+        <Card
+          title="Delegation Actions Example"
+          icon="code"
+          href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/delegation-actions"
+          iconType="duotone"
+        >
+          Explore reference implementation on GitHub
+        </Card>
+      </CardGroup>
+
+    Attach instructions to a delegation that the ER validator runs automatically
+    inside the rollup, right after the account is delegated — no extra transaction:
+    - Build the action(s) as standard `Instruction`s and convert them to the
+      compact payload with `.cleartext()` (public) — encrypted actions are built
+      off-chain by a client holding the validator key.
+    - The base-layer delegation program stores the payload in the delegation
+      record; the ER validator executes it once the account lands in the rollup.
+    - CPI with `delegate_account_with_actions` instead of the plain `delegate_pda`
+      helper; the `#[delegate]` macro still provides the buffer/record/metadata
+      accounts.
+
+    <DelegateWithActionsCode />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>

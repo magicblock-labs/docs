@@ -14,6 +14,10 @@ import UndelegateCode from "/snippets/rust-counter-code/undelegate.mdx";
 import InstructionsCode from "/snippets/rust-counter-code/instructions.mdx";
 import ResizeCode from "/snippets/rust-counter-code/resize.mdx";
 import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
+import DelegateWithActionsCode from "/snippets/rust-counter-code/delegate-with-actions.mdx";
+import MagicRouterSDK from "/snippets/magic-router-sdk.mdx";
+import MagicActionCode from "/snippets/rust-counter-code/magic-action.mdx";
+import LamportsTopupCode from "/snippets/lamports-topup-code.mdx";
 
 import UndelegationCallbackNote from "/snippets/notes/undelegation-callback-note.mdx";
 
@@ -216,9 +220,70 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
+  <Tab title="Magic Router">
+
+    <MagicRouterSDK />
+
+    [Learn more about Magic Router](/pages/ephemeral-rollups-ers/introduction/magic-router)
+
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Magic Action">
+
+    Attach one or more instructions that run automatically on the Solana base
+    layer immediately after an ER commit, scheduled with `MagicIntentBundleBuilder`.
+    [Learn more about Magic Action](/pages/ephemeral-rollups-ers/magic-actions/overview)
+
+    <MagicActionCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Top-up delegated account">
+    Top up a delegated account's lamports on the ER side. The transaction is submitted on the **base layer** and uses the Ephemeral SPL Token program to shuttle lamports to the destination's delegated balance via a single-use lamports PDA.
+
+    Common use case: keeping a delegated fee payer funded so it can keep paying its own commits past the default 10-commit sponsorship cap.
+
+    Notes:
+    - Generate a fresh 32-byte salt per top-up via `crypto.getRandomValues` — re-using a salt collides with an existing PDA.
+    - Submit to the base-layer RPC, not the ER.
+    - The destination must already be delegated.
+
+    <LamportsTopupCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
   <Tab title="On-Curve Delegation">
 
     <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Delegation Actions">
+      ### Quick Access
+
+      <CardGroup cols={2}>
+        <Card
+          title="Delegation Actions Example"
+          icon="code"
+          href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/delegation-actions"
+          iconType="duotone"
+        >
+          Explore reference implementation on GitHub
+        </Card>
+      </CardGroup>
+
+    Attach instructions to a delegation that the ER validator runs automatically
+    inside the rollup, right after the account is delegated — no extra transaction:
+    - Build the action(s) as standard `Instruction`s and convert them to the
+      compact payload with `.cleartext()` (public) — encrypted actions are built
+      off-chain by a client holding the validator key.
+    - The base-layer delegation program stores the payload in the delegation
+      record; the ER validator executes it once the account lands in the rollup.
+    - CPI with `delegate_account_with_actions` (same `DelegateAccounts` /
+      `DelegateConfig` as a normal delegation, plus the actions payload).
+
+    <DelegateWithActionsCode />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>

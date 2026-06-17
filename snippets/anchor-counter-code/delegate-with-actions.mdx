@@ -1,0 +1,67 @@
+```rust
+/// Reuse the same accounts context as a normal delegation
+#[delegate]
+#[derive(Accounts)]
+pub struct DelegateInput<'info> {
+    pub payer: Signer<'info>,
+    /// CHECK: The pda to delegate
+    #[account(mut, del)]
+    pub pda: AccountInfo<'info>,
+}
+```
+
+```rust
+use anchor_lang::solana_program::instruction::{AccountMeta, Instruction};
+use anchor_lang::InstructionData;
+use ephemeral_rollups_sdk::cpi::{
+    delegate_account_with_actions, DelegateAccounts, DelegateConfig,
+};
+use ephemeral_rollups_sdk::dlp_api::compact::ClearText;
+
+/// Delegate the account AND attach a post-delegation action. The action is stored
+/// in the delegation record on the base layer and executed automatically by the ER
+/// validator inside the rollup, right after the account is delegated — no extra
+/// transaction. Here the action is a self-CPI back into `increment`.
+pub fn delegate_with_actions(ctx: Context<DelegateInput>) -> Result<()> {
+    let counter_key = ctx.accounts.pda.key();
+
+    // The instruction the ER validator runs post-delegation, inside the rollup.
+    let increment_action = Instruction {
+        program_id: crate::ID,
+        accounts: vec![AccountMeta::new(counter_key, false)],
+        data: crate::instruction::Increment {}.data(),
+    };
+
+    // Convert to the compact, cleartext post-delegation actions payload.
+    // (Use `cleartext` for public actions; encrypted actions are built off-chain
+    // by a client that holds the validator key.)
+    let actions = vec![increment_action].cleartext();
+
+    let payer = ctx.accounts.payer.to_account_info();
+    let pda = ctx.accounts.pda.to_account_info();
+    let delegate_accounts = DelegateAccounts {
+        payer: &payer,
+        pda: &pda,
+        owner_program: &ctx.accounts.owner_program,
+        buffer: &ctx.accounts.buffer_pda,
+        delegation_record: &ctx.accounts.delegation_record_pda,
+        delegation_metadata: &ctx.accounts.delegation_metadata_pda,
+        delegation_program: &ctx.accounts.delegation_program,
+        system_program: &ctx.accounts.system_program,
+    };
+
+    delegate_account_with_actions(
+        delegate_accounts,
+        &[COUNTER_SEED],
+        DelegateConfig {
+            // Optionally set a specific validator from the first remaining account
+            validator: ctx.remaining_accounts.first().map(|acc| acc.key()),
+            ..Default::default()
+        },
+        actions,
+        // No extra signers are required by the increment action.
+        &[],
+    )?;
+    Ok(())
+}
+```
