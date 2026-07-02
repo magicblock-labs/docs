@@ -1,0 +1,288 @@
+---
+title: "Local Development"
+description: "Run and test your Private Ephemeral Rollup programs locally, with the Query Filtering Service emulating the TEE privacy layer — no hardware attestation required."
+---
+
+import Validators from "/snippets/notes/validators.mdx";
+
+---
+
+### Quick Access
+
+Explore private program and test scripts for Anchor, Native Rust, and Pinocchio:
+
+<CardGroup cols={2}>
+  <Card
+    title="Anchor Private Counter"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter"
+    iconType="duotone"
+  >
+    Anchor implementation with permissions.
+  </Card>
+  <Card
+    title="Pinocchio Private Counter"
+    icon="code"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/pinocchio-private-counter"
+    iconType="duotone"
+  >
+    Pinocchio implementation with magic permission accounts.
+  </Card>
+</CardGroup>
+
+---
+
+## Why a Local PER Setup Is Different
+
+In production a **Private Ephemeral Rollup** runs the Ephemeral Rollup inside a
+**Trusted Execution Environment (TEE)** on Intel TDX. Clients don't reach the ER
+directly — they connect through a **token-gated TEE endpoint** that enforces
+privacy and compliance (IP geofencing, OFAC screening, and per-account
+[permission filtering](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control))
+at ingress, before any transaction is accepted or executed.
+
+You can't run real TDX hardware locally. Instead, the TEE ingress is emulated by
+a dedicated process — the **Query Filtering Service (QFS)** — which replicates
+the same token-auth and permission-filtering logic **without** hardware
+attestation, and fronts an ordinary local ephemeral validator.
+
+That is the only structural difference from a plain
+[Ephemeral Rollup local setup](/pages/ephemeral-rollups-ers/how-to-guide/local-development):
+**you run the QFS in front of the ER and point your client at the QFS instead of
+the ER directly.**
+
+## Topology
+
+Four processes, each fronting the next:
+
+```mermaid
+graph LR
+  User((Client))
+  QFS["Query Filtering Service<br/>:6699 / :6700"]
+  ER["Ephemeral Rollup<br/>:7799 / :7800"]
+  SN["Base Solana<br/>:8899 / :8900"]
+  User <--> QFS
+  QFS <--> ER
+  ER <--> SN
+```
+
+| Process                   | RPC / WS    | Role                                                                                                      |
+| ------------------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
+| `mb-test-validator`       | 8899 / 8900 | Base layer. Wraps `solana-test-validator` and pre-clones the MagicBlock delegation + permission programs. |
+| `ephemeral-validator`     | 7799 / 7800 | The Ephemeral Rollup itself.                                                                              |
+| `query-filtering-service` | 6699 / 6700 | **PER-specific.** Emulates the TEE ingress — token auth + permission filtering.                           |
+| `vrf-oracle` (optional)   | —           | Only needed if the program under test uses VRF.                                                           |
+
+<Note>
+  Point your client at the **QFS (6699)** to test privacy features. Point it at
+  the **ER (7799)** directly when you don't need the privacy layer.
+</Note>
+
+## Bring Up the Stack
+
+<Steps>
+  <Step title="Install the binaries">
+    `ephemeral-validator` and `mb-test-validator` ship together:
+
+    ```bash
+    npm install -g @magicblock-labs/ephemeral-validator@latest
+    ```
+
+    `query-filtering-service` (and `vrf-oracle`, if you need VRF) must also be on
+    your `PATH` — they ship with the MagicBlock validator tooling. Verify:
+
+    ```bash
+    command -v ephemeral-validator query-filtering-service
+    ```
+
+  </Step>
+
+  <Step title="Start the base validator (port 8899)">
+    ```bash
+    mb-test-validator --reset
+    ```
+
+    Wait until it is actually **producing slots** before starting the ER — poll
+    `getSlot` until it returns a value greater than `0`. The ER's account cloner
+    fails to bootstrap if it starts against a bank that isn't producing yet.
+
+    <Note>
+      `--reset` airdrops the CLI wallet ~500M SOL, which exceeds the ER's
+      internal faucet. If you use that wallet as an ER fee payer, the cloner
+      fails with `InsufficientFunds`. Drain it down to ~1000 SOL first (transfer
+      the excess to the incinerator `1nc1nerator11111111111111111111111111111111`).
+    </Note>
+
+  </Step>
+
+  <Step title="Deploy or preload your program">
+    <Tabs>
+      <Tab title="Anchor">
+        ```bash
+        anchor build && anchor deploy --provider.cluster localnet
+        ```
+      </Tab>
+      <Tab title="Native / Pinocchio">
+        ```bash
+        cargo build-sbf
+        solana config set --url localhost
+        solana program deploy YOUR_PROGRAM_PATH
+        ```
+      </Tab>
+      <Tab title="Preload at startup">
+        Alternatively, inject the program when the base validator boots so it is
+        on-chain at its declared address from slot 0:
+
+        ```bash
+        mb-test-validator --reset \
+          --upgradeable-program <program-keypair.json> <program.so> <upgrade-authority-pubkey>
+        ```
+      </Tab>
+    </Tabs>
+
+  </Step>
+
+  <Step title="Start the ephemeral validator (port 7799)">
+    ```bash
+    ephemeral-validator \
+      --lifecycle ephemeral \
+      --remotes http://127.0.0.1:8899 \
+      --remotes ws://127.0.0.1:8900 \
+      --listen 127.0.0.1:7799 \
+      --reset
+    ```
+
+    Wait for port `7799` to accept a TCP connection before continuing.
+
+  </Step>
+
+  <Step title="Start the Query Filtering Service (port 6699)">
+    This is the process that makes it a **private** rollup. It points upstream at
+    the ER and exposes the client-facing endpoint:
+
+    ```bash
+    RUST_LOG=info query-filtering-service \
+      --listen-addr 127.0.0.1:6699 \
+      --listen-addr-ws 127.0.0.1:6700 \
+      --ephemeral-url http://127.0.0.1:7799 \
+      --ephemeral-url-ws ws://127.0.0.1:7800 \
+      --token-expiry-days 180 \
+      --add-cors-headers
+    ```
+
+    `--add-cors-headers` is required if you test from a browser app. Wait for
+    port `6699` to accept a connection before firing any request.
+
+  </Step>
+
+  <Step title="(Optional) Start the VRF oracle">
+    If your program requests randomness, run one oracle against the base layer and
+    one against the ER:
+
+    ```bash
+    # Base-layer VRF requests
+    VRF_ORACLE_SKIP_PREFLIGHT=true RPC_URL=http://localhost:8899 \
+      WEBSOCKET_URL=ws://localhost:8900 RUST_LOG=info vrf-oracle &
+
+    # ER VRF requests
+    VRF_ORACLE_SKIP_PREFLIGHT=true RPC_URL=http://localhost:7799 \
+      WEBSOCKET_URL=ws://localhost:7800 RUST_LOG=info vrf-oracle &
+    ```
+
+  </Step>
+</Steps>
+
+## Connect Your Client Through the QFS
+
+Your client treats the **QFS endpoint as the TEE endpoint**: point
+`TEE_PROVIDER_ENDPOINT` at `http://localhost:6699` and reuse the same
+[authorization flow](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart#4-authorize)
+from the quickstart — fetch a token by signing a challenge, then open the
+connection with `?token=...` attached. When a PDA is set to private via its
+`EphemeralPermission`, the QFS blocks any wallet not in the member list — exactly
+as the TEE would on devnet.
+
+```ts
+import { getAuthToken } from "@magicblock-labs/ephemeral-rollups-sdk";
+import nacl from "tweetnacl";
+
+// Locally, TEE_PROVIDER_ENDPOINT = http://localhost:6699 (the QFS).
+const teeUrl =
+  process.env.TEE_PROVIDER_ENDPOINT || "https://devnet-tee.magicblock.app";
+const teeWsUrl =
+  process.env.TEE_WS_ENDPOINT || "wss://devnet-tee.magicblock.app";
+
+const token = await getAuthToken(
+  teeUrl,
+  payer.publicKey,
+  (message: Uint8Array) =>
+    Promise.resolve(nacl.sign.detached(message, payer.secretKey)),
+);
+
+const erProvider = new anchor.AnchorProvider(
+  new anchor.web3.Connection(`${teeUrl}?token=${token.token}`, {
+    wsEndpoint: `${teeWsUrl}?token=${token.token}`,
+    commitment: "confirmed",
+  }),
+  anchor.Wallet.local(),
+);
+```
+
+<Note>
+  `verifyTeeRpcIntegrity` checks a real TDX attestation and is meant for the
+  devnet/mainnet TEE endpoints. The local QFS has no hardware attestation, so
+  skip that check when running fully local.
+</Note>
+
+## Delegate to the Local Validator Identity
+
+When delegating your PDA in a local test, delegate to the **localnet ER
+identity** — not a devnet/mainnet one — so commits and undelegations settle
+correctly:
+
+```
+mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev
+```
+
+<Validators />
+
+## Endpoint Environment Variables
+
+Centralize the endpoints so tests hit the local cluster instead of silently
+falling back to devnet. The PER-relevant variables:
+
+```bash
+export PROVIDER_ENDPOINT=http://localhost:8899            # base layer
+export WS_ENDPOINT=ws://localhost:8900
+export EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799  # ER direct
+export EPHEMERAL_WS_ENDPOINT=ws://localhost:7800
+export QFS_ENDPOINT=http://localhost:6699                 # QFS
+export QFS_WS_ENDPOINT=ws://localhost:6700
+export TEE_PROVIDER_ENDPOINT=$QFS_ENDPOINT                # private tests read this
+export TEE_WS_ENDPOINT=$QFS_WS_ENDPOINT
+export VALIDATOR=mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev
+```
+
+## The Shortcut
+
+The [`magicblock-engine-examples`](https://github.com/magicblock-labs/magicblock-engine-examples)
+repo wires all of this up. To bring the full cluster up and leave it running for
+manual testing:
+
+```bash
+# from the repo root
+SETUP_ONLY=1 ./scripts/test-locally.sh
+```
+
+Then, in another shell, source the shared endpoints and run one example's tests
+against the running cluster:
+
+```bash
+cd private-counter
+. ../scripts/local-env.sh && yarn test:local
+```
+
+Per example, `yarn setup` brings the stack up and `yarn test:local` runs the
+tests against it.
+
+---
