@@ -140,6 +140,7 @@
                   "visibility": "private",
                   "fromBalance": "base",
                   "toBalance": "base",
+                  "exactOut": false,
                   "initIfMissing": true,
                   "initAtasIfMissing": true,
                   "initVaultIfMissing": false,

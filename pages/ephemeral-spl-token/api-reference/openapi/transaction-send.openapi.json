@@ -49,7 +49,7 @@
                   },
                   "cluster": {
                     "anyOf": [
-                      { "type": "string", "enum": ["mainnet", "devnet"] },
+                      { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
                       { "type": "string" }
                     ],
                     "example": "mainnet",
@@ -79,6 +79,13 @@
                   }
                 },
                 "required": ["transactionBase64", "sendTo"],
+                "if": {
+                  "properties": { "confirm": { "const": true } },
+                  "required": ["confirm"]
+                },
+                "then": {
+                  "required": ["recentBlockhash", "lastValidBlockHeight"]
+                },
                 "example": {
                   "transactionBase64": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
                   "sendTo": "base",

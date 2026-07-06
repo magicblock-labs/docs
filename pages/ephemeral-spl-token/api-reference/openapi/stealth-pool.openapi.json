@@ -44,6 +44,7 @@
                   "handle": {
                     "type": "string",
                     "minLength": 1,
+                    "maxLength": 255,
                     "example": "john.doe@magicblock.id",
                     "description": "Human-readable handle, up to 255 UTF-8 bytes. Stored as its exact bytes — NOT trimmed, lowercased, or normalized, so `John.Doe@…` is a different handle than `john.doe@…`."
                   },
@@ -134,7 +135,7 @@
             "in": "query",
             "required": true,
             "description": "The exact handle (up to 255 UTF-8 bytes). Must match the stored bytes exactly.",
-            "schema": { "type": "string", "example": "john.doe@magicblock.id" }
+            "schema": { "type": "string", "minLength": 1, "maxLength": 255, "example": "john.doe@magicblock.id" }
           },
           {
             "name": "cluster",

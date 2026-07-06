@@ -55,7 +55,7 @@
                   "initVaultIfMissing": { "type": "boolean", "description": "Optional. Initialize the vault if missing." },
                   "initAtasIfMissing": { "type": "boolean", "description": "Optional. Initialize associated token accounts if missing." },
                   "idempotent": { "type": "boolean", "description": "Optional. When `true`, the API uses idempotent variants for any preparatory init instructions." },
-                  "private": { "type": "boolean", "description": "Optional. Defaults to `true`. When `true`, the deposited balance is kept private." }
+                  "private": { "type": "boolean", "default": true, "description": "Optional. When `true`, the deposited balance is kept private." }
                 },
                 "required": ["owner", "amount"],
                 "example": {

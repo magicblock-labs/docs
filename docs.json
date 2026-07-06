@@ -28,7 +28,7 @@
     { "source": "/jp/pages/overview/additional-information/solana-vrf", "destination": "/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf" },
     { "source": "/ko/pages/overview/additional-information/solana-vrf", "destination": "/ko/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf" },
     { "source": "/api-reference/per-api/getConfig", "destination": "/pages/ephemeral-spl-token/api-reference/introduction" },
-    { "source": "/api-reference/per-api/prepareWithdrawal", "destination": "/pages/ephemeral-spl-token/api-reference/introduction" },
+    { "source": "/api-reference/per-api/prepareWithdrawal", "destination": "/pages/ephemeral-spl-token/api-reference/withdraw" },
     { "source": "/api-reference/per-api/transferAmount", "destination": "/pages/ephemeral-spl-token/api-reference/transfer" },
     { "source": "/api-reference/er-api/introduction", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/introduction" },
     { "source": "/api-reference/er-api/getRoutes", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getRoutes" },
