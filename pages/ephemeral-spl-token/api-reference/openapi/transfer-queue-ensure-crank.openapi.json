@@ -1,0 +1,77 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Verify the validator-scoped transfer queue for a mint and force one crank attempt."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/v1/spl/transfer-queue/ensure-crank": {
+      "post": {
+        "summary": "Ensure Transfer Queue Crank",
+        "description": "After setup confirmation, verify that the validator-scoped transfer queue exists for a mint and force one crank attempt. Used to make sure queued private transfers make progress.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mint": {
+                    "type": "string",
+                    "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                  },
+                  "cluster": {
+                    "anyOf": [
+                      { "type": "string", "enum": ["mainnet", "devnet"] },
+                      { "type": "string" }
+                    ],
+                    "example": "mainnet",
+                    "description": "Optional. Cluster selector or custom http(s) RPC URL."
+                  },
+                  "validator": {
+                    "type": "string",
+                    "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                    "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
+                  }
+                },
+                "required": ["mint"],
+                "example": {
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "validator": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Forced transfer queue crank result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mint": { "type": "string" },
+                    "validator": { "type": "string" },
+                    "transferQueue": { "type": "string" },
+                    "crankSignature": { "type": "string" }
+                  },
+                  "required": ["mint", "validator", "transferQueue", "crankSignature"]
+                }
+              }
+            }
+          },
+          "400": { "description": "Crank error" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    }
+  }
+}

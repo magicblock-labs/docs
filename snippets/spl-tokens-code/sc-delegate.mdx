@@ -1,0 +1,24 @@
+```rust
+// Delegate the eATA with a CPI to the Ephemeral SPL Token program.
+// An optional trailing validator pubkey routes to a specific validator.
+let mut data = vec![4]; // DelegateEphemeralAta
+if let Some(validator) = validator {
+    data.extend_from_slice(validator.as_ref());
+}
+
+let instruction = Instruction {
+    program_id: EPHEMERAL_SPL_TOKEN_PROGRAM_ID,
+    accounts: vec![
+        AccountMeta::new(payer.key(), true),
+        AccountMeta::new(ephemeral_ata.key(), false),
+        AccountMeta::new_readonly(EPHEMERAL_SPL_TOKEN_PROGRAM_ID, false),
+        AccountMeta::new(buffer.key(), false),
+        AccountMeta::new(record.key(), false),
+        AccountMeta::new(metadata.key(), false),
+        AccountMeta::new_readonly(delegation_program.key(), false),
+        AccountMeta::new_readonly(system_program.key(), false),
+    ],
+    data,
+};
+invoke(&instruction, &account_infos)?;
+```

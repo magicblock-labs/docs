@@ -27,9 +27,9 @@
     { "source": "/cn/pages/overview/additional-information/solana-vrf", "destination": "/cn/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf" },
     { "source": "/jp/pages/overview/additional-information/solana-vrf", "destination": "/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf" },
     { "source": "/ko/pages/overview/additional-information/solana-vrf", "destination": "/ko/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf" },
-    { "source": "/api-reference/per-api/getConfig", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction" },
-    { "source": "/api-reference/per-api/prepareWithdrawal", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction" },
-    { "source": "/api-reference/per-api/transferAmount", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer" },
+    { "source": "/api-reference/per-api/getConfig", "destination": "/pages/ephemeral-spl-token/api-reference/introduction" },
+    { "source": "/api-reference/per-api/prepareWithdrawal", "destination": "/pages/ephemeral-spl-token/api-reference/introduction" },
+    { "source": "/api-reference/per-api/transferAmount", "destination": "/pages/ephemeral-spl-token/api-reference/transfer" },
     { "source": "/api-reference/er-api/introduction", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/introduction" },
     { "source": "/api-reference/er-api/getRoutes", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getRoutes" },
     { "source": "/api-reference/er-api/getIdentity", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getIdentity" },
@@ -38,26 +38,26 @@
     { "source": "/api-reference/er-api/getAccountInfo", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo" },
     { "source": "/api-reference/er-api/getDelegationStatus", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus" },
     { "source": "/api-reference/er-api/getPermission", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getPermission" },
-    { "source": "/api-reference/per-api/introduction", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction" },
-    { "source": "/api-reference/per-api/health", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/health" },
-    { "source": "/api-reference/per-api/deposit", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/deposit" },
-    { "source": "/api-reference/per-api/transfer", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer" },
-    { "source": "/api-reference/per-api/withdraw", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw" },
-    { "source": "/api-reference/per-api/initialize-mint", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint" },
-    { "source": "/api-reference/per-api/balance", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/balance" },
-    { "source": "/api-reference/per-api/private-balance", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance" },
-    { "source": "/api-reference/per-api/is-mint-initialized", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized" },
-    { "source": "/api-reference/per-api/mcp", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/mcp" },
-    { "source": "/api-reference/per/introduction", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction" },
-    { "source": "/api-reference/per/health", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/health" },
-    { "source": "/api-reference/per/deposit", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/deposit" },
-    { "source": "/api-reference/per/transfer", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer" },
-    { "source": "/api-reference/per/withdraw", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw" },
-    { "source": "/api-reference/per/initialize-mint", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint" },
-    { "source": "/api-reference/per/balance", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/balance" },
-    { "source": "/api-reference/per/private-balance", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance" },
-    { "source": "/api-reference/per/is-mint-initialized", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized" },
-    { "source": "/api-reference/per/mcp", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/mcp" },
+    { "source": "/api-reference/per-api/introduction", "destination": "/pages/ephemeral-spl-token/api-reference/introduction" },
+    { "source": "/api-reference/per-api/health", "destination": "/pages/ephemeral-spl-token/api-reference/health" },
+    { "source": "/api-reference/per-api/deposit", "destination": "/pages/ephemeral-spl-token/api-reference/deposit" },
+    { "source": "/api-reference/per-api/transfer", "destination": "/pages/ephemeral-spl-token/api-reference/transfer" },
+    { "source": "/api-reference/per-api/withdraw", "destination": "/pages/ephemeral-spl-token/api-reference/withdraw" },
+    { "source": "/api-reference/per-api/initialize-mint", "destination": "/pages/ephemeral-spl-token/api-reference/initialize-mint" },
+    { "source": "/api-reference/per-api/balance", "destination": "/pages/ephemeral-spl-token/api-reference/balance" },
+    { "source": "/api-reference/per-api/private-balance", "destination": "/pages/ephemeral-spl-token/api-reference/private-balance" },
+    { "source": "/api-reference/per-api/is-mint-initialized", "destination": "/pages/ephemeral-spl-token/api-reference/is-mint-initialized" },
+    { "source": "/api-reference/per-api/mcp", "destination": "/pages/ephemeral-spl-token/api-reference/mcp" },
+    { "source": "/api-reference/per/introduction", "destination": "/pages/ephemeral-spl-token/api-reference/introduction" },
+    { "source": "/api-reference/per/health", "destination": "/pages/ephemeral-spl-token/api-reference/health" },
+    { "source": "/api-reference/per/deposit", "destination": "/pages/ephemeral-spl-token/api-reference/deposit" },
+    { "source": "/api-reference/per/transfer", "destination": "/pages/ephemeral-spl-token/api-reference/transfer" },
+    { "source": "/api-reference/per/withdraw", "destination": "/pages/ephemeral-spl-token/api-reference/withdraw" },
+    { "source": "/api-reference/per/initialize-mint", "destination": "/pages/ephemeral-spl-token/api-reference/initialize-mint" },
+    { "source": "/api-reference/per/balance", "destination": "/pages/ephemeral-spl-token/api-reference/balance" },
+    { "source": "/api-reference/per/private-balance", "destination": "/pages/ephemeral-spl-token/api-reference/private-balance" },
+    { "source": "/api-reference/per/is-mint-initialized", "destination": "/pages/ephemeral-spl-token/api-reference/is-mint-initialized" },
+    { "source": "/api-reference/per/mcp", "destination": "/pages/ephemeral-spl-token/api-reference/mcp" },
     { "source": "/pages/ephemeral-rollups-ers/api-reference/introduction", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/introduction" },
     { "source": "/pages/ephemeral-rollups-ers/api-reference/getRoutes", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getRoutes" },
     { "source": "/pages/ephemeral-rollups-ers/api-reference/getIdentity", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getIdentity" },
@@ -66,16 +66,16 @@
     { "source": "/pages/ephemeral-rollups-ers/api-reference/getAccountInfo", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo" },
     { "source": "/pages/ephemeral-rollups-ers/api-reference/getDelegationStatus", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus" },
     { "source": "/pages/ephemeral-rollups-ers/api-reference/getPermission", "destination": "/pages/ephemeral-rollups-ers/api-reference/er/getPermission" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/introduction", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/introduction" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/health", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/health" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/deposit", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/deposit" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/transfer", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/transfer" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/withdraw", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/initialize-mint", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/balance", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/balance" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/private-balance", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/is-mint-initialized", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized" },
-    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/mcp", "destination": "/pages/private-ephemeral-rollups-pers/api-reference/per/mcp" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/introduction", "destination": "/pages/ephemeral-spl-token/api-reference/introduction" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/health", "destination": "/pages/ephemeral-spl-token/api-reference/health" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/deposit", "destination": "/pages/ephemeral-spl-token/api-reference/deposit" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/transfer", "destination": "/pages/ephemeral-spl-token/api-reference/transfer" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/withdraw", "destination": "/pages/ephemeral-spl-token/api-reference/withdraw" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/initialize-mint", "destination": "/pages/ephemeral-spl-token/api-reference/initialize-mint" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/balance", "destination": "/pages/ephemeral-spl-token/api-reference/balance" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/private-balance", "destination": "/pages/ephemeral-spl-token/api-reference/private-balance" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/is-mint-initialized", "destination": "/pages/ephemeral-spl-token/api-reference/is-mint-initialized" },
+    { "source": "/pages/private-ephemeral-rollups-pers/api-reference/mcp", "destination": "/pages/ephemeral-spl-token/api-reference/mcp" },
     { "source": "/api-reference/rpc-api/introduction", "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/introduction" },
     { "source": "/api-reference/rpc-api/getAccountInfo", "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getAccountInfo" },
     { "source": "/api-reference/rpc-api/getBalance", "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/getBalance" },
@@ -305,22 +305,68 @@
                 ]
               },
               {
-                "group": "Private Payments API",
+                "group": "Private Payments",
                 "pages": [
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/introduction",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/health",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/challenge",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/login",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/deposit",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/transfer",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/withdraw",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/balance",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/private-balance",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/quote",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/swap",
-                  "pages/private-ephemeral-rollups-pers/api-reference/per/mcp"
+                  "pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Ephemeral SPL Token",
+            "icon": "coins",
+            "groups": [
+              {
+                "group": "How-to-Guide",
+                "pages": [
+                  "pages/ephemeral-spl-token/quickstart",
+                  "pages/ephemeral-spl-token/smart-contract-integration",
+                  "pages/ephemeral-spl-token/private-payments"
+                ]
+              },
+              {
+                "group": "Reference Material",
+                "pages": [
+                  "pages/ephemeral-spl-token/overview"
+                ]
+              },
+              {
+                "group": "API Reference",
+                "pages": [
+                  "pages/ephemeral-spl-token/api-reference/introduction",
+                  {
+                    "group": "Core Token API",
+                    "pages": [
+                      "pages/ephemeral-spl-token/api-reference/deposit",
+                      "pages/ephemeral-spl-token/api-reference/transfer",
+                      "pages/ephemeral-spl-token/api-reference/withdraw",
+                      "pages/ephemeral-spl-token/api-reference/balance",
+                      "pages/ephemeral-spl-token/api-reference/initialize-mint",
+                      "pages/ephemeral-spl-token/api-reference/is-mint-initialized",
+                      "pages/ephemeral-spl-token/api-reference/undelegate-ephemeral-ata",
+                      "pages/ephemeral-spl-token/api-reference/transaction-send"
+                    ]
+                  },
+                  {
+                    "group": "Private Payments",
+                    "pages": [
+                      "pages/ephemeral-spl-token/api-reference/challenge",
+                      "pages/ephemeral-spl-token/api-reference/login",
+                      "pages/ephemeral-spl-token/api-reference/private-balance",
+                      "pages/ephemeral-spl-token/api-reference/stealth-pool",
+                      "pages/ephemeral-spl-token/api-reference/stealth-pool-status",
+                      "pages/ephemeral-spl-token/api-reference/transfer-queue-ensure-crank"
+                    ]
+                  },
+                  {
+                    "group": "Swap",
+                    "pages": [
+                      "pages/ephemeral-spl-token/api-reference/quote",
+                      "pages/ephemeral-spl-token/api-reference/swap"
+                    ]
+                  },
+                  "pages/ephemeral-spl-token/api-reference/health",
+                  "pages/ephemeral-spl-token/api-reference/mcp"
                 ]
               }
             ]

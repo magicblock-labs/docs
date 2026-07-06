@@ -1,0 +1,9 @@
+```rust
+// No PDA signer — the authority is the user's Signer.
+let cpi_accounts = SplTransfer {
+    from: ctx.accounts.from.to_account_info(),
+    to: ctx.accounts.to.to_account_info(),
+    authority: ctx.accounts.payer.to_account_info(),
+};
+token::transfer(CpiContext::new(ctx.accounts.token_program.key(), cpi_accounts), amount)?;
+```

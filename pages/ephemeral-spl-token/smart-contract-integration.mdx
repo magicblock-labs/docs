@@ -1,0 +1,155 @@
+---
+title: "Smart Contract Integration"
+description: "Custody and move SPL tokens from your own Solana program on an Ephemeral Rollup — PDA-signed transfers, delegation, and commit/undelegate."
+---
+
+import Software from "/snippets/software.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
+
+import EphemeralCode from "/snippets/spl-tokens-code/sc-ephemeral.mdx";
+import CreateEataCode from "/snippets/spl-tokens-code/sc-create-eata.mdx";
+import DelegateEataCode from "/snippets/spl-tokens-code/sc-delegate.mdx";
+import PdaTransferCode from "/snippets/spl-tokens-code/sc-transfer.mdx";
+import CommitCode from "/snippets/spl-tokens-code/sc-commit.mdx";
+import NonCustodyCode from "/snippets/spl-tokens-code/sc-non-custody.mdx";
+import PostCommitCode from "/snippets/spl-tokens-code/sc-post-commit.mdx";
+
+---
+
+### Quick Access
+
+<CardGroup cols={3}>
+  <Card title="binary-prediction" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/binary-prediction" iconType="duotone">
+    eATA custody end to end
+  </Card>
+  <Card title="rewards-delegated-vrf" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rewards-delegated-vrf" iconType="duotone">
+    Base-layer post-commit payouts
+  </Card>
+  <Card title="spl-tokens" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/spl-tokens" iconType="duotone">
+    Non-custody transfers
+  </Card>
+</CardGroup>
+
+This guide is for on-chain programs — a DEX, AMM, prediction market, escrow, or game — that hold user
+funds and move them at Ephemeral Rollup speed. The core pattern: a program-owned account, delegated to
+the ER, with your program signing token transfers as a PDA.
+
+<Note>
+  Moving tokens from a client instead of on-chain? See the
+  [Quickstart](/pages/ephemeral-spl-token/quickstart).
+</Note>
+
+### Two custody models
+
+| Model | You delegate… | Tokens move… | Use when |
+| --- | --- | --- | --- |
+| **eATA custody** | a program-owned **ephemeral ATA (eATA)** | **on the ER**, PDA-signed | you settle or pay out inside the rollup (e.g. a market fill) |
+| **State PDA + post-commit payout** | only a **state PDA**; real ATAs stay on base | **on the base layer**, as a post-commit action | funds stay on L1 and settle on commit |
+
+The walkthrough below covers **eATA custody**, with the post-commit variant in the advanced snippets.
+
+---
+
+## Step-By-Step Guide
+
+Give your program authority over an eATA, delegate it, move funds PDA-signed on the ER, then settle
+back to Solana:
+
+<Steps>
+  <Step title={<a href="#1-er-aware">Make your program ER-aware</a>}>
+    Add the `#[ephemeral]` attribute and import the SDK helpers.
+  </Step>
+  <Step title={<a href="#2-create-eata">Create the custody PDA and eATA</a>}>
+    Own an eATA under the Ephemeral SPL Token program from your custody PDA.
+  </Step>
+  <Step title={<a href="#3-delegate">Delegate the eATA</a>}>
+    CPI into the Ephemeral SPL Token program to delegate it to the ER.
+  </Step>
+  <Step title={<a href="#4-transfer">Move tokens PDA-signed</a>}>
+    Sign the transfer as the custody PDA inside the rollup.
+  </Step>
+  <Step title={<a href="#5-commit">Commit & undelegate</a>}>
+    Return the account to the base layer.
+  </Step>
+</Steps>
+
+---
+
+## Custody Example
+
+<Software />
+
+### Code Snippets
+
+<Tabs>
+  <Tab title="1. ER-aware program">
+    Wrap `#[program]` with `#[ephemeral]` and import the SDK helpers you need.
+
+    <EphemeralCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="2. Create eATA">
+    Your program owns a state PDA (for example, a `Pool`) that is the authority over the funds. Custody
+    on the ER uses an **ephemeral ATA (eATA)** owned by that PDA, derived from `[owner, mint]` under the
+    Ephemeral SPL Token program (`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`).
+
+    <CreateEataCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="3. Delegate eATA">
+    Delegate the eATA with a CPI to the Ephemeral SPL Token program (`DelegateEphemeralAta`,
+    discriminator `4`).
+
+    <Warning>
+      Delegating a plain PDA-owned ATA directly to the ER is not supported — token custody on the ER
+      goes through an eATA. To delegate program *state* (not a token account), use the SDK's
+      `#[delegate]` macro instead.
+    </Warning>
+
+    <DelegateEataCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="4. PDA-signed transfer">
+    With the eATA delegated, move tokens inside the rollup with an SPL Token CPI signed by the custody
+    PDA via `CpiContext::new_with_signer`. The signer seeds are `[POOL_SEED, bump]` — the program
+    authorizes the payout itself, with no user signature.
+
+    <PdaTransferCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="5. Commit & undelegate">
+    Commit the ER state and return the account to the base layer with `MagicIntentBundleBuilder`.
+
+    <CommitCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+</Tabs>
+
+---
+
+### Advanced Code Snippets
+
+<Tabs>
+  <Tab title="Non-custody transfer">
+    If your program doesn't custody funds — it moves tokens between two already-delegated accounts on a
+    user's behalf — no PDA signer is needed. The authority is the user's `Signer`, with a plain
+    `CpiContext::new`.
+
+    <NonCustodyCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+  </Tab>
+  <Tab title="Base-layer post-commit payout">
+    To keep real token accounts on the base layer and delegate only program state, schedule the payout
+    as a post-commit action that runs PDA-signed on the base layer right after a commit — using
+    `transfer_checked` (Token-2022 compatible) and committing with the action attached.
+
+    <PostCommitCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

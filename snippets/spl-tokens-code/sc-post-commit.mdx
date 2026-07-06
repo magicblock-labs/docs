@@ -1,0 +1,9 @@
+```rust
+// Keep real token accounts on base, delegate only program state, and pay out
+// PDA-signed on the base layer right after the commit.
+MagicIntentBundleBuilder::new(payer, magic_context, magic_program)
+    .magic_fee_vault(magic_fee_vault)
+    .commit(&[state_pda])
+    .add_post_commit_actions([action])
+    .build_and_invoke_signed(payer_seeds)?;
+```

@@ -1,0 +1,11 @@
+```rust
+// The #[commit] attribute on the accounts context supplies
+// magic_context and magic_program.
+MagicIntentBundleBuilder::new(
+    ctx.accounts.payer.to_account_info(),
+    ctx.accounts.magic_context.to_account_info(),
+    ctx.accounts.magic_program.to_account_info(),
+)
+.commit_and_undelegate(&[ctx.accounts.pool.to_account_info()])
+.build_and_invoke()?;
+```

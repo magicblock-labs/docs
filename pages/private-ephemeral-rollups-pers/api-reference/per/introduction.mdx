@@ -1,109 +1,57 @@
 ---
-title: "Introduction"
-description: "Private Payments API documentation"
+title: "Private Payments"
+description: "Private, compliant onchain payments on MagicBlock — powered by Ephemeral SPL Tokens."
 ---
 
-import PrivatePaymentApiCard from "/snippets/private-payment-api-card.mdx";
+---
+
+## Private Payments
+
+**Private Payments** let you add private, compliant onchain transfers to your app — shielded amounts,
+destinations, and timing, with stealth handles and queued settlement.
+
+Private Payments are powered by **Ephemeral SPL Tokens**: the same fast token primitive used for public
+transfers, run with private `visibility`. All of the documentation — concepts, the SDK quickstart, the
+private-payments guide, and the full REST/MCP API — lives in the dedicated **Ephemeral SPL Token**
+section.
 
 <CardGroup cols={2}>
   <Card
-    title="Ephemeral SPL Token Program"
-    icon="github"
-    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    title="Private Payments guide"
+    icon="lock"
+    href="/pages/ephemeral-spl-token/private-payments"
     iconType="duotone"
   >
-    Reference program for private SPL token flows
+    Private transfers, stealth handles, and queued settlement — end to end.
   </Card>
-
-  <PrivatePaymentApiCard />
+  <Card
+    title="Ephemeral SPL Token — Overview"
+    icon="coins"
+    href="/pages/ephemeral-spl-token/overview"
+    iconType="duotone"
+  >
+    The token primitive behind private payments.
+  </Card>
+  <Card
+    title="API Reference"
+    icon="server"
+    href="/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    Deposit, transfer, withdraw, balances, stealth pools, swap, and auth.
+  </Card>
+  <Card
+    title="SDK Quickstart"
+    icon="rocket"
+    href="/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    Integrate ephemeral SPL tokens in your own program and client.
+  </Card>
 </CardGroup>
 
-## Overview
-
-The Private Payments API builds unsigned SPL token transactions for deposits, transfers, withdrawals, swaps, and mint initialization across Solana and MagicBlock ephemeral rollups. It also exposes balance queries, mint-initialization status, and a wallet challenge/login flow that issues bearer tokens for reading private data. The canonical public reference is available at [payments.magicblock.app/reference](https://payments.magicblock.app/reference).
-
-### Meta
-
-- [**Health**](/pages/private-ephemeral-rollups-pers/api-reference/per/health) - Check API health and availability
-
-### Auth
-
-- [**Challenge**](/pages/private-ephemeral-rollups-pers/api-reference/per/challenge) - Generate a challenge string for the wallet to sign
-- [**Login**](/pages/private-ephemeral-rollups-pers/api-reference/per/login) - Exchange a signed challenge for a bearer token
-
-### SPL
-
-- [**Deposit SPL Tokens**](/pages/private-ephemeral-rollups-pers/api-reference/per/deposit) - Build an unsigned deposit transaction from Solana into an ephemeral rollup
-- [**Transfer SPL Tokens**](/pages/private-ephemeral-rollups-pers/api-reference/per/transfer) - Build an unsigned public or private SPL transfer
-- [**Withdraw SPL Tokens**](/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - Build an unsigned withdrawal transaction back to Solana
-- [**Initialize Mint**](/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - Build an unsigned transaction that initializes a validator-scoped transfer queue for a mint
-- [**Balance**](/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - Get the base-chain SPL token balance for an address
-- [**Private Balance**](/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - Get the ephemeral-rollup SPL token balance for an address (auth required)
-- [**Is Mint Initialized**](/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - Check whether a mint has a validator-scoped transfer queue on the ephemeral RPC
-
-### Swap
-
-- [**Swap Quote**](/pages/private-ephemeral-rollups-pers/api-reference/per/quote) - Get a swap quote between two SPL mints
-- [**Swap**](/pages/private-ephemeral-rollups-pers/api-reference/per/swap) - Build an unsigned swap transaction (public pass-through or private with scheduled transfer)
-
-### MCP
-
-- [**MCP**](/pages/private-ephemeral-rollups-pers/api-reference/per/mcp) - Access the stateless Streamable HTTP MCP endpoint
-
-```
-┌────────────────────────────────────────────┐
-│ 1. Deposit                                │
-├────────────────────────────────────────────┤
-│ • Build an unsigned deposit transaction   │
-│ • Solana base balance → ephemeral rollup  │
-└────────────────────────────────────────────┘
-                     ↓
-┌────────────────────────────────────────────┐
-│ 2. Transfer / Swap                        │
-├────────────────────────────────────────────┤
-│ • Build SPL transfer or swap              │
-│ • base/ephemeral → base/ephemeral         │
-│ • public or private (delayed + split)     │
-└────────────────────────────────────────────┘
-                     ↓
-┌────────────────────────────────────────────┐
-│ 3. Withdraw                               │
-├────────────────────────────────────────────┤
-│ • Build an unsigned withdrawal            │
-│ • ephemeral rollup → Solana base balance  │
-└────────────────────────────────────────────┘
-```
-
-## Auth Flow
-
-Endpoints that read private data inside the Private Ephemeral Rollup require a bearer token:
-
-1. `GET /v1/spl/challenge?pubkey=<wallet>` returns a `challenge` string
-2. The wallet signs the challenge
-3. `POST /v1/spl/login` with `{ pubkey, challenge, signature }` returns a `token`
-4. Pass `Authorization: Bearer <token>` on `/v1/spl/private-balance` (required) and on `/v1/spl/transfer` requests that need to connect to the Private Ephemeral Rollup (optional)
-
-## Response Format
-
-Successful transaction-building endpoints return an unsigned transaction payload:
-
-```json
-{
-  "kind": "deposit",
-  "version": "legacy",
-  "transactionBase64": "base64-encoded-transaction",
-  "sendTo": "base",
-  "recentBlockhash": "blockhash",
-  "lastValidBlockHeight": 284512337,
-  "instructionCount": 3,
-  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
-}
-```
-
-The expected client flow is:
-
-1. Call the API
-2. Decode `transactionBase64`
-3. Optionally adjust the transaction if the client needs to
-4. Sign with the required wallet(s)
-5. Send to the RPC indicated by `sendTo` (`"base"` or `"ephemeral"`)
+<Note>
+  Looking for the full API? Head to the [**Ephemeral SPL
+  Token**](/pages/ephemeral-spl-token/api-reference/introduction) tab — it's the single source of truth
+  for every endpoint and guide.
+</Note>
