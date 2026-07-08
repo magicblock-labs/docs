@@ -12,13 +12,13 @@ Jupiter is the key liquidity aggregator for Solana, offering the widest range of
 
 ## Perform a Swap
 
-Create an IDex istance, providing a default account:
+Create an IDex instance, providing a default account:
 
 ```csharp
 IDexAggregator dex = new JupiterDexAg(Web3.Account);
 ```
 
-Create an IDex istance:
+Fetch token data:
 
 ```csharp
 TokenData tokenA = await dex.GetTokenBySymbol("SOL");
@@ -64,13 +64,13 @@ await Web3.Wallet.SignAndSendTransaction(tx);
 
 The Jupiter Payments API is also available, enabling you to utilize Jupiter + SolanaPay for facilitating user payments with any SPL token, allowing pricing in USDC or other tokens.
 
-Create an IDex istance, providing a default account:
+Create an IDex instance, providing a default account:
 
 ```csharp
 IDexAggregator dex = new JupiterDexAg(Web3.Account);
 ```
 
-Create an IDex istance:
+Fetch token data:
 
 ```csharp
 TokenData tokenA = await dex.GetTokenBySymbol("SOL");
