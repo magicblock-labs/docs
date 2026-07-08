@@ -3,6 +3,14 @@
   "theme": "mint",
   "name": "MagicBlock Documentation",
   "description": "With MagicBlock, anything you imagine is possible. Build unstoppable games, high-speed DeFi, and Web3 apps that run like Web2.",
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
   "errors": {
     "404": {
       "redirect": true
