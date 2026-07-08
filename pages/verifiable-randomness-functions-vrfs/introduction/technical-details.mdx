@@ -23,7 +23,7 @@ The flow starts with a “Request for randomness”.
 
 ## Oracle queues
 
-Every randomness request names an **oracle queue** account (the `oracle_queue` field of `RequestRandomnessParams`). Like every Solana account, the queue lives on Solana — but a **delegated** queue is directly writable only from inside an ephemeral rollup, while a **non-delegated** queue is directly writable on the base layer. Request randomness from the queue that matches where your transaction runs — the base-layer queue from Solana, or the delegated queue from inside the ephemeral rollup. Reference the SDK constants from `ephemeral_vrf_sdk::consts` instead of hardcoding addresses wherever possible.
+Every randomness request names an **oracle queue** account (the `oracle_queue` field of `RequestRandomnessParams`). Like every Solana account, the queue lives on Solana — but a **delegated** queue is directly writable only from inside an ephemeral rollup, while a **non-delegated** queue is directly writable on the base layer. Request randomness from the queue that matches where your transaction runs — the base-layer queue from Solana, or the delegated queue from inside the ephemeral rollup. Reference the SDK constants from `ephemeral_rollups_sdk::vrf::consts` instead of hardcoding addresses wherever possible.
 
 | Network  | Base-layer queue                                                            | Delegated queue (ephemeral rollup)                                                       |
 | -------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
