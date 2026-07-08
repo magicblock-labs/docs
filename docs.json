@@ -315,6 +315,7 @@
               {
                 "group": "Private Payments",
                 "pages": [
+                  "pages/ephemeral-spl-token/private-payments",
                   "pages/private-ephemeral-rollups-pers/api-reference/per/introduction"
                 ]
               }
