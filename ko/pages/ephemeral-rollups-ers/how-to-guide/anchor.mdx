@@ -1,0 +1,280 @@
+---
+title: "Anchor 예제"
+description: "Solana에서 counter를 증가시키는 간단한 Anchor 프로그램을 작성하는 방법을 배워봅니다"
+---
+
+import Endpoints from "/ko/snippets/endpoints.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/qwu2RBKyFiw?si=PMg-3UbRfvvbrs7C&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Anchor Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+이 가이드에서는 counter를 증가시키는 간단한 Anchor 프로그램을 작성하는 과정을 안내합니다. 이 프로그램을 Solana에 배포하고 React 클라이언트와 상호작용하는 방법을 함께 살펴봅니다.
+
+## 소프트웨어 패키지
+
+이 프로그램은 다음 소프트웨어 패키지로 개발 및 테스트되었습니다. 다른 버전도 호환될 수 있습니다.
+
+| 소프트웨어 | 버전   | 설치 가이드                                                     |
+| ---------- | ------ | --------------------------------------------------------------- |
+| **Solana** | 3.1.9  | [Solana 설치](https://docs.anza.xyz/cli/install)                |
+| **Rust**   | 1.89.0 | [Rust 설치](https://www.rust-lang.org/tools/install)            |
+| **Anchor** | 1.0.2  | [Anchor 설치](https://www.anchor-lang.com/docs/installation)    |
+
+## 소스 코드 빠른 접근
+
+코드를 바로 살펴보고 싶다면:
+
+<CardGroup cols={2}>
+  <Card
+    title="소스 코드: Anchor Counter 프로그램"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="라이브 예제 앱"
+    icon="react"
+    href="https://counter-example.magicblock.app/"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
+
+## Anchor 프로그램 작성하기
+
+이 counter 프로그램의 핵심 구성 요소를 차례로 살펴보겠습니다:
+
+## 핵심 기능
+
+이 프로그램은 두 개의 주요 instruction을 구현합니다:
+
+1. `initialize`: counter를 0으로 설정
+2. `increment`: counter를 1만큼 증가
+
+프로그램의 핵심 구조는 다음과 같습니다:
+
+```rust
+#[ephemeral]
+#[program]
+pub mod public_counter {
+    use super::*;
+
+    /// Initialize the counter.
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        Ok(())
+    }
+
+    /// Increment the counter.
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+
+    // ... Additional instructions will be added here
+}
+```
+
+특별한 점은 없으며, counter를 증가시키는 간단한 Anchor 프로그램입니다. 유일한 차이는 위임 프로그램과 상호작용하는 데 필요한 로직을 주입하기 위해 `delegate` 매크로를 추가했다는 것입니다.
+
+### Counter PDA 위임하기
+
+counter PDA를 위임하여 Ephemeral Rollup 세션 안에서 쓰기 가능하게 만들려면, 내부적으로 `delegate_account` 함수를 호출하는 instruction을 추가해야 합니다. `delegate_account`는 위임 프로그램에 CPI를 수행하고, 검증이 통과되면 해당 계정의 소유권을 가져옵니다.
+이 단계 이후에는 ephemeral validator가 counter PDA에 대한 트랜잭션 처리를 시작하고, 위임 프로그램을 통해 상태 변경 사항을 제안할 수 있게 됩니다.
+
+<Card
+  title="트랜잭션 (Base Layer): Delegate"
+  icon="magnifying-glass"
+  href="https://solscan.io/tx/5tyEk8gkdP88xe8GL7X12f9WGZfYZtmDbuXozvqkpea4rphXPiNp91vAzmSjsyUR399wimBYazEszKSH35sidPRH?cluster=devnet"
+  iconType="duotone"
+>
+  Solana Explorer에서 트랜잭션 상세 보기
+</Card>
+```rust
+/// Add delegate function to the context
+#[delegate]
+#[derive(Accounts)]
+pub struct DelegateInput<'info> {
+    pub payer: Signer<'info>,
+    /// CHECK The pda to delegate
+    #[account(mut, del)]
+    pub pda: AccountInfo<'info>,
+}
+````
+
+```rust
+/// Delegate the account to the delegation program
+/// Set specific validator based on ER, see https://docs.magicblock.gg/pages/ephemeral-rollups-ers/how-to-guide/local-development
+pub fn delegate(ctx: Context<DelegateInput>) -> Result<()> {
+    ctx.accounts.delegate_pda(
+        &ctx.accounts.payer,
+        &[COUNTER_SEED],
+        DelegateConfig {
+            // Optionally set a specific validator from the first remaining account
+            validator: ctx.remaining_accounts.first().map(|acc| acc.key()),
+            ..Default::default()
+        },
+    )?;
+    Ok(())
+}
+```
+
+### PDA가 위임된 상태에서 commit 하기
+
+ephemeral 런타임은 PDA가 위임된 동안에도 그 상태를 commit할 수 있게 해줍니다. 이는 `commit` intent를 가진 `MagicIntentBundleBuilder`를 구성하고 호출함으로써 수행됩니다.
+
+<CardGroup cols={2}>
+  <Card
+    title="트랜잭션 (ER): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/335F5UcgAW3P8wSaVoEPiBoxeykw9wR1kcJLWUnd9sHmxymCgGvLtxaGDy6ZKDgJw2ku9jtRqwVNY85DuAHvs9GT?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer에서 트랜잭션 상세 보기
+  </Card>
+  <Card
+    title="트랜잭션 (Base Layer): Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/3xzMGbj2fwFCnGp6r7wyMv5LExmL6SXaEbt52DmxA3Wx1LyksuXpPJS4AAPtqoSeJe3aF7oY3jFNiEhBQKwhzRGN?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer에서 트랜잭션 상세 보기
+  </Card>
+</CardGroup>
+```rust
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+
+/// Increment the counter and manually commit the account in the Ephemeral Rollup session.
+pub fn increment_and_commit(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    // Serialize the Anchor account before the CPI sees it
+    counter.exit(&crate::ID)?;
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit(&[ctx.accounts.counter.to_account_info()])
+    .build_and_invoke()?;
+    Ok(())
+}
+````
+
+### PDA의 위임 해제
+
+PDA의 위임 해제는 `commit_and_undelegate` intent를 가진 `MagicIntentBundleBuilder`를 구성함으로써 수행됩니다.
+이 작업은 최신 상태를 commit하고 PDA의 소유권을 소유자 프로그램에게 돌려줍니다.
+
+<CardGroup cols={2}>
+  <Card
+    title="트랜잭션 (ER): Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/3MN6Avygk3FwsuQPoKHzpLo9kBBommHwRHTdgxBooDwsaNHgSYr1yaDXYEe63Eii5DCVbtaK89Yyrhy3dSGhHmvw?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer에서 트랜잭션 상세 보기
+  </Card>
+  <Card
+    title="트랜잭션 (Base Layer): Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/2YwzNQh632bJu8TSP9GPsXmh7o78KgMMM9QPNbdaAzamtjGZfmT4o7bkG2PtpCWp7aJmmxpxTXr4Qo36k5EjgPab?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer에서 트랜잭션 상세 보기
+  </Card>
+</CardGroup>
+
+```rust
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
+
+/// Undelegate the account from the delegation program
+pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit_and_undelegate(&[ctx.accounts.counter.to_account_info()])
+    .build_and_invoke()?;
+    Ok(())
+}
+```
+
+## React 클라이언트 연결
+
+React 클라이언트는 Anchor 프로그램과 상호작용할 수 있게 해주는 간단한 인터페이스입니다.
+Anchor 바인딩을 사용해 프로그램과 통신하고, MagicBlock SDK로 Ephemeral Rollup 세션과 상호작용합니다. 소스는 프로그램과 같은 위치인 [`anchor-counter/app`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter/app)에 있습니다.
+
+{" "}
+
+<Card
+  title="라이브 예제 앱"
+  icon="react"
+  href="https://counter-example.magicblock.app/"
+  iconType="duotone"
+></Card>
+
+<iframe
+  src="https://counter-example.magicblock.app/"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+<Warning>
+  iframe은 일부 지갑(예: Backpack)에서만 동작합니다. 다음의 배포된 데모를 사용해보세요: https://counter-example.magicblock.app/
+</Warning>
+
+### Ephemeral 엔드포인트 설정
+
+Ephemeral Rollup 세션과 상호작용하려면 적절한 엔드포인트를 설정해야 합니다:
+
+- devnet의 경우, 다음 ephemeral 엔드포인트를 사용하세요:
+
+  https://devnet.magicblock.app
+
+- mainnet의 경우, 적절한 엔드포인트를 받으려면 MagicBlock 팀에 문의해주세요.
+- <a href="/ko/pages/ephemeral-rollups-ers/how-to-guide/local-development">localhost</a>의 경우, ephemeral validator를 다운로드, 설치 후 적절한 환경 변수를 사용해 로컬에서 실행하세요.
+
+개발 또는 프로덕션 환경에 따라 클라이언트 설정을 올바른 엔드포인트로 업데이트해야 합니다.
+
+<Endpoints />
+
+<CardGroup cols={2}>
+  <Card
+    title="소스 코드: Anchor Counter 프로그램"
+    icon="anchor"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/anchor-counter"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="라이브 예제 앱"
+    icon="react"
+    href="https://counter-example.magicblock.app/"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
