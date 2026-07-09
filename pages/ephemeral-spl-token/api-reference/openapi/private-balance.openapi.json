@@ -11,22 +11,22 @@
       "description": "Mainnet - Private Payments API"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
   "paths": {
     "/v1/spl/private-balance": {
       "get": {
         "summary": "Private Balance",
         "description": "Reads the owner's associated token account on the ephemeral RPC. Requires an `Authorization: Bearer <token>` header obtained from `/v1/spl/login`.",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": true,
-            "description": "Required. Authentication token issued by `/v1/spl/login`. Format: `Bearer <token>`.",
-            "schema": {
-              "type": "string",
-              "example": "Bearer 1234567890"
-            }
-          },
           {
             "name": "address",
             "in": "query",

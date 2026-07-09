@@ -5,5 +5,5 @@ let cpi_accounts = SplTransfer {
     to: ctx.accounts.to.to_account_info(),
     authority: ctx.accounts.payer.to_account_info(),
 };
-token::transfer(CpiContext::new(ctx.accounts.token_program.key(), cpi_accounts), amount)?;
+token::transfer(CpiContext::new(ctx.accounts.token_program.to_account_info(), cpi_accounts), amount)?;
 ```

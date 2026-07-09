@@ -11,23 +11,21 @@
       "description": "Mainnet - Private Payments API"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
   "paths": {
     "/v1/spl/transfer": {
       "post": {
         "summary": "Transfer SPL Tokens",
         "description": "Transfer SPL tokens publicly or privately through an ephemeral rollup. Accepts an optional `Authorization: Bearer <token>` header obtained from the `/v1/spl/login` flow when the request needs to read or write data inside the Private Ephemeral Rollup.",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "description": "Optional. Authentication token for requests that need to connect to the Private Ephemeral Rollup. Format: `Bearer <token>`.",
-            "schema": {
-              "type": "string",
-              "example": "Bearer 1234567890"
-            }
-          }
-        ],
+        "security": [{ "bearerAuth": [] }, {}],
         "requestBody": {
           "required": true,
           "content": {
@@ -179,7 +177,8 @@
                       "properties": {
                         "lamports": { "type": "string" },
                         "tokens": { "type": "string" }
-                      }
+                      },
+                      "required": ["lamports", "tokens"]
                     }
                   },
                   "required": ["kind", "version", "transactionBase64", "sendTo", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners"]

@@ -11,20 +11,21 @@
       "description": "Mainnet - Private Payments API"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
   "paths": {
     "/v1/spl/stealth-pool": {
       "post": {
         "summary": "Create Stealth Pool",
         "description": "Build unsigned stealth-pool setup and ER update transactions that map a handle to 1-10 destination owner keys. Requires an `Authorization: Bearer <token>` header from the `/v1/spl/login` flow. Once initialized, the handle can be used as the `to` value of a private `/v1/spl/transfer`.",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": true,
-            "description": "Required. `Bearer <token>` obtained from the `/v1/spl/login` flow.",
-            "schema": { "type": "string", "example": "Bearer 1234567890" }
-          }
-        ],
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {

@@ -16,7 +16,7 @@ pub mod spl_tokens {
             to: ctx.accounts.to.to_account_info(),
             authority: ctx.accounts.payer.to_account_info(),
         };
-        let cpi_ctx = CpiContext::new(ctx.accounts.token_program.key(), cpi_accounts);
+        let cpi_ctx = CpiContext::new(ctx.accounts.token_program.to_account_info(), cpi_accounts);
         token::transfer(cpi_ctx, amount)?;
         Ok(())
     }

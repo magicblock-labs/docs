@@ -11,20 +11,21 @@
       "description": "Mainnet - Private Payments API"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
   "paths": {
     "/v1/spl/undelegate-ephemeral-ata": {
       "post": {
         "summary": "Undelegate Ephemeral ATA",
         "description": "Build an unsigned ephemeral-rollup transaction that undelegates a wallet's ephemeral ATA (eATA) for a mint, committing its balance back toward the base layer. Accepts an optional `Authorization: Bearer <token>` header.",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "description": "Optional. `Bearer <token>` from the `/v1/spl/login` flow.",
-            "schema": { "type": "string", "example": "Bearer 1234567890" }
-          }
-        ],
+        "security": [{ "bearerAuth": [] }, {}],
         "requestBody": {
           "required": true,
           "content": {

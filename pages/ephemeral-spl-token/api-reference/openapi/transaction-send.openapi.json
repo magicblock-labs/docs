@@ -11,20 +11,21 @@
       "description": "Mainnet - Private Payments API"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
   "paths": {
     "/v1/transaction/send": {
       "post": {
         "summary": "Send Transaction",
         "description": "Submit a signed, serialized transaction. Use the `sendTo` value returned by a build endpoint (deposit / transfer / withdraw / stealth-pool) to route the transaction to the base layer or the ephemeral RPC. Accepts an optional `Authorization: Bearer <token>` header for ephemeral submissions that require it.",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "description": "Optional. `Bearer <token>` obtained from the `/v1/spl/login` flow, required for some ephemeral submissions.",
-            "schema": { "type": "string", "example": "Bearer 1234567890" }
-          }
-        ],
+        "security": [{ "bearerAuth": [] }, {}],
         "requestBody": {
           "required": true,
           "content": {
