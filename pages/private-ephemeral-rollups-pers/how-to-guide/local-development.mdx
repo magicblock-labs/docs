@@ -78,41 +78,65 @@ graph LR
   the **ER (7799)** directly when you don't need the privacy layer.
 </Note>
 
-## Bring Up the Stack
+## Quickstart with mb-stack
+
+`mb-stack` is a single CLI that wraps `mb-test-validator`, `ephemeral-validator`,
+and `query-filtering-service`, and handles the startup ordering between them for
+you, in a single command. It ships in the same package as `ephemeral-validator`.
+
+<Steps>
+  <Step title="Install">
+    ```bash
+    npm install -g @magicblock-labs/ephemeral-validator@latest
+    ```
+  </Step>
+
+  <Step title="Bring up the full stack">
+    ```bash
+    mb-stack --reset
+    ```
+
+    This starts `mb-test-validator` (8899 / 8900), `ephemeral-validator`
+    (7799 / 7800), and `query-filtering-service` (6699 / 6700) together, on the
+    same default ports used throughout this guide.
+  </Step>
+
+  <Step title="Deploy your program">
+    Once the stack is up, deploy against the base layer as usual:
+
+    <Tabs>
+      <Tab title="Anchor">
+        ```bash
+        anchor build && anchor deploy --provider.cluster localnet
+        ```
+      </Tab>
+      <Tab title="Native / Pinocchio">
+        ```bash
+        cargo build-sbf
+        solana config set --url localhost
+        solana program deploy YOUR_PROGRAM_PATH
+        ```
+      </Tab>
+    </Tabs>
+
+  </Step>
+</Steps>
+
+## Per-Service Setup
 
 <Steps>
   <Step title="Install the binaries">
-    `ephemeral-validator` and `mb-test-validator` ship together:
+    `mb-stack`, `ephemeral-validator`, `query-filtering-service`, and `mb-test-validator` ship together:
 
     ```bash
     npm install -g @magicblock-labs/ephemeral-validator@latest
     ```
-
-    `query-filtering-service` (and `vrf-oracle`, if you need VRF) must also be on
-    your `PATH` — they ship with the MagicBlock validator tooling. Verify:
-
-    ```bash
-    command -v ephemeral-validator query-filtering-service
-    ```
-
   </Step>
 
   <Step title="Start the base validator (port 8899)">
     ```bash
     mb-test-validator --reset
     ```
-
-    Wait until it is actually **producing slots** before starting the ER — poll
-    `getSlot` until it returns a value greater than `0`. The ER's account cloner
-    fails to bootstrap if it starts against a bank that isn't producing yet.
-
-    <Note>
-      `--reset` airdrops the CLI wallet ~500M SOL, which exceeds the ER's
-      internal faucet. If you use that wallet as an ER fee payer, the cloner
-      fails with `InsufficientFunds`. Drain it down to ~1000 SOL first (transfer
-      the excess to the incinerator `1nc1nerator11111111111111111111111111111111`).
-    </Note>
-
   </Step>
 
   <Step title="Deploy or preload your program">
@@ -151,9 +175,6 @@ graph LR
       --listen 127.0.0.1:7799 \
       --reset
     ```
-
-    Wait for port `7799` to accept a TCP connection before continuing.
-
   </Step>
 
   <Step title="Start the Query Filtering Service (port 6699)">
@@ -188,7 +209,6 @@ graph LR
     VRF_ORACLE_SKIP_PREFLIGHT=true RPC_URL=http://localhost:7799 \
       WEBSOCKET_URL=ws://localhost:7800 RUST_LOG=info vrf-oracle &
     ```
-
   </Step>
 </Steps>
 
@@ -262,27 +282,5 @@ export TEE_PROVIDER_ENDPOINT=$QFS_ENDPOINT                # private tests read t
 export TEE_WS_ENDPOINT=$QFS_WS_ENDPOINT
 export VALIDATOR=mAGicPQYBMvcYveUZA5F5UNNwyHvfYh5xkLS2Fr1mev
 ```
-
-## The Shortcut
-
-The [`magicblock-engine-examples`](https://github.com/magicblock-labs/magicblock-engine-examples)
-repo wires all of this up. To bring the full cluster up and leave it running for
-manual testing:
-
-```bash
-# from the repo root
-SETUP_ONLY=1 ./scripts/test-locally.sh
-```
-
-Then, in another shell, source the shared endpoints and run one example's tests
-against the running cluster:
-
-```bash
-cd private-counter
-. ../scripts/local-env.sh && yarn test:local
-```
-
-Per example, `yarn setup` brings the stack up and `yarn test:local` runs the
-tests against it.
 
 ---
