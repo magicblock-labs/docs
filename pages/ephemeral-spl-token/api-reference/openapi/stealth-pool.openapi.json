@@ -69,7 +69,7 @@
                   "cluster": {
                     "anyOf": [
                       { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
-                      { "type": "string" }
+                      { "type": "string", "format": "uri" }
                     ],
                     "example": "mainnet",
                     "description": "Optional. Cluster selector or custom http(s) RPC URL."
@@ -107,15 +107,33 @@
                     "stealthPool": { "type": "string", "description": "Derived stealth-pool PDA." },
                     "setupTransaction": {
                       "type": "object",
-                      "description": "The base-chain setup transaction (same field set as the top-level transaction).",
+                      "description": "The base-chain setup transaction. It uses the same transaction response contract as the top-level transaction; `sendRpcEndpoint` is omitted when `sendTo` is `base`.",
                       "properties": {
+                        "kind": { "type": "string", "enum": ["stealthPool"] },
+                        "version": { "type": "string", "enum": ["legacy", "v0"] },
                         "transactionBase64": { "type": "string" },
                         "sendTo": { "type": "string", "enum": ["base", "ephemeral"] },
+                        "sendRpcEndpoint": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Exact ephemeral RPC endpoint where the signed transaction should be submitted. Present when `sendTo` is `ephemeral`."
+                        },
+                        "from": { "type": "string", "enum": ["base", "ephemeral"] },
                         "recentBlockhash": { "type": "string" },
                         "lastValidBlockHeight": { "type": "integer" },
                         "instructionCount": { "type": "integer", "minimum": 0 },
-                        "requiredSigners": { "type": "array", "items": { "type": "string" } }
-                      }
+                        "requiredSigners": { "type": "array", "items": { "type": "string" } },
+                        "validator": { "type": "string" },
+                        "fees": {
+                          "type": "object",
+                          "properties": {
+                            "lamports": { "type": "string" },
+                            "tokens": { "type": "string" }
+                          },
+                          "required": ["lamports", "tokens"]
+                        }
+                      },
+                      "required": ["kind", "version", "transactionBase64", "sendTo", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners"]
                     }
                   },
                   "required": ["kind", "version", "transactionBase64", "sendTo", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners", "stealthPool", "setupTransaction"]
@@ -143,7 +161,13 @@
             "in": "query",
             "required": false,
             "description": "Optional. Cluster selector or custom http(s) RPC URL.",
-            "schema": { "type": "string", "example": "mainnet" }
+            "schema": {
+              "anyOf": [
+                { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
+                { "type": "string", "format": "uri" }
+              ],
+              "example": "mainnet"
+            }
           }
         ],
         "responses": {
