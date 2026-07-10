@@ -302,6 +302,7 @@
                 "group": "How-to-Guide",
                 "pages": [
                   "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
+                  "pages/private-ephemeral-rollups-pers/how-to-guide/local-development",
                   "pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
                 ]
               },
