@@ -1,0 +1,69 @@
+---
+title: "隐私"
+description: "开启私密且可验证的计算"
+---
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="/images/TEE.mp4"
+  controls
+></video>
+
+#### 🔴 隐私面临的问题
+
+- **数据暴露**：敏感信息会暴露在公共账本上。
+- **中心化信任**：用户必须将私密数据托付给第三方。
+- **缺乏可验证性**：在不暴露数据的前提下，无法证明计算执行正确。
+
+#### ⛓️ 当前区块链的限制
+
+- **公开执行**：所有交易和智能合约状态都在链上公开可见。
+- **MEV 利用**：抢跑和夹子攻击会利用交易可见性牟利。
+- **合规障碍**：监管要求常常与完全公开透明相冲突。
+
+#### ⚡ MagicBlock 的解决方案
+
+- 基于 Intel TDX 的 **Trusted Execution Environments (TEEs)**：安全隔离的计算环境，可在处理过程中保护数据。
+- **私密状态执行**：可在不向网络暴露数据的情况下，对敏感数据执行计算。
+- **可验证隐私**：通过密码学证明在保持机密性的同时确保执行正确。
+
+## 浏览 TEE 文档
+
+<CardGroup cols={2}>
+  <Card
+    title="TEE 简介"
+    icon="shield"
+    href="/cn/pages/tools/tee/introduction"
+    iconType="duotone"
+  >
+    了解什么是 PER，以及为什么需要 TEE
+  </Card>
+  <Card
+    title="授权"
+    icon="key"
+    href="/cn/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    权限组与访问控制
+  </Card>
+  <Card
+    title="程序实现"
+    icon="code"
+    href="/cn/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    通过 CPI 添加权限
+  </Card>
+  <Card
+    title="客户端实现"
+    icon="browser"
+    href="/cn/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    证明、挑战与访问
+  </Card>
+</CardGroup>

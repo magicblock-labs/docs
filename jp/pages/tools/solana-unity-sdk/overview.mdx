@@ -1,0 +1,61 @@
+---
+title: "紹介"
+description: "NFT サポートと完全な RPC カバレッジを備えたオープンソースの Unity-Solana SDK。"
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="インストール"
+    icon="location-arrow"
+    href="/jp/pages/tools/solana-unity-sdk/getting-started/installation"
+    iconType="duotone"
+  >
+    システム設定と
+    Solana.Unity-SDK のインストールを段階的に案内します。
+  </Card>
+  <Card
+    title="ウォレット設定"
+    icon="wallet"
+    href="/jp/pages/tools/solana-unity-sdk/getting-started/configuration"
+    iconType="duotone"
+  >
+    ゲーム用ウォレットの設定方法を学びましょう。
+  </Card>
+  <Card
+    title="コアコンセプト"
+    icon="hexagon-check"
+    href="/jp/pages/tools/solana-unity-sdk/core-concepts/associated-token-account"
+    iconType="duotone"
+  >
+    Solana.Unity-SDK のコアコンセプト。
+  </Card>
+  <Card
+    title="ガイド"
+    icon="books"
+    href="/jp/pages/tools/solana-unity-sdk/guides/mint-an-nft"
+    iconType="duotone"
+  >
+    はじめるためのガイド。
+  </Card>
+</CardGroup>
+
+## Solana.Unity-SDK
+
+Solana.Unity SDK は、Unity ベースのゲームから Solana に簡単にアクセスできる包括的なオープンソースツール群です。SDK は Unity Package Manager または Unity Asset Store からインストールでき、利用可能な選択肢の中から好みのウォレットを設定できます。Solana.Unity-SDK は [Solana.Unity-Core](https://github.com/garbles-labs/Solana.Unity-Core) 実装をベースにしており、ネイティブな .NET Standard 2.0（Unity 互換）、完全な RPC API カバレッジ、MPL、ネイティブ DEX 操作などを備えています。
+
+## 機能
+
+- 完全な JSON RPC API カバレッジ
+- ウォレットとアカウント: Unity 内で非カストディアルな Solana ウォレットを設定（sollet と solana-keygen に対応）
+- Phantom と Web3auth をサポート（ソーシャルアカウントを通じた非カストディアルな登録/ログイン）
+- base64 および wire format からのトランザクションデコードと、wire format への再エンコード
+- base64 および wire format からのメッセージデコードと、wire format への再エンコード
+- 命令の逆コンパイル
+- SPL token の送受信と、Associated Token Accounts の JIT プロビジョニングを行う TokenWallet オブジェクト
+- 基本的な UI サンプル
+- NFTs
+- ゲームを xNFT（Backpack）としてビルド
+- ネイティブ DEX 操作（Orca、Jupiter は近日対応予定…）
+- WebSocket によるカスタムイベント登録/発火（アカウント変更、署名状態、プログラムなど）
+- Solana Mobile Stack サポート
+- Solana Wallet Adapter

@@ -1,0 +1,46 @@
+---
+title: "위임, 커밋, 위임 해제"
+description: "트랜잭션 실행과 상태 동기화를 모두 실시간으로."
+---
+
+import Validators from "/ko/snippets/notes/validators.mdx";
+
+<img class="w-full h-auto max-w-5xl" src="/images/architecture_overview.png" />
+
+[MagicBlock의 Ephemeral Rollup](/ko/pages/overview/additional-information/whitepaper)은 **Solana Virtual Machine (SVM)의 계정 기반 구조와 병렬 실행** 을 활용해 상태 관리를 최적화합니다. 상태를 **클러스터** 로 구성함으로써 사용자는 **하나 이상의 계정을 잠그고** 상태 실행을 일시적으로 **전용 보조 레이어** 인 “Ephemeral Rollup (ER)” 으로 옮길 수 있습니다. 동적인 fraud-proof 메커니즘은 탈중앙 Security Committee를 통해 빠른 상태 finalization을 가능하게 합니다. 자세한 내용은 [백서](/public/Ephemeral_Rollups_Fraud_Proof.pdf)를 참고하세요.
+
+---
+
+## ER에서 실시간으로 트랜잭션을 실행하기 위한 계정 라이프사이클:
+
+<img
+  class="w-full h-auto max-w-5xl"
+  src="/images/magicblock-delegation-lifecycle.png"
+/>
+
+<Steps>
+  <Step title="계정 위임">
+    상태 계정은 먼저 account owner를 [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 로 바꾸고, ER validator, 계정 수명, 동기화 주기 같은 파라미터를 지정하여 특정 ER validator에 위임해야 합니다.
+    <Validators />
+
+  </Step>
+  <Step title="실시간으로 트랜잭션 실행">
+    위임된 상태 계정은 ER에서 직접 실행되는 트랜잭션 또는 [Magic
+    Router](/ko/pages/ephemeral-rollups-ers/introduction/magic-router). The
+    Router](/ko/pages/ephemeral-rollups-ers/introduction/magic-router) 를 통해 실시간으로 업데이트됩니다. **ER에서의 첫 번째 트랜잭션은 위임된 계정을** base layer에서 ephemeral rollup으로 복제합니다.
+  </Step>
+  <Step title="상태 커밋">
+    operator는 ephemeral 상태를 **주기적으로 또는 필요할 때** base layer로 커밋합니다. 여기에는 새로운 상태와 관련 포인터가 포함됩니다. 계정 상태는 백서에 설명된 fraud-proof 메커니즘으로 finalization 됩니다.
+  </Step>
+  <Step title="지속적으로 실시간 트랜잭션 실행">
+    위임된 계정 상태는 ER에서 직접 또는 [Magic
+    Router](/ko/pages/ephemeral-rollups-ers/introduction/magic-router).
+  </Step>
+  <Step title="계정 위임 해제">
+    위임된 계정 상태는 ER validator를 통해 base layer에 커밋되고, account owner는 [Delegation
+    Program](https://github.com/magicblock-labs/delegation-program)
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 에서 원래 owner로 되돌아갑니다.
+  </Step>
+</Steps>

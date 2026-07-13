@@ -1,0 +1,303 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MagicBlock Solana RPC API",
+    "description": "Solana JSON-RPC method getAccountInfo on MagicBlock devnet RPC endpoints.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://devnet-as.magicblock.app/",
+      "description": "Devnet AS - RPC"
+    },
+    {
+      "url": "https://devnet-us.magicblock.app/",
+      "description": "Devnet US - RPC"
+    },
+    {
+      "url": "https://devnet-eu.magicblock.app/",
+      "description": "Devnet EU - RPC"
+    },
+    {
+      "url": "https://devnet-tee.magicblock.app/",
+      "description": "Devnet TEE - RPC"
+    },
+    {
+      "url": "https://as.magicblock.app/",
+      "description": "Mainnet AS - RPC"
+    },
+    {
+      "url": "https://us.magicblock.app/",
+      "description": "Mainnet US - RPC"
+    },
+    {
+      "url": "https://eu.magicblock.app/",
+      "description": "Mainnet EU - RPC"
+    },
+    {
+      "url": "https://mainnet-tee.magicblock.app/",
+      "description": "Mainnet TEE - RPC"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "getAccountInfoRpc",
+        "summary": "getAccountInfo",
+        "description": "Returns all information associated with an account of provided Pubkey.",
+        "externalDocs": {
+          "description": "Official Solana RPC documentation",
+          "url": "https://solana.com/docs/rpc/http/getaccountinfo"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": [
+                      "2.0"
+                    ],
+                    "default": "2.0"
+                  },
+                  "id": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "getAccountInfo"
+                    ],
+                    "default": "getAccountInfo"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "string",
+                        "object"
+                      ]
+                    },
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "description": "Account address and optional config object",
+                    "example": [
+                      "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                      {
+                        "encoding": "base64"
+                      }
+                    ],
+                    "default": [
+                      "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                      {
+                        "encoding": "base64"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "jsonrpc",
+                  "id",
+                  "method",
+                  "params"
+                ],
+                "default": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "method": "getAccountInfo",
+                  "params": [
+                    "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                    {
+                      "encoding": "base64"
+                    }
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "method": "getAccountInfo",
+                  "params": [
+                    "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                    {
+                      "encoding": "base64"
+                    }
+                  ]
+                },
+                "examples": [
+                  {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "getAccountInfo",
+                    "params": [
+                      "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                      {
+                        "encoding": "base64"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getAccountInfo",
+                "params": [
+                  "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                  {
+                    "encoding": "base64"
+                  }
+                ]
+              },
+              "examples": {
+                "default": {
+                  "summary": "Default getAccountInfo request",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "getAccountInfo",
+                    "params": [
+                      "5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb",
+                      {
+                        "encoding": "base64"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "enum": [
+                        "2.0"
+                      ],
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "oneOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "context": {
+                          "type": "object",
+                          "properties": {
+                            "apiVersion": {
+                              "type": "string"
+                            },
+                            "slot": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "apiVersion",
+                            "slot"
+                          ]
+                        },
+                        "value": {
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Account data as base64 string with optional encoding info"
+                            },
+                            "executable": {
+                              "type": "boolean"
+                            },
+                            "lamports": {
+                              "type": "integer"
+                            },
+                            "owner": {
+                              "type": "string"
+                            },
+                            "rentEpoch": {
+                              "oneOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                {
+                                  "type": "string",
+                                  "pattern": "^[0-9]+$"
+                                }
+                              ],
+                              "description": "Rent epoch."
+                            },
+                            "space": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "data",
+                            "executable",
+                            "lamports",
+                            "owner",
+                            "rentEpoch",
+                            "space"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "context",
+                        "value"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "jsonrpc",
+                    "id",
+                    "result"
+                  ]
+                },
+                "example": {
+                  "jsonrpc": "2.0",
+                  "result": {
+                    "context": {
+                      "apiVersion": "2.2.1",
+                      "slot": 85838062
+                    },
+                    "value": {
+                      "data": [
+                        "KLUv/QBYQQAAAgAAAAAAAAA=",
+                        "base64"
+                      ],
+                      "executable": false,
+                      "lamports": 946560,
+                      "owner": "11111111111111111111111111111111",
+                      "rentEpoch": "18446744073709551615",
+                      "space": 8
+                    }
+                  },
+                  "id": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,147 @@
+---
+title: "クイックスタート"
+description: "MagicBlock の ER と Intel TDX 上の Trusted Execution Environment を通じて、任意の Solana プログラム状態アカウントにプライバシーを導入します。"
+---
+
+import Endpoints from "/jp/snippets/endpoints.mdx";
+import Validators from "/jp/snippets/notes/validators.mdx";
+import Construction from "/jp/snippets/construction.mdx";
+import Software from "/jp/snippets/software.mdx";
+import SolanaResources from "/jp/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/jp/snippets/per-code/write-program.mdx";
+import DelegateCode from "/jp/snippets/per-code/delegate.mdx";
+import RestrictCode from "/jp/snippets/per-code/restrict.mdx";
+import AuthorizeCode from "/jp/snippets/per-code/authorize.mdx";
+import TestCode from "/jp/snippets/per-code/test.mdx";
+import DelegationInfo from "/jp/snippets/delegation-info.mdx";
+
+import QuickAccessPER from "/jp/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
+## ステップごとのガイド
+
+<Steps>
+  <Step title={<a href="#1-write-program">プログラムを書く</a>}>
+    いつも通りに Solana プログラムを実装します。
+  </Step>
+  <Step
+    title={
+      <a href="#2-restrict">
+        プログラムに権限フックを追加して制限をかける。
+      </a>
+    }
+  >
+    CPI フックを追加し、グループと権限を作成して、特定の委任済みアカウントに制限を適用します。
+  </Step>
+  <Step title={<a href="#3-delegate">プログラムに委任フックを追加する</a>}>
+    CPI フックを追加して、Ephemeral Rollup セッションを通じて状態アカウントを委任、コミット、委任解除できるようにします。
+  </Step>
+  <Step title={<a href="#4-deploy">Solana にデプロイする</a>}>
+    Anchor CLI を使って Solana プログラムをデプロイします。
+  </Step>
+  <Step
+    title={<a href="#5-authorize">クライアントで認可を実装する</a>}
+  >
+    ユーザーメッセージに署名し、TEE エンドポイントから認可トークンを取得します。
+  </Step>
+  <Step title={<a href="#6-test">トランザクションを実行してプライバシーを検証する</a>}>
+    認可トークンを取得し、機密トランザクションを送信します。
+  </Step>
+</Steps>
+
+---
+
+## プライベート送金の例
+
+<img
+  src="/images/gifs/per-short-2x-420w.gif"
+  alt="Private Payments GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+
+<Software />
+
+<div id="code-snippets" />
+### コードスニペット
+
+<Tabs>
+    <Tab title={<span id="1-write-program">1. プログラムを書く</span>}>
+        トークンをデポジットアカウントで管理し、ボールトアカウントにロックするシンプルな送金プログラムです。
+        <WriteProgramCode />
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title={<span id="2-restrict">2. 制限を設定</span>}>
+        アカウント単位の権限を 2 ステップで定義します。
+        1. ユーザーグループを作成する
+        2. 状態アカウントとユーザーグループに権限を作成する
+        <RestrictCode />
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+        <Tab title={<span id="3-delegate">3. 委任</span>}>
+        TEE 内のバリデータへ委任することでアカウントのプライバシーを保護します。 
+        <DelegateCode />
+        <DelegationInfo />
+        自動コミットや特定の ER バリデータなど、好みの委任設定を指定します。
+        <Validators />
+
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title={<span id="4-deploy">4. デプロイ</span>}>
+        これでプログラムのアップグレードは完了です。目的のクラスター向けにビルドしてデプロイします。
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title={<span id="5-authorize">5. 認可</span>}>
+        TEE 内の ER RPC との連携を設定します。
+        1. `https://pccs.phala.network/tdx/certification/v4` を使って TEE RPC の完全性を検証する
+        2. ユーザーが TEE エンドポイントとやり取りするための認可トークンを要求する
+        <AuthorizeCode />
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title={<span id="6-test">6. テスト</span>}>
+        `authToken` を使ってプライベート決済プログラムをテストします。
+
+        `https://devnet-tee.magicblock.app?token=${token}`
+        1. ユーザーのデポジットアカウントを初期化する（受取人側も同様）
+        2. トークンを入金する
+        3. デポジットに権限を設定する
+        4. デポジットを委任する
+        5. 委任済みデポジット間でプライベート送金する
+        6. デポジットを Solana に委任解除する
+        7. デポジットを引き出す
+
+        <TestCode />
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock 製品
+
+import ProductCards from "/jp/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

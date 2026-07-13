@@ -1,0 +1,38 @@
+```rust
+use ephemeral_rollups_sdk::access_control::{
+    instructions::UpdateEphemeralPermissionCpi,
+    structs::{
+        EphemeralMembersArgs, Member,
+        TX_LOGS_FLAG, TX_MESSAGE_FLAG, TX_BALANCES_FLAG,
+    },
+};
+
+let seeds: &[&[u8]] = &[
+    COUNTER_SEED,
+    permissioned_account_authority.as_ref(),
+    &[bump],
+];
+
+// When private, only listed members can read ER state via the TEE.
+let members = if is_private {
+    vec![Member {
+        flags: TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG,
+        pubkey: permissioned_account_authority,
+    }]
+} else {
+    vec![]
+};
+
+UpdateEphemeralPermissionCpi {
+    payer: &counter_account_info,
+    permissioned_account: &counter_account_info,
+    permission: &permission_account_info,
+    vault: &ephemeral_vault_account_info,
+    magic_program: &magic_program_account_info,
+    permission_program: &permission_program_account_info,
+    authority: &counter_account_info,
+    authority_is_signer: false,   // PDA signs via the seeds above
+    args: EphemeralMembersArgs { is_private, members },
+}
+.invoke_signed(&[seeds])?;
+```

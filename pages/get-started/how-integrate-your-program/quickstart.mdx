@@ -36,7 +36,7 @@ The lifecycle of integrating Ephemeral Rollups in your program is as follows:
 <Steps>
   <Step title="Write your program">
     Write your Solana program as you normally would, using Anchor, native Rust,
-    Bolt, C, or even assembly.
+    C, or even assembly.
   </Step>
   <Step title="Add delegation and undelegation hooks">
     Accounts that are delegated can be used as writable in an Ephemeral Rollup
@@ -91,21 +91,26 @@ delegate_account(
 ### Undelegation
 
 `Undelegation` is the process of transferring ownership of the `PDAs` back to your program.
-On undelegation, the state is committed and it trigger the finalization process. Once state it validated, the `PDAs` are unlocked and can be used as normal on mainnet
+On undelegation, the state is committed and it triggers the finalization process. Once state is validated, the `PDAs` are unlocked and can be used as normal on mainnet.
 
-```rust Delegation
-use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
+The SDK exposes a `MagicIntentBundleBuilder` that lets you build commit and commit-and-undelegate intents in one call:
+
+```rust Undelegation
+use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
 
 pub fn undelegate(ctx: Context<IncrementAndCommit>) -> Result<()> {
-    commit_and_undelegate_accounts(
-        &ctx.accounts.payer,
-        vec![&ctx.accounts.pda.to_account_info()],
-        &ctx.accounts.magic_context,
-        &ctx.accounts.magic_program,
-    )?;
+    MagicIntentBundleBuilder::new(
+        ctx.accounts.payer.to_account_info(),
+        ctx.accounts.magic_context.to_account_info(),
+        ctx.accounts.magic_program.to_account_info(),
+    )
+    .commit_and_undelegate(&[ctx.accounts.pda.to_account_info()])
+    .build_and_invoke()?;
     Ok(())
 }
 ```
+
+The same builder can be used with `.commit(...)` instead of `.commit_and_undelegate(...)` to push state to the base layer without releasing the PDA.
 
 Additionally, custom CPI can instruct the ephemeral validators to `commit` and `finalize` a state or `close` a session.
 
@@ -122,10 +127,10 @@ To make it easier to integrate via the frontend, we created the [Magic Router](/
 ```typescript Frontend
 import { sendMagicTransaction } from "magic-router-sdk";
 
-const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+const routerConnection = new Connection("https://devnet-router.magicblock.app", "confirmed");
 
 // Construct a standard Solana transaction
-const transaction = await exampleClient.current?.methods
+const tx = await exampleClient.current?.methods
   .exampleMethod(0)
   .accounts({
       user: userPda,

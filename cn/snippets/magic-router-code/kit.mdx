@@ -1,0 +1,18 @@
+```typescript Kit
+import { Connection } from "@magicblock-labs/ephemeral-rollups-kit";
+
+// Initialize connection
+const connection = await Connection.create(
+  "https://devnet-router.magicblock.app",
+  "wss://devnet-router.magicblock.app"
+);
+
+// ... create transaction
+
+// Send and confirm transaction
+const txHash = await connection.sendAndConfirmTransaction(
+  transactionMessage,
+  [userKeypair],
+  { commitment: "confirmed", skipPreflight: true }
+);
+```

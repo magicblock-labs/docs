@@ -1,0 +1,65 @@
+---
+title: "紹介"
+description: "MagicBlock Ephemeral Rollups によるリアルタイムオンチェーンデータ"
+---
+
+## MagicBlock 上のオラクル
+
+MagicBlock は <b>Pyth Lazer</b> フィードを取り込み、Ephemeral Rollup アカウントを <b>50–200&nbsp;ms</b> 間隔（資産ごとに異なる）で更新することで、低遅延かつ高スループットのオラクルデータを提供します。
+
+<CardGroup cols={3}>
+  <Card title="ライブデモ" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
+    リアルタイム価格ストリーム
+  </Card>
+  <Card title="実装" icon="book" href="/jp/pages/tools/oracle/implementation" iconType="duotone">
+    オンチェーンでオラクルにアクセスする方法を学ぶ
+  </Card>
+  <Card title="コード例" icon="code" href="https://github.com/magicblock-labs/real-time-pricing-oracle
+" iconType="duotone">
+    Github リポジトリを見る
+  </Card>
+</CardGroup>
+<Note id="endpoints">
+  このオラクル例では Pyth Lazer を使っていますが、任意のデータソース向けにオラクルを構築できます。
+</Note>
+
+
+## オンチェーンオラクルとは？
+
+オンチェーンオラクルは、プログラムが信頼できる検証可能なオフチェーンデータを提供します。用途は資産価格からイベント結果までさまざまです。
+
+Solana では、オラクルは通常オンチェーンアカウントを更新し続けます。プログラムはそれらのアカウントを直接読み取るため、実行時に外部 API 呼び出しは不要です。私たちは、広く採用されているクロスチェーンオラクルネットワーク <b>Pyth</b> を利用しています。
+
+## なぜオラクルが重要なのか
+
+- **金融**: 清算、資金調達、TWAP などでは、不正確な価格が損失やリスクにつながります
+- **ゲーム**: スポーツ結果の確定や、ゲーム内状態を現実世界のイベントと同期する用途
+- **コンポーザビリティ**: 信頼できるオンチェーンデータが安全なプログラム合成を可能にします
+
+正確性と遅延は、正しさ、安全性、UX に直接影響します。
+
+## MagicBlock 上のオラクル
+
+MagicBlock は標準的なオラクルパターンに従い、データを合成可能なオンチェーンアカウントへ書き込みますが、更新間隔は <b>50–200&nbsp;ms</b>（資産ごとに異なる）で、Solana slot の約 <b>400&nbsp;ms</b> より高速です。この遅延特性は、清算、コピー取引、その他の時間に敏感なフローに適しています。
+
+### オラクルの 2 つの構成要素
+
+- **データソース**: 上流の真実です。任意のオンチェーン／オフチェーンフィードを取り込み、Pyth がカバーしていない資産（例: 新しい PumpFun や Raydium R‑tokens）を Ephemeral Rollups に載せられます。
+- **チェーンプッシャー**: ソースフィードを処理してオンチェーンに更新を書き込みます。MagicBlock の chain pusher はオープンソース化される予定です。
+
+### フロー
+
+1. Pyth Lazer の更新を固定間隔（資産ごとに 50&nbsp;ms または 200&nbsp;ms）で受け取る
+2. あらかじめ定義されたオンチェーンアカウントに更新を書き込む
+3. プログラムが該当アカウントを直接読み取る
+
+import Endpoints from '/jp/snippets/endpoints.mdx'
+
+<Endpoints />
+
+<Callout type="info">
+  このページは概要です。バイトレベルの詳細やコード例については <a href="/jp/pages/tools/oracle/implementation">実装</a> を参照してください。
+  <br />
+  コードスニペットは、流れに集中できるよう意図的にプレースホルダーを使っています。
+</Callout>
+

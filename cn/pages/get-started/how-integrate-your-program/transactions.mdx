@@ -1,0 +1,100 @@
+---
+title: "交易流程"
+description: "不同类型的交易如何流经 Ephemeral Rollup"
+---
+
+一旦部署了 delegation 和 undelegation hooks，属于你程序的任意 instruction 都可以在无需改动的情况下以超低延迟执行。
+**交易将根据账户的 delegation 状态**，由 Base Layer（Solana）或 Ephemeral Rollup（ER）validators 处理。
+
+<Columns cols={4}>
+  <Card
+    title="标准程序指令"
+    icon="link"
+    href="#standard-program-instruction"
+  ></Card>
+  <Card
+    title="委托交易"
+    icon="link"
+    href="#delegate-transaction"
+  ></Card>
+  <Card
+    title="取消委托交易"
+    icon="link"
+    href="#undelegate-transaction"
+  ></Card>
+  <Card
+    title="提交交易"
+    icon="link"
+    href="#commit-transaction"
+  ></Card>
+</Columns>
+<div id="standard-program-instruction" />
+### 标准程序指令
+
+当你通过专用 RPC router 执行程序中的任意指令时，系统会检查交易中的账户列表：
+
+- 超低延迟：如果 **所有可写账户都已委托**，交易会在 ER 上以低延迟执行。
+  - 如果 **账户刚刚完成委托**，该账户会带着原始 owner 从 Base Layer 克隆到 ER。
+  - 如果 **账户已经委托，并且已从 Base Layer 以原始 owner 克隆到 ER**，则会直接使用 ER 上现有的委托账户。
+  - 如果 **账户未委托且不可写**，则会从 Base Layer 克隆到 ER。
+- 普通模式：如果 **所有可写账户都未委托**，交易会在 Base Layer 上执行。
+- 错误：如果 **可写账户中同时存在已委托和未委托账户**，交易会失败。
+  <img class="w-full h-auto max-w-5xl" src="/images/interact.png" />
+
+<div id="delegate-transaction" />
+### 委托交易
+
+在 ER 上执行超低延迟交易之前，状态账户必须通过程序中的 delegation hook 完成委托。将状态账户从 Base Layer 委托到 ER 时会发生以下事情：
+
+- **Base Layer：** 账户 owner 会被锁定，并设置为 MagicBlock 的 Delegation Program。
+- **ER：** 在 delegation 过程中，ER 上暂时不会立刻创建账户；而是在之后首次向 ER 发送交易时创建。
+
+如果账户已经委托，交易会失败。
+
+<img class="w-full h-auto max-w-5xl" src="/images/delegate.png" />
+
+<div id="undelegate-transaction" />
+### 取消委托交易
+
+你可以通过 undelegation hook 将账户从 ER 提交并取消委托回 Base Layer。取消委托状态账户时会发生以下事情：
+
+- **ER：** 账户的 commit 会被安排执行。账户会被 undelegate，也就是 owner 从原始程序变为 Delegation Program。
+- **Base Layer：** 会触发 CPI callback，从 ER 获取、finalize 并在 Base Layer 上以原始程序为 owner 重建账户。
+
+如果账户已经 undelegate，交易会失败。
+
+<img class="w-full h-auto max-w-5xl" src="/images/undelegate.png" />
+
+<div id="commit-transaction" />
+### 提交交易
+
+你也可以通过 commit hook 提交账户状态，在不改变 delegation 的情况下，把状态从 ER 同步回 Base Layer。提交状态时会发生以下事情：
+
+- **ER：** 账户的 commit 会被安排执行。
+- **Base Layer：** 会触发 CPI callback，从 ER 获取、finalize 并更新 Base Layer 上的账户，其 owner 仍为 Delegation Program。
+
+如果账户已经 undelegate，交易会失败。
+
+<img class="w-full h-auto max-w-5xl" src="/images/commit.png" />
+
+## 学习如何使用 Native Rust 和 Anchor 构建！
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/cn/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  与 Anchor 程序集成
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/cn/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  与 Native Rust 程序集成
+</Card>
+
+</CardGroup>

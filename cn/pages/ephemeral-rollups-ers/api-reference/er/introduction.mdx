@@ -1,0 +1,48 @@
+---
+title: "介绍"
+description: "MagicBlock Router API 文档"
+---
+
+## 概述
+
+MagicBlock Router API 是一个 JSON-RPC API，它实现了几乎所有标准 Solana RPC 方法，并添加了 Router 专用方法。它通过在单个端点后处理节点选择和路由，简化了多节点部署。
+
+它可用于获取账户的委托状态，并识别最适合执行请求的最近节点。例如，`getBlockhashForAccounts` 会根据提供的账户及其委托状态，从合适的节点返回 blockhash。
+
+**Mainnet URL:** `https://router.magicblock.app`
+
+**Devnet URL:** `https://devnet-router.magicblock.app`
+
+**API Version:** 2.0
+
+## 主要操作
+
+### 网络信息
+- [**Get Routes**](/cn/pages/ephemeral-rollups-ers/api-reference/er/getRoutes) - 查询可用路由信息
+- [**Get Identity**](/cn/pages/ephemeral-rollups-ers/api-reference/er/getIdentity) - 获取身份信息
+
+### 账户操作
+- [**Get Account Info**](/cn/pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo) - 获取账户信息
+- [**Get Blockhash For Accounts**](/cn/pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts) - 获取特定账户的 blockhash
+
+### 状态与委托
+- [**Get Signature Statuses**](/cn/pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses) - 检查交易签名状态
+- [**Get Delegation Status**](/cn/pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus) - 查询委托信息
+
+## 关键特性
+
+- **Solana RPC 覆盖** - 通过 Router 实现几乎所有标准 Solana RPC 方法
+- **Router 专用方法** - 增加 `getBlockhashForAccounts` 和 `getDelegationStatus` 等方法
+- **简化多节点部署** - 使用一个 Router 端点，而不是手动管理多个节点端点
+- **快速路由查询** - 高效确定交易的路由路径
+- **账户状态** - 访问当前账户信息和余额
+- **交易跟踪** - 监控交易状态和确认情况
+- **委托查询** - 通过 Router 检查委托关系
+
+## 使用场景
+
+- 获取账户余额和状态
+- 检查交易确认状态
+- 查询交易路由信息
+- 验证委托配置
+- 避免手动管理多节点端点

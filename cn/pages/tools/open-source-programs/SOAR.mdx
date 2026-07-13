@@ -1,0 +1,165 @@
+---
+title: SOAR
+description: "Solana 链上成就与排名"
+---
+
+SOAR 是一个程序，为 Solana 区块链上的排行榜、成就、玩家档案以及自动奖励分发提供了一套流畅的解决方案。目前它已经支持从 TypeScript 客户端调用，后续也将很快集成到 Solana.Unity-SDK 中。
+
+## 目录
+
+- [SOAR SDK](#soar-sdk)
+  - [快速开始](#quick-start)
+  - [类](#classes)
+    - [SoarProgram](#soarprogram)
+    - [GameClient](#gameclient)
+    - [InstructionBuilder](#instructionbuilder)
+
+<div id="soar-sdk" />
+<div id="quick-start" />
+## 快速开始
+
+### 创建新游戏
+
+```typescript
+import { SoarProgram, GameType, Genre } from "@magicblock-labs/soar-sdk";
+
+// 使用 '@solana/web3.js' 的当前 Connection 和默认 defaultPayer 创建 Soar 客户端
+const client = SoarProgram.getFromConnection(connection, defaultPayer);
+
+let game = Keypair.generate();
+let title = "Game1";
+let description = "Description";
+let genre = Genre.Action;
+let gameType = GameType.Web;
+let nftMeta = Keypair.generate().publicKey;
+let _auths = auths.map((keypair) => keypair.publicKey);
+
+// 获取打包后的交易
+let { newGame, transaction } = await client.initializeNewGame(
+  game.publicKey,
+  title,
+  description,
+  genre,
+  gameType,
+  nftMeta,
+  _auths
+);
+// 使用 game keypair 作为 signer 发送并确认交易
+await web3.sendAndConfirmTransaction(connection, transaction);
+```
+
+### 创建排行榜
+
+```typescript
+const transactionIx = await client.addNewGameLeaderBoard(
+  newGame,
+  authWallet.publicKey,
+  "my leaderboard", // 描述
+  leaderboardNft, // 与排行榜关联的 nft
+  100,
+  true // isAscending
+);
+
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [
+  authWallet,
+]);
+```
+
+### 提交分数
+
+```typescript
+const score = 10;
+const playerAddress = new web3.PublicKey("..."); // 玩家 publicKey
+const authWallet = web3.Keypair.fromSecretKey(bs58.decode("")); // AUTH_WALLET_PRIVATE_KEY
+const leaderboardPda = new web3.PublicKey(""); // LEADERBOARD_PDA
+
+const transactionIx = await client.submitScoreToLeaderBoard(
+  playerAddress,
+  authWallet.publicKey,
+  leaderboardPda,
+  new BN(score)
+);
+
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [
+  authWallet,
+]);
+```
+
+<div id="classes" />
+## 类
+
+### SoarProgram <span id="soarprogram" />
+
+`SoarProgram` 类让客户端可以访问链上 SOAR program 中的所有指令。
+
+它还提供了用于推导 PDA 的工具函数：
+
+```typescript
+const user = Keypair.generate().publicKey;
+const playerAddress = client.utils.derivePlayerAddress(user)[0];
+```
+
+获取单个账户：
+
+```typescript
+const account = await client.fetchLeaderBoardAccount(address);
+```
+
+以及获取多个账户：
+
+```typescript
+const accounts = await client.fetchAllLeaderboardAccounts([]);
+```
+
+### GameClient <span id="gameclient" />
+
+`GameClient` 提供了一组更具体的方法，用于处理单个 Game 账户。
+
+```typescript
+import { GameClient } from "@magicblock-labs/soar-sdk";
+```
+
+获取一个表示现有链上 Game 账户的实例：
+
+```typescript
+const soar = SoarProgram.getFromConnection(connection, defaultPayer);
+const gameClient = new GameClient(soar, address);
+```
+
+注册一个新游戏：
+
+```typescript
+const soar = SoarProgram.getFromConnection(connection, defaultPayer);
+const game = new GameClient.register(soar, ...);
+```
+
+```typescript
+// 创建一个新的排行榜：
+await game.addLeaderboard(....);
+
+// 访问游戏状态。
+await game.init();
+
+// 刷新游戏状态。
+await game.refresh();
+
+// 获取某个游戏最近创建的成就
+const achievement = game.recentAchievementAddress();
+```
+
+## InstructionBuilder <span id="instructionbuilder" />
+
+```typescript
+import { InstructionBuilder } from "@magicblock-labs/soar-sdk";
+```
+
+InstructionBuilder 提供了一组方法，用于方便地打包交易。
+
+```typescript
+const transaction = await this.builder
+  .andInitializePlayer({ username, nftMeta }, user)
+  .andRegisterPlayerEntry(/*...*/)
+  .andSubmitScoreToLeaderboard(/*...*/)
+  .and(/*some other transaction*/)
+  .then((builder) => builder.build());
+```

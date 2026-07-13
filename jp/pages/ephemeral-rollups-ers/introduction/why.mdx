@@ -1,0 +1,93 @@
+---
+title: Ephemeral Rollup
+description: "Solana 上のリアルタイムアプリケーション向け高性能エンジン"
+---
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/yfgDZJJvydU?si=3k8ndg9Z69sv6_LE&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Why Build with MagicBlock? Solve Scaling & UX Pain Points with Ephemeral Rollups"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+<Card>
+  [MagicBlock の Ephemeral
+  Rollup](/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) は、
+  高性能な分散型アプリケーション向けに設計された Solana ネットワークの
+  拡張です。Solana のコンポーザビリティと整合性を保ちながら、その能力を
+  さらに高めます。
+</Card>
+
+---
+
+## なぜ Ephemeral Rollups なのか？
+
+ブロックチェーン技術は分散型アプリケーションを大きく変えつつありますが、依然として次のような根本的課題があります。
+
+- **レイテンシ**：ブロックチェーンの取引速度はリアルタイムアプリには遅すぎます。
+- **コスト**：たとえ「低手数料」のブロックチェーンでも、大規模になると高コストになります。
+- **スケーラビリティ**：現在のアーキテクチャでは高スループットなアプリケーションをさばくのが困難です。
+- **プライバシー**：ブロックチェーンは基本的に公開されており、オンチェーンデータは誰でも読めます。
+
+## **MagicBlock の Ephemeral Rollup の利点**
+
+ephemeral rollup は **専用の SVM runtime** として機能し、次のように **カスタマイズ** できます。
+
+- ✅ **Gasless Transactions** – ゼロ手数料でスケーラビリティと大規模普及を可能にする
+- ✅ **より速いブロックタイム** – 10ms 未満のレイテンシでシームレスな UX を実現
+- ✅ **高精度スケジューリング** – トランザクション実行のための自動化を内蔵
+- ✅ **プログラムと状態の同期** – 断片化せず、コンポーザブルかつアップグレード可能
+- ✅ **水平スケーリング** – 必要に応じて複数 rollup を起動し、数百万件のトランザクションに対応
+- ✅ **馴染みのあるツール群** – 既存の言語、ライブラリ、テストツールを再利用可能
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral Rollup"
+    icon="bolt"
+    href="/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup"
+    iconType="duotone"
+  >
+    Ephemeral Rollup の仕組みを学ぶ
+  </Card>
+  <Card
+    title="Magic Router"
+    icon="router"
+    href="/jp/pages/ephemeral-rollups-ers/introduction/magic-router"
+    iconType="duotone"
+  >
+    Magic Router の仕組みを学ぶ
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="hammer"
+    href="/jp/pages/ephemeral-rollups-ers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Rust、Anchor、Typescript で試してみる
+  </Card>
+  <Card
+    title="Privacy"
+    icon="shield-check"
+    href="/jp/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy"
+    iconType="duotone"
+  >
+    TEE でプライベートかつ検証可能なアプリを構築する
+  </Card>
+</CardGroup>

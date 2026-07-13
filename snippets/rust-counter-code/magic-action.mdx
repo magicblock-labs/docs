@@ -1,0 +1,50 @@
+```rust
+use solana_program::{
+    account_info::{next_account_info, AccountInfo},
+    entrypoint::ProgramResult,
+    pubkey::Pubkey,
+};
+use ephemeral_rollups_sdk::ephem::{CallHandler, MagicIntentBundleBuilder};
+use ephemeral_rollups_sdk::{ActionArgs, ShortAccountMeta};
+
+// Runs on the ER. Commits the counter to the base layer and attaches a
+// post-commit action (`update_leaderboard`) that the base layer executes
+// automatically once the commit lands — both applied in one ER transaction.
+pub fn process_commit_with_action(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+) -> ProgramResult {
+    let account_info_iter = &mut accounts.iter();
+    let payer = next_account_info(account_info_iter)?;
+    let counter = next_account_info(account_info_iter)?;
+    let leaderboard = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+
+    // The instruction that runs on the base layer after the commit.
+    // `args` is your program's own instruction payload (e.g. update_leaderboard).
+    let action = CallHandler {
+        destination_program: *program_id,
+        accounts: vec![
+            ShortAccountMeta { pubkey: *leaderboard.key, is_writable: true },
+            ShortAccountMeta { pubkey: *counter.key, is_writable: false },
+        ],
+        args: ActionArgs::new(update_leaderboard_instruction_data()),
+        // Signer that pays the action's fees from its escrow PDA.
+        escrow_authority: payer.clone(),
+        compute_units: 200_000,
+    };
+
+    // Schedule the commit + post-commit action on magic_context.
+    MagicIntentBundleBuilder::new(
+        payer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit(&[counter.clone()])
+    .add_post_commit_actions([action])
+    .build_and_invoke()?;
+
+    Ok(())
+}
+```

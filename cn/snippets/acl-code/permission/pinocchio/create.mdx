@@ -1,0 +1,48 @@
+```rust
+use ephemeral_rollups_pinocchio::instruction::create_permission;
+use ephemeral_rollups_pinocchio::types::{
+    Member,
+    MemberFlags,
+    MembersArgs,
+};
+use pinocchio::AccountView;
+
+// Create members with specific flags
+// AUTHORITY - Member can directly modify the permission
+// TX_LOGS - Member can view transaction logs
+// TX_BALANCES - Member can view account balances
+// TX_MESSAGE - Member can view transaction messages
+// ACCOUNT_SIGNATURES - Member can view account signatures
+
+let mut flags = MemberFlags::new();
+flags.set(MemberFlags::AUTHORITY);
+flags.set(MemberFlags::TX_LOGS);
+
+let member = Member {
+    flags,
+    pubkey: payer_address,
+};
+
+let members = vec![member];
+let members_args = MembersArgs {
+    members: Some(&members),
+};
+
+// Prepare accounts: [permissioned_account, permission, payer, system_program]
+let accounts: &[&AccountView] = &[
+    &permissioned_account,
+    &permission,
+    &payer,
+    &system_program,
+];
+
+// Create the permission
+// Pass signer_seeds if permissioned_account is a PDA owned by your program
+// Pass None if permissioned_account is an on-curve signer
+create_permission(
+    accounts,
+    &permission_program_id,
+    members_args,
+    pda_signer_seeds, // Or None if permissioned_account is on-curve
+)?;
+```

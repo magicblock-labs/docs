@@ -1,0 +1,69 @@
+---
+title: 소개
+description: MagicBlock의 Magic Router SDK로 복잡성을 추상화하기
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="시작하기"
+    icon="rocket"
+    href="/ko/pages/tools/magic-router-sdk/getting-started"
+    iconType="duotone"
+  >
+    SDK를 설치하고 트랜잭션 라우팅의 핵심 개념을 알아보세요.
+  </Card>
+  <Card
+    title="Magic Router 개요"
+    icon="route"
+    href="/ko/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    Magic Router가 지능형 라우팅으로 트랜잭션을 가속하는 방식을 알아보세요.
+  </Card>
+</CardGroup>
+
+## Magic Router SDK
+
+Magic Router SDK는 MagicBlock의 Ephemeral Rollups 인프라에서 트랜잭션 준비와 라우팅을 단순화하는 TypeScript 라이브러리입니다. 트랜잭션을 Solana 메인넷에서 실행할지 Ephemeral Rollup에서 실행할지 수동으로 판단하는 대신, SDK가 메타데이터를 분석해 이 복잡성을 자동으로 처리합니다.
+
+## 목적과 장점
+
+Magic Router SDK는 MagicBlock의 이중 레이어 실행 환경이 가진 복잡성을 추상화합니다.
+
+- **자동 라우팅**: 계정 메타데이터를 기반으로 트랜잭션을 Ephemeral Rollups 또는 Solana로 지능적으로 라우팅합니다
+- **단순한 통합**: 단일 엔드포인트 연결만으로 충분하며 수동 라우팅 로직이 필요 없습니다
+- **최적화된 성능**: 가장 빠른 사용 가능 레이어에서 트랜잭션을 실행해 즉시 확인을 노립니다
+- **매끄러운 지갑 경험**: 표준 Solana 트랜잭션 서명을 유지하면서 향상된 라우팅 기능을 제공합니다
+
+## 주요 기능
+
+<CardGroup cols={2}>
+  <Card
+    title="스마트한 트랜잭션 준비"
+    icon="brain"
+    iconType="duotone"
+  >
+    SDK는 트랜잭션의 쓰기 가능 계정에 맞는 올바른 blockhash를 자동으로 가져와 Ephemeral Rollups와 Solana 메인넷 모두와의 호환성을 보장합니다.
+  </Card>
+  <Card
+    title="검증자 탐색"
+    icon="radar"
+    iconType="duotone"
+  >
+    최적의 트랜잭션 성능을 위해 가장 가까운 사용 가능한 검증자를 자동으로 찾아 연결합니다.
+  </Card>
+  <Card
+    title="유연한 서명 옵션"
+    icon="signature"
+    iconType="duotone"
+  >
+    브라우저 지갑 통합과 로컬 서명자 또는 session keys를 이용한 프로그래밍 방식 서명을 모두 지원합니다.
+  </Card>
+  <Card
+    title="계정 분석"
+    icon="magnifying-glass-chart"
+    iconType="duotone"
+  >
+    트랜잭션에서 쓰기 가능 계정을 추출하고 분석하는 내장 유틸리티로 지능형 라우팅 결정을 지원합니다.
+  </Card>
+</CardGroup>

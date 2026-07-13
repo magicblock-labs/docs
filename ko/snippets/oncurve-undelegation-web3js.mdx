@@ -1,0 +1,19 @@
+```typescript Web3.js
+// Create commit and undelegate instruction
+const commitAndUndelegateInstruction = createCommitAndUndelegateInstruction(
+  userPubkey,
+  [userPubkey]
+);
+
+// Send and confirm transaction on ephemeral connection
+const tx = new Transaction().add(commitAndUndelegateInstruction);
+tx.feePayer = feePayerKeypair.publicKey;
+const txSignature = await sendAndConfirmTransaction(
+  ephemeralConnection,
+  tx,
+  [userKeypair, feePayerKeypair],
+  {
+    skipPreflight: true,
+  }
+);
+```

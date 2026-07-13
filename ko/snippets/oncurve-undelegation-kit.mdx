@@ -1,0 +1,22 @@
+```typescript Kit
+// Create commit and undelegate instruction
+const commitAndUndelegateInstruction = createCommitAndUndelegateInstruction(
+  userAddress,
+  [userAddress]
+);
+
+// Prepare transaction
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(feePayerAddress, tx),
+  (tx) =>
+    appendTransactionMessageInstructions([commitAndUndelegateInstruction], tx)
+);
+
+// Send and confirm transaction on ephemeral connection
+const txHash = await ephemeralConnection.sendAndConfirmTransaction(
+  transactionMessage,
+  [userKeypair, feePayerKeypair],
+  { commitment: "confirmed", skipPreflight: true }
+);
+```

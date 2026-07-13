@@ -1,0 +1,244 @@
+---
+title: "访问控制"
+description: "了解如何在 Private Ephemeral Rollups 中管理细粒度访问控制和成员权限。"
+---
+
+import CreateEphemeralPermissionAnchor from "/cn/snippets/acl-code/ephemeral-permission/anchor/create.mdx";
+import UpdateEphemeralPermissionAnchor from "/cn/snippets/acl-code/ephemeral-permission/anchor/update.mdx";
+import CloseEphemeralPermissionAnchor from "/cn/snippets/acl-code/ephemeral-permission/anchor/close.mdx";
+
+import CreateEphemeralPermissionRust from "/cn/snippets/acl-code/ephemeral-permission/rust/create.mdx";
+import UpdateEphemeralPermissionRust from "/cn/snippets/acl-code/ephemeral-permission/rust/update.mdx";
+import CloseEphemeralPermissionRust from "/cn/snippets/acl-code/ephemeral-permission/rust/close.mdx";
+
+import CreateEphemeralPermissionPinocchio from "/cn/snippets/acl-code/ephemeral-permission/pinocchio/create.mdx";
+import UpdateEphemeralPermissionPinocchio from "/cn/snippets/acl-code/ephemeral-permission/pinocchio/update.mdx";
+import CloseEphemeralPermissionPinocchio from "/cn/snippets/acl-code/ephemeral-permission/pinocchio/close.mdx";
+
+import CreateEphemeralPermissionKit from "/cn/snippets/acl-code/ephemeral-permission/kit/create.mdx";
+import UpdateEphemeralPermissionKit from "/cn/snippets/acl-code/ephemeral-permission/kit/update.mdx";
+import CloseEphemeralPermissionKit from "/cn/snippets/acl-code/ephemeral-permission/kit/close.mdx";
+
+import CreateEphemeralPermissionWeb3js from "/cn/snippets/acl-code/ephemeral-permission/web3js/create.mdx";
+import UpdateEphemeralPermissionWeb3js from "/cn/snippets/acl-code/ephemeral-permission/web3js/update.mdx";
+import CloseEphemeralPermissionWeb3js from "/cn/snippets/acl-code/ephemeral-permission/web3js/close.mdx";
+
+import MemberFlagsRust from "/cn/snippets/acl-code/member/rust.mdx";
+import MemberFlagsWeb3js from "/cn/snippets/acl-code/member/web3js.mdx";
+import MemberFlagsKit from "/cn/snippets/acl-code/member/kit.mdx";
+import MemberFlagsPinocchio from "/cn/snippets/acl-code/member/pinocchio.mdx";
+
+import PerCards from "/cn/snippets/per-cards.mdx";
+import AclCards from "/cn/snippets/acl-cards.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+
+---
+
+<AclCards />
+
+---
+
+## 概述
+
+Private Ephemeral Rollups 是 [Ephemeral Rollups](/cn/pages/ephemeral-rollups-ers/introduction/why) 的一种形式，它在以[合规](/cn/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)为核心的 [Trusted Execution Environment](/cn/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) 中，为受权限控制的账户提供细粒度权限管理。每个权限账户都会维护一份成员列表，并通过特定标志来决定这些成员可以执行哪些操作。
+
+### 核心概念
+
+- **Permission Account**：用于存储特定账户访问控制规则的 PDA
+- **Members**：通过标志授予特定权限的地址
+- **Flags**：用于定义成员可执行操作的位掩码（authority、查看日志、查看余额等）
+- **Public Permissions**：当成员被设置为 `None` 时，受权限控制的账户会暂时变为可见
+
+---
+
+## 成员标志
+
+成员标志为每位成员定义细粒度权限。你可以通过按位 OR 组合多个标志，以授予多个权限。
+
+**标志说明：**
+
+- **AUTHORITY**：允许成员更新和委托权限设置、添加或移除其他成员，以及更新成员标志。
+- **TX_LOGS**：允许成员查看交易执行日志。
+- **TX_BALANCES**：允许成员查看账户余额变更。
+- **TX_MESSAGE**：允许成员查看交易消息数据。
+- **ACCOUNT_SIGNATURES**：允许成员查看账户签名
+
+<Tabs>
+  <Tab title="Rust SDK">
+    <MemberFlagsRust />
+  </Tab>
+  <Tab title="Pinocchio">
+    <MemberFlagsPinocchio />
+  </Tab>
+  <Tab title="Web3.js">
+    <MemberFlagsWeb3js />
+  </Tab>
+  <Tab title="Kit">
+    <MemberFlagsKit />
+  </Tab>
+</Tabs>
+---
+
+## Ephemeral Permission
+
+<Note>
+  `EphemeralPermission` 账户完全运行在 Ephemeral Rollup 上，由已委托的 PDA
+  承担租金——无需在 Base Layer 上创建、委托或 commit-and-undelegate
+  任何权限账户。三个 CPI 操作即可覆盖完整生命周期：**Create**、**Update**、**Close**，
+  全部由 ER 上的数据账户作为 PDA 签名，通过 MagicBlock 的 Permission Program
+  `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 调用。
+</Note>
+
+**前置条件 —— 委托数据 PDA。** 只有数据账户会被委托给 TEE 验证器（在 Base
+Layer 上，通过 MagicBlock 的 Delegation Program
+`DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`）。委托完成后，PDA 会使用其程序种子
+在 ER 上签署全部三个权限操作，并支付 ephemeral permission 的租金——因此必须在
+`initialize` 时预先充值。完整流程请参阅
+[快速开始](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart#2-委托并创建-permission)。
+
+<Validators />
+
+<Steps>
+  <Step title={<a href="#1-创建-ephemeral-permission">创建 Ephemeral Permission</a>}>
+    在 ER 上初始化一个带有初始成员和隐私标志的 `EphemeralPermission` 账户。
+    幂等——如果已存在则跳过。
+  </Step>
+  <Step title={<a href="#2-更新-ephemeral-permission">更新 Ephemeral Permission</a>}>
+    切换隐私标志，或添加 / 移除 / 更新成员。更新会立即在 ER 上生效。
+  </Step>
+  <Step title={<a href="#3-关闭-ephemeral-permission">关闭 Ephemeral Permission</a>}>
+    当不再需要权限时，关闭 ER 上的 `EphemeralPermission` 账户，
+    并将租金退还给数据 PDA。
+  </Step>
+</Steps>
+
+---
+
+## Ephemeral Permission 操作
+
+<Tabs>
+  <Tab title="1. 创建 Ephemeral Permission">
+    通过 `CreateEphemeralPermissionCpi` 在 ER 上初始化一个新的 `EphemeralPermission`
+    账户。Payer = 已委托的数据 PDA，它使用其程序种子签名，并使用 `initialize`
+    时预先充值的 lamports 来支付租金。
+
+    <Tabs>
+      <Tab title="Anchor">
+        <CreateEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <CreateEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CreateEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CreateEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreateEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **使用场景：**
+
+    - 为 ER 上新委托的 PDA 启动访问控制
+    - 以公开模式启动（`is_private: false`、成员为空），后续通过 Update 收紧
+
+    [⬆️ 返回顶部](#ephemeral-permission)
+
+  </Tab>
+
+  <Tab title="2. 更新 Ephemeral Permission">
+    通过 `UpdateEphemeralPermissionCpi` 切换隐私标志并重写成员列表。每次调用都
+    重新构建完整成员列表（包含 authority），以确保数据 PDA 永远不会把自己锁在外面。
+
+    <Tabs>
+      <Tab title="Anchor">
+        <UpdateEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <UpdateEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdateEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <UpdateEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdateEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **使用场景：**
+
+    - 按需切换 `is_private`（如：私密游玩 / 公开揭示）
+    - 添加新的查看者，并设置 `TX_LOGS | TX_MESSAGE | TX_BALANCES` 标志
+    - 通过在下一次调用的成员列表中省略某个成员来撤销其权限
+
+    [⬆️ 返回顶部](#ephemeral-permission)
+
+  </Tab>
+
+  <Tab title="3. 关闭 Ephemeral Permission">
+    通过 `CloseEphemeralPermissionCpi` 关闭 ER 上的 `EphemeralPermission` 账户。
+    租金会退还给数据 PDA（原始 payer）。可选——仅在不再需要权限时调用。
+
+    <Tabs>
+      <Tab title="Anchor">
+        <CloseEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <CloseEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CloseEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CloseEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CloseEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **使用场景：**
+
+    - 在取消委托数据 PDA 之前回收 ephemeral 租金
+    - 私密执行结束后拆除访问控制
+
+    [⬆️ 返回顶部](#ephemeral-permission)
+
+  </Tab>
+</Tabs>
+
+<Tip>
+  参考实现：
+  [`private-counter/anchor`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter/anchor)
+  （Anchor）和
+  [`private-counter/pinocchio`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter/pinocchio)。
+</Tip>
+
+---
+
+## 最佳实践
+
+1. **Authority 管理**：始终至少为一位可信成员分配 `AUTHORITY_FLAG`
+2. **最小权限原则**：仅向每位成员授予必要的标志
+3. **实时更新**：权限可以在不取消委托的情况下于 Private Ephemeral Rollup 上实时更新，从而实现动态访问控制调整
+4. **清理**：取消委托并关闭未使用的权限账户，以释放 SOL
+
+---
+
+## 安全注意事项
+
+- **签名者验证**：只有拥有 `AUTHORITY_FLAG` 的成员或带有受权限控制账户的程序才能授权变更
+- **公开账户**：将成员设置为 `None` 会使账户对外公开可见
+- **默认 Authority**：默认情况下，受权限控制账户的所有者会被添加为权限账户成员中的 permission authority
+- **空成员列表**：如果 `members` 字段被设置为空列表，则受权限控制账户将完全受限且保持私密。只有该账户所有者才能修改权限
+- **访问审计**：使用成员标志来审计和控制访问
+
+---
+
+<PerCards />

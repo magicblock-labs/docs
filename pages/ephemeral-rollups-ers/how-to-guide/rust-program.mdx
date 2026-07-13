@@ -4,7 +4,7 @@ description: "Learn how to write a simple Rust program that delegates and increm
 ---
 
 import Endpoints from "/snippets/endpoints.mdx";
-import Validators from "/snippets/validators.mdx";
+import Validators from "/snippets/notes/validators.mdx";
 import SoftwareRust from "/snippets/software-rust.mdx";
 import SolanaResources from "/snippets/solana-resources.mdx";
 
@@ -14,6 +14,12 @@ import UndelegateCode from "/snippets/rust-counter-code/undelegate.mdx";
 import InstructionsCode from "/snippets/rust-counter-code/instructions.mdx";
 import ResizeCode from "/snippets/rust-counter-code/resize.mdx";
 import OncurveDelegation from "/snippets/oncurve-delegation.mdx";
+import DelegateWithActionsCode from "/snippets/rust-counter-code/delegate-with-actions.mdx";
+import MagicRouterSDK from "/snippets/magic-router-sdk.mdx";
+import MagicActionCode from "/snippets/rust-counter-code/magic-action.mdx";
+import LamportsTopupCode from "/snippets/lamports-topup-code.mdx";
+
+import UndelegationCallbackNote from "/snippets/notes/undelegation-callback-note.mdx";
 
 import QuickAccesERRust from "/snippets/quick-access-er-rust.mdx";
 
@@ -100,6 +106,9 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
     2. `CommitAndUndelegate`: Schedules sync of counter from ER to Base Layer, and undelegates counter on ER (called on ER)
     3. `Commit`: Schedules sync of counter from ER to Base Layer (called on ER)
     4. `Undelegate`: Undelegates counter on the Base Layer (called on Base Layer through validator CPI)
+    5. `IncrementAndCommit`: Increments and commits in a single ER transaction (called on ER)
+    6. `IncrementAndUndelegate`: Increments, commits, and undelegates in a single ER transaction (called on ER)
+    <UndelegationCallbackNote />
 
     Here's the core structure of our program:
 
@@ -138,7 +147,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
     <Tab title="3. Commit">
     ### Committing while the PDA is delegated
 
-    The ephemeral runtime allow to commit the state of the PDA while it is delegated. This is done by calling the `commit_accounts` function.
+    The ephemeral runtime allows committing the state of the PDA while it is delegated. This is done by building a `MagicIntentBundleBuilder` with the `commit` intent.
 
     <CardGroup cols={2}>
       <Card
@@ -166,9 +175,9 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
   <Tab title="4. Undelegate">
     ### Undelegating the PDA
 
-    Undelegating the PDA is done by calling the `commit_and_undelegate_accounts` as part of some instruction.
-    Undelegation commit the latest state and give back the ownership of the PDA to the owner program. After undelegating and finalizing the state, the validator will create a callback CPI into "undelegate" on the Base Layer.
-
+    Undelegating the PDA is done by building a `MagicIntentBundleBuilder` with the `commit_and_undelegate` intent as part of some instruction.
+    This commits the latest state and returns ownership of the PDA to the owner program. After undelegating and finalizing the state, the validator will create a callback CPI into `undelegate` on the base layer.
+    <UndelegationCallbackNote />
     <CardGroup cols={2}>
       <Card
         title="Transaction (ER): Undelegate"
@@ -211,9 +220,70 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>
+  <Tab title="Magic Router">
+
+    <MagicRouterSDK />
+
+    [Learn more about Magic Router](/pages/ephemeral-rollups-ers/introduction/magic-router)
+
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Magic Action">
+
+    Attach one or more instructions that run automatically on the Solana base
+    layer immediately after an ER commit, scheduled with `MagicIntentBundleBuilder`.
+    [Learn more about Magic Action](/pages/ephemeral-rollups-ers/magic-actions/overview)
+
+    <MagicActionCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Top-up delegated account">
+    Top up a delegated account's lamports on the ER side. The transaction is submitted on the **base layer** and uses the Ephemeral SPL Token program to shuttle lamports to the destination's delegated balance via a single-use lamports PDA.
+
+    Common use case: keeping a delegated fee payer funded so it can keep paying its own commits past the default 10-commit sponsorship cap.
+
+    Notes:
+    - Generate a fresh 32-byte salt per top-up via `crypto.getRandomValues` — re-using a salt collides with an existing PDA.
+    - Submit to the base-layer RPC, not the ER.
+    - The destination must already be delegated.
+
+    <LamportsTopupCode />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
   <Tab title="On-Curve Delegation">
 
     <OncurveDelegation />
+    [⬆️ Back to Top](#advanced-code-snippets)
+
+  </Tab>
+  <Tab title="Delegation Actions">
+      ### Quick Access
+
+      <CardGroup cols={2}>
+        <Card
+          title="Delegation Actions Example"
+          icon="code"
+          href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/delegation-actions/anchor"
+          iconType="duotone"
+        >
+          Explore reference implementation on GitHub
+        </Card>
+      </CardGroup>
+
+    Attach instructions to a delegation that the ER validator runs automatically
+    inside the rollup, right after the account is delegated — no extra transaction:
+    - Build the action(s) as standard `Instruction`s and convert them to the
+      compact payload with `.cleartext()` (public) — encrypted actions are built
+      off-chain by a client holding the validator key.
+    - The base-layer delegation program stores the payload in the delegation
+      record; the ER validator executes it once the account lands in the rollup.
+    - CPI with `delegate_account_with_actions` (same `DelegateAccounts` /
+      `DelegateConfig` as a normal delegation, plus the actions payload).
+
+    <DelegateWithActionsCode />
     [⬆️ Back to Top](#advanced-code-snippets)
 
   </Tab>

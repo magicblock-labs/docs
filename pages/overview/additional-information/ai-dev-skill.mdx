@@ -1,0 +1,141 @@
+---
+title: AI Dev Skill
+description: MagicBlock Ephemeral Rollups development skill for AI coding agents, with MagicBlock-specific patterns for delegation, Magic Actions, cranks, VRF, lamports top-up, commit sponsorship, private payments with swaps, and dual-connection architecture.
+---
+
+<CardGroup cols={1}>
+  <Card
+    title="MagicBlock Dev Skill Repository"
+    icon="browser"
+    href="https://github.com/magicblock-labs/magicblock-dev-skill"
+    iconType="duotone"
+  >
+    View the repository, installation steps, and source files for the skill.
+  </Card>
+</CardGroup>
+
+## Quick install
+
+```bash
+npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
+```
+
+## What It Is
+
+The MagicBlock Dev Skill is an AI development skill that packages MagicBlock-specific patterns into a reusable workflow that activates when you ask for MagicBlock or Ephemeral Rollups help. Instead of re-explaining the same integration details in every prompt, the skill gives your coding agent structured guidance for building on MagicBlock.
+
+It is designed for teams working on:
+
+- MagicBlock Ephemeral Rollups integration
+- Delegating and undelegating Solana accounts
+- Dual-connection Solana + MagicBlock architectures
+- High-performance, low-latency transaction flows
+- Cranks for recurring automated transactions
+- VRF for provable randomness
+- Magic Actions — base-layer instructions chained atomically to an ER commit
+- Topping up a delegated account's lamports via `lamportsDelegatedTransferIx`
+- Commit sponsorship and lifting the default 10-commit cap with `magic_fee_vault`
+- Private payments — deposits, transfers, withdrawals, and swaps via the Payments API, including the challenge/login bearer-token flow for private reads
+- Gaming and real-time app development on Solana
+- Anchor and TypeScript-based integrations
+
+## Installation
+
+### Quick install
+
+```bash
+npx add-skill https://github.com/magicblock-labs/magicblock-dev-skill
+```
+
+### Manual install
+
+```bash
+git clone https://github.com/magicblock-labs/magicblock-dev-skill
+cd magicblock-dev-skill
+./install.sh
+```
+
+By default, `./install.sh` installs the skill to both personal skill directories:
+
+- `~/.claude/skills/magicblock`
+- `${CODEX_HOME:-~/.codex}/skills/magicblock`
+
+### Targeting specific agents
+
+Global / per-user targets:
+
+```bash
+./install.sh --claude
+./install.sh --codex
+```
+
+Project-scoped targets (always install into the current directory):
+
+```bash
+./install.sh --cursor       # .cursor/rules/magicblock.mdc
+./install.sh --windsurf     # .windsurf/rules/magicblock.md
+./install.sh --cline        # .clinerules/magicblock.md
+./install.sh --continue     # .continue/rules/magicblock.md
+./install.sh --agents-md    # ./AGENTS.md
+```
+
+Combined:
+
+```bash
+./install.sh --all          # everything for the current project
+./install.sh --project      # Claude + Codex into .claude/.codex inside the project
+./install.sh --path /custom/path/magicblock
+```
+
+The single-file targets for Cursor, Windsurf, Cline, Continue, and `AGENTS.md` are generated from `dist/` artifacts. `install.sh` runs `./build.sh` automatically if `dist/` is missing.
+
+### Building dist artifacts manually
+
+```bash
+./build.sh
+```
+
+Produces:
+
+- `dist/AGENTS.md` - full flattened skill (`SKILL.md` plus all references)
+- `dist/system-prompt.md` - trimmed `SKILL.md` plus reference URLs for chat-only platforms
+- `dist/magicblock.cursor.mdc` - Cursor-formatted rule with `.mdc` frontmatter
+- `dist/magicblock.zip` - zipped `skill/` folder for Claude.ai upload
+
+## Usage
+
+The skill activates automatically when you ask about MagicBlock or Ephemeral Rollups.
+
+- In Claude Code, you can also invoke it directly with `/magicblock`.
+- In Codex, mention it explicitly by name, for example: `use the magicblock skill`.
+- In Cursor / Windsurf / Cline / Continue, the rule's description triggers contextually when you mention MagicBlock topics.
+- For chat-only platforms, load `dist/system-prompt.md` once as the system prompt, custom instructions, or project context.
+
+Examples:
+
+```text
+Add delegation hooks to my player account
+Change my roll_dice function to use VRF
+Set up a crank that updates game state every 100ms
+Add a Magic Action that updates my onchain leaderboard after every commit
+Top up my delegated fee payer with lamports
+Build a private USDC transfer flow using the Payments API
+Help me integrate MagicBlock into my Anchor program
+```
+
+## What the Skill Adds
+
+The skill goes beyond a simple prompt template. Its main entrypoint and supporting references guide the agent toward MagicBlock-specific implementation details such as:
+
+- When to use the base layer connection vs. the ephemeral rollup connection
+- How to structure delegation, commit, and undelegation flows correctly with `MagicIntentBundleBuilder` (SDK 0.11+)
+- Common Anchor patterns for `#[ephemeral]`, `#[delegate]`, and `#[commit]`
+- Magic Actions: scheduling base-layer instructions inside an ER transaction via `MagicIntentBundleBuilder.add_post_commit_actions(...)` so they execute atomically once the commit is sealed back
+- Topping up delegated accounts with `lamportsDelegatedTransferIx` (single-use lamports PDA, submitted on base layer, credited on the ER)
+- Lifting the default 10-commit sponsorship cap by attaching a `magic_fee_vault` PDA and delegated fee payer to the intent bundle
+- Private Ephemeral Rollups (PER) patterns — delegating the permission account alongside the permissioned account so member updates execute on the ER
+- Private Payments API workflows including the challenge → login → bearer-token flow for reading private balances and the public/private swap modes
+- VRF and crank setup for real-time apps and games
+- Environment variables, versions, and dependencies for MagicBlock development
+
+For the full skill, source files, and installation instructions, visit the [MagicBlock Dev Skill repository](https://github.com/magicblock-labs/magicblock-dev-skill).

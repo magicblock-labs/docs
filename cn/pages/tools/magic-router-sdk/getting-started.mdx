@@ -1,0 +1,247 @@
+---
+title: 快速开始
+description: 开始配置 Magic Router SDK
+---
+
+## 安装
+
+使用你偏好的包管理器安装 Magic Router SDK：
+
+<CodeGroup>
+
+```bash npm
+npm install magic-router-sdk
+```
+
+```bash yarn
+yarn add magic-router-sdk
+```
+
+```bash pnpm
+pnpm add magic-router-sdk
+```
+
+</CodeGroup>
+
+## 基础设置
+
+导入你需要的 SDK 函数：
+
+```typescript
+import { 
+  prepareMagicTransaction, 
+  sendMagicTransaction,
+  getClosestValidator,
+  getWritableAccounts
+} from 'magic-router-sdk';
+import { Connection, Transaction } from '@solana/web3.js';
+```
+
+连接到 Magic Router 端点：
+
+```typescript
+const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+```
+
+## 理解基础原理
+
+在开始查看使用示例之前，先理解 Magic Router SDK 背后的核心概念非常重要。这些概念解释了某些方法为何存在，以及它们如何优化你的交易流程。
+
+<Card
+  title="核心概念"
+  icon="lightbulb"
+  href="/cn/pages/tools/magic-router-sdk/core-concepts"
+  iconType="duotone"
+>
+  了解 Magic Router 生态中的账户委托、blockhash 管理和验证器选择。
+</Card>
+
+## 基础使用示例
+
+### 准备交易（浏览器钱包）
+
+当你使用由浏览器钱包负责签名的场景时，请使用 `prepareMagicTransaction`：
+
+```typescript
+import { prepareMagicTransaction } from 'magic-router-sdk';
+
+// 像往常一样构建交易
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userPublicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// 为交易准备正确的 blockhash
+const preparedTransaction = await prepareMagicTransaction(
+  connection, 
+  transaction
+);
+
+// 使用钱包签名（例如 Phantom、Solflare）
+const signedTransaction = await wallet.signTransaction(preparedTransaction);
+
+// 发送已签名交易
+const signature = await connection.sendRawTransaction(
+  signedTransaction.serialize()
+);
+```
+
+### 发送交易（本地签名者）
+
+当你拥有本地签名者或 session keys 时，请使用 `sendMagicTransaction`：
+
+```typescript
+import { sendMagicTransaction } from 'magic-router-sdk';
+
+// 构建交易
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userKeypair.publicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// 自动准备并签名后发送交易
+const signature = await sendMagicTransaction(
+  connection,
+  transaction,
+  [userKeypair] // 签名者数组
+);
+
+console.log("Transaction signature:", signature);
+```
+
+### 验证器发现
+
+为你的连接找到最优验证器：
+
+```typescript
+import { getClosestValidator } from 'magic-router-sdk';
+
+const closestValidatorPubkey = await getClosestValidator(connection);
+console.log("Closest validator:", closestValidatorPubkey.toBase58());
+```
+
+#### 将账户委托给验证器
+
+拿到最近的验证器后，你可以委托账户，从而启用 Ephemeral Rollup 执行：
+
+```typescript
+import { sendMagicTransaction, getClosestValidator } from 'magic-router-sdk';
+
+async function delegateAccountToValidator(program, userKeypair, connection) {
+  // 获取最近的验证器以获得最佳性能
+  const validatorKey = await getClosestValidator(connection);
+  
+  // 创建委托交易
+  const delegationTx = await program.methods
+    .delegate({
+      commitFrequencyMs: 30000, // 每 30 秒提交一次
+      validator: validatorKey,
+    })
+    .accounts({
+      payer: userKeypair.publicKey,
+    })
+    .transaction();
+
+  // 发送委托交易
+  const signature = await sendMagicTransaction(
+    connection,
+    delegationTx,
+    [userKeypair]
+  );
+
+  console.log("✅ Account delegated to validator:", validatorKey.toBase58());
+  console.log("Delegation signature:", signature);
+  
+  return signature;
+}
+
+// 使用示例
+await delegateAccountToValidator(myProgram, userKeypair, connection);
+```
+
+完成委托后，涉及这些已委托账户的交易会自动路由到 Ephemeral Rollup，以获得更快的执行速度。
+
+## 完整示例
+
+下面是一个整合全部概念的完整示例：
+
+```typescript
+import { 
+  Connection, 
+  Keypair, 
+  Transaction,
+  TransactionInstruction,
+  PublicKey 
+} from '@solana/web3.js';
+import { 
+  sendMagicTransaction,
+  getWritableAccounts,
+  getClosestValidator 
+} from 'magic-router-sdk';
+
+async function executeGameMove() {
+  // 连接到 Magic Router
+  const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+  
+  // 获取最优验证器
+  const validator = await getClosestValidator(connection);
+  console.log(`Using validator: ${validator.toBase58()}`);
+  
+  // 构建游戏交易
+  const transaction = await gameProgram.methods
+    .makeMove({ x: 3, y: 4 })
+    .accounts({
+      gameState: gameStatePda,
+      player: playerKeypair.publicKey,
+    })
+    .transaction();
+  
+  // 分析将被修改的账户
+  const writableAccounts = getWritableAccounts(transaction);
+  console.log("Modifying accounts:", writableAccounts);
+  
+  // 自动路由并执行交易
+  const signature = await sendMagicTransaction(
+    connection,
+    transaction,
+    [playerKeypair]
+  );
+  
+  console.log("Move executed:", signature);
+}
+```
+
+## 下一步
+
+<CardGroup cols={3}>
+  <Card
+    title="核心概念"
+    icon="lightbulb"
+    href="/cn/pages/tools/magic-router-sdk/core-concepts"
+    iconType="duotone"
+  >
+    深入了解 Magic Router SDK 背后的基础概念。
+  </Card>
+  <Card
+    title="Magic Router 概览"
+    icon="route"
+    href="/cn/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    进一步了解账户委托以及 Magic Router 的工作方式。
+  </Card>
+  <Card
+    title="Session Keys"
+    icon="key"
+    href="/cn/pages/tools/session-keys/introduction"
+    iconType="duotone"
+  >
+    探索用于免 gas 游戏体验的 Session Keys。
+  </Card>
+</CardGroup>

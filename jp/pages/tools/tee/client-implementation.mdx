@@ -1,0 +1,86 @@
+### クライアント実装
+
+フロントエンドは、Private Ephemeral Rollup（PER）とやり取りする際に、リモートアテステーション、クライアントチャレンジ、アクセストークンという 3 つの概念を使います。
+
+- **アテステーション**: チャレンジを送信し、返された TDX Quote を検証して、RPC が安全なハードウェア上で動作していることを確認します。
+- **クライアントチャレンジ**: 公開鍵の所有権を証明し、権限制御された状態にアクセスするための認可トークンを取得します。
+- **アクセス**: 接続を作成する際にトークンをクエリパラメータとして渡し、状態を取得します。
+
+### アテステーション
+
+フロントエンドは Intel TDX Quote を検証し、ER サーバーが本物の安全なハードウェア上で動作していることを証明します。これは `verifyTeeRpcIntegrity` を使って実行します。
+
+- ランダムな 32 バイトのチャレンジを生成し、base64 にエンコードする
+- そのチャレンジを TEE RPC サーバーへ送り、TDX Quote を受け取る
+- Quote に対応する collateral（証明書類）を PCCS 経由で取得する
+- DCAP QVL WASM モジュールを使い、collateral と現在時刻に基づいて Quote を検証する
+
+```ts
+import { verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const isIntegrityVerified = await verifyTeeRpcIntegrity(PRIVATE_ER_URL);
+```
+
+### クライアントチャレンジの流れ
+
+- ウォレットの公開鍵を指定して RPC にチャレンジを要求する
+- 受け取ったチャレンジを対応する鍵ペアで署名する
+- 署名済みチャレンジを送信し、成功したら認可トークンを受け取る
+
+```ts
+import { getAuthToken } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const { publicKey, signMessage } = useWallet();
+const token = await getAuthToken(PRIVATE_ER_URL, publicKey, signMessage);
+```
+
+### アクセス
+
+接続を作成する際に、認可トークンをクエリパラメータとして渡します。
+
+```ts
+function useEphemeralConnection() {
+  const { authToken } = usePrivateRollupAuth();
+  const ephemeralConnection = useMemo(() => {
+    if (authToken) {
+      return new Connection(
+        `${EPHEMERAL_RPC_URL}?token=${authToken}`,
+        "confirmed"
+      );
+    }
+    return null;
+  }, [authToken]);
+
+  return { ephemeralConnection };
+}
+```
+
+import PerEndpoint from "/jp/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+<CardGroup cols={2}>
+  <Card
+    title="認可"
+    icon="key"
+    href="/jp/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    Permission Group とアクセス
+  </Card>
+  <Card
+    title="プログラム実装"
+    icon="code"
+    href="/jp/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    CPI で権限を追加する
+  </Card>
+  <Card
+    title="プライバシーのユースケース"
+    icon="shield-check"
+    href="/jp/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    プライベートで検証可能なアプリケーションを構築する
+  </Card>
+</CardGroup>

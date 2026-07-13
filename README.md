@@ -1,12 +1,17 @@
-# Mintlify Starter Kit
+# MagicBlock Labs Documentation
 
-Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
+This repository contains the official documentation for **MagicBlock Labs** products, APIs, and developer guides.  
+The docs are built using [Mintlify](https://mintlify.com), enabling a clean and interactive developer experience.
 
-- Guide pages
-- Navigation
-- Customizations
-- API Reference pages
-- Use of popular components
+### 📖 Contents
+- Guides and tutorials for using MagicBlock Labs tools
+- API reference
+- Navigation and customization examples
+- Best practices and integration tips
+
+You can view the live documentation here: **[https://docs.magicblocklabs.com](https://docs.magicblocklabs.com)**
+
+---
 
 ### 👩‍💻 Development
 

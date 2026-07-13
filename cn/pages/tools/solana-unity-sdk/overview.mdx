@@ -1,0 +1,61 @@
+---
+title: "介绍"
+description: "开源 Unity-Solana SDK，支持 NFT 与完整 RPC 覆盖。"
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="安装"
+    icon="location-arrow"
+    href="/cn/pages/tools/solana-unity-sdk/getting-started/installation"
+    iconType="duotone"
+  >
+    按步骤完成系统配置并安装
+    Solana.Unity-SDK。
+  </Card>
+  <Card
+    title="钱包配置"
+    icon="wallet"
+    href="/cn/pages/tools/solana-unity-sdk/getting-started/configuration"
+    iconType="duotone"
+  >
+    了解如何配置你的游戏钱包。
+  </Card>
+  <Card
+    title="核心概念"
+    icon="hexagon-check"
+    href="/cn/pages/tools/solana-unity-sdk/core-concepts/associated-token-account"
+    iconType="duotone"
+  >
+    Solana.Unity-SDK 的核心概念。
+  </Card>
+  <Card
+    title="指南"
+    icon="books"
+    href="/cn/pages/tools/solana-unity-sdk/guides/mint-an-nft"
+    iconType="duotone"
+  >
+    帮助你快速上手的指南。
+  </Card>
+</CardGroup>
+
+## Solana.Unity-SDK
+
+Solana.Unity SDK 是一套完整的开源工具，可让你在基于 Unity 的游戏中轻松接入 Solana。你可以通过 Unity Package Manager 或 Unity Asset Store 安装该 SDK，并在可选方案中配置你偏好的钱包。Solana.Unity-SDK 基于 [Solana.Unity-Core](https://github.com/garbles-labs/Solana.Unity-Core) 实现，原生支持 .NET Standard 2.0（兼容 Unity），并提供完整 RPC API 覆盖、MPL、原生 DEX 操作等能力。
+
+## 功能特性
+
+- 完整的 JSON RPC API 覆盖
+- 钱包与账户：在 Unity 中设置非托管 Solana 钱包（兼容 sollet 和 solana-keygen）
+- 支持 Phantom 和 Web3auth（通过社交账号完成非托管注册/登录）
+- 支持从 base64 和 wire format 解码交易，并重新编码为 wire format
+- 支持从 base64 和 wire format 解码消息，并重新编码为 wire format
+- 指令反编译
+- 提供 TokenWallet 对象，用于发送和接收 SPL token，并支持按需创建 Associated Token Accounts
+- 基础 UI 示例
+- NFTs
+- 将游戏编译为 xNFT（Backpack）
+- 原生 DEX 操作（Orca，Jupiter 即将支持……）
+- 使用 WebSocket 注册/触发自定义事件（账户变更、签名状态、程序等）
+- 支持 Solana Mobile Stack
+- Solana Wallet Adapter

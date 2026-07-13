@@ -1,0 +1,150 @@
+---
+title: "クイックスタート"
+description: "MagicBlock の ER と Intel TDX 上の Trusted Execution Environment を通じて、任意の Solana プログラムのステートアカウントにプライバシーを付与します。"
+---
+
+import Endpoints from "/jp/snippets/endpoints.mdx";
+import Validators from "/jp/snippets/notes/validators.mdx";
+import Construction from "/jp/snippets/construction.mdx";
+import Software from "/jp/snippets/software.mdx";
+import SolanaResources from "/jp/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/jp/snippets/per-counter-code/write-program.mdx";
+import DelegateCode from "/jp/snippets/per-counter-code/delegate.mdx";
+import AuthorizeCode from "/jp/snippets/per-counter-code/authorize.mdx";
+import DelegationInfo from "/jp/snippets/delegation-info.mdx";
+
+import AIDevSkillCallout from "/jp/snippets/ai-dev-skill-callout.mdx";
+import QuickAccessPER from "/jp/snippets/quick-access-per.mdx";
+import PerCards from "/jp/snippets/per-cards.mdx";
+
+---
+
+<AIDevSkillCallout />
+
+<QuickAccessPER />
+<Note>
+  MagicBlock の Private Ephemeral Rollup は、入口の段階で、トランザクションが受け付けられたり実行されたりする前に、
+  ノードレベルでの IP ジオフェンシング、OFAC 制裁リスト、制限対象の管轄区域に基づくコンプライアンス制御を実施します。[詳細はこちら](/jp/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)
+</Note>
+
+---
+
+## ステップ・バイ・ステップ ガイド
+
+プログラムを構築し、ステートを TEE バリデーターへ委任し、MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` と Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` を経由して ER 上に直接 `EphemeralPermission` アカウントを作成します：
+
+<Steps>
+  <Step title={<a href="#1-write-program">プログラムを書く</a>}>
+    通常通り Solana プログラムを書きます。
+  </Step>
+  <Step
+    title={
+      <a href="#2-委任と-permission-の作成">
+        委任と permission の作成
+      </a>
+    }
+  >
+    `delegate` は Base Layer 上で counter を TEE バリデーターへ委任します。続けて
+    `init_permission` が ER 上で実行され、委任済みの PDA が PDA として署名し、
+    自身の ephemeral permission レントを支払います（`initialize` 時に事前にチャージ済み）。
+    `set_privacy` で必要に応じて公開 / 非公開フラグを切り替えます。Base Layer に
+    permission アカウントを作成・委任・commit-and-undelegate する必要はありません。
+    [アクセス制御の詳細を見る](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-deploy">Solana にプログラムをデプロイする</a>}>
+    Anchor CLI を使って Solana プログラムをデプロイします。
+  </Step>
+  <Step
+    title={<a href="#4-authorize">クライアントに認可の仕組みを実装する</a>}
+  >
+    ユーザーにメッセージを署名してもらい、TEE エンドポイントから認可トークンを取得します。
+  </Step>
+  <Step title={<a href="#5-test">トランザクションを実行してプライバシーを検証する</a>}>
+    認可トークンをリクエストし、機密トランザクションを送信します。
+  </Step>
+</Steps>
+
+---
+
+## Private Counter サンプル
+
+<Software />
+<Note>
+  以下に示す EphemeralPermission フローは `ephemeral-rollups-sdk` v0.14+ が必要です
+  （`CreateEphemeralPermissionCpi` / `UpdateEphemeralPermissionCpi` /
+  `CloseEphemeralPermissionCpi` が導入されました）。古い SDK や Anchor バージョンの場合は
+  [legacy examples](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/00-LEGACY_EXAMPLES)
+  を参照してください。
+</Note>
+
+### コードスニペット
+
+<Tabs>
+    <Tab title="1. プログラムを書く">
+        `initialize` と `increment` 命令を持つシンプルな counter プログラムです。形は public な counter とまったく同じで、プライバシー機能は次のステップで追加します：
+        <WriteProgramCode />
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title="2. 委任と permission の作成">
+        プライバシーのライフサイクル全体は 2 つのレイヤーに分かれます。**Base Layer**
+        では counter を TEE バリデーターに委任し、その後 **ER** 上で、委任済みの PDA
+        自身が署名して専用の `EphemeralPermission` アカウントを作成 / 更新 / 閉じます。
+
+        - `initialize` は ephemeral permission のレントを counter PDA に事前にチャージするので、ステップ 3 以降で別途 lamports を補充する必要はありません。
+        - `delegate` は counter のみを TEE バリデーターへ委任します。
+        - `init_permission` は ER 上で実行されます — 委任済みの PDA がプログラムシードを用いて [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) を発行し、レントを支払います。べき等です。
+        - `set_privacy(is_private)` は ER 上で [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) を介してプライバシーを切り替えます。非公開時は counter の `authority` のみがメンバーリストに含まれ、`TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` が設定されます — 他のすべてのウォレットは TEE のイングレスでブロックされます。
+        - `close_permission` は permission が不要になったときにレントを PDA に返します（オプション）。
+        - `undelegate` は `MagicIntentBundleBuilder` 経由で counter をコミットし委任解除します。
+
+        ライフサイクル全体および言語別のスニペットは[アクセス制御](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)を参照してください。
+        <Validators />
+        <DelegateCode />
+
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title="3. デプロイ">
+        プログラムのアップグレードが完了し、準備が整いました！希望するクラスタ向けにビルドしてデプロイします：
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title="4. 認可">
+        TEE 内の ER RPC との対話を準備します：
+        1. `https://pccs.phala.network/tdx/certification/v4` を使って TEE RPC の完全性を検証します
+        2. ユーザーが TEE エンドポイントとやり取りするための認可トークンをリクエストします
+        <AuthorizeCode />
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+    <Tab title="5. テスト">
+        Private Ephemeral Rollup 接続でプログラムをテストします：
+
+        `https://devnet-tee.magicblock.app?token=${token}`
+
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ トップに戻る](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<PerCards />
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock プロダクト
+
+import ProductCards from "/jp/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

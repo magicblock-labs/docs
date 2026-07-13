@@ -1,0 +1,26 @@
+```typescript
+import {
+  MAGIC_PROGRAM_ID,
+  PERMISSION_PROGRAM_ID,
+  EPHEMERAL_VAULT_ID,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+
+// Toggle the `is_private` flag. Idempotent — the program rebuilds the member
+// list every call so the authority never locks itself out.
+const updateIx = await counterProgram.methods
+  .setPrivacy(isPrivate)
+  .accountsPartial({
+    authority: tempKeypair.publicKey,
+    counter: counterPda,
+    permission: permissionPda,
+    permissionProgram: PERMISSION_PROGRAM_ID,
+    ephemeralVault: EPHEMERAL_VAULT_ID,
+    magicProgram: MAGIC_PROGRAM_ID,
+  })
+  .instruction();
+
+const tx = new Transaction().add(updateIx);
+const sig = await sendAndConfirmTransaction(ephemeralConnection, tx, [tempKeypair]);
+console.log("set_privacy tx:", sig);
+```

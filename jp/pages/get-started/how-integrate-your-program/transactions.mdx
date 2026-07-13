@@ -1,0 +1,100 @@
+---
+title: "トランザクションフロー"
+description: "さまざまなトランザクションが Ephemeral Rollup をどう流れるか"
+---
+
+delegation と undelegation hooks を含めてデプロイすれば、プログラム内の任意の instruction を変更なしで超低レイテンシ実行できます。
+**トランザクションはアカウントの delegation 状態に応じて**、Base Layer（Solana）または Ephemeral Rollup（ER）の validators によって処理されます。
+
+<Columns cols={4}>
+  <Card
+    title="標準プログラム命令"
+    icon="link"
+    href="#standard-program-instruction"
+  ></Card>
+  <Card
+    title="委任トランザクション"
+    icon="link"
+    href="#delegate-transaction"
+  ></Card>
+  <Card
+    title="委任解除トランザクション"
+    icon="link"
+    href="#undelegate-transaction"
+  ></Card>
+  <Card
+    title="コミットトランザクション"
+    icon="link"
+    href="#commit-transaction"
+  ></Card>
+</Columns>
+<div id="standard-program-instruction" />
+### 標準プログラム命令
+
+専用 RPC router 経由でプログラム命令を実行する際には、トランザクションに含まれるアカウント一覧が確認されます。
+
+- 超低レイテンシ: **すべての writable アカウントが委任済み** なら、トランザクションは ER 上で低レイテンシ実行されます。
+  - **新しく委任されたアカウント** の場合、そのアカウントは元の owner を保ったまま Base Layer から ER にクローンされます。
+  - **すでに委任済みかつ Base Layer から ER にクローン済み** の場合、ER 上の既存アカウントが使われます。
+  - **未委任かつ non-writable** の場合、そのアカウントは Base Layer から ER にクローンされます。
+- 通常: **すべての writable アカウントが未委任** の場合、トランザクションは Base Layer で実行されます。
+- エラー: **writable アカウントに委任済みと未委任が混在** している場合、トランザクションは失敗します。
+  <img class="w-full h-auto max-w-5xl" src="/images/interact.png" />
+
+<div id="delegate-transaction" />
+### 委任トランザクション
+
+ER 上で超低レイテンシ取引を実行する前に、状態アカウントはプログラムの delegation hook を通じて委任されている必要があります。Base Layer から ER へ状態アカウントを委任すると、次のことが起こります。
+
+- **Base Layer:** account owner がロックされ、MagicBlock の Delegation Program に設定されます。
+- **ER:** delegation の時点ではまだ ER 上にアカウントは作られず、その後 ER へのトランザクション時に作成されます。
+
+アカウントがすでに委任済みの場合、トランザクションは失敗します。
+
+<img class="w-full h-auto max-w-5xl" src="/images/delegate.png" />
+
+<div id="undelegate-transaction" />
+### 委任解除トランザクション
+
+undelegation hook を通じて、ER から Base Layer にアカウントを commit して undelegate できます。状態アカウントを委任解除すると、次のことが起こります。
+
+- **ER:** アカウントの commit がスケジュールされます。アカウントは undelegate され、owner は元の program から Delegation Program に変わります。
+- **Base Layer:** CPI callback が呼ばれ、ER から取得・finalize した後、元の program を owner として Base Layer に再作成されます。
+
+アカウントがすでに undelegate 済みの場合、トランザクションは失敗します。
+
+<img class="w-full h-auto max-w-5xl" src="/images/undelegate.png" />
+
+<div id="commit-transaction" />
+### コミットトランザクション
+
+commit hook を使えば、delegation を変えずにアカウント状態を commit して、ER から Base Layer に状態を同期することもできます。次のことが起こります。
+
+- **ER:** アカウントの commit がスケジュールされます。
+- **Base Layer:** CPI callback が呼ばれ、ER から取得・finalize した状態で、Delegation Program を owner としたまま Base Layer のアカウントが更新されます。
+
+アカウントがすでに undelegate 済みの場合、トランザクションは失敗します。
+
+<img class="w-full h-auto max-w-5xl" src="/images/commit.png" />
+
+## Native Rust と Anchor での構築方法を学ぶ！
+
+<CardGroup cols={2}>
+<Card
+  title="Anchor"
+  icon="anchor"
+  href="/jp/pages/get-started/how-integrate-your-program/anchor"
+  iconType="duotone"
+>
+  Anchor プログラムと統合する
+</Card>
+<Card
+  title="Native Rust"
+  icon="rust"
+  href="/jp/pages/get-started/how-integrate-your-program/rust"
+  iconType="duotone"
+>
+  Native Rust プログラムと統合する
+</Card>
+
+</CardGroup>

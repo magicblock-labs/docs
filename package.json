@@ -4,13 +4,20 @@
   "private": true,
   "scripts": {
     "dev": "mintlify dev",
-    "build": "mintlify build",
-    "start": "mintlify serve"
+    "build": "mintlify validate",
+    "start": "mintlify dev",
+    "export": "mintlify export",
+    "validate": "mintlify validate",
+    "update": "mintlify update",
+    "localize:prepare": "node scripts/localize-with-openai.mjs --prepare-only",
+    "localize:translate": "node scripts/localize-with-openai.mjs --translate --concurrency=2",
+    "localize:check": "node scripts/check-localization.mjs"
   },
   "dependencies": {
     "recharts": "^3.3.0"
   },
   "devDependencies": {
-    "@mintlify/cli": "^4.0.791"
-  }
+    "@mintlify/cli": "^4.0.1124"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

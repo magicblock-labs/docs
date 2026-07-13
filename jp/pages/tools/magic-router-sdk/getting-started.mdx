@@ -1,0 +1,247 @@
+---
+title: はじめに
+description: Magic Router SDK のセットアップ
+---
+
+## インストール
+
+好みのパッケージマネージャーを使って Magic Router SDK をインストールします。
+
+<CodeGroup>
+
+```bash npm
+npm install magic-router-sdk
+```
+
+```bash yarn
+yarn add magic-router-sdk
+```
+
+```bash pnpm
+pnpm add magic-router-sdk
+```
+
+</CodeGroup>
+
+## 基本セットアップ
+
+必要な SDK 関数をインポートします。
+
+```typescript
+import { 
+  prepareMagicTransaction, 
+  sendMagicTransaction,
+  getClosestValidator,
+  getWritableAccounts
+} from 'magic-router-sdk';
+import { Connection, Transaction } from '@solana/web3.js';
+```
+
+Magic Router エンドポイントに接続します。
+
+```typescript
+const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+```
+
+## 基本概念を理解する
+
+使用例に入る前に、Magic Router SDK の背後にあるコアコンセプトを理解することが重要です。これらの概念は、なぜ特定のメソッドが存在するのか、そしてどのようにトランザクションフローを最適化するのかを説明します。
+
+<Card
+  title="コアコンセプト"
+  icon="lightbulb"
+  href="/jp/pages/tools/magic-router-sdk/core-concepts"
+  iconType="duotone"
+>
+  Magic Router エコシステムにおけるアカウント委任、blockhash 管理、バリデータ選択について学びます。
+</Card>
+
+## 基本的な使用例
+
+### トランザクションの準備（ブラウザウォレット）
+
+署名をブラウザウォレットが処理する場合は `prepareMagicTransaction` を使います。
+
+```typescript
+import { prepareMagicTransaction } from 'magic-router-sdk';
+
+// 通常通りトランザクションを構築
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userPublicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// 正しい blockhash でトランザクションを準備
+const preparedTransaction = await prepareMagicTransaction(
+  connection, 
+  transaction
+);
+
+// ウォレットで署名（例: Phantom、Solflare）
+const signedTransaction = await wallet.signTransaction(preparedTransaction);
+
+// 署名済みトランザクションを送信
+const signature = await connection.sendRawTransaction(
+  signedTransaction.serialize()
+);
+```
+
+### トランザクション送信（ローカル署名者）
+
+ローカル署名者や session keys を使う場合は `sendMagicTransaction` を使います。
+
+```typescript
+import { sendMagicTransaction } from 'magic-router-sdk';
+
+// トランザクションを構築
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userKeypair.publicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// 自動準備と署名付きでトランザクションを送信
+const signature = await sendMagicTransaction(
+  connection,
+  transaction,
+  [userKeypair] // 署名者の配列
+);
+
+console.log("Transaction signature:", signature);
+```
+
+### バリデータ検出
+
+接続に最適なバリデータを見つけます。
+
+```typescript
+import { getClosestValidator } from 'magic-router-sdk';
+
+const closestValidatorPubkey = await getClosestValidator(connection);
+console.log("Closest validator:", closestValidatorPubkey.toBase58());
+```
+
+#### アカウントをバリデータへ委任する
+
+最寄りのバリデータが見つかったら、アカウントを委任して Ephemeral Rollup 実行を有効化できます。
+
+```typescript
+import { sendMagicTransaction, getClosestValidator } from 'magic-router-sdk';
+
+async function delegateAccountToValidator(program, userKeypair, connection) {
+  // 最適な性能のために最寄りのバリデータを取得
+  const validatorKey = await getClosestValidator(connection);
+  
+  // 委任トランザクションを作成
+  const delegationTx = await program.methods
+    .delegate({
+      commitFrequencyMs: 30000, // 30 秒ごとに commit
+      validator: validatorKey,
+    })
+    .accounts({
+      payer: userKeypair.publicKey,
+    })
+    .transaction();
+
+  // 委任トランザクションを送信
+  const signature = await sendMagicTransaction(
+    connection,
+    delegationTx,
+    [userKeypair]
+  );
+
+  console.log("✅ Account delegated to validator:", validatorKey.toBase58());
+  console.log("Delegation signature:", signature);
+  
+  return signature;
+}
+
+// 使用例
+await delegateAccountToValidator(myProgram, userKeypair, connection);
+```
+
+委任後は、これらの委任済みアカウントを含むトランザクションが自動的に Ephemeral Rollup にルーティングされ、より高速に実行されます。
+
+## 完全な例
+
+以下は、すべての概念を組み合わせた完全な例です。
+
+```typescript
+import { 
+  Connection, 
+  Keypair, 
+  Transaction,
+  TransactionInstruction,
+  PublicKey 
+} from '@solana/web3.js';
+import { 
+  sendMagicTransaction,
+  getWritableAccounts,
+  getClosestValidator 
+} from 'magic-router-sdk';
+
+async function executeGameMove() {
+  // Magic Router に接続
+  const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+  
+  // 最適なバリデータを取得
+  const validator = await getClosestValidator(connection);
+  console.log(`Using validator: ${validator.toBase58()}`);
+  
+  // ゲーム用トランザクションを構築
+  const transaction = await gameProgram.methods
+    .makeMove({ x: 3, y: 4 })
+    .accounts({
+      gameState: gameStatePda,
+      player: playerKeypair.publicKey,
+    })
+    .transaction();
+  
+  // 変更対象アカウントを分析
+  const writableAccounts = getWritableAccounts(transaction);
+  console.log("Modifying accounts:", writableAccounts);
+  
+  // 自動ルーティングでトランザクションを実行
+  const signature = await sendMagicTransaction(
+    connection,
+    transaction,
+    [playerKeypair]
+  );
+  
+  console.log("Move executed:", signature);
+}
+```
+
+## 次のステップ
+
+<CardGroup cols={3}>
+  <Card
+    title="コアコンセプト"
+    icon="lightbulb"
+    href="/jp/pages/tools/magic-router-sdk/core-concepts"
+    iconType="duotone"
+  >
+    Magic Router SDK の基礎概念をさらに深掘りします。
+  </Card>
+  <Card
+    title="Magic Router 概要"
+    icon="route"
+    href="/jp/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    アカウント委任と Magic Router の仕組みをさらに学びます。
+  </Card>
+  <Card
+    title="Session Keys"
+    icon="key"
+    href="/jp/pages/tools/session-keys/introduction"
+    iconType="duotone"
+  >
+    ガスレスなゲーム体験のための Session Keys を確認します。
+  </Card>
+</CardGroup>

@@ -1,0 +1,196 @@
+---
+title: 핵심 개념
+description: Magic Router SDK의 핵심 개념 이해하기
+---
+
+## 왜 계정의 Blockhash를 가져와야 하나요?
+
+MagicBlock 아키텍처에서 계정은 두 가지 실행 환경에 존재할 수 있습니다.
+
+- **Solana Mainnet**: 영속적이고 조합 가능한 상태를 위한 기본 레이어
+- **Ephemeral Rollups**: 위임된 계정을 위한 고성능 실행 레이어
+
+각 환경은 자체적인 blockhash 진행 흐름을 가집니다. Magic Router SDK는 `getBlockhashForAccounts` 메서드를 사용해 다음을 수행합니다.
+
+1. **계정 위임 분석**: 트랜잭션의 쓰기 가능 계정이 현재 어디에 위임되어 있는지 확인합니다
+2. **올바른 Blockhash 가져오기**: Ephemeral Rollup 또는 Solana mainnet에서 적절한 blockhash를 가져옵니다
+3. **트랜잭션 유효성 보장**: blockhash 불일치로 인한 트랜잭션 실패를 방지합니다
+
+<Warning>
+계정이 Ephemeral Rollup에 위임된 경우 표준 Solana `getLatestBlockhash()` 호출을 사용하면 레이어마다 blockhash 진행 방식이 다르기 때문에 트랜잭션이 실패할 수 있습니다.
+</Warning>
+
+## 왜 가장 가까운 검증자를 가져오나요?
+
+`getClosestValidator` 함수는 다음 방식으로 트랜잭션 성능을 최적화합니다.
+
+- **지연 시간 감소**: 지리적으로 더 가까운 검증자에 연결해 더 빠른 트랜잭션 확인을 가능하게 합니다
+- **부하 분산**: 네트워크의 사용 가능한 검증자들에 트랜잭션을 분산합니다
+- **네트워크 최적화**: MagicBlock 인프라를 통한 최적의 라우팅을 보장합니다
+
+위임할 때는 특정 검증자에게 위임해야 합니다. 원하는 검증자를 직접 선택할 수도 있지만, `getClosestValidator`를 사용하면 사용자에게 가장 적합한 검증자를 자동으로 선택할 수 있습니다. 아래는 이 흐름을 따르는 컨트랙트와 프런트엔드 예시입니다.
+
+## 전체 위임 예제
+
+### 스마트 컨트랙트 구현
+
+먼저 계정 위임을 처리하는 Rust 컨트랙트를 살펴보겠습니다.
+
+```rust
+use anchor_lang::prelude::*;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct DelegateParams {
+    pub commit_frequency_ms: u32,
+    pub validator: Option<Pubkey>,
+}
+
+#[program]
+pub mod my_game {
+    use super::*;
+    
+    /// Delegate account to an Ephemeral Rollup validator
+    pub fn delegate(ctx: Context<DelegateBalance>, params: DelegateParams) -> Result<()> {
+        let config = DelegateConfig {
+            commit_frequency_ms: params.commit_frequency_ms,
+            validator: params.validator,
+        };
+
+        ctx.accounts.delegate_balance(
+            &ctx.accounts.payer,
+            &[ctx.accounts.payer.key.as_ref()],
+            config,
+        )?;
+        
+        msg!("Account delegated to validator: {:?}", params.validator);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct DelegateBalance<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+### 프런트엔드 구현
+
+이제 Magic Router SDK를 사용해 프런트엔드에서 이를 호출하는 방법을 살펴보겠습니다.
+
+```typescript
+import { 
+  Connection, 
+  Keypair, 
+  PublicKey 
+} from '@solana/web3.js';
+import { 
+  sendMagicTransaction,
+  getClosestValidator 
+} from 'magic-router-sdk';
+import { AnchorProvider, Program } from '@coral-xyz/anchor';
+
+async function delegateAccountsToValidator() {
+  // Connect to Magic Router
+  const routerConnection = new Connection(
+    "https://devnet-router.magicblock.app", 
+    "confirmed"
+  );
+  
+  // Get the optimal validator automatically
+  const validatorKey = await getClosestValidator(routerConnection);
+  console.log("Selected validator:", validatorKey.toBase58());
+  
+  // Create delegation transaction for multiple accounts
+  const tx = await program.methods
+    .delegate({
+      commitFrequencyMs: 30000, // Commit every 30 seconds
+      validator: validatorKey,
+    })
+    .accounts({
+      payer: provider.wallet.publicKey,
+    })
+    .postInstructions([
+      // Delegate additional accounts in the same transaction
+      await program.methods
+        .delegate({
+          commitFrequencyMs: 30000,
+          validator: validatorKey,
+        })
+        .accounts({
+          payer: secondAccount.publicKey,
+        })
+        .instruction()
+    ])
+    .transaction();
+
+  // Send the delegation transaction
+  const signature = await sendMagicTransaction(
+    routerConnection,
+    tx,
+    [provider.wallet.payer, secondAccount] // Sign with both accounts
+  );
+  
+  console.log("✅ Accounts delegated successfully!");
+  console.log("Transaction signature:", signature);
+  console.log("Validator:", validatorKey.toBase58());
+  
+  return signature;
+}
+
+// Usage in your application
+async function initializeGame() {
+  try {
+    // Delegate accounts to enable high-performance execution
+    await delegateAccountsToValidator();
+    
+    // Now game transactions will route to the Ephemeral Rollup
+    console.log("🚀 Ready for high-speed gaming!");
+    
+  } catch (error) {
+    console.error("Delegation failed:", error);
+  }
+}
+```
+
+### 이 접근 방식의 핵심 이점
+
+<AccordionGroup>
+  <Accordion title="자동 검증자 선택">
+    `getClosestValidator()` 를 사용하면 사용자에게 지리적으로 가장 가깝고 가장 덜 바쁜 검증자를 자동으로 선택해 최적의 성능을 확보할 수 있습니다.
+  </Accordion>
+  
+  <Accordion title="배치 위임">
+    이 예시는 `postInstructions()` 를 사용해 한 번의 트랜잭션에서 여러 계정을 위임하는 방법을 보여 주며, 트랜잭션 비용과 설정 시간을 줄여 줍니다.
+  </Accordion>
+  
+  <Accordion title="유연한 Commit 주기">
+    `commitFrequencyMs` 파라미터를 사용하면 성능(낮은 빈도)과 데이터 영속성 보장(높은 빈도) 사이에서 균형을 맞출 수 있습니다.
+  </Accordion>
+</AccordionGroup>
+
+<Info>
+위임이 끝나면 이 계정이 포함된 모든 후속 트랜잭션은 자동으로 Ephemeral Rollup으로 라우팅되어, 애플리케이션에 서브초 단위 확인 시간과 더 높은 처리량을 제공합니다.
+</Info>
+
+## 다음 단계
+
+<CardGroup cols={2}>
+  <Card
+    title="시작하기"
+    icon="play"
+    href="/ko/pages/tools/magic-router-sdk/getting-started"
+    iconType="duotone"
+  >
+    애플리케이션에서 Magic Router SDK 구현을 시작하세요.
+  </Card>
+  <Card
+    title="Magic Router 개요"
+    icon="route"
+    href="/ko/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    더 넓은 Magic Router 아키텍처를 알아보세요.
+  </Card>
+</CardGroup> 

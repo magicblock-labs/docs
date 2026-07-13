@@ -1,0 +1,247 @@
+---
+title: 시작하기
+description: Magic Router SDK 설정 시작하기
+---
+
+## 설치
+
+원하는 패키지 매니저를 사용해 Magic Router SDK를 설치하세요.
+
+<CodeGroup>
+
+```bash npm
+npm install magic-router-sdk
+```
+
+```bash yarn
+yarn add magic-router-sdk
+```
+
+```bash pnpm
+pnpm add magic-router-sdk
+```
+
+</CodeGroup>
+
+## 기본 설정
+
+필요한 SDK 함수를 가져옵니다.
+
+```typescript
+import { 
+  prepareMagicTransaction, 
+  sendMagicTransaction,
+  getClosestValidator,
+  getWritableAccounts
+} from 'magic-router-sdk';
+import { Connection, Transaction } from '@solana/web3.js';
+```
+
+Magic Router 엔드포인트에 연결합니다.
+
+```typescript
+const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+```
+
+## 기본 개념 이해하기
+
+사용 예제로 들어가기 전에 Magic Router SDK의 핵심 개념을 이해하는 것이 중요합니다. 이러한 개념은 왜 특정 메서드가 존재하는지, 그리고 어떻게 트랜잭션 흐름을 최적화하는지를 설명합니다.
+
+<Card
+  title="핵심 개념"
+  icon="lightbulb"
+  href="/ko/pages/tools/magic-router-sdk/core-concepts"
+  iconType="duotone"
+>
+  Magic Router 생태계에서 계정 위임, blockhash 관리, 검증자 선택에 대해 알아보세요.
+</Card>
+
+## 기본 사용 예시
+
+### 트랜잭션 준비(브라우저 지갑)
+
+서명을 브라우저 지갑이 처리하는 경우 `prepareMagicTransaction`을 사용하세요.
+
+```typescript
+import { prepareMagicTransaction } from 'magic-router-sdk';
+
+// 평소처럼 트랜잭션 구성
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userPublicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// 올바른 blockhash로 트랜잭션 준비
+const preparedTransaction = await prepareMagicTransaction(
+  connection, 
+  transaction
+);
+
+// 지갑으로 서명(예: Phantom, Solflare)
+const signedTransaction = await wallet.signTransaction(preparedTransaction);
+
+// 서명된 트랜잭션 전송
+const signature = await connection.sendRawTransaction(
+  signedTransaction.serialize()
+);
+```
+
+### 트랜잭션 전송(로컬 서명자)
+
+로컬 서명자나 session keys가 있을 때는 `sendMagicTransaction`을 사용하세요.
+
+```typescript
+import { sendMagicTransaction } from 'magic-router-sdk';
+
+// 트랜잭션 구성
+const transaction = await program.methods
+  .myInstruction()
+  .accounts({
+    user: userKeypair.publicKey,
+    // ... other accounts
+  })
+  .transaction();
+
+// 자동 준비 및 서명과 함께 트랜잭션 전송
+const signature = await sendMagicTransaction(
+  connection,
+  transaction,
+  [userKeypair] // 서명자 배열
+);
+
+console.log("Transaction signature:", signature);
+```
+
+### 검증자 탐색
+
+연결에 가장 적합한 검증자를 찾습니다.
+
+```typescript
+import { getClosestValidator } from 'magic-router-sdk';
+
+const closestValidatorPubkey = await getClosestValidator(connection);
+console.log("Closest validator:", closestValidatorPubkey.toBase58());
+```
+
+#### 계정을 검증자에게 위임하기
+
+가장 가까운 검증자를 찾았다면, 계정을 위임해 Ephemeral Rollup 실행을 활성화할 수 있습니다.
+
+```typescript
+import { sendMagicTransaction, getClosestValidator } from 'magic-router-sdk';
+
+async function delegateAccountToValidator(program, userKeypair, connection) {
+  // 최적의 성능을 위해 가장 가까운 검증자 가져오기
+  const validatorKey = await getClosestValidator(connection);
+  
+  // 위임 트랜잭션 생성
+  const delegationTx = await program.methods
+    .delegate({
+      commitFrequencyMs: 30000, // 30초마다 commit
+      validator: validatorKey,
+    })
+    .accounts({
+      payer: userKeypair.publicKey,
+    })
+    .transaction();
+
+  // 위임 트랜잭션 전송
+  const signature = await sendMagicTransaction(
+    connection,
+    delegationTx,
+    [userKeypair]
+  );
+
+  console.log("✅ Account delegated to validator:", validatorKey.toBase58());
+  console.log("Delegation signature:", signature);
+  
+  return signature;
+}
+
+// 사용 예시
+await delegateAccountToValidator(myProgram, userKeypair, connection);
+```
+
+위임이 끝나면, 해당 위임 계정을 포함하는 트랜잭션은 자동으로 Ephemeral Rollup으로 라우팅되어 더 빠르게 실행됩니다.
+
+## 전체 예시
+
+아래는 모든 개념을 결합한 전체 예시입니다.
+
+```typescript
+import { 
+  Connection, 
+  Keypair, 
+  Transaction,
+  TransactionInstruction,
+  PublicKey 
+} from '@solana/web3.js';
+import { 
+  sendMagicTransaction,
+  getWritableAccounts,
+  getClosestValidator 
+} from 'magic-router-sdk';
+
+async function executeGameMove() {
+  // Magic Router에 연결
+  const connection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+  
+  // 최적의 검증자 가져오기
+  const validator = await getClosestValidator(connection);
+  console.log(`Using validator: ${validator.toBase58()}`);
+  
+  // 게임 트랜잭션 구성
+  const transaction = await gameProgram.methods
+    .makeMove({ x: 3, y: 4 })
+    .accounts({
+      gameState: gameStatePda,
+      player: playerKeypair.publicKey,
+    })
+    .transaction();
+  
+  // 변경될 계정 분석
+  const writableAccounts = getWritableAccounts(transaction);
+  console.log("Modifying accounts:", writableAccounts);
+  
+  // 자동 라우팅으로 트랜잭션 실행
+  const signature = await sendMagicTransaction(
+    connection,
+    transaction,
+    [playerKeypair]
+  );
+  
+  console.log("Move executed:", signature);
+}
+```
+
+## 다음 단계
+
+<CardGroup cols={3}>
+  <Card
+    title="핵심 개념"
+    icon="lightbulb"
+    href="/ko/pages/tools/magic-router-sdk/core-concepts"
+    iconType="duotone"
+  >
+    Magic Router SDK의 기본 개념을 더 깊이 살펴보세요.
+  </Card>
+  <Card
+    title="Magic Router 개요"
+    icon="route"
+    href="/ko/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    계정 위임과 Magic Router의 작동 방식을 더 알아보세요.
+  </Card>
+  <Card
+    title="Session Keys"
+    icon="key"
+    href="/ko/pages/tools/session-keys/introduction"
+    iconType="duotone"
+  >
+    가스 없는 게임 경험을 위한 Session Keys를 살펴보세요.
+  </Card>
+</CardGroup>

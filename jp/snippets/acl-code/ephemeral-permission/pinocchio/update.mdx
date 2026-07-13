@@ -1,0 +1,43 @@
+```rust
+use ephemeral_rollups_pinocchio::acl::{
+    EphemeralMembersArgs, Member, MemberFlags, UpdateEphemeralPermission,
+};
+use pinocchio::cpi::{Seed, Signer};
+
+const PERMISSION_CPI_BUF: usize = 64;
+
+let bump_seed = [bump];
+let seeds_array: [Seed; 3] = [
+    Seed::from(b"counter"),
+    Seed::from(authority.address().as_ref()),
+    Seed::from(&bump_seed),
+];
+let signer = Signer::from(&seeds_array);
+
+// Read the on-chain Counter to grab `authority` — the sole "private" member.
+let counter_authority = {
+    let data = counter_account.try_borrow()?;
+    Counter::load(&data)?.authority
+};
+
+let single_member = [Member {
+    flags: MemberFlags::from_acl_flag_byte(
+        MemberFlags::TX_LOGS | MemberFlags::TX_MESSAGE | MemberFlags::TX_BALANCES,
+    ),
+    pubkey: counter_authority,
+}];
+let members: &[Member] = if is_private { &single_member } else { &[] };
+
+UpdateEphemeralPermission {
+    payer: counter_account,
+    permissioned_account: counter_account,
+    permission,
+    vault,
+    magic_program,
+    permission_program,
+    authority: counter_account,
+    authority_is_signer: false,   // PDA signs via the seeds above
+    args: EphemeralMembersArgs { is_private, members },
+}
+.invoke_signed::<PERMISSION_CPI_BUF>(&[signer])?;
+```

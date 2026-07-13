@@ -1,0 +1,5 @@
+> `Delegation` 是将你程序中一个或多个 `PDA` 的所有权转移给 delegation program 的过程。之后 Ephemeral Validators 就可以在 SVM runtime 中使用这些 `PDA` 执行交易。
+
+> `Commit` 是将 `PDA` 的状态从 ER 更新到 base layer 的过程。在 finalization 完成后，`PDA` 仍然会在 base layer 上保持锁定。
+
+> `Undelegation` 是将 `PDA` 的所有权转回给你程序的过程。在 undelegation 时，状态会被提交并触发 finalization 流程。一旦状态验证完成，`PDA` 就会被解锁，并可像平常一样在 base layer 上使用。

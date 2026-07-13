@@ -1,0 +1,255 @@
+
+---
+title: 使用 Ephemeral SPL Tokens 的私密支付
+description: 使用 ephemeral SPL tokens 实现私密入金、转账和提现的指南
+---
+
+## 概述
+
+本指南将说明如何在 MagicBlock private-payments 示例的背景下，使用 **ephemeral SPL tokens** 实现**私密入金、转账与提现**。
+
+Ephemeral tokens 是生命周期短、由程序控制的 SPL token 账户或 mint，它们：
+- 只在特定工作流的持续时间内存在
+- 尽量减少用户之间的链上关联
+- 降低长期元数据与余额的可追踪性
+
+目标是实现**以隐私为设计基础**，而不是默认匿名。
+
+---
+
+## 核心概念
+
+### 什么是 Ephemeral SPL Token？
+
+Ephemeral SPL token 通常指：
+
+- 一个**临时 token 账户**（有时也包括临时 mint）
+- 由 program-derived address（PDA）拥有或控制
+- 在交易或会话发生时即时创建
+- 使用后关闭（并回收租金）
+
+这种模式会限制余额的生命周期，并让跨交易关联活动变得更加困难。
+
+---
+
+### 隐私模型
+
+这里的私密支付依赖于：
+
+- 短生命周期 token 账户
+- 由程序中介托管
+- 受控的账户关闭
+- 可选地为每个会话使用全新的用户 keypair
+
+⚠️ 这**并不能**完全向验证器或 RPC 提供方隐藏活动。
+它降低的是*可关联性*，而不是*可观察性*。
+
+---
+
+## 架构流程
+
+```
+User Wallet
+   |
+   | 1. Deposit
+   v
+Ephemeral Token Account (PDA-controlled)
+   |
+   | 2. Transfer (internal)
+   v
+Another Ephemeral Account
+   |
+   | 3. Withdrawal
+   v
+Destination Token Account
+```
+
+---
+
+## 入金
+
+### 入金如何工作
+
+1. 用户从其标准 SPL token 账户批准一笔转账
+2. 程序创建一个 ephemeral token account（PDA）
+3. token 被转入该 ephemeral 账户
+4. 该账户会在系统内部登记，以供后续操作使用
+
+### 关键特性
+
+- 用户从不直接拥有 ephemeral 账户
+- authority 是由以下信息派生出的 PDA：
+  - Program ID
+  - 会话或入金 seed
+- 入金元数据保持最小化
+
+### 最佳实践
+
+- 每次入金使用唯一的 seed
+- 避免复用 ephemeral 账户
+- 转账后立即撤销用户 authority
+
+---
+
+## 私密转账
+
+### 内部转账
+
+私密转账发生在**由程序控制的账户内部**：
+
+- 入金之后不再需要用户钱包签名
+- 余额在各个 ephemeral 账户之间流动
+- 转账可以表示：
+  - 内部支付
+  - 类似托管的流程
+  - 条件释放
+
+### 为什么这能提升隐私
+
+- 没有直接的发送方 → 接收方 token 转移
+- 链上历史只显示 PDA 到 PDA 的流动
+- 用户被从 SPL token 所有权中抽象出来
+
+---
+
+## 提现
+
+### 提现流程
+
+1. 用户请求提现
+2. 程序验证：
+   - 授权
+   - 余额
+   - 提现约束
+3. 程序将 token 转移到用户的目标账户
+4. Ephemeral account 会被**关闭**
+
+### 账户关闭
+
+提现后务必关闭 ephemeral 账户：
+
+- 回收租金
+- 减少链上痕迹
+- 防止余额探测
+
+---
+
+## 示例伪代码
+
+```ts
+// Create ephemeral token account
+const ephemeralAccount = derivePDA(
+  programId,
+  ["ephemeral", user.publicKey, sessionId]
+);
+
+// Deposit
+token.transfer(
+  userTokenAccount,
+  ephemeralAccount,
+  userAuthority,
+  amount
+);
+
+// Withdraw
+token.transfer(
+  ephemeralAccount,
+  destinationAccount,
+  programPDA,
+  amount
+);
+
+token.closeAccount(ephemeralAccount);
+```
+
+---
+
+## 重要：开发者说明 ⚠️
+
+### 1. 隐私是一个光谱
+
+Ephemeral tokens **并不保证匿名性**。
+
+它们可以：
+- 降低可关联性
+- 限制长期存在的余额
+- 提升默认隐私卫生
+
+它们**不能**：
+- 隐藏交易金额
+- 混淆时间信息
+- 防御 RPC 层级的分析
+
+---
+
+### 2. Seed 设计很重要
+
+糟糕的 PDA seed 设计会破坏隐私。
+
+避免使用：
+- 静态 seed
+- 被重复使用的用户公钥
+- 可预测的计数器
+
+更推荐：
+- 基于会话的随机性
+- 用户 + nonce 的哈希
+- 一次性标识符
+
+---
+
+### 3. 始终关闭账户
+
+让 ephemeral 账户保持开启会：
+- 泄露历史余额
+- 浪费租金
+- 使状态探测成为可能
+
+请在程序逻辑中把关闭账户设为强制步骤。
+
+---
+
+### 4. 不要记录敏感元数据
+
+避免输出：
+- 用户公钥
+- 金额
+- 会话标识符
+
+尤其不要出现在程序日志或事件中。
+
+---
+
+### 5. 钱包体验仍然很重要
+
+即使使用了 ephemeral tokens：
+- 钱包授权仍会暴露意图
+- 糟糕的 UX 可能重新建立身份关联
+- 复用目标账户会泄露行为模式
+
+建议鼓励：
+- 使用全新的 token 账户
+- 可选的一次性 burner 钱包
+- 清晰的用户教育
+
+---
+
+## 总结
+
+Ephemeral SPL tokens 是在 Solana 上构建**具备隐私意识的支付流程**的强大基础原语。
+
+当它们与以下机制结合时：
+- 由程序控制的托管
+- 严格的账户生命周期管理
+- 谨慎的 seed 设计
+
+它们可以在**无需修改 SPL token 标准**的前提下，实现私密入金、内部转账和干净的提现流程。
+
+---
+
+## 下一步
+
+- 查看 private-payments 示例代码
+- 审计 PDA 派生逻辑
+- 为你的隐私假设建立威胁模型
+- 彻底测试账户关闭路径

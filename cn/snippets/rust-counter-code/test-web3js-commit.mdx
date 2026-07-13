@@ -1,0 +1,49 @@
+```typescript Web3.js
+// "Commit" transaction
+
+const tx = new web3.Transaction();
+const keys = [
+  // Initializer
+  {
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
+  },
+  // Counter Account
+  {
+    pubkey: counterPda,
+    isSigner: false,
+    isWritable: true,
+  },
+  // Magic Program
+  {
+    pubkey: MAGIC_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Magic Context
+  {
+    pubkey: MAGIC_CONTEXT_ID,
+    isSigner: false,
+    isWritable: true,
+  },
+];
+const serializedInstructionData = Buffer.from(CounterInstruction.Commit, "hex");
+const commitIx = new web3.TransactionInstruction({
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
+});
+tx.add(commitIx);
+
+// Send and confirm transaction to ER
+const txHash = await sendAndConfirmTransaction(
+  connectionEphemeralRollup,
+  tx,
+  [userKeypair],
+  {
+    skipPreflight: true,
+    commitment: "confirmed",
+  }
+);
+```

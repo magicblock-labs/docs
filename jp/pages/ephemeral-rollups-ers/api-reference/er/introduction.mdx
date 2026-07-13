@@ -1,0 +1,48 @@
+---
+title: "概要"
+description: "MagicBlock Router API ドキュメント"
+---
+
+## 概要
+
+MagicBlock Router API は、ほぼすべての標準 Solana RPC メソッドを実装し、Router 固有のメソッドを追加した JSON-RPC API です。単一エンドポイントの背後でノード選択とルーティングを処理することで、マルチノード構成を簡素化します。
+
+この API は、アカウントの委任状態を取得し、リクエスト実行に最適な最寄りノードを特定するために使用できます。たとえば `getBlockhashForAccounts` は、指定されたアカウントとその委任状態に基づいて適切なノードから blockhash を返します。
+
+**Mainnet URL:** `https://router.magicblock.app`
+
+**Devnet URL:** `https://devnet-router.magicblock.app`
+
+**API Version:** 2.0
+
+## 主な操作
+
+### ネットワーク情報
+- [**Get Routes**](/jp/pages/ephemeral-rollups-ers/api-reference/er/getRoutes) - 利用可能なルーティング情報を照会する
+- [**Get Identity**](/jp/pages/ephemeral-rollups-ers/api-reference/er/getIdentity) - 識別情報を取得する
+
+### アカウント操作
+- [**Get Account Info**](/jp/pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo) - アカウント情報を取得する
+- [**Get Blockhash For Accounts**](/jp/pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts) - 特定アカウントの blockhash を取得する
+
+### ステータスと委任
+- [**Get Signature Statuses**](/jp/pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses) - トランザクション署名の状態を確認する
+- [**Get Delegation Status**](/jp/pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus) - 委任情報を照会する
+
+## 主な特徴
+
+- **Solana RPC カバレッジ** - Router 経由でほぼすべての標準 Solana RPC メソッドを実装
+- **Router 固有メソッド** - `getBlockhashForAccounts` や `getDelegationStatus` などのメソッドを追加
+- **簡素化されたマルチノード構成** - 複数ノードのエンドポイントを手動管理せず、1 つの Router エンドポイントを利用
+- **高速ルート照会** - トランザクションのルーティング経路を効率よく判定
+- **アカウント状態** - 現在のアカウント情報と残高にアクセス
+- **トランザクション追跡** - トランザクション状態と承認状況を監視
+- **委任照会** - Router 経由で委任関係を確認
+
+## 利用例
+
+- アカウント残高と状態を取得する
+- トランザクションの承認状態を確認する
+- トランザクションルーティングのための経路情報を照会する
+- 委任設定を検証する
+- 複数ノードのエンドポイントを手動管理せずに済ませる

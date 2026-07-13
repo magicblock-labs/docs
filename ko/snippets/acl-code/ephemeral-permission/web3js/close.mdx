@@ -1,0 +1,25 @@
+```typescript
+import {
+  MAGIC_PROGRAM_ID,
+  PERMISSION_PROGRAM_ID,
+  EPHEMERAL_VAULT_ID,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+
+// Refunds the permission's rent to the counter PDA.
+const closeIx = await counterProgram.methods
+  .closePermission()
+  .accountsPartial({
+    authority: tempKeypair.publicKey,
+    counter: counterPda,
+    permission: permissionPda,
+    permissionProgram: PERMISSION_PROGRAM_ID,
+    ephemeralVault: EPHEMERAL_VAULT_ID,
+    magicProgram: MAGIC_PROGRAM_ID,
+  })
+  .instruction();
+
+const tx = new Transaction().add(closeIx);
+const sig = await sendAndConfirmTransaction(ephemeralConnection, tx, [tempKeypair]);
+console.log("close_permission tx:", sig);
+```

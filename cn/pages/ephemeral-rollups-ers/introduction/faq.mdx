@@ -1,0 +1,20 @@
+---
+title: "常见问题"
+description: "实时执行交易并同步状态。"
+---
+
+<AccordionGroup>
+    <Accordion title="已委托账户可以直接在 ER 上创建吗？">
+        **不能。** 已委托账户必须事先存在于 Solana 上。只有在你在 ER 上请求该账户，或提交包含该已委托账户的交易之后，账户才会被克隆到 ER。     
+    </Accordion>
+    <Accordion title="程序可以被委托到 ER 吗？">
+        **不能。** Program accounts 永远不会被委托。只有 state accounts 可以被委托，而 **program accounts 会在交易提交到 ER 时被克隆**，并在之后持续订阅更新。
+    </Accordion>
+    <Accordion title="已委托账户可以与 Solana 上的所有程序组合使用吗？">
+        **可以。** 已委托账户可以与所有 Solana programs 和 accounts 协同工作。Solana 上的每个账户在 ER 上都可读，但只有已委托账户才能在 ER 上的原子交易中被修改。 
+    </Accordion>
+    <Accordion title="开发者应该把 slot time 当作可靠的计时机制吗？">
+        **不应该。** 截至 **2025 年 11 月 20 日**，Solana 使用的是 **400 ms slot time**，而 MagicBlock 的 Execution Runtime (ER) 使用的是 **50 ms slot time**。开发者可能会想把 slot time 当作固定时长来依赖，但 **slot time 并没有被保证固定，并且未来可能变化**。因此，任何依赖特定 slot 时长的代码或逻辑都应谨慎编写。
+    </Accordion>
+
+</AccordionGroup>

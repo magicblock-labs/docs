@@ -1,0 +1,99 @@
+---
+title: "NFT 민팅하기"
+description: "NFT를 민팅하려면 [Token Metadata](https://docs.metaplex.com/programs/token-metadata/) 프로그램과 상호작용해야 합니다. 전체 개요는 metaplex [문서](https://docs.metaplex.com/)를 참고하세요."
+---
+
+먼저 민팅할 NFT를 위한 새 mint 계정과 이를 보유할 연결 토큰 계정을 생성해야 합니다.
+
+```csharp
+var mint = new Account();
+var associatedTokenAccount = AssociatedTokenAccountProgram
+    .DeriveAssociatedTokenAccount(Web3.Account, mint.PublicKey);
+```
+
+다음으로 NFT의 메타데이터를 정의합니다.
+
+```csharp
+var metadata = new Metadata()
+{
+    name = "Test",
+    symbol = "TST",
+    uri = "https://y5fi7acw5f5r4gu6ixcsnxs6bhceujz4ijihcebjly3zv3lcoqkq.arweave.net/x0qPgFbpex4ankXFJt5eCcRKJzxCUHEQKV43mu1idBU",
+    sellerFeeBasisPoints = 0,
+    creators = new List<Creator> { new(Web3.Account.PublicKey, 100, true)}
+};
+```
+
+이제 트랜잭션을 구성할 수 있으며, 다음 6개의 명령으로 이루어집니다.
+
+- Mint 계정 생성
+- Mint 계정 초기화
+- Associated Token Account 생성
+- NFT 민팅
+- Metadata 계정 생성
+- Master Edition 생성
+
+```csharp
+var transaction = new TransactionBuilder()
+    .SetRecentBlockHash(blockHash)
+    .SetFeePayer(Web3.Account)
+    .AddInstruction(
+        SystemProgram.CreateAccount(
+            Web3.Account,
+            mint.PublicKey,
+            minimumRent.Result,
+            TokenProgram.MintAccountDataSize,
+            TokenProgram.ProgramIdKey))
+    .AddInstruction(
+        TokenProgram.InitializeMint(
+            mint.PublicKey,
+            0,
+            Web3.Account,
+            Web3.Account))
+    .AddInstruction(
+        AssociatedTokenAccountProgram.CreateAssociatedTokenAccount(
+            Web3.Account,
+            Web3.Account,
+            mint.PublicKey))
+    .AddInstruction(
+        TokenProgram.MintTo(
+            mint.PublicKey,
+            associatedTokenAccount,
+            1,
+            Web3.Account))
+    .AddInstruction(MetadataProgram.CreateMetadataAccount(
+        PDALookup.FindMetadataPDA(mint),
+        mint.PublicKey,
+        Web3.Account,
+        Web3.Account,
+        Web3.Account.PublicKey,
+        metadata,
+        TokenStandard.NonFungible,
+        true,
+        true,
+        null,
+        metadataVersion: MetadataVersion.V3))
+    .AddInstruction(MetadataProgram.CreateMasterEdition(
+        maxSupply: null,
+        masterEditionKey: PDALookup.FindMasterEditionPDA(mint),
+        mintKey: mint,
+        updateAuthorityKey: Web3.Account,
+        mintAuthority: Web3.Account,
+        payer: Web3.Account,
+        metadataKey: PDALookup.FindMetadataPDA(mint),
+        version: CreateMasterEditionVersion.V3
+    )
+);
+```
+
+마지막으로 트랜잭션에 서명하고 전송합니다.
+
+```csharp
+var tx = Transaction.Deserialize(transaction.Build(new List<Account> {Web3.Account, mint}));
+var res = await Web3.Wallet.SignAndSendTransaction(tx);
+Debug.Log(res.Result);
+```
+
+콘솔에는 트랜잭션 서명이 출력됩니다. 익스플로러에서 확인하면 이 [트랜잭션](https://explorer.solana.com/tx/TPSviDzpzTFEyfJkYwmQzqaPJTTsGMZTuPuG9q1LiKrhZnwg5WWHH7ARR8eYAdoB8rt8qcjKwqbcZj43b84Ls5C?cluster=devnet)과 비슷한 형태가 됩니다.
+
+mint 주소도 익스플로러에서 확인할 수 있으며, 이 [NFT](https://explorer.solana.com/address/4X199VtLKVJUeLMXzwXzSsFgapVQcrYx9vnqxNDkH2Xa?cluster=devnet)와 비슷하게 보일 것입니다.

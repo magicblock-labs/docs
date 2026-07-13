@@ -1,0 +1,109 @@
+---
+title: "概要"
+description: "Private Payments API ドキュメント"
+---
+
+import PrivatePaymentApiCard from "/jp/snippets/private-payment-api-card.mdx";
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token Program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    プライベート SPL トークンフローのリファレンスプログラム
+  </Card>
+
+  <PrivatePaymentApiCard />
+</CardGroup>
+
+## 概要
+
+Private Payments API は、Solana と MagicBlock ephemeral rollups をまたいで、入金、送金、出金、swap、mint 初期化用の未署名 SPL トークントランザクションを構築します。残高および mint 初期化状態の照会、プライベートデータを読み取るための bearer トークンを発行するウォレットの challenge/login フローも提供します。正式な公開リファレンスは [payments.magicblock.app/reference](https://payments.magicblock.app/reference) です。
+
+### メタ
+
+- [**Health**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/health) - API の健全性と可用性を確認する
+
+### 認証
+
+- [**Challenge**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/challenge) - ウォレットが署名する challenge 文字列を生成する
+- [**Login**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/login) - 署名済み challenge を bearer トークンと交換する
+
+### SPL
+
+- [**Deposit SPL Tokens**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/deposit) - Solana から ephemeral rollup への未署名入金トランザクションを構築する
+- [**Transfer SPL Tokens**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/transfer) - 未署名の公開または非公開 SPL 送金を構築する
+- [**Withdraw SPL Tokens**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - Solana へ戻す未署名出金トランザクションを構築する
+- [**Initialize Mint**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - mint 用の validator-scoped transfer queue を初期化する未署名トランザクションを構築する
+- [**Balance**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - アドレスの base-chain SPL トークン残高を取得する
+- [**Private Balance**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - アドレスの ephemeral-rollup SPL トークン残高を取得する (認証が必要)
+- [**Is Mint Initialized**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - mint に validator-scoped transfer queue が ephemeral RPC 上で存在するか確認する
+
+### Swap
+
+- [**Swap Quote**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/quote) - 2 つの SPL mint 間の swap クォートを取得する
+- [**Swap**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/swap) - 未署名の swap トランザクションを構築する (公開パススルー、または予約済み転送付きのプライベート)
+
+### MCP
+
+- [**MCP**](/jp/pages/private-ephemeral-rollups-pers/api-reference/per/mcp) - stateless Streamable HTTP MCP endpoint にアクセスする
+
+```
+┌────────────────────────────────────────────┐
+│ 1. Deposit                                │
+├────────────────────────────────────────────┤
+│ • 未署名の入金トランザクションを構築      │
+│ • Solana base balance → ephemeral rollup  │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 2. Transfer / Swap                        │
+├────────────────────────────────────────────┤
+│ • SPL 送金または swap を構築              │
+│ • base/ephemeral → base/ephemeral         │
+│ • 公開またはプライベート (遅延 + 分割)    │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 3. Withdraw                               │
+├────────────────────────────────────────────┤
+│ • 未署名の出金を構築                      │
+│ • ephemeral rollup → Solana base balance  │
+└────────────────────────────────────────────┘
+```
+
+## 認証フロー
+
+Private Ephemeral Rollup 内のプライベートデータを読み取るエンドポイントには bearer トークンが必要です:
+
+1. `GET /v1/spl/challenge?pubkey=<wallet>` が `challenge` 文字列を返す
+2. ウォレットが challenge に署名する
+3. `POST /v1/spl/login` に `{ pubkey, challenge, signature }` を送ると `token` が返る
+4. `/v1/spl/private-balance` (必須) と Private Ephemeral Rollup への接続が必要な `/v1/spl/transfer` リクエスト (オプション) で `Authorization: Bearer <token>` を渡す
+
+## レスポンス形式
+
+トランザクション構築エンドポイントが成功すると、未署名トランザクションのペイロードが返されます:
+
+```json
+{
+  "kind": "deposit",
+  "version": "legacy",
+  "transactionBase64": "base64-encoded-transaction",
+  "sendTo": "base",
+  "recentBlockhash": "blockhash",
+  "lastValidBlockHeight": 284512337,
+  "instructionCount": 3,
+  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
+}
+```
+
+クライアントの流れ:
+
+1. API を呼び出す
+2. `transactionBase64` をデコードする
+3. 必要に応じてクライアント側でトランザクションを調整する
+4. 必要なウォレットで署名する
+5. `sendTo` で指定された RPC (`"base"` または `"ephemeral"`) に送信する

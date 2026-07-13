@@ -1,0 +1,28 @@
+```rust
+use ephemeral_rollups_sdk::access_control::{
+    instructions::CreateEphemeralPermissionCpi,
+    structs::{EphemeralMembersArgs, Member},
+};
+
+// Counter PDA pays for its own permission rent (it carries lamports onto the ER
+// after delegation and signs as PDA via seeds).
+let signers = [
+    COUNTER_SEED,
+    ctx.accounts.counter.authority.as_ref(),
+    &[ctx.bumps.counter],
+];
+
+CreateEphemeralPermissionCpi {
+    payer: ctx.accounts.counter.to_account_info(),                  // pays ephemeral rent
+    permissioned_account: ctx.accounts.counter.to_account_info(),   // what the permission gates
+    permission: ctx.accounts.permission.to_account_info(),
+    vault: ctx.accounts.ephemeral_vault.to_account_info(),
+    magic_program: ctx.accounts.magic_program.to_account_info(),
+    permission_program: ctx.accounts.permission_program.to_account_info(),
+    args: EphemeralMembersArgs {
+        is_private: false,    // start public — flip via UpdateEphemeralPermission
+        members: vec![],
+    },
+}
+.invoke_signed(&[&signers])?;
+```

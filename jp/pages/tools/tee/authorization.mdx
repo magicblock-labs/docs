@@ -1,0 +1,42 @@
+### 認可モデル
+
+<img class="w-full h-auto max-w-5xl" src="/images/TEE_permission.png" />
+
+Private Ephemeral Rollups は、アカウントおよびアカウントグループに対するきめ細かなプライバシー制御を管理するために Permission Program を使用します。これは Solana L1 上で動作し、動的に更新できます。
+
+- **Permission Group**: CPI を通じて、任意のメンバーシップと ID を持つグループを定義します。グループはユーザーと、その権限で管理されるアカウントをまとめます。
+- **権限**: グループに権限を追加します。現時点では、権限は委任済みアカウントへの読み取りアクセスを意味しますが、将来的には読み取りと書き込みが分かれる可能性があります。
+- **アクセス**: クライアントが権限制御された ER 状態へアクセスするには、指定された公開鍵の所有権を認証する必要があります。認証に成功すると、ER のクエリに使うトークンが発行されます。
+
+import PerEndpoint from "/jp/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+このグループベースの抽象化により、1 回のトランザクションで多数のユーザーやアカウントの権限を原子的に変更できます。
+
+<CardGroup cols={2}>
+  <Card
+    title="プログラム実装"
+    icon="code"
+    href="/jp/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    CPI で権限を追加する
+  </Card>
+  <Card
+    title="クライアント実装"
+    icon="browser"
+    href="/jp/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    アテステーション、チャレンジ、アクセス
+  </Card>
+  <Card
+    title="プライバシーのユースケース"
+    icon="shield-check"
+    href="/jp/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    プライベートで検証可能なアプリケーションを構築する
+  </Card>
+</CardGroup>

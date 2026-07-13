@@ -1,0 +1,63 @@
+---
+title: "技术细节"
+description: "Solana VRF 如何与 MagicBlock 集成"
+---
+
+如需产品概览，请参阅 [Solana VRF](/cn/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf)。
+
+有关运行时概览，请参阅 [Ephemeral Rollup 文档](/cn/pages/get-started/introduction/ephemeral-rollup)。
+
+MagicBlock 通过 `ephemeral_vrf_sdk` 将随机性作为一等原语提供。Rollup 程序会使用 `caller_seed` 和类似 `consume_randomness` 的回调来调用 `create_request_randomness_ix`（即 `RequestRandomness` 指令）。随后，MagicBlock Solana VRF 网络中的某个预言机会执行 `ProvideRandomness` 指令来返回结果。
+
+随机数通过构建在 Curve25519 Ristretto 群之上的 VRF 生成，并使用 RFC&nbsp;9381 所描述的类 Schnorr 签名进行证明。证明和输出会通过来自 MagicBlock VRF signer PDA 的签名回调返回给 rollup。你的程序会先验证调用方，然后再在游戏逻辑中使用该随机性。
+
+`random_u32`、`random_u8_with_range` 和 `random_bool` 等辅助工具可以轻松将 `[u8; 32]` 输出转换为可用值。由于请求和消费步骤都发生在临时执行窗口内，用户可以获得具备可验证公平性的实时结果，而无需依赖外部服务器。
+
+## 流程
+
+<img class="w-full h-auto max-w-5xl" src="/images/vrf-flow.png" />
+
+流程从“请求随机性”开始。
+
+1. 你的程序会通过 CPI 调用 MagicBlock VRF 程序，并将请求追加到队列中。
+2. 当随机性请求进入队列后，某个预言机会取出该请求并执行随机性计算。
+3. 完成后，它会将结果和证明返回给 MagicBlock VRF 程序。
+4. 在验证证明后，VRF 程序会回调你的程序中预先定义的函数来“消费”随机性。
+
+<Note>
+  VRF 程序已有公开审计。集成到生产 rollup 前，请先阅读报告并充分测试。
+</Note>
+
+## 预言机队列
+
+每个随机数请求都会指定一个**预言机队列（oracle queue）**账户（即 `RequestRandomnessParams` 的 `oracle_queue` 字段）。与所有 Solana 账户一样，该队列同样存放在 Solana 上；但**已委托（delegated）**的队列只能在 ephemeral rollup 内部直接写入，而**未委托**的队列则可在基础层直接写入。请使用与交易运行位置相匹配的队列来发起随机数请求——在 Solana 上使用基础层队列，在 ephemeral rollup 内部则使用已委托的队列。请尽可能引用 `ephemeral_vrf_sdk::consts` 中的常量，而不要硬编码地址。
+
+| 网络     | 基础层队列                                                                  | 已委托队列（ephemeral rollup）                                                           |
+| -------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Mainnet  | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Devnet   | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Localnet | `DEFAULT_TEST_QUEUE`<br />`GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb`     | `DEFAULT_EPHEMERAL_TEST_QUEUE`<br />`Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT`        |
+
+<Note>
+  Mainnet 和 Devnet 使用相同的默认队列地址——区别仅在于你所连接的集群。Localnet 使用专用的**测试队列**，由本地验证器从 Devnet 克隆而来；`DEFAULT_TEST_QUEUE` / `DEFAULT_EPHEMERAL_TEST_QUEUE` 常量随 VRF SDK 一起提供。
+</Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="快速开始"
+    icon="book"
+    href="/cn/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    按照 Solana VRF 设置指南进行集成。
+  </Card>
+
+  <Card
+    title="开源 VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/solana-vrf"
+    iconType="duotone"
+  >
+    查看开源 VRF 程序和示例。
+  </Card>
+</CardGroup>

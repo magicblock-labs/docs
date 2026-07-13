@@ -1,0 +1,29 @@
+```typescript
+import {
+  createUpdatePermissionInstruction,
+  type Member,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+
+// Update permission and modify members
+// Either authority or permissioned_account must sign based on AUTHORITY_FLAG
+const updatePermissionIx = await createUpdatePermissionInstruction(
+  {
+    authority: [payer.address, true],  // authority can sign if they have AUTHORITY_FLAG
+    permissionedAccount: [permissionedAccount.address, false],  // or permissioned_account can sign
+  },
+  {
+    // Setting members to empty array or None makes the permission public (temporarily visible)
+    // This is useful for transitional states during delegation/undeligation
+    members: [],
+  }
+);
+
+const tx = transaction([updatePermissionIx]);
+const signature = await sendAndConfirmTransaction(
+  client,
+  tx,
+  [payer]
+);
+console.log("TX:", signature);
+```

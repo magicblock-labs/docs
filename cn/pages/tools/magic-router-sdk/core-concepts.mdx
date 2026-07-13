@@ -1,0 +1,196 @@
+---
+title: 核心概念
+description: 理解 Magic Router SDK 背后的核心概念
+---
+
+## 为什么要为账户获取 Blockhash？
+
+在 MagicBlock 的架构中，账户可以存在于两种执行环境中：
+
+- **Solana Mainnet**: 持久化、可组合状态的基础层
+- **Ephemeral Rollups**: 用于已委托账户的高性能执行层
+
+每种环境都有各自独立的 blockhash 推进节奏。Magic Router SDK 使用 `getBlockhashForAccounts` 方法来：
+
+1. **分析账户委托情况**: 检查交易中的可写账户当前被委托到哪里
+2. **获取正确的 Blockhash**: 从 Ephemeral Rollup 或 Solana mainnet 获取合适的 blockhash
+3. **确保交易有效性**: 避免因 blockhash 不匹配而导致交易失败
+
+<Warning>
+如果你的账户已委托到 Ephemeral Rollup，直接使用标准的 Solana `getLatestBlockhash()` 可能会导致交易失败，因为不同层之间的 blockhash 推进并不相同。
+</Warning>
+
+## 为什么要获取最近的验证器？
+
+`getClosestValidator` 函数通过以下方式优化交易性能：
+
+- **降低延迟**: 连接地理位置更近的验证器，加快交易确认
+- **负载均衡**: 将交易分发到网络中可用的验证器
+- **网络优化**: 确保通过 MagicBlock 基础设施进行最佳路由
+
+执行委托时，我们需要指定一个验证器。虽然你可以自行选择任何验证器，但也可以通过 `getClosestValidator` 自动为用户选择最佳验证器。下面是一个遵循该流程的合约与前端示例。
+
+## 完整委托示例
+
+### 智能合约实现
+
+首先，我们来看处理账户委托的 Rust 合约：
+
+```rust
+use anchor_lang::prelude::*;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct DelegateParams {
+    pub commit_frequency_ms: u32,
+    pub validator: Option<Pubkey>,
+}
+
+#[program]
+pub mod my_game {
+    use super::*;
+    
+    /// Delegate account to an Ephemeral Rollup validator
+    pub fn delegate(ctx: Context<DelegateBalance>, params: DelegateParams) -> Result<()> {
+        let config = DelegateConfig {
+            commit_frequency_ms: params.commit_frequency_ms,
+            validator: params.validator,
+        };
+
+        ctx.accounts.delegate_balance(
+            &ctx.accounts.payer,
+            &[ctx.accounts.payer.key.as_ref()],
+            config,
+        )?;
+        
+        msg!("Account delegated to validator: {:?}", params.validator);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct DelegateBalance<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+### 前端实现
+
+接下来看看如何在前端中使用 Magic Router SDK 调用它：
+
+```typescript
+import { 
+  Connection, 
+  Keypair, 
+  PublicKey 
+} from '@solana/web3.js';
+import { 
+  sendMagicTransaction,
+  getClosestValidator 
+} from 'magic-router-sdk';
+import { AnchorProvider, Program } from '@coral-xyz/anchor';
+
+async function delegateAccountsToValidator() {
+  // Connect to Magic Router
+  const routerConnection = new Connection(
+    "https://devnet-router.magicblock.app", 
+    "confirmed"
+  );
+  
+  // Get the optimal validator automatically
+  const validatorKey = await getClosestValidator(routerConnection);
+  console.log("Selected validator:", validatorKey.toBase58());
+  
+  // Create delegation transaction for multiple accounts
+  const tx = await program.methods
+    .delegate({
+      commitFrequencyMs: 30000, // Commit every 30 seconds
+      validator: validatorKey,
+    })
+    .accounts({
+      payer: provider.wallet.publicKey,
+    })
+    .postInstructions([
+      // Delegate additional accounts in the same transaction
+      await program.methods
+        .delegate({
+          commitFrequencyMs: 30000,
+          validator: validatorKey,
+        })
+        .accounts({
+          payer: secondAccount.publicKey,
+        })
+        .instruction()
+    ])
+    .transaction();
+
+  // Send the delegation transaction
+  const signature = await sendMagicTransaction(
+    routerConnection,
+    tx,
+    [provider.wallet.payer, secondAccount] // Sign with both accounts
+  );
+  
+  console.log("✅ Accounts delegated successfully!");
+  console.log("Transaction signature:", signature);
+  console.log("Validator:", validatorKey.toBase58());
+  
+  return signature;
+}
+
+// Usage in your application
+async function initializeGame() {
+  try {
+    // Delegate accounts to enable high-performance execution
+    await delegateAccountsToValidator();
+    
+    // Now game transactions will route to the Ephemeral Rollup
+    console.log("🚀 Ready for high-speed gaming!");
+    
+  } catch (error) {
+    console.error("Delegation failed:", error);
+  }
+}
+```
+
+### 这种方法的关键优势
+
+<AccordionGroup>
+  <Accordion title="自动验证器选择">
+    使用 `getClosestValidator()` 可以自动为用户选择地理位置最近且负载最低的验证器，从而确保最佳性能。
+  </Accordion>
+  
+  <Accordion title="批量委托">
+    该示例展示了如何在单笔交易中使用 `postInstructions()` 委托多个账户，以降低交易成本和初始化时间。
+  </Accordion>
+  
+  <Accordion title="灵活的提交频率">
+    `commitFrequencyMs` 参数允许你在性能（较低频率）与数据持久化保障（较高频率）之间取得平衡。
+  </Accordion>
+</AccordionGroup>
+
+<Info>
+完成委托后，所有涉及这些账户的后续交易都会自动路由到 Ephemeral Rollup，为你的应用提供亚秒级确认时间和更高吞吐量。
+</Info>
+
+## 下一步
+
+<CardGroup cols={2}>
+  <Card
+    title="快速开始"
+    icon="play"
+    href="/cn/pages/tools/magic-router-sdk/getting-started"
+    iconType="duotone"
+  >
+    开始在你的应用中实现 Magic Router SDK。
+  </Card>
+  <Card
+    title="Magic Router 概览"
+    icon="route"
+    href="/cn/pages/get-started/how-integrate-your-program/magic-router"
+    iconType="duotone"
+  >
+    进一步了解更完整的 Magic Router 架构。
+  </Card>
+</CardGroup> 

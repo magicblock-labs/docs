@@ -1,0 +1,25 @@
+---
+title: "最佳实践"
+description: "集成可验证随机数的指导原则"
+---
+
+在请求随机数时，可使用以下建议来获得最可靠的结果。
+请确保你的 rollup 通过 `DelegateOracleQueue` 指令委托给一个可信的 oracle queue，以便请求能被及时完成。
+
+### Seed 选择
+
+- 将用户输入与服务器时间戳或游戏状态结合，以创建不可预测的 seed。
+- 避免让玩家完全指定 `caller_seed`，以防止刷种子（grinding）。
+
+### Callback 验证
+
+- 始终检查 `vrf_program_identity`，以确认 callback 来自 MagicBlock 官方签名者。
+- 拒绝与原始请求参数不匹配的 callback。
+
+### 状态管理
+
+- 存储所有待处理请求标识符，以便安全处理重试或意外 callback。
+- 跟踪你的请求被委托到的 oracle queue，以便正确匹配返回结果。
+- 让随机输出保持短生命周期，在你的 [rollup logic](/cn/pages/get-started/introduction/ephemeral-rollup) 中立即消费它们，并避免重复使用。
+
+遵循这些准则可以降低被操纵的风险，并确保跨会话的一致随机性。

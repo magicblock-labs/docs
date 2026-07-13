@@ -1,0 +1,76 @@
+---
+title: じゃんけん
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="デモ"
+    icon="play"
+    href="https://rps-example.magicblock.app"
+    iconType="duotone"
+  >
+    公開中のアプリを試す
+  </Card>
+
+  <Card
+    title="リポジトリを見る"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rock-paper-scissor/anchor"
+    iconType="duotone"
+  >
+    ソースコードと実装を見る
+  </Card>
+
+</CardGroup>
+
+---
+
+<img src="/images/template_images/rps-example.png" alt="じゃんけんデモ" />
+
+## 概要
+
+Private Ephemeral Rollups を使った confidential なじゃんけんゲームです。各プレイヤーの手はプライベートな TEE アカウントに保存され、対戦相手も RPC も読み取れません。最後の手が出された瞬間に勝者が自動的に公開され、どちらのプレイヤーも同じアカウントを再利用してリマッチを開始できます（新たな rent は不要です）。
+
+サンプルには Web アプリが含まれており、ロボットと対戦するソロモードと、リンクや QR コードで友達を招待する 2 人対戦モードを備えています。
+
+---
+
+## 関連プロダクト
+
+<CardGroup cols={2}>
+  <Card
+    title="Private Ephemeral Rollup"
+    icon="shield-check"
+    href="/jp/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy"
+    iconType="duotone"
+  >
+    Private ER が confidential on-chain computation を可能にする仕組みを学ぶ
+  </Card>
+
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/jp/pages/private-ephemeral-rollups-pers/introduction/authorization"
+    iconType="duotone"
+  >
+    Private ER における authorization の仕組みを理解する
+  </Card>
+
+  <Card
+    title="クイックスタートガイド"
+    icon="rocket"
+    href="/jp/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    プライベートアプリ構築を始める
+  </Card>
+
+  <Card
+    title="Access Control"
+    icon="lock"
+    href="/jp/pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
+    iconType="duotone"
+  >
+    ephemeral アカウントに細かなアクセス権限を設定する
+  </Card>
+</CardGroup>

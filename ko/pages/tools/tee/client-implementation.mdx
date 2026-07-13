@@ -1,0 +1,86 @@
+### 클라이언트 구현
+
+프런트엔드는 Private Ephemeral Rollup(PER)과 상호작용할 때 원격 증명, 클라이언트 챌린지, 액세스 토큰이라는 세 가지 개념을 사용합니다.
+
+- **원격 증명**: 챌린지를 보내고 반환된 TDX Quote를 검증해 RPC가 안전한 하드웨어에서 실행 중인지 확인합니다.
+- **클라이언트 챌린지**: 공개 키의 소유권을 증명해 권한이 있는 상태에 접근할 수 있는 인증 토큰을 발급받습니다.
+- **접근**: 연결을 생성할 때 토큰을 쿼리 파라미터로 전달해 상태를 조회합니다.
+
+### 원격 증명
+
+프런트엔드는 Intel TDX Quote 검증을 수행해 ER 서버가 실제 보안 하드웨어에서 실행 중임을 증명합니다. 이 과정은 `verifyTeeRpcIntegrity`로 실행합니다.
+
+- 무작위 32바이트 챌린지를 생성하고 base64로 인코딩합니다
+- 챌린지를 TEE RPC 서버로 보내 TDX Quote를 받습니다
+- PCCS를 통해 Quote 검증에 필요한 collateral(인증서 자료)을 가져옵니다
+- DCAP QVL WASM 모듈을 사용해 collateral과 현재 시각 기준으로 Quote를 검증합니다
+
+```ts
+import { verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const isIntegrityVerified = await verifyTeeRpcIntegrity(PRIVATE_ER_URL);
+```
+
+### 클라이언트 챌린지 흐름
+
+- 지갑 공개 키를 파라미터로 RPC에 챌린지를 요청합니다
+- 받은 챌린지를 해당 키페어로 서명합니다
+- 서명한 챌린지를 제출하고 성공하면 인증 토큰을 받습니다
+
+```ts
+import { getAuthToken } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const { publicKey, signMessage } = useWallet();
+const token = await getAuthToken(PRIVATE_ER_URL, publicKey, signMessage);
+```
+
+### 접근
+
+연결을 만들 때 인증 토큰을 쿼리 파라미터로 전달합니다.
+
+```ts
+function useEphemeralConnection() {
+  const { authToken } = usePrivateRollupAuth();
+  const ephemeralConnection = useMemo(() => {
+    if (authToken) {
+      return new Connection(
+        `${EPHEMERAL_RPC_URL}?token=${authToken}`,
+        "confirmed"
+      );
+    }
+    return null;
+  }, [authToken]);
+
+  return { ephemeralConnection };
+}
+```
+
+import PerEndpoint from "/ko/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+<CardGroup cols={2}>
+  <Card
+    title="인증"
+    icon="key"
+    href="/ko/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    권한 그룹과 접근
+  </Card>
+  <Card
+    title="프로그램 구현"
+    icon="code"
+    href="/ko/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    CPI로 권한 추가하기
+  </Card>
+  <Card
+    title="프라이버시 사용 사례"
+    icon="shield-check"
+    href="/ko/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    비공개이면서 검증 가능한 애플리케이션 만들기
+  </Card>
+</CardGroup>

@@ -1,10 +1,10 @@
 ---
 title: "Quickstart"
-description: "Learn how to request and consume verifiable randomness onchain using the MagicBlock VRF SDK on Solana."
+description: "Learn how to request and consume Solana VRF randomness onchain using the MagicBlock VRF SDK."
 ---
 
 import Endpoints from "/snippets/endpoints.mdx";
-import Validators from "/snippets/validators.mdx";
+import Validators from "/snippets/notes/validators.mdx";
 import Software from "/snippets/software.mdx";
 import ExplorerCards from "/snippets/explorer-cards.mdx";
 import RpcCards from "/snippets/rpc-cards.mdx";
@@ -16,12 +16,20 @@ import RequestConsumeRandomnessCode from "/snippets/roll-dice-code/request-consu
 import TestCode from "/snippets/roll-dice-code/test.mdx";
 
 import QuickAccessVRF from "/snippets/quick-access-vrf.mdx";
+import AIDevSkillCallout from "/snippets/ai-dev-skill-callout.mdx";
 
 ---
+
+<AIDevSkillCallout />
 
 <QuickAccessVRF />
 
 ---
+
+<Note>
+  Need the product overview first? Start with the <a href="/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf">Solana VRF</a> landing page, then follow this quickstart.
+</Note>
+
 
 ## Step-By-Step Guide
 
@@ -33,7 +41,7 @@ Any Solana program can request and consume verifiable randomness onchain within 
   </Step>
   <Step
     title={
-      <a href="#2-request-%26-consume-randomnness">
+      <a href="#2-request-%26-consume-randomness">
         Add request and consume randomness instructions.
       </a>
     }
@@ -80,7 +88,7 @@ Any Solana program can request and consume verifiable randomness onchain within 
     [⬆️ Back to Top](#code-snippets)
 
   </Tab>
-  <Tab title="2. Request & Consume Randomnness">
+  <Tab title="2. Request & Consume Randomness">
 
     1. Add `ephemeral_vrf_sdk` with Anchor features to your program
 
@@ -99,6 +107,21 @@ Any Solana program can request and consume verifiable randomness onchain within 
     2. Add instructions `roll_dice` to request randomness and `callback_roll_dice` to consume randomness, along with its context:
 
     <RequestConsumeRandomnessCode />
+
+    <Note>
+      **VRF SDK constants** (`ephemeral_vrf_sdk::consts`) — reference these instead of hardcoding addresses, both in your program and in client/test code:
+
+      | Constant | Purpose | Address |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF program | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | Callback signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | Base-layer queue (mainnet/devnet) | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER queue (mainnet/devnet) | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | Base-layer queue (localnet) | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER queue (localnet) | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      Pass the queue that matches where your transaction runs as `oracle_queue`. Mainnet and Devnet share the same queue addresses; localnet uses the test queues.
+    </Note>
 
     > `Request Randomness` is the process of generating a random `hashId` with the relevant callback instruction for the verified oracles to be triggered.
 
@@ -121,11 +144,32 @@ Any Solana program can request and consume verifiable randomness onchain within 
     ```bash
     anchor test --skip-build --skip-deploy --skip-local-validator
     ```
+    <Note>
+      **VRF SDK constants** (`ephemeral_vrf_sdk::consts`) — reference these instead of hardcoding addresses, in both your program and client/test code:
+
+      | Constant | Purpose | Address |
+      | --- | --- | --- |
+      | `VRF_PROGRAM_ID` | VRF program | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
+      | `VRF_PROGRAM_IDENTITY` | Callback signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `DEFAULT_QUEUE` | Base-layer queue (mainnet/devnet) | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
+      | `DEFAULT_EPHEMERAL_QUEUE` | ER queue (mainnet/devnet) | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
+      | `DEFAULT_TEST_QUEUE` | Base-layer queue (localnet) | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
+      | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER queue (localnet) | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
+
+      Pass the queue that matches where your transaction runs as `oracle_queue`. Mainnet and Devnet share the same queue addresses; localnet uses the test queues.
+    </Note>
+
     Run the following test:
     <TestCode />
     [⬆️ Back to Top](#code-snippets)
   </Tab>
 </Tabs>
+
+---
+
+<Note>
+  Want to run VRF end to end on your machine? Use the <a href="/pages/get-started/how-integrate-your-program/local-setup">Local Validator Setup</a> guide for the fully local stack, the Surfpool alternative, and the local <code>vrf-oracle</code> flow.
+</Note>
 
 ---
 

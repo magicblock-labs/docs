@@ -5,24 +5,24 @@ import OtherActionsCode from "/snippets/magic-action-code/other-actions-code.mdx
 
 ### 1) Create action instruction
 
-The instruction `update_leaderboard` runs on the base layer immediately after commit.
+The instruction `update_leaderboard` runs on the base layer immediately after the commit lands. The `#[action]` attribute on its accounts context marks it as callable from a post-commit action.
 
 <ActionCode />
 
 ### 2) Build the commit instruction with the action
 
-The commit instruction `commit_and_update_leaderboard` runs on the ER and schedules the commit with action.
+The commit instruction `commit_and_update_leaderboard` runs on the ER. It uses `MagicIntentBundleBuilder` to schedule both the commit and the post-commit action onto `magic_context` — both are applied together when the ER transaction is sealed back to the base layer.
 
 <CommitWithActionCode />
 
 ### Execute multiple actions
 
-You can commit multiple accounts and chain several actions. Actions execute sequentially.
+You can commit multiple accounts and chain several actions in one call. Actions execute sequentially in the order they're passed to `add_post_commit_actions`.
 
 <MultipleActionCode />
 
-### Other actions
+### Undelegate with actions
 
-Actions can be executed with undelegation and without any commits.
+Actions can also be chained onto an undelegation — the counter commits, undelegates, and the actions run, all atomically in one ER transaction.
 
 <OtherActionsCode />

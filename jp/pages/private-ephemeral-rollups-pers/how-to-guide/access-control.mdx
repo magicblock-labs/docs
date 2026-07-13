@@ -1,0 +1,249 @@
+---
+title: "アクセス制御"
+description: "Private Ephemeral Rollups におけるきめ細かなアクセス制御とメンバー権限の管理方法を学びます。"
+---
+
+import CreateEphemeralPermissionAnchor from "/jp/snippets/acl-code/ephemeral-permission/anchor/create.mdx";
+import UpdateEphemeralPermissionAnchor from "/jp/snippets/acl-code/ephemeral-permission/anchor/update.mdx";
+import CloseEphemeralPermissionAnchor from "/jp/snippets/acl-code/ephemeral-permission/anchor/close.mdx";
+
+import CreateEphemeralPermissionRust from "/jp/snippets/acl-code/ephemeral-permission/rust/create.mdx";
+import UpdateEphemeralPermissionRust from "/jp/snippets/acl-code/ephemeral-permission/rust/update.mdx";
+import CloseEphemeralPermissionRust from "/jp/snippets/acl-code/ephemeral-permission/rust/close.mdx";
+
+import CreateEphemeralPermissionPinocchio from "/jp/snippets/acl-code/ephemeral-permission/pinocchio/create.mdx";
+import UpdateEphemeralPermissionPinocchio from "/jp/snippets/acl-code/ephemeral-permission/pinocchio/update.mdx";
+import CloseEphemeralPermissionPinocchio from "/jp/snippets/acl-code/ephemeral-permission/pinocchio/close.mdx";
+
+import CreateEphemeralPermissionKit from "/jp/snippets/acl-code/ephemeral-permission/kit/create.mdx";
+import UpdateEphemeralPermissionKit from "/jp/snippets/acl-code/ephemeral-permission/kit/update.mdx";
+import CloseEphemeralPermissionKit from "/jp/snippets/acl-code/ephemeral-permission/kit/close.mdx";
+
+import CreateEphemeralPermissionWeb3js from "/jp/snippets/acl-code/ephemeral-permission/web3js/create.mdx";
+import UpdateEphemeralPermissionWeb3js from "/jp/snippets/acl-code/ephemeral-permission/web3js/update.mdx";
+import CloseEphemeralPermissionWeb3js from "/jp/snippets/acl-code/ephemeral-permission/web3js/close.mdx";
+
+import MemberFlagsRust from "/jp/snippets/acl-code/member/rust.mdx";
+import MemberFlagsWeb3js from "/jp/snippets/acl-code/member/web3js.mdx";
+import MemberFlagsKit from "/jp/snippets/acl-code/member/kit.mdx";
+import MemberFlagsPinocchio from "/jp/snippets/acl-code/member/pinocchio.mdx";
+
+import PerCards from "/jp/snippets/per-cards.mdx";
+import AclCards from "/jp/snippets/acl-cards.mdx";
+import Validators from "/jp/snippets/notes/validators.mdx";
+
+---
+
+<AclCards />
+
+---
+
+## 概要
+
+Private Ephemeral Rollups は、[コンプライアンス](/jp/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)を中核に据えた [Trusted Execution Environment](/jp/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) 上で、permissioned accounts に対するきめ細かな権限制御を可能にする [Ephemeral Rollups](/jp/pages/ephemeral-rollups-ers/introduction/why) です。各 permission account は、メンバー一覧と、それぞれが実行できる操作を決める特定のフラグを保持します。
+
+### 基本概念
+
+- **Permission Account**: 特定のアカウントに対するアクセス制御ルールを保存する PDA
+- **Members**: フラグを通じて特定の権限を付与されたアドレス
+- **Flags**: メンバーが何をできるか（authority、ログ閲覧、残高閲覧など）を定義するビットマスク
+- **Public Permissions**: メンバーが `None` に設定されると、permissioned account は一時的に可視状態になる
+
+---
+
+## メンバーフラグ
+
+メンバーフラグは、各メンバーに対するきめ細かな権限を定義します。フラグはビット OR で組み合わせることで、複数の権限を付与できます。
+
+**フラグの説明:**
+
+- **AUTHORITY**: 権限設定の更新・委任、他メンバーの追加・削除、メンバーフラグの更新を許可します。
+- **TX_LOGS**: トランザクション実行ログの閲覧を許可します。
+- **TX_BALANCES**: アカウント残高の変化の閲覧を許可します。
+- **TX_MESSAGE**: トランザクションメッセージデータの閲覧を許可します。
+- **ACCOUNT_SIGNATURES**: アカウント署名の閲覧を許可します
+
+<Tabs>
+  <Tab title="Rust SDK">
+    <MemberFlagsRust />
+  </Tab>
+  <Tab title="Pinocchio">
+    <MemberFlagsPinocchio />
+  </Tab>
+  <Tab title="Web3.js">
+    <MemberFlagsWeb3js />
+  </Tab>
+  <Tab title="Kit">
+    <MemberFlagsKit />
+  </Tab>
+</Tabs>
+---
+
+## Ephemeral Permission
+
+<Note>
+  `EphemeralPermission` アカウントは Ephemeral Rollup 上で完結し、レントは委任済みの
+  PDA が負担します — Base Layer に permission account を作成・委任・commit-and-undelegate
+  する必要はありません。ライフサイクル全体は **Create**、**Update**、**Close** の
+  3 つの CPI 操作でカバーされ、すべて ER 上のデータアカウントが PDA として署名し、
+  MagicBlock の Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 経由で実行されます。
+</Note>
+
+**前提条件 — データ PDA を委任する。** 委任されるのはデータアカウントのみです
+（Base Layer 上で、MagicBlock の Delegation Program
+`DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 経由）。委任後、PDA は自身のプログラム
+シードを使って ER 上で 3 つの permission 操作すべてに署名し、ephemeral permission の
+レントを支払います — そのため `initialize` 時に事前にチャージしておく必要があります。
+エンドツーエンドの流れは
+[クイックスタート](/jp/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart#2-委任と-permission-の作成)
+を参照してください。
+
+<Validators />
+
+<Steps>
+  <Step title={<a href="#1-ephemeral-permission-を作成">Ephemeral Permission を作成</a>}>
+    初期メンバーとプライバシーフラグを指定して、ER 上に新しい `EphemeralPermission`
+    アカウントを初期化します。べき等 — 既に存在する場合はスキップします。
+  </Step>
+  <Step title={<a href="#2-ephemeral-permission-を更新">Ephemeral Permission を更新</a>}>
+    プライバシーフラグの切り替え、またはメンバーの追加 / 削除 / フラグ変更を行います。
+    更新は ER 上で即座に反映されます。
+  </Step>
+  <Step title={<a href="#3-ephemeral-permission-を閉じる">Ephemeral Permission を閉じる</a>}>
+    permission が不要になった時点で、ER 上の `EphemeralPermission` アカウントを閉じ、
+    レントをデータ PDA に返金します。
+  </Step>
+</Steps>
+
+---
+
+## Ephemeral Permission 操作
+
+<Tabs>
+  <Tab title="1. Ephemeral Permission を作成">
+    `CreateEphemeralPermissionCpi` を使って ER 上に新しい `EphemeralPermission`
+    アカウントを初期化します。Payer は委任済みのデータ PDA で、自身のプログラムシードで
+    署名し、`initialize` 時に事前チャージされた lamports からレントを支払います。
+
+    <Tabs>
+      <Tab title="Anchor">
+        <CreateEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <CreateEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CreateEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CreateEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreateEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **ユースケース:**
+
+    - ER 上で新たに委任された PDA のアクセス制御をブートストラップ
+    - 公開状態（`is_private: false`、メンバー空）で開始し、後で Update により絞り込む
+
+    [⬆️ トップに戻る](#ephemeral-permission)
+
+  </Tab>
+
+  <Tab title="2. Ephemeral Permission を更新">
+    `UpdateEphemeralPermissionCpi` でプライバシーフラグを切り替え、メンバー一覧を
+    書き換えます。毎回 authority を含む完全なメンバー一覧を再構築してください —
+    そうすればデータ PDA が自分自身をロックアウトすることはありません。
+
+    <Tabs>
+      <Tab title="Anchor">
+        <UpdateEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <UpdateEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdateEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <UpdateEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdateEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **ユースケース:**
+
+    - 必要に応じて `is_private` を切り替える（例：プライベートプレイ、公開リビール）
+    - `TX_LOGS | TX_MESSAGE | TX_BALANCES` フラグ付きで新しい閲覧者を追加
+    - 次回の呼び出しのメンバー一覧から除外することでメンバーの権限を取り消す
+
+    [⬆️ トップに戻る](#ephemeral-permission)
+
+  </Tab>
+
+  <Tab title="3. Ephemeral Permission を閉じる">
+    `CloseEphemeralPermissionCpi` を使って ER 上の `EphemeralPermission` アカウントを
+    閉じます。レントはデータ PDA（元の payer）に返金されます。オプション — permission
+    が不要になった場合にのみ呼び出します。
+
+    <Tabs>
+      <Tab title="Anchor">
+        <CloseEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <CloseEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CloseEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CloseEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CloseEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **ユースケース:**
+
+    - データ PDA を委任解除する前に ephemeral レントを回収
+    - プライベート実行が終わったらアクセス制御を取り壊す
+
+    [⬆️ トップに戻る](#ephemeral-permission)
+
+  </Tab>
+</Tabs>
+
+<Tip>
+  参考実装:
+  [`private-counter/anchor`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter/anchor)
+  （Anchor）と
+  [`private-counter/pinocchio`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter/pinocchio)。
+</Tip>
+
+---
+
+## ベストプラクティス
+
+1. **Authority 管理**: 常に少なくとも 1 人の信頼できるメンバーに `AUTHORITY_FLAG` を割り当てる
+2. **最小権限**: 各メンバーには必要なフラグだけを付与する
+3. **リアルタイム更新**: permission は委任解除せずに Private Ephemeral Rollup 上でリアルタイム更新でき、動的なアクセス制御調整が可能
+4. **クリーンアップ**: 未使用の permission accounts を委任解除して閉じ、SOL を解放する
+
+---
+
+## セキュリティ上の考慮事項
+
+- **署名者の検証**: `AUTHORITY_FLAG` を持つメンバー、または permissioned account を持つプログラムだけが変更を認可できます
+- **公開アカウント**: メンバーを `None` に設定すると、アカウントは公開可視状態になります
+- **デフォルト Authority**: デフォルトでは、permissioned account の所有者が permission account の members に permission authority として追加されます
+- **空のメンバー一覧**: `members` フィールドが空リストに設定されると、permissioned account は完全に制限されて非公開になります。permission を変更できるのは所有者だけです
+- **アクセス監査**: メンバーフラグを使ってアクセスを監査・制御します
+
+---
+
+<PerCards />

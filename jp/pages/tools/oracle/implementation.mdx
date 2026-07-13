@@ -1,0 +1,54 @@
+---
+title: "実装"
+description: "Pyth Lazer の価格フィードアカウントを導出し、そのバイト列をデコードする"
+---
+
+## 価格フィードアカウントの導出
+
+価格アカウントの PDA は、次の seeds を使って導出します。
+
+- **"price feed"**（buffer）
+- **"pyth-lazer"**（buffer）
+- **feedID**（buffer）: 取得したい資産です。サポートされているフィードは[こちら](https://github.com/magicblock-labs/real-time-pricing-oracle/blob/main/pyth_lazer_list.json)で確認できます。
+- **price program id**: `PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd`
+
+```ts
+// seeds: ["price_feed", "pyth-lazer", feed_id_as_string]
+function deriveFeedAddress (feedId: string) {
+  const [addr] = web3.PublicKey.findProgramAddressSync(
+  [Buffer.from('price_feed'), Buffer.from('pyth-lazer'), Buffer.from(feedId)],
+  PROGRAM ID
+  );
+  return addr
+}
+```
+
+## アカウントの解析
+
+オンチェーンアカウントにはヘッダーと価格データ用のフィールドが保存されています。ここでは生のバイト列を読み取り、デコードします。
+
+- **Price offset**: 先頭から 73 バイト
+- **Type**: 符号付き 64 ビット整数（`i64`）
+- **Apply exponent**: アカウントの exponent を使って生の価格をスケーリングする
+
+```ts
+const addr = deriveFeedAddress(feed.id);
+const PRICE_OFFSET = 73;
+
+const dv = new DataView(ai.data.buffer, ai.data.byteOffset, ai.data.byteLength);
+const raw = dv.getBigUint64(PRICE_OFFSET, true);
+const price = Number(raw) * Math.pow(10, feed.exponent);
+```
+
+<CardGroup cols={3}>
+  <Card title="ライブデモ" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
+    リアルタイム価格ストリーム
+  </Card>
+  <Card title="実装" icon="book" href="/jp/pages/tools/oracle/implementation" iconType="duotone">
+    オンチェーンでオラクルにアクセスする方法を学ぶ
+  </Card>
+  <Card title="コード例" icon="code" href="https://github.com/magicblock-labs/real-time-pricing-oracle
+" iconType="duotone">
+    Github リポジトリを見る
+  </Card>
+</CardGroup>

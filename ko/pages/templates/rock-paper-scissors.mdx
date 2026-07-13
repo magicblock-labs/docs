@@ -1,0 +1,76 @@
+---
+title: 가위바위보
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="데모"
+    icon="play"
+    href="https://rps-example.magicblock.app"
+    iconType="duotone"
+  >
+    라이브 애플리케이션 체험하기
+  </Card>
+
+  <Card
+    title="저장소 보기"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rock-paper-scissor/anchor"
+    iconType="duotone"
+  >
+    소스 코드와 구현 살펴보기
+  </Card>
+
+</CardGroup>
+
+---
+
+<img src="/images/template_images/rps-example.png" alt="가위바위보 데모" />
+
+## 개요
+
+Private Ephemeral Rollups를 사용한 confidential 가위바위보 게임입니다. 각 플레이어의 선택은 상대방도 RPC도 읽을 수 없는 프라이빗 TEE 계정에 저장되며, 마지막 선택이 제출되는 순간 승자가 자동으로 공개됩니다. 어느 플레이어든 같은 계정을 재사용하는 리매치를 시작할 수 있어 새로운 rent가 필요 없습니다.
+
+예제에는 웹 앱이 포함되어 있으며, 로봇과 대전하는 솔로 모드와 링크 또는 QR 코드로 친구를 초대하는 2인 대전 모드를 지원합니다.
+
+---
+
+## 관련 제품
+
+<CardGroup cols={2}>
+  <Card
+    title="Private Ephemeral Rollup"
+    icon="shield-check"
+    href="/ko/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy"
+    iconType="duotone"
+  >
+    Private ER가 confidential on-chain computations를 가능하게 하는 방식을 알아보세요
+  </Card>
+
+  <Card
+    title="Authorization"
+    icon="key"
+    href="/ko/pages/private-ephemeral-rollups-pers/introduction/authorization"
+    iconType="duotone"
+  >
+    Private ER의 authorization 메커니즘 이해하기
+  </Card>
+
+  <Card
+    title="퀵스타트 가이드"
+    icon="rocket"
+    href="/ko/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    프라이빗 애플리케이션 구축 시작하기
+  </Card>
+
+  <Card
+    title="Access Control"
+    icon="lock"
+    href="/ko/pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
+    iconType="duotone"
+  >
+    ephemeral 계정에 세분화된 접근 권한 설정하기
+  </Card>
+</CardGroup>

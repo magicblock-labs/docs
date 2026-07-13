@@ -1,0 +1,86 @@
+### 客户端实现
+
+前端通过三个核心概念与 Private Ephemeral Rollup（PER）交互：远程证明、客户端挑战和访问令牌。
+
+- **远程证明**：发送挑战并验证返回的 TDX Quote，以确认 RPC 运行在安全硬件上。
+- **客户端挑战**：证明你拥有某个公钥，从而为受权限保护的状态获取授权令牌。
+- **访问**：在创建连接时将该令牌作为查询参数传入，以便查询状态。
+
+### 远程证明
+
+前端会执行 Intel TDX Quote 验证，以证明 ER 服务器运行在真实的安全硬件上。这个过程通过 `verifyTeeRpcIntegrity` 完成。
+
+- 生成一个随机的 32 字节挑战，并将其编码为 base64
+- 将挑战发送到 TEE RPC 服务器，以获取 TDX Quote
+- 通过 PCCS 为该 Quote 获取 collateral（证书链材料）
+- 使用 DCAP QVL WASM 模块，结合 collateral 和当前时间验证 Quote
+
+```ts
+import { verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const isIntegrityVerified = await verifyTeeRpcIntegrity(PRIVATE_ER_URL);
+```
+
+### 客户端挑战流程
+
+- 向 RPC 请求一个挑战，并带上钱包公钥作为参数
+- 使用对应的密钥对对收到的挑战进行签名
+- 提交签名后的挑战，成功后获取授权令牌
+
+```ts
+import { getAuthToken } from "@magicblock-labs/ephemeral-rollups-sdk";
+
+const { publicKey, signMessage } = useWallet();
+const token = await getAuthToken(PRIVATE_ER_URL, publicKey, signMessage);
+```
+
+### 访问
+
+创建连接时，将授权令牌作为查询参数传入。
+
+```ts
+function useEphemeralConnection() {
+  const { authToken } = usePrivateRollupAuth();
+  const ephemeralConnection = useMemo(() => {
+    if (authToken) {
+      return new Connection(
+        `${EPHEMERAL_RPC_URL}?token=${authToken}`,
+        "confirmed"
+      );
+    }
+    return null;
+  }, [authToken]);
+
+  return { ephemeralConnection };
+}
+```
+
+import PerEndpoint from "/cn/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+<CardGroup cols={2}>
+  <Card
+    title="授权"
+    icon="key"
+    href="/cn/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    权限组与访问
+  </Card>
+  <Card
+    title="程序实现"
+    icon="code"
+    href="/cn/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    通过 CPI 添加权限
+  </Card>
+  <Card
+    title="隐私用例"
+    icon="shield-check"
+    href="/cn/pages/get-started/use-cases/privacy"
+    iconType="duotone"
+  >
+    构建私密且可验证的应用
+  </Card>
+</CardGroup>

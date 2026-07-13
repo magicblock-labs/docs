@@ -1,0 +1,232 @@
+import Validators from "/ko/snippets/notes/validators.mdx";
+
+## 로컬 설정 옵션
+
+Ephemeral Rollups를 로컬에서 실행하는 방법은 세 가지입니다.
+
+- `mb-test-validator` 를 베이스 레이어로 사용하고 로컬 `ephemeral-validator` 를 함께 쓰는 완전 로컬 스택
+- 베이스 레이어 대안으로 로컬 Surfpool 인스턴스를 사용하면서 rollup도 로컬에서 실행하는 방식
+- 로컬 `ephemeral-validator` 를 Devnet 같은 공개 베이스 레이어에 직접 연결하는 방식
+
+모든 것을 자신의 머신에서 돌리고 싶다면 완전 로컬 구성을 사용하세요. Surfpool 워크플로를 유지하면서 로컬 Ephemeral Rollup을 테스트하고 싶다면 Surfpool을 사용하세요. 로컬 Solana validator 없이 로컬 rollup 프로세스만 원한다면 Devnet 옵션을 사용하세요.
+
+### 중요: 올바른 검증자 ID로 프로그램 업그레이드하기
+
+로컬 ER 검증자를 사용할 때는 계정이 위임되는 베이스 레이어에 연결해야 합니다. 특정 ER 검증자 ID로 PDA를 위임한다면, commit와 undelegation이 베이스 레이어에서 올바르게 완료되도록 프로그램의 delegation 설정도 업데이트하세요.
+
+<Validators />
+
+<Tabs>
+  <Tab title="완전 로컬">
+    <Steps>
+      <Step title="Ephemeral Validator CLI 설치">
+        ```bash
+        npm install -g @magicblock-labs/ephemeral-validator@latest
+        ```
+      </Step>
+
+      <Step title="로컬 Solana 베이스 레이어 시작">
+        `mb-test-validator` 는 완전 로컬 구성을 위한 베이스 레이어로 사용할 수 있는 로컬 Solana validator를 시작합니다.
+
+        ```bash
+        mb-test-validator --reset
+        ```
+
+        이 구성은 RPC에 `http://localhost:8899`, WebSocket 연결에 `ws://localhost:8900` 을 사용합니다.
+      </Step>
+
+      <Step title="localhost에 프로그램 배포 또는 업그레이드">
+        <Tabs>
+          <Tab title="Rust Native">
+            ```bash
+            cargo build-sbf
+            solana config set --url localhost
+            solana program deploy YOUR_PROGRAM_PATH
+            ```
+          </Tab>
+          <Tab title="Anchor">
+            ```bash
+            anchor build && anchor deploy \
+              --provider.cluster localnet
+            ```
+          </Tab>
+        </Tabs>
+      </Step>
+
+      <Step title="로컬 ephemeral validator 시작">
+        로컬 Ephemeral Rollup을 로컬 Solana validator에 연결합니다.
+
+        ```bash
+        ephemeral-validator --remotes "http://localhost:8899" --remotes "ws://localhost:8900" -l "7799" --lifecycle ephemeral
+        ```
+      </Step>
+
+      <Step title="로컬 rollup 대상 테스트 실행">
+        로컬 rollup은 RPC `http://localhost:7799`, WebSocket `ws://localhost:7800` 에서 노출됩니다.
+
+        <Tabs>
+          <Tab title="Rust Native">
+            ```bash
+            EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+            EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+            PROVIDER_ENDPOINT=http://localhost:8899 \
+            WS_ENDPOINT=ws://localhost:8900 \
+            yarn test
+            ```
+          </Tab>
+          <Tab title="Anchor">
+            ```bash
+            EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
+            EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
+            anchor test \
+              --provider.cluster localnet \
+              --skip-local-validator \
+              --skip-build \
+              --skip-deploy
+            ```
+          </Tab>
+        </Tabs>
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Surfpool">
+    <Steps>
+      <Step title="Surfpool 설치">
+        ```bash
+        curl -sL https://run.surfpool.run/ | bash
+        ```
+      </Step>
+
+      <Step title="Ephemeral Validator CLI 설치">
+        ```bash
+        npm install -g @magicblock-labs/ephemeral-validator@latest
+        ```
+      </Step>
+
+      <Step title="Surfpool 시작">
+        이 예시는 Surfpool은 로컬에 두고, 상위 베이스 레이어로 Solana Devnet을 사용합니다.
+
+        ```bash
+        surfpool start --rpc-url https://api.devnet.solana.com
+        ```
+
+        Surfpool은 ephemeral validator가 연결할 로컬 RPC 및 WebSocket 엔드포인트를 노출합니다.
+      </Step>
+
+      <Step title="ephemeral validator 시작">
+        validator를 Surfpool의 로컬 RPC 및 WebSocket 엔드포인트로 지정합니다.
+
+        ```bash
+        ephemeral-validator --remotes "http://localhost:8899" --remotes "ws://localhost:8900" -l "7799" --lifecycle ephemeral
+        ```
+      </Step>
+
+      <Step title="rollup으로 테스트 트랜잭션 보내기">
+        ```bash
+        solana transfer <your address> 0 -u "http://localhost:7799"
+        ```
+      </Step>
+
+      <Step title="트랜잭션 확인">
+        해당 트랜잭션은 ER TUI에 표시되며, 여기서 내용을 확인하고 익스플로러에서 열 수 있습니다.
+
+        이 흐름은 [Surfpool로 Ephemeral Rollups를 로컬에서 실행하는 방법](https://x.com/PiccoGabriele/status/2030045550230524212)을 기반으로 합니다.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Devnet">
+    <Steps>
+      <Step title="Devnet에 프로그램 배포 또는 업그레이드">
+        프로그램에 MagicBlock delegation을 추가한 뒤 Devnet에 배포합니다.
+
+        <Tabs>
+          <Tab title="Rust Native">
+            ```bash
+            cargo build-sbf
+            solana config set --url devnet
+            solana program deploy YOUR_PROGRAM_PATH
+            ```
+          </Tab>
+          <Tab title="Anchor">
+            ```bash
+            anchor build && anchor deploy \
+              --provider.cluster devnet
+            ```
+          </Tab>
+        </Tabs>
+      </Step>
+
+      <Step title="로컬 ephemeral validator 설치 및 실행">
+        ```bash
+        npm install -g @magicblock-labs/ephemeral-validator@latest
+        ```
+
+        ```bash
+        RUST_LOG=info ephemeral-validator \
+          --lifecycle ephemeral \
+          --remote-url "https://rpc.magicblock.app/devnet" \
+          --rpc-port 7799
+        ```
+      </Step>
+
+      <Step title="로컬 rollup 대상 테스트 실행">
+        <Tabs>
+          <Tab title="Rust Native">
+            ```bash
+            EPHEMERAL_PROVIDER_ENDPOINT=http://localhost:7799 \
+            EPHEMERAL_WS_ENDPOINT=ws://localhost:7800 \
+            yarn test
+            ```
+          </Tab>
+          <Tab title="Anchor">
+            ```bash
+            EPHEMERAL_PROVIDER_ENDPOINT="http://localhost:7799" \
+            EPHEMERAL_WS_ENDPOINT="ws://localhost:7800" \
+            anchor test \
+              --provider.cluster devnet \
+              --skip-local-validator \
+              --skip-build \
+              --skip-deploy
+            ```
+          </Tab>
+        </Tabs>
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## 로컬에서 VRF 오라클 실행
+
+VRF를 엔드투엔드로 테스트해야 한다면, 로컬 `vrf-oracle` 을 로컬 테스트 큐에 연결해 실행하세요.
+
+<Steps>
+  <Step title="최신 Ephemeral Validator CLI 설치">
+    ```bash
+    npm install -g @magicblock-labs/ephemeral-validator@latest
+    ```
+  </Step>
+
+  <Step title="로컬 Solana validator 시작">
+    ```bash
+    mb-test-validator --reset
+    ```
+  </Step>
+
+  <Step title="ephemeral validator 시작">
+    ```bash
+    ephemeral-validator --remote-url "http://localhost:8899" --rpc-port 7799 --lifecycle ephemeral
+    ```
+  </Step>
+
+  <Step title="로컬 VRF 오라클 시작">
+    이 오라클은 요청을 로컬 테스트 큐에 추가합니다。
+
+    ```bash
+    VRF_ORACLE_SKIP_PREFLIGHT="true" RPC_URL="http://localhost:8899" WEBSOCKET_URL="ws://localhost:8999" RUST_LOG=info vrf-oracle
+    ```
+
+    로컬 validator가 다른 WebSocket 포트를 노출한다면 `WEBSOCKET_URL` 도 그에 맞게 수정하세요.
+  </Step>
+</Steps>

@@ -1,0 +1,59 @@
+---
+title: "Pricing"
+description: "Pricing for provably fair randomness requests with MagicBlock Solana VRF."
+---
+
+import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
+
+MagicBlock Solana VRF pricing is charged per fulfilled randomness request. Fees cover proof generation and posting the verified result on-chain.
+
+<table style={{ width: "100%", tableLayout: "fixed" }}>
+  <thead>
+    <tr>
+      <th>VRF type</th>
+      <th>Amount (SOL)</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ER (&lt;50 ms)</td>
+      <td>Free</td>
+      <td>Per randomness request</td>
+    </tr>
+    <tr>
+      <td>Solana (&lt;500 ms)</td>
+      <td>0.0008</td>
+      <td>Per randomness request</td>
+    </tr>
+    <tr>
+      <td>Solana (1/2 seconds)</td>
+      <td>0.0005</td>
+      <td>Per randomness request</td>
+    </tr>
+  </tbody>
+</table>
+
+## VRF Cost Simulator: 30 Days
+
+<VRFCostSimulator />
+
+<CardGroup cols={2}>
+  <Card
+    title="Start Building"
+    icon="book"
+    href="/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Build a Solana VRF request and callback flow with the MagicBlock VRF SDK.
+  </Card>
+
+  <Card
+    title="Solana VRF"
+    icon="dice"
+    href="/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
+    iconType="duotone"
+  >
+    Return to the Solana VRF overview.
+  </Card>
+</CardGroup>

@@ -1,0 +1,52 @@
+---
+title: "検証可能なランダムネスとは？"
+description: "Solana VRF が Solana プログラムとオンチェーンロジックに証明可能に公平なランダムネスを提供する方法を学びます。"
+---
+
+Solana VRF は、オンチェーンプログラムに対して改ざん耐性のある乱数ソースを提供します。
+タイムスタンプやブロックハッシュから導かれる疑似乱数とは異なり、これはオフチェーンで生成され、誰でもオンチェーンで検証できる暗号学的証明とともに提供されます。
+
+MagicBlock は **MagicBlock Solana VRF** を通じてこの機能を提供します。これは、オラクルネットワークを使ってランダム値を計算および検証する Solana VRF 実装です。プロトコルは [RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381) に従い、Curve25519 の Ristretto グループと Schnorr 形式の署名を利用して証明を生成します。製品背景は [Solana VRF 概要](/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf)から始め、統合の詳細は[技術詳細](./technical-details)ページを参照してください。
+
+MagicBlock rollup は `ephemeral_vrf_sdk` を通じてこのランダムネスにアクセスします。
+これは [ephemeral rollup](/jp/pages/get-started/introduction/ephemeral-rollup)
+の実行ウィンドウ内で完結して動作します。
+
+これにより、プログラムは単一の主体を信頼することなく、アイテムドロップ、ガチャ、マッチメイキングのような仕組みを実装できます。返される証明により、その値が公平に生成され、操作されていないことを確認できます。
+
+<CardGroup cols={2}>
+  <Card
+    title="Solana VRF クイックスタート"
+    icon="book"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    Solana VRF のリクエストとコールバックの流れを構築します。
+  </Card>
+
+  <Card
+    title="製品概要"
+    icon="book"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
+    iconType="duotone"
+  >
+    Solana VRF が MagicBlock の製品群にどう組み込まれるかを確認します。
+  </Card>
+
+  <Card
+    title="オープンソース VRF"
+    icon="github"
+    href="https://github.com/magicblock-labs/solana-vrf"
+    iconType="duotone"
+  >
+    オープンソースの VRF プログラムとサンプルを確認します。
+  </Card>
+</CardGroup>
+
+## 使用例
+
+- 証明可能に公平なルートボックスや宝箱ドロップ
+- 安全なガチャシステム
+- ランダムなスポーンや資源生成
+- チェーン上で検証される PvP マッチメイキング
+- トラストレスな抽選やギブアウェイ

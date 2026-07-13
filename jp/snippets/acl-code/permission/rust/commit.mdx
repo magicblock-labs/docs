@@ -1,0 +1,13 @@
+```rust
+use ephemeral_rollups_sdk::access_control::{
+    instructions::CommitPermissionCpiBuilder
+};
+
+CommitPermissionCpiBuilder::new(&permission_program)
+    .authority(&payer, false)
+    .permissioned_account(&permissioned_account, true)
+    .permission(&permission)
+    .magic_program(&magic_program)
+    .magic_context(&magic_context)
+    .invoke_signed(&[seed_refs.as_slice()])?;
+```

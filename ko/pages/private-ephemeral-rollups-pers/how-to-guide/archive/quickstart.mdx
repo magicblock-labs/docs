@@ -1,0 +1,147 @@
+---
+title: "빠른 시작"
+description: "MagicBlock의 ER과 Intel TDX 기반 Trusted Execution Environment를 통해 모든 Solana 프로그램 상태 계정에 프라이버시를 적용하세요."
+---
+
+import Endpoints from "/ko/snippets/endpoints.mdx";
+import Validators from "/ko/snippets/notes/validators.mdx";
+import Construction from "/ko/snippets/construction.mdx";
+import Software from "/ko/snippets/software.mdx";
+import SolanaResources from "/ko/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/ko/snippets/per-code/write-program.mdx";
+import DelegateCode from "/ko/snippets/per-code/delegate.mdx";
+import RestrictCode from "/ko/snippets/per-code/restrict.mdx";
+import AuthorizeCode from "/ko/snippets/per-code/authorize.mdx";
+import TestCode from "/ko/snippets/per-code/test.mdx";
+import DelegationInfo from "/ko/snippets/delegation-info.mdx";
+
+import QuickAccessPER from "/ko/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
+## 단계별 가이드
+
+<Steps>
+  <Step title={<a href="#1-write-program">프로그램 작성</a>}>
+    평소와 같은 방식으로 Solana 프로그램을 작성합니다.
+  </Step>
+  <Step
+    title={
+      <a href="#2-restrict">
+        프로그램에 권한 훅을 추가해 제한을 설정합니다.
+      </a>
+    }
+  >
+    CPI 훅을 추가해 그룹과 권한을 생성하고, 특정 위임 계정에 제한을 적용합니다.
+  </Step>
+  <Step title={<a href="#3-delegate">프로그램에 위임 훅 추가</a>}>
+    CPI 훅을 추가해 Ephemeral Rollup 세션을 통해 상태 계정을 위임, 커밋, 위임 해제할 수 있게 합니다.
+  </Step>
+  <Step title={<a href="#4-deploy">Solana에 배포</a>}>
+    Anchor CLI를 사용해 Solana 프로그램을 배포합니다.
+  </Step>
+  <Step
+    title={<a href="#5-authorize">클라이언트에 인증 구현</a>}
+  >
+    사용자 메시지에 서명해 TEE 엔드포인트에서 인증 토큰을 가져옵니다.
+  </Step>
+  <Step title={<a href="#6-test">트랜잭션 실행 및 프라이버시 테스트</a>}>
+    인증 토큰을 요청하고 기밀 트랜잭션을 전송합니다.
+  </Step>
+</Steps>
+
+---
+
+## 비공개 전송 예시
+
+<img
+  src="/images/gifs/per-short-2x-420w.gif"
+  alt="Private Payments GIF"
+  style={{
+    width: "100%",
+    maxWidth: "420px",
+    height: "auto",
+    objectFit: "contain",
+    borderRadius: "8px",
+  }}
+/>
+
+<Software />
+
+<div id="code-snippets" />
+### 코드 스니펫
+
+<Tabs>
+    <Tab title={<span id="1-write-program">1. 프로그램 작성</span>}>
+        토큰을 예치 계정으로 추적하고 금고 계정에 잠그는 간단한 전송 프로그램입니다.
+        <WriteProgramCode />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title={<span id="2-restrict">2. 제한 설정</span>}>
+        계정 단위 권한을 두 단계로 정의합니다.
+        1. 사용자 그룹 생성
+        2. 상태 계정과 사용자 그룹에 대한 권한 생성
+        <RestrictCode />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+        <Tab title={<span id="3-delegate">3. 위임</span>}>
+        TEE 내부 검증자에게 위임해 계정의 프라이버시를 보장합니다. 
+        <DelegateCode />
+        <DelegationInfo />
+        자동 커밋이나 특정 ER 검증자 등 원하는 위임 설정을 지정합니다.
+        <Validators />
+
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title={<span id="4-deploy">4. 배포</span>}>
+        이제 프로그램 업그레이드가 끝났고 준비가 완료되었습니다. 원하는 클러스터에 빌드하고 배포하세요.
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title={<span id="5-authorize">5. 인증</span>}>
+        TEE 내부 ER RPC와의 상호작용을 설정합니다.
+        1. `https://pccs.phala.network/tdx/certification/v4`를 통해 TEE RPC 무결성을 검증합니다
+        2. 사용자가 TEE 엔드포인트와 상호작용할 수 있도록 인증 토큰을 요청합니다
+        <AuthorizeCode />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+    <Tab title={<span id="6-test">6. 테스트</span>}>
+        `authToken`을 사용해 비공개 결제 프로그램을 테스트합니다.
+
+        `https://devnet-tee.magicblock.app?token=${token}`
+        1. 사용자 예치 계정을 초기화합니다(수신자도 동일)
+        2. 토큰을 예치합니다
+        3. 예치 계정에 권한을 설정합니다
+        4. 예치 계정을 위임합니다
+        5. 위임된 예치 계정 사이에서 비공개 전송을 수행합니다
+        6. 예치 계정을 Solana로 위임 해제합니다
+        7. 예치를 출금합니다
+
+        <TestCode />
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ 맨 위로](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock 제품
+
+import ProductCards from "/ko/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

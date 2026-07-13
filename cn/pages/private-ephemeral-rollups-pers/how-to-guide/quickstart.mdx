@@ -1,0 +1,149 @@
+---
+title: "快速开始"
+description: "通过 MagicBlock 的 ER 和基于 Intel TDX 的 Trusted Execution Environment，为任意 Solana 程序状态账户启用隐私。"
+---
+
+import Endpoints from "/cn/snippets/endpoints.mdx";
+import Validators from "/cn/snippets/notes/validators.mdx";
+import Construction from "/cn/snippets/construction.mdx";
+import Software from "/cn/snippets/software.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+
+import WriteProgramCode from "/cn/snippets/per-counter-code/write-program.mdx";
+import DelegateCode from "/cn/snippets/per-counter-code/delegate.mdx";
+import AuthorizeCode from "/cn/snippets/per-counter-code/authorize.mdx";
+import DelegationInfo from "/cn/snippets/delegation-info.mdx";
+
+import AIDevSkillCallout from "/cn/snippets/ai-dev-skill-callout.mdx";
+import QuickAccessPER from "/cn/snippets/quick-access-per.mdx";
+import PerCards from "/cn/snippets/per-cards.mdx";
+
+---
+
+<AIDevSkillCallout />
+
+<QuickAccessPER />
+<Note>
+  MagicBlock 的 Private Ephemeral Rollup 会在入口处、交易被接受或执行之前，
+  基于节点级 IP 地理围栏、OFAC 制裁名单以及受限司法辖区来执行合规控制。[了解更多](/cn/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)
+</Note>
+
+---
+
+## 分步指南
+
+构建你的程序，将状态委托给 TEE validator，并通过 MagicBlock 的 Permission Program `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1` 和 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` 直接在 ER 上创建 `EphemeralPermission` 账户：
+
+<Steps>
+  <Step title={<a href="#1-write-program">编写你的程序</a>}>
+    像往常一样编写你的 Solana 程序。
+  </Step>
+  <Step
+    title={
+      <a href="#2-委托并创建-permission">
+        委托并创建 permission
+      </a>
+    }
+  >
+    `delegate` 在 Base Layer 上将 counter 委托给 TEE validator。`init_permission`
+    接着在 ER 上运行 —— 已委托的 PDA 作为 PDA 签名，并支付自身的 ephemeral
+    permission 租金（在 `initialize` 时预先充值）。`set_privacy` 按需切换
+    公开 / 私密标志。无需在 Base Layer 上创建、委托或
+    commit-and-undelegate 任何 permission 账户。
+    [查看访问控制详情](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
+    <Validators />
+  </Step>
+  <Step title={<a href="#3-deploy">在 Solana 上部署你的程序</a>}>
+    使用 Anchor CLI 部署你的 Solana 程序。
+  </Step>
+  <Step
+    title={<a href="#4-authorize">在客户端实现授权流程</a>}
+  >
+    让用户对消息进行签名，从 TEE 端点获取授权令牌。
+  </Step>
+  <Step title={<a href="#5-test">执行交易并测试隐私</a>}>
+    请求授权令牌并发送机密交易。
+  </Step>
+</Steps>
+
+---
+
+## Private Counter 示例
+
+<Software />
+<Note>
+  以下展示的 EphemeralPermission 流程需要 `ephemeral-rollups-sdk` v0.14+（引入
+  `CreateEphemeralPermissionCpi` / `UpdateEphemeralPermissionCpi` /
+  `CloseEphemeralPermissionCpi`）。旧版 SDK 与 Anchor 版本请参阅
+  [legacy examples](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/00-LEGACY_EXAMPLES)。
+</Note>
+
+### 代码片段
+
+<Tabs>
+    <Tab title="1. 编写程序">
+        一个简单的 counter 程序，包含 `initialize` 和 `increment` 指令，结构与公开版本的 counter 完全相同 —— 隐私能力将在后续步骤中加入：
+        <WriteProgramCode />
+        [⬆️ 回到顶部](#code-snippets)
+    </Tab>
+    <Tab title="2. 委托并创建 permission">
+        完整的隐私生命周期分布在两层：**Base Layer** 将 counter 委托给 TEE
+        validator；**ER** 随后由已委托的 PDA 自行签名，创建 / 更新 / 关闭
+        其专属的 `EphemeralPermission` 账户。
+
+        - `initialize` 为 counter PDA 预先充入 ephemeral permission 的租金，使后续步骤无需再单独补充 lamports。
+        - `delegate` 仅将 counter 委托给 TEE validator。
+        - `init_permission` 在 ER 上运行 —— 已委托的 PDA 使用其程序种子签发 [`CreateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk)，并支付租金。幂等。
+        - `set_privacy(is_private)` 通过 [`UpdateEphemeralPermissionCpi`](https://github.com/magicblock-labs/ephemeral-rollups-sdk) 在 ER 上切换隐私标志。私密时，仅 counter 的 `authority` 出现在成员列表中，带有 `TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG` 标志 —— 其他所有钱包都会在 TEE 入口处被拒绝。
+        - `close_permission` 当不再需要 permission 时，将租金退还给 PDA（可选）。
+        - `undelegate` 通过 `MagicIntentBundleBuilder` 提交并取消 counter 的委托。
+
+        完整生命周期及各语言代码片段请参阅[访问控制](/cn/pages/private-ephemeral-rollups-pers/how-to-guide/access-control)。
+        <Validators />
+        <DelegateCode />
+
+        [⬆️ 回到顶部](#code-snippets)
+    </Tab>
+    <Tab title="3. 部署">
+        现在你的程序已经升级完毕、可以发布了！在目标集群上构建并部署：
+        ```bash
+          anchor build && anchor deploy
+        ```
+        [⬆️ 回到顶部](#code-snippets)
+    </Tab>
+    <Tab title="4. 授权">
+        在 TEE 中设置与 ER RPC 的交互：
+        1. 通过 `https://pccs.phala.network/tdx/certification/v4` 验证 TEE RPC 的完整性
+        2. 为用户请求一个授权令牌，用于与 TEE 端点进行交互
+        <AuthorizeCode />
+        [⬆️ 回到顶部](#code-snippets)
+    </Tab>
+    <Tab title="5. 测试">
+        使用 Private Ephemeral Rollup 连接来测试你的程序：
+
+        `https://devnet-tee.magicblock.app?token=${token}`
+
+        <Validators />
+        <QuickAccessPER />
+        [⬆️ 回到顶部](#code-snippets)
+    </Tab>
+
+</Tabs>
+
+---
+
+<PerCards />
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock 产品
+
+import ProductCards from "/cn/snippets/product-cards.mdx";
+
+<ProductCards />
+
+---

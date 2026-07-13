@@ -1,0 +1,633 @@
+---
+title: "Rust サンプル"
+description: "Solana 上で counter を委任しインクリメントするシンプルな Rust プログラムの書き方を学びます"
+---
+
+import Endpoints from "/jp/snippets/endpoints.mdx";
+
+<div
+  style={{
+    position: "relative",
+    paddingBottom: "56.25%",
+    height: 0,
+    overflow: "hidden",
+  }}
+>
+  <iframe
+    src="https://www.youtube.com/embed/b77bwSGDHK0?si=Oknc5f8CuC17WBnV&list=PLWR_ZQiGMS8mIe1kPZe8OfHIbhvZqaM8V"
+    title="Build a real-time Rust Counter on Solana with MagicBlock's Ephemeral Rollup | Tutorial"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+    }}
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    referrerPolicy="strict-origin-when-cross-origin"
+  />
+</div>
+
+このガイドでは、Anchor を使わないネイティブ Rust で、counter をインクリメントするシンプルなプログラムを書く手順を案内します。Solana へのデプロイ方法と、TypeScript テストスクリプトを使った操作方法も学びます。
+
+## ソフトウェアパッケージ
+
+このプログラムは以下のソフトウェアパッケージで開発・テストされています。他のバージョンでも互換性がある場合があります。
+
+| ソフトウェア | バージョン | インストールガイド                                              |
+| ------------ | ---------- | --------------------------------------------------------------- |
+| **Solana**   | 3.1.9      | [Install Solana](https://docs.anza.xyz/cli/install)             |
+| **Rust**     | 1.89.0     | [Install Rust](https://www.rust-lang.org/tools/install)         |
+
+## クイックアクセス
+
+すぐにコードを確認したい場合：
+
+<CardGroup cols={2}>
+  <Card
+    title="ソースコード：ネイティブ Rust Counter プログラム"
+    icon="rust"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/counter/native-rust"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="ソースコード：TypeScript テストスクリプト"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/counter/native-rust/tests"
+    iconType="duotone"
+  ></Card>
+</CardGroup>
+
+## コア機能
+
+このプログラムは 2 つの主要な instruction を実装します：
+
+1. `InitializeCounter`：counter を初期化して 0 にセット（base layer で呼び出し）
+2. `IncreaseCounter`：初期化済みの counter を指定数だけインクリメント（base layer または ER で呼び出し）
+
+さらに、counter の委任と委任解除のための専用 instruction も実装します：
+
+1. `Delegate`：counter を base layer から ER へ委任（base layer で呼び出し）
+2. `CommitAndUndelegate`：ER から base layer への counter 同期をスケジュールし、ER 上で counter を委任解除（ER で呼び出し）
+3. `Commit`：ER から base layer への counter 同期をスケジュール（ER で呼び出し）
+4. `Undelegate`：base layer 上で counter を委任解除（validator が CPI 経由で base layer から呼び出します）
+
+プログラムの中核構造は以下のとおりです：
+
+```rust
+pub enum ProgramInstruction {
+    InitializeCounter,
+    IncreaseCounter {
+        increase_by: u64
+    },
+    Delegate,
+    CommitAndUndelegate,
+    Commit,
+    Undelegate {
+        pda_seeds: Vec<Vec<u8>>
+    }
+}
+
+#[derive(BorshDeserialize)]
+struct IncreaseCounterPayload {
+    increase_by: u64,
+}
+
+impl ProgramInstruction {
+    pub fn unpack(input: &[u8]) -> Result<Self, ProgramError> {
+        // Ensure the input has at least 8 bytes for the variant
+        if input.len() < 8 {
+            return Err(ProgramError::InvalidInstructionData);
+        }
+
+        // Extract the first 8 bytes as variant
+        let (variant_bytes, rest) = input.split_at(8);
+        let mut variant = [0u8; 8];
+        variant.copy_from_slice(variant_bytes);
+
+        Ok(match variant {
+            [0, 0, 0, 0, 0, 0, 0, 0] => Self::InitializeCounter,
+            [1, 0, 0, 0, 0, 0, 0, 0] => {
+                let payload = IncreaseCounterPayload::try_from_slice(rest)?;
+                Self::IncreaseCounter {
+                    increase_by: payload.increase_by,
+                }
+            },
+            [2, 0, 0, 0, 0, 0, 0, 0] => Self::Delegate,
+            [3, 0, 0, 0, 0, 0, 0, 0] => Self::CommitAndUndelegate,
+            [4, 0, 0, 0, 0, 0, 0, 0] => Self::Commit,
+            [196, 28, 41, 206, 48, 37, 51, 167] => {
+                let pda_seeds: Vec<Vec<u8>> = Vec::<Vec<u8>>::try_from_slice(rest)?;
+                Self::Undelegate {
+                    pda_seeds
+                }
+            }
+            _ => return Err(ProgramError::InvalidInstructionData),
+        })
+    }
+}
+```
+
+<Note>
+  あなたの "Undelegate" 命令には、上記とまったく同じ discriminator を使用する必要があります。この命令をあなたが直接呼び出すことはありません — base layer 上の validator が、ER 上のあなたのアカウントの委任を解除した後、CPI でこの命令へコールバックします。
+</Note>
+
+### Counter PDA の委任
+
+counter PDA を委任して Ephemeral Rollup セッション内で書き込み可能にするには、内部で `delegate_account` 関数を呼び出す instruction を追加します。`delegate_account` は委任プログラムへ CPI を行い、検証が通ればそのアカウントの所有権を取得します。
+このステップ以降、ephemeral validator が counter PDA に対するトランザクションの処理を開始し、委任プログラムを通じて状態差分を提案できるようになります。
+
+<Card
+  title="トランザクション（Base Layer）：Delegate"
+  icon="magnifying-glass"
+  href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+  iconType="duotone"
+>Solana Explorer でトランザクション詳細を確認</Card>
+
+```rust
+use solana_program::{
+    account_info::{next_account_info, AccountInfo},
+    pubkey::Pubkey,
+    entrypoint::ProgramResult,
+    program_error::ProgramError,
+};
+use ephemeral_rollups_sdk::cpi::{delegate_account, DelegateAccounts, DelegateConfig};
+
+// For Base Layer only
+// Set specific validator based on ER, see https://docs.magicblock.gg/pages/get-started/how-integrate-your-program/local-setup
+pub fn process_delegate(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
+    let pda_to_delegate = next_account_info(account_info_iter)?;
+    let owner_program = next_account_info(account_info_iter)?;
+    let delegation_buffer = next_account_info(account_info_iter)?;
+    let delegation_record = next_account_info(account_info_iter)?;
+    let delegation_metadata = next_account_info(account_info_iter)?;
+    let delegation_program = next_account_info(account_info_iter)?;
+    let validator_account = account_info_iter.next();
+
+    // Optional: client-provided validator or default validator
+    let validator_pubkey: Option<Pubkey> = validator_account.map(|acc_info| acc_info.key.clone());
+
+    // Prepare counter pda seeds
+    let seed_1 = b"counter";
+    let seed_2 = initializer.key.as_ref();
+    let pda_seeds: &[&[u8]] = &[seed_1, seed_2];
+
+    let delegate_accounts = DelegateAccounts {
+        payer: initializer,
+        pda: pda_to_delegate,
+        owner_program,
+        buffer: delegation_buffer,
+        delegation_record,
+        delegation_metadata,
+        delegation_program,
+        system_program,
+    };
+
+    let delegate_config = DelegateConfig {
+        validator: validator_pubkey, // Set delegating ER validator
+        ..Default::default()
+    };
+
+    delegate_account(delegate_accounts, pda_seeds, delegate_config)?;
+
+    Ok(())
+}
+```
+
+### PDA が委任されている間に commit する
+
+ephemeral ランタイムでは、PDA が委任されている間にその状態を commit できます。これは `commit` intent を持つ `MagicIntentBundleBuilder` を構築することで実現します。
+
+<CardGroup cols={2}>
+  <Card
+    title="トランザクション（ER）：Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+  <Card
+    title="トランザクション（Base Layer）：Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+</CardGroup>
+
+```rust
+use solana_program::{
+    account_info::{next_account_info, AccountInfo},
+    pubkey::Pubkey,
+    entrypoint::ProgramResult,
+    program_error::ProgramError,
+};
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
+
+// For ER only
+pub fn process_commit(
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
+) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let counter_account = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
+
+    // Signer should be the same as the initializer
+    if !initializer.is_signer {
+        msg!("Initializer {} should be the signer", initializer.key);
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
+    MagicIntentBundleBuilder::new(
+        initializer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit(&[counter_account.clone()])
+    .build_and_invoke()?;
+
+    Ok(())
+}
+```
+
+### PDA の委任を解除する
+
+PDA の委任解除は、ある instruction の中で `commit_and_undelegate` intent を持つ `MagicIntentBundleBuilder` を構築することで行います。
+これにより最新状態が commit され、PDA の所有権が所有者プログラムに戻されます。ER 上で委任解除と状態の確定が完了すると、validator が base layer 上の `undelegate` instruction にコールバックします。
+
+<CardGroup cols={2}>
+  <Card
+    title="トランザクション（ER）：Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+  <Card
+    title="トランザクション（Base Layer）：Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+</CardGroup>
+
+```rust
+use solana_program::{
+    account_info::{next_account_info, AccountInfo},
+    pubkey::Pubkey,
+    entrypoint::ProgramResult,
+    program_error::ProgramError,
+};
+use ephemeral_rollups_sdk::cpi::undelegate_account;
+use ephemeral_rollups_sdk::ephem::{FoldableIntentBuilder, MagicIntentBundleBuilder};
+
+// For ER only
+pub fn process_commit_and_undelegate(
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
+) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let counter_account = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
+
+    // Signer should be the same as the initializer
+    if !initializer.is_signer {
+        msg!("Initializer {} should be the signer", initializer.key);
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
+    // Commit and undelegate counter_account on ER
+    MagicIntentBundleBuilder::new(
+        initializer.clone(),
+        magic_context.clone(),
+        magic_program.clone(),
+    )
+    .commit_and_undelegate(&[counter_account.clone()])
+    .build_and_invoke()?;
+
+    Ok(())
+}
+
+// For Base Layer CPI callback
+pub fn process_undelegate(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    pda_seeds: Vec<Vec<u8>>,
+) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let delegated_pda = next_account_info(account_info_iter)?;
+    let delegation_buffer = next_account_info(account_info_iter)?;
+    let initializer = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
+
+    // CPI on Solana
+    undelegate_account(
+        delegated_pda,
+        program_id,
+        delegation_buffer,
+        initializer,
+        system_program,
+        pda_seeds,
+    )?;
+
+    Ok(())
+}
+```
+
+## プログラムのテスト
+
+あなたのプログラムにある委任・委任解除関連の instruction を呼び出す有効なトランザクションを構築します。
+プロジェクトの完全なテストコードは [TypeScript テストスクリプト](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/counter/native-rust/tests) で確認できます。
+
+### `delegation` トランザクションのテスト
+
+正しい account 順序と属性、そしてあなたのプログラムの `delegation` instruction discriminator を組み合わせて instruction を構築します。その instruction を含むトランザクションを base layer（Solana）ネットワークに送信します。
+
+<Card
+  title="トランザクション（Base Layer）：Delegate"
+  icon="magnifying-glass"
+  href="https://solscan.io/tx/5jUdf5rsfQsbLYAahS9axrnLnEjdbUqtXUmGfgGuS7QqbYJ4FZHgXTNoT1bxPXp7XQu78r8Ebpp1RT2u9V6qsc1r?cluster=devnet"
+  iconType="duotone"
+>
+  Solana Explorer でトランザクション詳細を確認
+</Card>
+
+```typescript
+import * as web3 from "@solana/web3.js";
+
+// Build delegation transaction
+const tx = new web3.Transaction();
+const keys = [
+  // Initializer
+  {
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
+  },
+  // System Program
+  {
+    pubkey: web3.SystemProgram.programId,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Counter Account
+  {
+    pubkey: counterPda,
+    isSigner: false,
+    isWritable: true,
+  },
+  // Owner Program
+  {
+    pubkey: PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Delegation Buffer
+  {
+    pubkey: getDelegationBufferPda(counterPda, PROGRAM_ID),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Record
+  {
+    pubkey: getDelegationRecordPda(counterPda),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Metadata
+  {
+    pubkey: getDelegationMetadataPda(counterPda),
+    isSigner: false,
+    isWritable: true,
+  },
+  // Delegation Program
+  {
+    pubkey: DELEGATION_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+];
+const serializedInstructionData = Buffer.from(
+  CounterInstruction.Delegate,
+  "hex"
+);
+const delegateIx = new web3.TransactionInstruction({
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
+});
+tx.add(delegateIx);
+
+// Send and confirm transaction to Base Layer
+const connection = new web3.Connection(rpcSolana);
+const txHash = await web3.sendAndConfirmTransaction(
+  connection,
+  tx,
+  [userKeypair],
+  {
+    skipPreflight: true,
+    commitment: "confirmed",
+  }
+);
+```
+
+### `commit` トランザクションのテスト
+
+正しい account 順序と属性、そしてあなたのプログラムの `commit` instruction discriminator を組み合わせて instruction を構築します。その instruction を含むトランザクションを ER ネットワークに送信します。
+
+<CardGroup cols={2}>
+  <Card
+    title="トランザクション（ER）：Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5GiFGyrnJPkEQbhE8EHVYczoj2RPGe1YSnoq1DzcUHAxpyzMUKtxG2Tc7TLkxtcCHr72ftnvmkAVMfecTaf6TCK8?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+  <Card
+    title="トランザクション（Base Layer）：Commit"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/5fHBADq99LAEBzGoeDXGtN3ut8RBf2s5UhbDM1N6TMTpvADNeYLz8e8vinNWj1VhLhrR7UxFoW7bo2u6pBR3YRjj?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+</CardGroup>
+
+```typescript
+import * as web3 from "@solana/web3.js";
+
+// 3: Commit
+// Create, send and confirm transaction
+const tx = new web3.Transaction();
+const keys = [
+  // Initializer
+  {
+    pubkey: userKeypair.publicKey,
+    isSigner: true,
+    isWritable: true,
+  },
+  // Counter Account
+  {
+    pubkey: counterPda,
+    isSigner: false,
+    isWritable: true,
+  },
+  // Magic Program
+  {
+    pubkey: MAGIC_PROGRAM_ID,
+    isSigner: false,
+    isWritable: false,
+  },
+  // Magic Context
+  {
+    pubkey: MAGIC_CONTEXT_ID,
+    isSigner: false,
+    isWritable: true,
+  },
+];
+const serializedInstructionData = Buffer.from(CounterInstruction.Commit, "hex");
+const commitIx = new web3.TransactionInstruction({
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
+});
+tx.add(commitIx);
+const connection = new web3.Connection(rpcMagicblock);
+const txHash = await web3.sendAndConfirmTransaction(
+  connection,
+  tx,
+  [userKeypair],
+  {
+    skipPreflight: true,
+    commitment: "confirmed",
+  }
+);
+```
+
+### `undelegation` トランザクションのテスト
+
+正しい account 順序と属性、そしてあなたのプログラムの `undelegation` instruction discriminator を組み合わせて instruction を構築します。その instruction を含むトランザクションを ER ネットワークに送信します。
+
+<CardGroup cols={2}>
+  <Card
+    title="トランザクション（ER）：Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/bMN6AhXrGH93Uc6ALibGgjnE39hcnY57mBhYkZ8TRaKxNRvyFaweaQPBmDxPv81cgR47WTTzzhfziTUEgAT8Y5m?cluster=custom&customUrl=https://devnet.magicblock.app"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+  <Card
+    title="トランザクション（Base Layer）：Undelegate"
+    icon="magnifying-glass"
+    href="https://solscan.io/tx/8JafYWiXmd4CHc2E97WKYnaNPmChZeg8aGYY7UUWaQ7Z54N5WoMcAVivyv2vdn9wKirMkR3y4UcmFPdXYqBtKAa?cluster=devnet"
+    iconType="duotone"
+  >
+    Solana Explorer でトランザクション詳細を確認
+  </Card>
+</CardGroup>
+
+```typescript
+import * as web3 from "@solana/web3.js"
+// Build commit and undelegation transaction
+const tx = new web3.Transaction();
+const keys = [
+  // Initializer
+  {
+  pubkey: userKeypair.publicKey,
+  isSigner: true,
+  isWritable: true,
+  },
+  // Counter Account
+  {
+  pubkey: counterPda,
+  isSigner: false,
+  isWritable: true,
+  },
+  // Magic Program
+  {
+  pubkey: MAGIC_PROGRAM_ID,
+  isSigner: false,
+  isWritable: false,
+  },
+  // Magic Context
+  {
+  pubkey: MAGIC_CONTEXT_ID,
+  isSigner: false,
+  isWritable: true,
+  },
+];
+const serializedInstructionData = Buffer.from(
+  CounterInstruction.CommitAndUndelegate,
+  "hex"
+);
+const undelegateIx = new web3.TransactionInstruction({
+  keys: keys,
+  programId: PROGRAM_ID,
+  data: serializedInstructionData,
+});
+tx.add(undelegateIx);
+
+// Send and confirm transaction to ER. Afterwards CPI callback will be triggered to "Undelegate" instruction of your program on the Base Layer.
+const connection = new web3.Connection(rpcER);
+const txHash = await web3.sendAndConfirmTransaction(
+connection,
+tx,
+[userKeypair],
+{
+skipPreflight: true,
+commitment: "confirmed",
+}
+)
+```
+
+### Ephemeral エンドポイントの設定
+
+Ephemeral Rollup セッションと対話するには、適切なエンドポイントを設定する必要があります：
+
+- devnet では、以下の ephemeral エンドポイントを使用してください：
+
+  https://devnet.magicblock.app
+
+- mainnet については、適切なエンドポイントを得るために MagicBlock チームへお問い合わせください。
+
+- <a href="/jp/pages/get-started/how-integrate-your-program/local-setup">localhost</a> の場合は、ephemeral validator をダウンロード・インストールし、適切な環境変数を指定してローカルで実行してください。
+
+開発環境または本番環境に応じて、クライアントの設定を正しいエンドポイントに更新してください。
+
+<Endpoints/>
+
+<CardGroup cols={2}>
+  <Card
+    title="ソースコード：ネイティブ Rust Counter プログラム"
+    icon="rust"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/counter/native-rust"
+    iconType="duotone"
+  ></Card>
+  <Card
+    title="ソースコード：TypeScript テストスクリプト"
+    icon="js"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/counter/native-rust/tests"
+    iconType="duotone"
+  ></Card>
+</CardGroup>

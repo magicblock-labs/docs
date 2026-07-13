@@ -1,0 +1,249 @@
+---
+title: "접근 제어"
+description: "Private Ephemeral Rollups에서 세밀한 접근 제어와 멤버 권한을 관리하는 방법을 알아봅니다."
+---
+
+import CreateEphemeralPermissionAnchor from "/ko/snippets/acl-code/ephemeral-permission/anchor/create.mdx";
+import UpdateEphemeralPermissionAnchor from "/ko/snippets/acl-code/ephemeral-permission/anchor/update.mdx";
+import CloseEphemeralPermissionAnchor from "/ko/snippets/acl-code/ephemeral-permission/anchor/close.mdx";
+
+import CreateEphemeralPermissionRust from "/ko/snippets/acl-code/ephemeral-permission/rust/create.mdx";
+import UpdateEphemeralPermissionRust from "/ko/snippets/acl-code/ephemeral-permission/rust/update.mdx";
+import CloseEphemeralPermissionRust from "/ko/snippets/acl-code/ephemeral-permission/rust/close.mdx";
+
+import CreateEphemeralPermissionPinocchio from "/ko/snippets/acl-code/ephemeral-permission/pinocchio/create.mdx";
+import UpdateEphemeralPermissionPinocchio from "/ko/snippets/acl-code/ephemeral-permission/pinocchio/update.mdx";
+import CloseEphemeralPermissionPinocchio from "/ko/snippets/acl-code/ephemeral-permission/pinocchio/close.mdx";
+
+import CreateEphemeralPermissionKit from "/ko/snippets/acl-code/ephemeral-permission/kit/create.mdx";
+import UpdateEphemeralPermissionKit from "/ko/snippets/acl-code/ephemeral-permission/kit/update.mdx";
+import CloseEphemeralPermissionKit from "/ko/snippets/acl-code/ephemeral-permission/kit/close.mdx";
+
+import CreateEphemeralPermissionWeb3js from "/ko/snippets/acl-code/ephemeral-permission/web3js/create.mdx";
+import UpdateEphemeralPermissionWeb3js from "/ko/snippets/acl-code/ephemeral-permission/web3js/update.mdx";
+import CloseEphemeralPermissionWeb3js from "/ko/snippets/acl-code/ephemeral-permission/web3js/close.mdx";
+
+import MemberFlagsRust from "/ko/snippets/acl-code/member/rust.mdx";
+import MemberFlagsWeb3js from "/ko/snippets/acl-code/member/web3js.mdx";
+import MemberFlagsKit from "/ko/snippets/acl-code/member/kit.mdx";
+import MemberFlagsPinocchio from "/ko/snippets/acl-code/member/pinocchio.mdx";
+
+import PerCards from "/ko/snippets/per-cards.mdx";
+import AclCards from "/ko/snippets/acl-cards.mdx";
+import Validators from "/ko/snippets/notes/validators.mdx";
+
+---
+
+<AclCards />
+
+---
+
+## 개요
+
+Private Ephemeral Rollups는 [컴플라이언스](/ko/pages/private-ephemeral-rollups-pers/introduction/compliance-framework)를 핵심에 둔 [Trusted Execution Environment](/ko/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) 안에서 permissioned accounts에 대한 세밀한 권한 제어를 가능하게 하는 [Ephemeral Rollups](/ko/pages/ephemeral-rollups-ers/introduction/why)입니다. 각 permission account는 멤버 목록과 이들이 수행할 수 있는 작업을 결정하는 특정 플래그를 유지합니다.
+
+### 핵심 개념
+
+- **Permission Account**: 특정 계정에 대한 접근 제어 규칙을 저장하는 PDA
+- **Members**: 플래그를 통해 특정 권한이 부여된 주소
+- **Flags**: 멤버가 무엇을 할 수 있는지(authority, 로그 보기, 잔액 보기 등)를 정의하는 비트마스크
+- **Public Permissions**: 멤버가 `None`으로 설정되면 permissioned account가 일시적으로 보이게 됩니다
+
+---
+
+## 멤버 플래그
+
+멤버 플래그는 각 멤버에 대한 세밀한 권한을 정의합니다. 플래그는 비트 OR로 결합해 여러 권한을 동시에 부여할 수 있습니다.
+
+**플래그 설명:**
+
+- **AUTHORITY**: 멤버가 permission 설정을 업데이트하고 위임하며, 다른 멤버를 추가/제거하고 멤버 플래그를 업데이트할 수 있게 합니다.
+- **TX_LOGS**: 멤버가 트랜잭션 실행 로그를 볼 수 있게 합니다.
+- **TX_BALANCES**: 멤버가 계정 잔액 변화를 볼 수 있게 합니다.
+- **TX_MESSAGE**: 멤버가 트랜잭션 메시지 데이터를 볼 수 있게 합니다.
+- **ACCOUNT_SIGNATURES**: 멤버가 계정 서명을 볼 수 있게 합니다
+
+<Tabs>
+  <Tab title="Rust SDK">
+    <MemberFlagsRust />
+  </Tab>
+  <Tab title="Pinocchio">
+    <MemberFlagsPinocchio />
+  </Tab>
+  <Tab title="Web3.js">
+    <MemberFlagsWeb3js />
+  </Tab>
+  <Tab title="Kit">
+    <MemberFlagsKit />
+  </Tab>
+</Tabs>
+---
+
+## Ephemeral Permission
+
+<Note>
+  `EphemeralPermission` 계정은 전적으로 Ephemeral Rollup 위에서 동작하며, 렌트는
+  위임된 PDA가 부담합니다 — Base Layer에 permission account를 생성하거나 위임하거나
+  commit-and-undelegate할 필요가 없습니다. 전체 라이프사이클은 **Create**、**Update**、
+  **Close** 세 가지 CPI 작업으로 충분히 다룰 수 있으며, 모두 ER 위의 데이터 계정이
+  PDA로 서명하고 MagicBlock의 Permission Program
+  `ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`을 통해 실행됩니다.
+</Note>
+
+**전제 조건 — 데이터 PDA 위임.** 위임 대상은 데이터 계정뿐입니다(Base Layer에서
+MagicBlock의 Delegation Program `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh`을 통해).
+위임 후 PDA는 자신의 프로그램 시드로 ER에서 세 가지 permission 작업 모두에 서명하고
+ephemeral permission 렌트를 지불합니다 — 따라서 `initialize` 시점에 미리
+충전해 두어야 합니다. 전체 흐름은
+[퀵스타트](/ko/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart#2-위임-및-permission-생성)
+를 참조하세요.
+
+<Validators />
+
+<Steps>
+  <Step title={<a href="#1-ephemeral-permission-생성">Ephemeral Permission 생성</a>}>
+    초기 멤버와 프라이버시 플래그를 가진 새 `EphemeralPermission` 계정을 ER에
+    초기화합니다. 멱등 — 이미 존재하면 건너뜁니다.
+  </Step>
+  <Step title={<a href="#2-ephemeral-permission-업데이트">Ephemeral Permission 업데이트</a>}>
+    프라이버시 플래그를 전환하거나 멤버를 추가 / 제거 / 플래그 변경합니다.
+    업데이트는 ER에서 즉시 반영됩니다.
+  </Step>
+  <Step title={<a href="#3-ephemeral-permission-닫기">Ephemeral Permission 닫기</a>}>
+    permission이 더 이상 필요하지 않을 때 ER의 `EphemeralPermission` 계정을 닫고
+    렌트를 데이터 PDA에 환불합니다.
+  </Step>
+</Steps>
+
+---
+
+## Ephemeral Permission 작업
+
+<Tabs>
+  <Tab title="1. Ephemeral Permission 생성">
+    `CreateEphemeralPermissionCpi`로 ER 위에 새로운 `EphemeralPermission` 계정을
+    초기화합니다. Payer = 위임된 데이터 PDA로, 자신의 프로그램 시드로 서명하고
+    `initialize` 시점에 미리 충전된 lamports로 렌트를 지불합니다.
+
+    <Tabs>
+      <Tab title="Anchor">
+        <CreateEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <CreateEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CreateEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CreateEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CreateEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **사용 사례:**
+
+    - ER에서 새로 위임된 PDA의 접근 제어를 부트스트랩
+    - 공개 모드(`is_private: false`, 빈 멤버)로 시작해 나중에 Update로 조이기
+
+    [⬆️ 맨 위로](#ephemeral-permission)
+
+  </Tab>
+
+  <Tab title="2. Ephemeral Permission 업데이트">
+    `UpdateEphemeralPermissionCpi`로 프라이버시 플래그를 전환하고 멤버 목록을
+    다시 작성합니다. 매 호출마다 authority를 포함한 전체 멤버 목록을 다시 구성하세요 —
+    그래야 데이터 PDA가 자기 자신을 잠그는 일이 없습니다.
+
+    <Tabs>
+      <Tab title="Anchor">
+        <UpdateEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <UpdateEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <UpdateEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <UpdateEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <UpdateEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **사용 사례:**
+
+    - 필요에 따라 `is_private` 전환(예: 비공개 플레이, 공개 공개)
+    - `TX_LOGS | TX_MESSAGE | TX_BALANCES` 플래그로 새 뷰어 추가
+    - 다음 호출 멤버 목록에서 빼는 방식으로 멤버 권한 회수
+
+    [⬆️ 맨 위로](#ephemeral-permission)
+
+  </Tab>
+
+  <Tab title="3. Ephemeral Permission 닫기">
+    `CloseEphemeralPermissionCpi`로 ER의 `EphemeralPermission` 계정을 닫습니다.
+    렌트는 데이터 PDA(원래 payer)에게 환불됩니다. 선택 사항 — permission이
+    더 이상 필요하지 않을 때만 호출하세요.
+
+    <Tabs>
+      <Tab title="Anchor">
+        <CloseEphemeralPermissionAnchor />
+      </Tab>
+      <Tab title="Rust SDK">
+        <CloseEphemeralPermissionRust />
+      </Tab>
+      <Tab title="Pinocchio">
+        <CloseEphemeralPermissionPinocchio />
+      </Tab>
+      <Tab title="Kit">
+        <CloseEphemeralPermissionKit />
+      </Tab>
+      <Tab title="Web3.js">
+        <CloseEphemeralPermissionWeb3js />
+      </Tab>
+    </Tabs>
+
+    **사용 사례:**
+
+    - 데이터 PDA를 위임 해제하기 전에 ephemeral 렌트 회수
+    - 비공개 실행이 끝난 후 접근 제어 해체
+
+    [⬆️ 맨 위로](#ephemeral-permission)
+
+  </Tab>
+</Tabs>
+
+<Tip>
+  참고 구현:
+  [`private-counter/anchor`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter/anchor)
+  (Anchor)와
+  [`private-counter/pinocchio`](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/private-counter/pinocchio)。
+</Tip>
+
+---
+
+## 모범 사례
+
+1. **Authority 관리**: 항상 최소 한 명의 신뢰할 수 있는 멤버에게 `AUTHORITY_FLAG`를 부여하세요
+2. **최소 권한 원칙**: 각 멤버에게 필요한 플래그만 부여하세요
+3. **실시간 업데이트**: 위임 해제 없이도 Private Ephemeral Rollup에서 permission을 실시간으로 업데이트해 동적 접근 제어 조정이 가능합니다
+4. **정리**: 사용하지 않는 permission accounts를 위임 해제하고 닫아 SOL을 확보하세요
+
+---
+
+## 보안 고려 사항
+
+- **서명자 검증**: `AUTHORITY_FLAG`를 가진 멤버 또는 permissioned account를 가진 프로그램만 변경을 인가할 수 있습니다
+- **공개 계정**: 멤버를 `None`으로 설정하면 계정이 공개적으로 보이게 됩니다
+- **기본 Authority**: 기본적으로 permissioned account의 소유자가 permission account의 members에 permission authority로 추가됩니다
+- **빈 멤버 목록**: `members` 필드가 빈 목록으로 설정되면 permissioned account는 완전히 제한되고 비공개가 됩니다. permission을 수정할 수 있는 것은 소유자뿐입니다
+- **접근 감사**: 멤버 플래그를 사용해 접근을 감사하고 제어하세요
+
+---
+
+<PerCards />

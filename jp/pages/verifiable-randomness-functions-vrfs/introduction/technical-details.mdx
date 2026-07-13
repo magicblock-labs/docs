@@ -1,0 +1,55 @@
+---
+title: "技術詳細"
+description: "Solana VRF が MagicBlock とどのように統合されるか"
+---
+
+ランダム値は Curve25519 の Ristretto group 上に構築された VRF によって生成され、[RFC&nbsp;9381](https://datatracker.ietf.org/doc/html/rfc9381) に記載された Schnorr ライクな署名で証明されます。proof と出力は、MagicBlock VRF signer PDA からの署名付き callback により rollup へ返されます。あなたのプログラムは caller を検証し、その後ゲームロジックでランダムネスを使用します。
+
+`random_u32`、`random_u8_with_range`、`random_bool` のような helper utilities により、`[u8; 32]` の出力を簡単に実用的な値へ変換できます。request と consume の手順は ephemeral execution window 内で行われるため、ユーザーは外部サーバーに依存せず、検証可能な公平性を備えたリアルタイム結果を得られます。
+
+## フロー
+
+<img class="w-full h-auto max-w-5xl" src="/images/vrf-flow.png" />
+
+フローは “Request for randomness” から始まります。
+
+1. あなたのプログラムは CPI で MagicBlock VRF program を呼び出し、queue に request を追加します。
+2. ランダムネス request が queue に入ると、oracle が request を取り出してランダムネス計算を行います。
+3. 完了すると、結果と proof が MagicBlock VRF program に返されます。proof の検証後、VRF program は事前定義された関数を通じてあなたのプログラムへ callback し、ランダムネスを “consume” します。
+
+<Note>
+  MagicBlock の VRF Program はオープンソースで監査済みです。製品概要については <a href="/jp/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf">Solana VRF 概要</a>を参照してください。
+</Note>
+
+## オラクルキュー
+
+すべてのランダムネス request は、**オラクルキュー（oracle queue）**アカウント（`RequestRandomnessParams` の `oracle_queue` フィールド）を指定します。他のすべての Solana アカウントと同様にこのキューも Solana 上に存在しますが、**委任された（delegated）**キューは ephemeral rollup の内部からのみ直接書き込み可能で、**委任されていない**キューはベースレイヤーで直接書き込み可能です。トランザクションが実行される場所に合ったキューからランダムネスをリクエストしてください——Solana ではベースレイヤーのキューを、ephemeral rollup 内部では委任されたキューを使用します。可能な限りアドレスをハードコードせず、`ephemeral_vrf_sdk::consts` の定数を参照してください。
+
+| ネットワーク | ベースレイヤーキュー                                                        | 委任されたキュー（ephemeral rollup）                                                     |
+| ------------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Mainnet      | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Devnet       | `DEFAULT_QUEUE`<br />`Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh`          | `DEFAULT_EPHEMERAL_QUEUE`<br />`5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc`            |
+| Localnet     | `DEFAULT_TEST_QUEUE`<br />`GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb`     | `DEFAULT_EPHEMERAL_TEST_QUEUE`<br />`Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT`        |
+
+<Note>
+  Mainnet と Devnet は同じデフォルトキューアドレスを使用します——異なるのは接続するクラスターだけです。Localnet は専用の**テストキュー**を使用し、これはローカルバリデーターが Devnet から複製します。`DEFAULT_TEST_QUEUE` / `DEFAULT_EPHEMERAL_TEST_QUEUE` 定数は VRF SDK に同梱されています。
+</Note>
+
+<CardGroup cols={2}>
+  <Card
+    title="Audit"
+    icon="certificate"
+    href="/jp/pages/overview/additional-information/security-and-audits"
+    iconType="duotone"
+  >
+    監査レポート全文を読む
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="book"
+    href="/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
+    iconType="duotone"
+  >
+    ランダムネス機能の追加方法を学ぶ
+  </Card>
+</CardGroup>

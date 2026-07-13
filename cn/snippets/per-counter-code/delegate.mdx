@@ -1,0 +1,165 @@
+```rust
+use anchor_lang::system_program::{transfer, Transfer};
+use ephemeral_rollups_sdk::{
+    access_control::{
+        instructions::{
+            CloseEphemeralPermissionCpi, CreateEphemeralPermissionCpi,
+            UpdateEphemeralPermissionCpi,
+        },
+        structs::{
+            EphemeralMembersArgs, EphemeralPermission, Member,
+            TX_BALANCES_FLAG, TX_LOGS_FLAG, TX_MESSAGE_FLAG,
+        },
+    },
+    anchor::{commit, delegate, ephemeral},
+    cpi::DelegateConfig,
+    ephem::MagicIntentBundleBuilder,
+};
+
+#[ephemeral] // Adds undelegation instruction for the ER validator
+#[program]
+pub mod private_counter {
+    use super::*;
+
+    /// Initialize on the base layer. Pre-funds the counter PDA with enough
+    /// lamports to cover the ephemeral permission rent that will be paid on
+    /// the ER (rent = ~32 lamports/byte × (size + 60); use
+    /// `EphemeralPermission::size_of(N)` for the exact byte count).
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.authority.to_account_info(),
+                    to: ctx.accounts.counter.to_account_info(),
+                },
+            ),
+            ephemeral_rollups_sdk::ephemeral_accounts::rent(
+                EphemeralPermission::size_of(1) as u32,
+            ),
+        )?;
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        counter.authority = ctx.accounts.authority.key();
+        Ok(())
+    }
+
+    /// Delegate the counter to the (TEE) ER. No permission CPI here —
+    /// the EphemeralPermission is created directly on the ER via
+    /// `init_permission` (next instruction).
+    pub fn delegate(ctx: Context<DelegateCounterPrivately>) -> Result<()> {
+        if ctx.accounts.counter.owner != &ephemeral_rollups_sdk::id() {
+            let validator = ctx.accounts.validator.as_ref();
+            ctx.accounts.delegate_counter(
+                &ctx.accounts.authority,
+                &[COUNTER_SEED, ctx.accounts.authority.key().as_ref()],
+                DelegateConfig {
+                    validator: validator.map(|v| v.key()),
+                    ..Default::default()
+                },
+            )?;
+        }
+        Ok(())
+    }
+
+    /// Create the ephemeral permission directly on the ER. Payer = the
+    /// counter PDA (delegated), which carries its base-layer lamports onto
+    /// the ER and signs via its program seeds. Idempotent: skip if the
+    /// permission account already exists. Starts public; flip with
+    /// `set_privacy`.
+    pub fn init_permission(ctx: Context<PermissionContext>) -> Result<()> {
+        if ctx.accounts.permission.lamports() > 0 {
+            return Ok(());
+        }
+        let signers = [
+            COUNTER_SEED,
+            ctx.accounts.counter.authority.as_ref(),
+            &[ctx.bumps.counter],
+        ];
+        CreateEphemeralPermissionCpi {
+            payer: ctx.accounts.counter.to_account_info(),
+            permissioned_account: ctx.accounts.counter.to_account_info(),
+            permission: ctx.accounts.permission.to_account_info(),
+            vault: ctx.accounts.ephemeral_vault.to_account_info(),
+            magic_program: ctx.accounts.magic_program.to_account_info(),
+            permission_program: ctx.accounts.permission_program.to_account_info(),
+            args: EphemeralMembersArgs {
+                is_private: false,
+                members: vec![],
+            },
+        }
+        .invoke_signed(&[&signers])?;
+        Ok(())
+    }
+
+    /// Toggle the privacy flag on the ER. When private, only the counter's
+    /// `authority` is allowed to read state via the TEE (logs, messages,
+    /// balances). The authority is the only member; the member list is
+    /// rebuilt every call so the authority can never lock itself out.
+    pub fn set_privacy(ctx: Context<PermissionContext>, is_private: bool) -> Result<()> {
+        let signers = [
+            COUNTER_SEED,
+            ctx.accounts.counter.authority.as_ref(),
+            &[ctx.bumps.counter],
+        ];
+        let members = if is_private {
+            vec![Member {
+                flags: TX_LOGS_FLAG | TX_MESSAGE_FLAG | TX_BALANCES_FLAG,
+                pubkey: ctx.accounts.counter.authority,
+            }]
+        } else {
+            vec![]
+        };
+        UpdateEphemeralPermissionCpi {
+            payer: ctx.accounts.counter.to_account_info(),
+            permissioned_account: ctx.accounts.counter.to_account_info(),
+            permission: ctx.accounts.permission.to_account_info(),
+            vault: ctx.accounts.ephemeral_vault.to_account_info(),
+            magic_program: ctx.accounts.magic_program.to_account_info(),
+            permission_program: ctx.accounts.permission_program.to_account_info(),
+            authority: ctx.accounts.counter.to_account_info(),
+            authority_is_signer: false, // PDA signs via the seeds above
+            args: EphemeralMembersArgs { is_private, members },
+        }
+        .invoke_signed(&[&signers])?;
+        Ok(())
+    }
+
+    /// Close the ephemeral permission account on the ER, refunding rent to
+    /// the counter PDA (the payer that originally deposited it).
+    pub fn close_permission(ctx: Context<PermissionContext>) -> Result<()> {
+        let signers = [
+            COUNTER_SEED,
+            ctx.accounts.counter.authority.as_ref(),
+            &[ctx.bumps.counter],
+        ];
+        CloseEphemeralPermissionCpi {
+            payer: ctx.accounts.counter.to_account_info(),
+            permissioned_account: ctx.accounts.counter.to_account_info(),
+            permission: ctx.accounts.permission.to_account_info(),
+            vault: ctx.accounts.ephemeral_vault.to_account_info(),
+            magic_program: ctx.accounts.magic_program.to_account_info(),
+            permission_program: ctx.accounts.permission_program.to_account_info(),
+            authority: ctx.accounts.counter.to_account_info(),
+            authority_is_signer: false,
+        }
+        .invoke_signed(&[&signers])?;
+        Ok(())
+    }
+
+    /// Commit + undelegate the counter when private execution is done. No
+    /// separate permission undelegation step — ephemeral permissions are
+    /// confined to the ER and were already cleaned up via `close_permission`
+    /// (if called).
+    pub fn undelegate(ctx: Context<UndelegateCounter>) -> Result<()> {
+        MagicIntentBundleBuilder::new(
+            ctx.accounts.payer.to_account_info(),
+            ctx.accounts.magic_context.to_account_info(),
+            ctx.accounts.magic_program.to_account_info(),
+        )
+        .commit_and_undelegate(&[ctx.accounts.counter.to_account_info()])
+        .build_and_invoke()?;
+        Ok(())
+    }
+}
+```

@@ -1,0 +1,94 @@
+---
+title: "程序实现"
+description: "通过 MagicBlock 的 ER 和基于 Intel TDX 的可信执行环境，为任意 Solana 程序状态账户启用隐私。"
+---
+
+import PerCards from "/cn/snippets/per-cards.mdx";
+import QuickAccessPER from "/cn/snippets/quick-access-per.mdx";
+
+---
+
+<QuickAccessPER />
+
+---
+
+### 程序实现流程
+
+为 MagicBlock TEE 编写程序，与编写标准 Solana 程序很相似，只是额外引入了一个 Permission Program 来管理隐私控制。
+
+- **创建权限组**：通过 CPI 调用 Permission Program 来创建一个组。你可以定义任意数量的组，每个组都拥有不同的成员和权限。
+- **创建权限**：为已创建的组添加权限。目前权限表示读访问，未来也可能区分读写权限。
+- **访问**：客户端通过身份认证来访问受权限保护的 ER 状态。验证成功后，会签发一个访问令牌供查询使用。
+
+基于组的抽象允许你在一次交易中修改一批用户的权限。权限状态保存在 Solana L1 上。
+
+```rust
+use ephemeral_rollups_sdk::access_control::{
+    CreateGroupCpiBuilder, CreatePermissionCpiBuilder,
+};
+
+pub fn create_permission(ctx: Context<CreatePermission>, id: Pubkey) -> Result<()> {
+    let CreatePermission {
+        payer,
+        permission,
+        permission_program,
+        group,
+        deposit,
+        user,
+        system_program,
+    } = ctx.accounts;
+
+    // [1] Create a Permission Group
+    CreateGroupCpiBuilder::new(&permission_program)
+        .group(&group)
+        .id(id)
+        .members(vec![user.key()])
+        .payer(&payer)
+        .system_program(system_program)
+        .invoke()?;
+
+    // [2] Create Permissions
+    CreatePermissionCpiBuilder::new(&permission_program)
+        .permission(&permission)
+        .delegated_account(&deposit.to_account_info())
+        .group(&group)
+        .payer(&payer)
+        .system_program(system_program)
+        .invoke_signed(&[&[
+            DEPOSIT_PDA_SEED,
+            user.key().as_ref(),
+            deposit.token_mint.as_ref(),
+            &[ctx.bumps.deposit],
+        ]] )?;
+
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct CreatePermission<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK: Anyone can create the permission
+    pub user: UncheckedAccount<'info>,
+    #[account(
+        seeds = [DEPOSIT_PDA_SEED, user.key().as_ref(), deposit.token_mint.as_ref()],
+        bump
+    )]
+    pub deposit: Account<'info, Deposit>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub permission: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    #[account(mut)]
+    pub group: UncheckedAccount<'info>,
+    /// CHECK: Checked by the permission program
+    pub permission_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+import PerEndpoint from "/cn/snippets/per-endpoint.mdx";
+
+<PerEndpoint />
+
+<PerCards />

@@ -1,0 +1,109 @@
+---
+title: "介绍"
+description: "Private Payments API 文档"
+---
+
+import PrivatePaymentApiCard from "/cn/snippets/private-payment-api-card.mdx";
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token Program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    私密 SPL token 流程的参考程序
+  </Card>
+
+  <PrivatePaymentApiCard />
+</CardGroup>
+
+## 概述
+
+Private Payments API 用于在 Solana 与 MagicBlock ephemeral rollups 之间构建未签名的 SPL token 入金、转账、提现、swap 与 mint 初始化交易。它还提供余额查询、mint 初始化状态查询,以及为读取私密数据签发 bearer token 的钱包 challenge/login 流程。官方公开参考可见 [payments.magicblock.app/reference](https://payments.magicblock.app/reference)。
+
+### 元信息
+
+- [**Health**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/health) - 检查 API 健康状态与可用性
+
+### 认证
+
+- [**Challenge**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/challenge) - 生成需由钱包签名的挑战字符串
+- [**Login**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/login) - 用已签名的挑战换取 bearer token
+
+### SPL
+
+- [**Deposit SPL Tokens**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/deposit) - 构建从 Solana 进入 ephemeral rollup 的未签名入金交易
+- [**Transfer SPL Tokens**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/transfer) - 构建未签名的公开或私密 SPL 转账
+- [**Withdraw SPL Tokens**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/withdraw) - 构建返回 Solana 的未签名提现交易
+- [**Initialize Mint**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/initialize-mint) - 构建用于初始化某个 mint 的 validator-scoped transfer queue 的未签名交易
+- [**Balance**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/balance) - 获取某地址在基础链上的 SPL token 余额
+- [**Private Balance**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/private-balance) - 获取某地址在 ephemeral rollup 上的 SPL token 余额(需认证)
+- [**Is Mint Initialized**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/is-mint-initialized) - 检查某个 mint 是否已在 ephemeral RPC 上拥有 validator-scoped transfer queue
+
+### Swap
+
+- [**Swap Quote**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/quote) - 获取两个 SPL mint 之间的 swap 报价
+- [**Swap**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/swap) - 构建未签名的 swap 交易(公开直通或带定时转账的私密模式)
+
+### MCP
+
+- [**MCP**](/cn/pages/private-ephemeral-rollups-pers/api-reference/per/mcp) - 访问无状态的 Streamable HTTP MCP 端点
+
+```
+┌────────────────────────────────────────────┐
+│ 1. Deposit                                │
+├────────────────────────────────────────────┤
+│ • 构建未签名入金交易                       │
+│ • Solana base balance → ephemeral rollup  │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 2. Transfer / Swap                        │
+├────────────────────────────────────────────┤
+│ • 构建 SPL 转账或 swap                    │
+│ • base/ephemeral → base/ephemeral         │
+│ • 公开或私密(可延时 + 拆分)              │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 3. Withdraw                               │
+├────────────────────────────────────────────┤
+│ • 构建未签名提现交易                       │
+│ • ephemeral rollup → Solana base balance  │
+└────────────────────────────────────────────┘
+```
+
+## 认证流程
+
+读取 Private Ephemeral Rollup 内私密数据的端点需要 bearer token:
+
+1. `GET /v1/spl/challenge?pubkey=<wallet>` 返回 `challenge` 字符串
+2. 钱包对该 challenge 进行签名
+3. `POST /v1/spl/login` 提交 `{ pubkey, challenge, signature }` 返回 `token`
+4. 在 `/v1/spl/private-balance` (必需) 以及需要连接 Private Ephemeral Rollup 的 `/v1/spl/transfer` 请求 (可选) 上设置 `Authorization: Bearer <token>`
+
+## 响应格式
+
+交易构建端点成功时会返回一个未签名交易载荷:
+
+```json
+{
+  "kind": "deposit",
+  "version": "legacy",
+  "transactionBase64": "base64-encoded-transaction",
+  "sendTo": "base",
+  "recentBlockhash": "blockhash",
+  "lastValidBlockHeight": 284512337,
+  "instructionCount": 3,
+  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
+}
+```
+
+客户端流程为:
+
+1. 调用 API
+2. 解码 `transactionBase64`
+3. 如有需要,客户端可对交易进行调整
+4. 用所需钱包签名
+5. 提交到 `sendTo` 指定的 RPC (`"base"` 或 `"ephemeral"`)

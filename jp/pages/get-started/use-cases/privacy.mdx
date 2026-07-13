@@ -1,0 +1,69 @@
+---
+title: "プライバシー"
+description: "秘密性を保ちながら検証可能な計算を実現する"
+---
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="/images/TEE.mp4"
+  controls
+></video>
+
+#### 🔴 プライバシーの課題
+
+- **データ漏えい**：機密情報が公開台帳上に載ってしまいます。
+- **中央集権的な信頼**：ユーザーは自分の個人データを第三者に預ける必要があります。
+- **検証可能性の欠如**：データを明かさずに計算が正しく行われたことを証明できません。
+
+#### ⛓️ 現在のブロックチェーンの制約
+
+- **公開実行**：すべての取引とスマートコントラクトの状態がオンチェーンで見えてしまいます。
+- **MEV の悪用**：フロントランやサンドイッチ攻撃が取引可視性を悪用します。
+- **コンプライアンスの障壁**：規制要件はしばしば公開透明性と衝突します。
+
+#### ⚡ MagicBlock の解決策
+
+- Intel TDX 上の **Trusted Execution Environments (TEEs)**：処理中のデータを保護する安全で隔離された計算環境です。
+- **プライベートな状態実行**：機密データをネットワークに公開せずに計算できます。
+- **検証可能なプライバシー**：暗号学的証明により、機密性を保ちながら正しい実行を保証します。
+
+## TEE ドキュメントを見る
+
+<CardGroup cols={2}>
+  <Card
+    title="TEE 入門"
+    icon="shield"
+    href="/jp/pages/tools/tee/introduction"
+    iconType="duotone"
+  >
+    PER とは何か、そしてなぜ TEE が必要なのか
+  </Card>
+  <Card
+    title="認可"
+    icon="key"
+    href="/jp/pages/tools/tee/authorization"
+    iconType="duotone"
+  >
+    権限グループとアクセス制御
+  </Card>
+  <Card
+    title="プログラム実装"
+    icon="code"
+    href="/jp/pages/tools/tee/program-implementation"
+    iconType="duotone"
+  >
+    CPI による権限追加
+  </Card>
+  <Card
+    title="クライアント実装"
+    icon="browser"
+    href="/jp/pages/tools/tee/client-implementation"
+    iconType="duotone"
+  >
+    アテステーション、チャレンジ、アクセス
+  </Card>
+</CardGroup>
