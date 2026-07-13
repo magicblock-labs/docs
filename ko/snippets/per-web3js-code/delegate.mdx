@@ -8,8 +8,8 @@ import {
 // Build the instruction
 const delegatePermissionIx = createDelegatePermissionInstruction({
   payer: payer.publicKey,
-    authority: [payer.publicKey, true], // defined as authority in permission members
-    permissionedAccount: [permissionedAccountKeypair.publicKey, false], // optional signer, since payer is defined as authority in permission members
+  authority: [payer.publicKey, true], // defined as authority in permission members
+  permissionedAccount: [permissionedAccountKeypair.publicKey, false], // optional signer, since payer is defined as authority in permission members
   ownerProgram: PERMISSION_PROGRAM_ID,
   validator,
 });
