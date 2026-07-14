@@ -1,0 +1,56 @@
+---
+title: "VRF Rewards"
+description: "Mint random rewards on an Ephemeral Rollup with a delegated reward account, verifiable randomness from the VRF oracle, and commit-back settlement to Solana."
+---
+
+The VRF Rewards example mints random rewards for a delegated account on an Ephemeral Rollup. The
+program requests randomness on the ER, the VRF oracle fulfills it by invoking the program's callback
+with verified random bytes, the program derives the reward from those bytes, and the state commits
+back to the base layer.
+
+<CardGroup cols={2}>
+  <Card
+    title="View Repository"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rewards-delegated-vrf/anchor"
+    iconType="duotone"
+  >
+    Build, test, and run the Anchor program and client.
+  </Card>
+  <Card
+    title="Solana VRF"
+    icon="dice"
+    href="/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
+    iconType="duotone"
+  >
+    How verifiable randomness works on MagicBlock.
+  </Card>
+</CardGroup>
+
+## What the example demonstrates
+
+- **VRF on a delegated account:** the reward account lives on the ER, so randomness requests and
+  reward minting run at rollup speed.
+- **Oracle callback pattern:** the program exposes a callback instruction that only the VRF oracle
+  can fulfill, receiving verified random bytes on-chain.
+- **Randomness-derived state:** reward selection happens deterministically from the verified bytes —
+  no off-chain draw to trust.
+- **Commit-back settlement:** the final reward state is committed from the ER back to Solana, ready
+  for base-layer payouts.
+
+## Recommended next steps
+
+<CardGroup cols={2}>
+  <Card title="VRF Quickstart" icon="rocket" href="/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart" iconType="duotone">
+    Request and consume randomness in your own program.
+  </Card>
+  <Card title="Ephemeral Rollups" icon="bolt" href="/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup" iconType="duotone">
+    The delegation and commit lifecycle behind the example.
+  </Card>
+  <Card title="SPL Token Custody" icon="coins" href="/pages/ephemeral-spl-token/smart-contract-integration" iconType="duotone">
+    Pay rewards out in SPL tokens — ER custody or post-commit payouts.
+  </Card>
+  <Card title="Magic Actions" icon="wand-magic-sparkles" href="/pages/ephemeral-rollups-ers/magic-actions/overview" iconType="duotone">
+    Trigger base-layer follow-ups atomically when the commit lands.
+  </Card>
+</CardGroup>

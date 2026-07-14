@@ -31,7 +31,7 @@ import PostCommitCode from "/snippets/spl-tokens-code/sc-post-commit.mdx";
 </CardGroup>
 
 This guide is for on-chain programs — a DEX, AMM, prediction market, escrow, or game — that hold user
-funds and move them at Ephemeral Rollup speed. The core pattern: a program-owned account, delegated to
+funds and move them at [Ephemeral Rollup](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) speed. The core pattern: a program-owned account, delegated to
 the ER, with your program signing token transfers as a PDA.
 
 <Note>
@@ -56,19 +56,19 @@ Give your program authority over an eATA, delegate it, move funds PDA-signed on 
 back to Solana:
 
 <Steps>
-  <Step title={<a href="#1-er-aware">Make your program ER-aware</a>}>
+  <Step title={<a href="#1-er-aware-program">Make your program ER-aware</a>}>
     Add the `#[ephemeral]` attribute and import the SDK helpers.
   </Step>
   <Step title={<a href="#2-create-eata">Create the custody PDA and eATA</a>}>
     Own an eATA under the Ephemeral SPL Token program from your custody PDA.
   </Step>
-  <Step title={<a href="#3-delegate">Delegate the eATA</a>}>
+  <Step title={<a href="#3-delegate-eata">Delegate the eATA</a>}>
     CPI into the Ephemeral SPL Token program to delegate it to the ER.
   </Step>
-  <Step title={<a href="#4-transfer">Move tokens PDA-signed</a>}>
+  <Step title={<a href="#4-pda-signed-transfer">Move tokens PDA-signed</a>}>
     Sign the transfer as the custody PDA inside the rollup.
   </Step>
-  <Step title={<a href="#5-commit">Commit & undelegate</a>}>
+  <Step title={<a href="#5-commit-%26-undelegate">Commit & undelegate</a>}>
     Return the account to the base layer.
   </Step>
 </Steps>
@@ -81,49 +81,56 @@ back to Solana:
 
 ### Code Snippets
 
-<Tabs>
-  <Tab title="1. ER-aware program">
-    Wrap `#[program]` with `#[ephemeral]` and import the SDK helpers you need.
+#### 1. ER-aware program
 
-    <EphemeralCode />
-    [⬆️ Back to Top](#code-snippets)
-  </Tab>
-  <Tab title="2. Create eATA">
-    Your program owns a state PDA (for example, a `Pool`) that is the authority over the funds. Custody
-    on the ER uses an **ephemeral ATA (eATA)** owned by that PDA, derived from `[owner, mint]` under the
-    Ephemeral SPL Token program (`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`).
+Wrap `#[program]` with `#[ephemeral]` and import the SDK helpers you need.
 
-    <CreateEataCode />
-    [⬆️ Back to Top](#code-snippets)
-  </Tab>
-  <Tab title="3. Delegate eATA">
-    Delegate the eATA with a CPI to the Ephemeral SPL Token program (`DelegateEphemeralAta`,
-    discriminator `4`).
+<EphemeralCode />
 
-    <Warning>
-      Delegating a plain PDA-owned ATA directly to the ER is not supported — token custody on the ER
-      goes through an eATA. To delegate program *state* (not a token account), use the SDK's
-      `#[delegate]` macro instead.
-    </Warning>
+[⬆️ Back to Top](#code-snippets)
 
-    <DelegateEataCode />
-    [⬆️ Back to Top](#code-snippets)
-  </Tab>
-  <Tab title="4. PDA-signed transfer">
-    With the eATA delegated, move tokens inside the rollup with an SPL Token CPI signed by the custody
-    PDA via `CpiContext::new_with_signer`. The signer seeds are `[POOL_SEED, bump]` — the program
-    authorizes the payout itself, with no user signature.
+#### 2. Create eATA
 
-    <PdaTransferCode />
-    [⬆️ Back to Top](#code-snippets)
-  </Tab>
-  <Tab title="5. Commit & undelegate">
-    Commit the ER state and return the account to the base layer with `MagicIntentBundleBuilder`.
+Your program owns a state PDA (for example, a `Pool`) that is the authority over the funds. Custody
+on the ER uses an **ephemeral ATA (eATA)** owned by that PDA, derived from `[owner, mint]` under the
+Ephemeral SPL Token program (`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`).
 
-    <CommitCode />
-    [⬆️ Back to Top](#code-snippets)
-  </Tab>
-</Tabs>
+<CreateEataCode />
+
+[⬆️ Back to Top](#code-snippets)
+
+#### 3. Delegate eATA
+
+Delegate the eATA with a CPI to the Ephemeral SPL Token program (`DelegateEphemeralAta`,
+discriminator `4`).
+
+<Warning>
+  Delegating a plain PDA-owned ATA directly to the ER is not supported — token custody on the ER
+  goes through an eATA. To delegate program *state* (not a token account), use the SDK's
+  `#[delegate]` macro instead.
+</Warning>
+
+<DelegateEataCode />
+
+[⬆️ Back to Top](#code-snippets)
+
+#### 4. PDA-signed transfer
+
+With the eATA delegated, move tokens inside the rollup with an SPL Token CPI signed by the custody
+PDA via `CpiContext::new_with_signer`. The signer seeds are `[POOL_SEED, bump]` — the program
+authorizes the payout itself, with no user signature.
+
+<PdaTransferCode />
+
+[⬆️ Back to Top](#code-snippets)
+
+#### 5. Commit & undelegate
+
+Commit the ER state and return the account to the base layer with `MagicIntentBundleBuilder`.
+
+<CommitCode />
+
+[⬆️ Back to Top](#code-snippets)
 
 ---
 

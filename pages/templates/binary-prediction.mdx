@@ -1,0 +1,55 @@
+---
+title: "Binary Prediction"
+description: "Build an up/down prediction flow with session-authorized bets, SPL token custody, real-time oracle prices, and Ephemeral Rollup settlement."
+---
+
+The Binary Prediction example lets a user stake SPL tokens on an up/down price move. It reads a
+MagicBlock pricing-oracle feed on the ER, snapshots the entry price, and settles after the bet expires.
+
+<Warning>
+  This is an integration example, not a production risk engine. The pool acts as the counterparty
+  without hedging its exposure and uses deliberately simple liquidity accounting.
+</Warning>
+
+<CardGroup cols={2}>
+  <Card
+    title="View Repository"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/binary-prediction/anchor"
+    iconType="duotone"
+  >
+    Build, test, and run the Anchor program and client.
+  </Card>
+  <Card
+    title="Protocol Architecture"
+    icon="diagram-project"
+    href="/pages/solutions/prediction-markets"
+    iconType="duotone"
+  >
+    Place this example in a complete prediction-market or trading architecture.
+  </Card>
+</CardGroup>
+
+## What the example demonstrates
+
+- **Session-authorized execution:** place bets without repeated wallet prompts after setup.
+- **SPL-token custody:** stake and pool liquidity move through delegated eATAs.
+- **Real-time pricing:** opening and settlement prices come from the same configured oracle feed.
+- **Expiry settlement:** wins pay the configured multiplier, ties refund, and losses remain in the pool.
+
+## Recommended next steps
+
+<CardGroup cols={2}>
+  <Card title="SPL Token Custody" icon="coins" href="/pages/ephemeral-spl-token/smart-contract-integration" iconType="duotone">
+    Understand eATA custody and post-commit payout alternatives.
+  </Card>
+  <Card title="Pricing Oracle" icon="waveform" href="/pages/tools/oracle/implementation" iconType="duotone">
+    Validate feed identity, freshness, and price data in your program.
+  </Card>
+  <Card title="Session Keys" icon="key" href="/pages/tools/session-keys/security" iconType="duotone">
+    Scope repeated trading actions and review the security boundaries.
+  </Card>
+  <Card title="Cranks" icon="clock" href="/pages/tools/crank/implementation" iconType="duotone">
+    Extend manual settlement with scheduled expiry checks.
+  </Card>
+</CardGroup>

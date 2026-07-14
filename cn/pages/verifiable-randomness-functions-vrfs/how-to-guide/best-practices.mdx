@@ -20,6 +20,6 @@ description: "集成可验证随机数的指导原则"
 
 - 存储所有待处理请求标识符，以便安全处理重试或意外 callback。
 - 跟踪你的请求被委托到的 oracle queue，以便正确匹配返回结果。
-- 让随机输出保持短生命周期，在你的 [rollup logic](/cn/pages/get-started/introduction/ephemeral-rollup) 中立即消费它们，并避免重复使用。
+- 让随机输出保持短生命周期，在你的 [rollup logic](/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) 中立即消费它们，并避免重复使用。
 
 遵循这些准则可以降低被操纵的风险，并确保跨会话的一致随机性。
