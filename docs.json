@@ -332,6 +332,19 @@
                   "pages/private-ephemeral-rollups-pers/api-reference/per/swap",
                   "pages/private-ephemeral-rollups-pers/api-reference/per/mcp"
                 ]
+              },
+              {
+                "group": "PER Middleware API",
+                "pages": [
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/introduction",
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/challenge",
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/login",
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/permission",
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/risk",
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/quote",
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/fast-quote",
+                  "pages/private-ephemeral-rollups-pers/api-reference/middleware/rpc"
+                ]
               }
             ]
           },

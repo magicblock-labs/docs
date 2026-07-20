@@ -1,0 +1,85 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PER Middleware API",
+    "version": "0.1.3",
+    "description": "Generate a challenge string for a wallet to sign as part of the Private Ephemeral Rollup's auth flow."
+  },
+  "servers": [
+    { "url": "https://devnet-tee.magicblock.app", "description": "Devnet - PER TEE Validator" },
+    { "url": "https://mainnet-tee.magicblock.app", "description": "Mainnet - PER TEE Validator" }
+  ],
+  "paths": {
+    "/auth/challenge": {
+      "get": {
+        "summary": "Challenge",
+        "description": "Returns a challenge string for the given pubkey to sign. The resulting signature is submitted to `/auth/login` in exchange for a bearer token used to authenticate JSON-RPC requests. Challenges expire 5 minutes after issuance.",
+        "parameters": [
+          {
+            "name": "pubkey",
+            "in": "query",
+            "required": true,
+            "description": "Base58-encoded Solana public key that will sign the challenge.",
+            "schema": {
+              "type": "string",
+              "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+            }
+          },
+          {
+            "name": "template",
+            "in": "query",
+            "required": false,
+            "description": "Custom challenge template to sign. Must contain a `{timestamp}` placeholder, which is substituted with `Timestamp: <unix_ts>`; `{pubkey}` is also substituted if present. Defaults to the service's standard template.",
+            "schema": {
+              "type": "string",
+              "example": "Sign in to My App as {pubkey}\n{timestamp}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["challenge"],
+                  "properties": {
+                    "challenge": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "challenge": "Login to Query Filtering Service\nTimestamp: 1732000000\nUser: Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing `pubkey` query param, or `template` is missing the `{timestamp}` placeholder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

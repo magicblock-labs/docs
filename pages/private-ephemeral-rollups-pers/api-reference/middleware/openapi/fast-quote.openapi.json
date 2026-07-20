@@ -1,0 +1,79 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PER Middleware API",
+    "version": "0.1.3",
+    "description": "Sign a challenge with a pre-attested key instead of generating a fresh TDX quote on every call."
+  },
+  "servers": [
+    { "url": "https://devnet-tee.magicblock.app", "description": "Devnet - PER TEE Validator" },
+    { "url": "https://mainnet-tee.magicblock.app", "description": "Mainnet - PER TEE Validator" }
+  ],
+  "paths": {
+    "/fast-quote": {
+      "get": {
+        "summary": "Fast Quote",
+        "description": "On first call, generates an ed25519 keypair, requests one TDX quote binding that keypair's public key, and caches both for the process lifetime. Every call (including the first) signs `challenge` with the cached signing key and returns that quote alongside the signature, so a caller only needs to verify the quote once and can then trust subsequent signatures from the same `pubkey` without re-attesting. Does not require a fresh TDX guest call after the first invocation, so it is faster than `/quote` for repeated verification.",
+        "parameters": [
+          {
+            "name": "challenge",
+            "in": "query",
+            "required": true,
+            "description": "Base64-encoded, exactly 64 bytes, signed with the attested key.",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quote and signature generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["quote", "pubkey", "challenge", "signature", "reportDataSha256"],
+                  "properties": {
+                    "quote": {
+                      "type": "string",
+                      "description": "Base64-encoded TDX quote binding `pubkey`."
+                    },
+                    "pubkey": {
+                      "type": "string",
+                      "description": "Base64-encoded ed25519 public key of the attested signing key bound into the quote."
+                    },
+                    "challenge": {
+                      "type": "string",
+                      "description": "The base64-encoded challenge that was signed, echoed back."
+                    },
+                    "signature": {
+                      "type": "string",
+                      "description": "Base64-encoded ed25519 signature over the raw challenge bytes, produced by `pubkey`."
+                    },
+                    "reportDataSha256": {
+                      "type": "string",
+                      "description": "Base64-encoded SHA-256 of the 64-byte TDX report data (user data) bound into the quote."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error, e.g. `challenge` does not decode to exactly 64 bytes, or no TDX guest device present on first call",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

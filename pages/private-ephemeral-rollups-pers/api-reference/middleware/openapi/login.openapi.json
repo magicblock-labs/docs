@@ -1,0 +1,89 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PER Middleware API",
+    "version": "0.1.3",
+    "description": "Exchange a signed challenge for a bearer token."
+  },
+  "servers": [
+    { "url": "https://devnet-tee.magicblock.app", "description": "Devnet - PER TEE Validator" },
+    { "url": "https://mainnet-tee.magicblock.app", "description": "Mainnet - PER TEE Validator" }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Login",
+        "description": "Verifies the signature over the challenge returned by `/auth/challenge` and, on success, returns a JWT bearer token (valid 30 days by default). Pass the token as `?token=<jwt>` or an `Authorization: Bearer <jwt>` header on subsequent JSON-RPC requests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["pubkey", "signature", "challenge"],
+                "properties": {
+                  "pubkey": {
+                    "type": "string",
+                    "description": "Base58-encoded Solana public key."
+                  },
+                  "signature": {
+                    "type": "string",
+                    "description": "Base58-encoded signature of the challenge bytes, produced by `pubkey`'s keypair."
+                  },
+                  "challenge": {
+                    "type": "string",
+                    "description": "The exact challenge string returned by `/auth/challenge`."
+                  }
+                }
+              },
+              "example": {
+                "pubkey": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
+                "signature": "5VER...base58...signature",
+                "challenge": "Login to Query Filtering Service\nTimestamp: 1732000000\nUser: Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["token"],
+                  "properties": { "token": { "type": "string" } }
+                },
+                "example": { "token": "eyJhbGciOiJIUzI1NiJ9..." }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid signature, malformed pubkey/signature, or expired/malformed challenge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

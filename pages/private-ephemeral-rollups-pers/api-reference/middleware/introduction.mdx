@@ -1,0 +1,63 @@
+---
+title: "Introduction"
+description: "PER Middleware API documentation"
+---
+
+## Overview
+
+The PER Middleware API is the HTTP API exposed directly by the Private Ephemeral Rollup's [privacy middleware](/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy) (the `query-filtering-service`, [source](https://github.com/magicblock-labs/private-ephemeral-rollup)). It runs alongside the MagicBlock validator inside the Trusted Execution Environment and sits in front of every request: it issues bearer tokens through a wallet challenge/login flow, filters JSON-RPC calls against on-chain [permission](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control) accounts, and exposes TEE remote-attestation quotes.
+
+This is a different service from the [Private Payments API](/pages/private-ephemeral-rollups-pers/api-reference/per/introduction), which builds SPL token transactions on top of the PER. Standard Solana JSON-RPC methods forwarded through this middleware (`getAccountInfo`, `sendTransaction`, etc.) are documented in the [ER RPC reference](/pages/ephemeral-rollups-ers/api-reference/rpc/introduction).
+
+**Mainnet URL:** `https://mainnet-tee.magicblock.app`
+
+**Devnet URL:** `https://devnet-tee.magicblock.app`
+
+## Main Operations
+
+### Auth
+
+- [**Challenge**](/pages/private-ephemeral-rollups-pers/api-reference/middleware/challenge) - Generate a challenge string for a wallet to sign
+- [**Login**](/pages/private-ephemeral-rollups-pers/api-reference/middleware/login) - Exchange a signed challenge for a bearer token
+
+### Access & Compliance
+
+- [**Permission**](/pages/private-ephemeral-rollups-pers/api-reference/middleware/permission) - Look up the authorized members of a permissioned account
+- [**Risk**](/pages/private-ephemeral-rollups-pers/api-reference/middleware/risk) - Unauthenticated AML/sanctions risk check for an address
+
+### TEE Attestation
+
+- [**Quote**](/pages/private-ephemeral-rollups-pers/api-reference/middleware/quote) - Request a fresh TDX remote-attestation quote
+- [**Fast Quote**](/pages/private-ephemeral-rollups-pers/api-reference/middleware/fast-quote) - Sign a challenge with a pre-attested key instead of generating a new quote
+
+### JSON-RPC
+
+- [**RPC**](/pages/private-ephemeral-rollups-pers/api-reference/middleware/rpc) - Authenticated, permission-filtered Solana JSON-RPC passthrough
+
+## Auth Flow
+
+Every JSON-RPC request must carry a bearer token minted from a signed challenge:
+
+1. `GET /auth/challenge?pubkey=<wallet>` returns a `challenge` string that expires 5 minutes after issuance.
+2. The wallet signs the challenge bytes.
+3. `POST /auth/login` with `{ pubkey, signature, challenge }` verifies the signature and returns a JWT `token` (valid 30 days by default).
+4. Pass the token as `?token=<jwt>` on the request, or as an `Authorization: Bearer <jwt>` header.
+
+## JSON-RPC Passthrough
+
+Any authenticated `POST` request other than `/auth/login` is treated as a standard Solana JSON-RPC 2.0 request (`{ jsonrpc, id, method, params }`). It is forwarded to the underlying MagicBlock validator and both the request and response are filtered according to the caller's on-chain `EphemeralPermission` access before being returned. See [RPC](/pages/private-ephemeral-rollups-pers/api-reference/middleware/rpc) for details and the [ER RPC reference](/pages/ephemeral-rollups-ers/api-reference/rpc/introduction) for the list of supported methods.
+
+## Key Features
+
+- **Wallet Challenge/Login** - Stateless, signature-based auth that issues short bearer tokens without ever handling a private key
+- **Permission-Filtered RPC** - Every JSON-RPC call and response is filtered against on-chain `EphemeralPermission` accounts
+- **TEE Remote Attestation** - `quote` and `fast-quote` let clients verify the validator is genuinely running inside an Intel TDX enclave before trusting it
+- **AML/Sanctions Screening** - Optional Range-backed address risk scoring, exposed both inline (enforced during login) and via a standalone, unauthenticated `risk` check
+
+## Use Cases
+
+- Authenticate a wallet and mint a bearer token to read private account state
+- Check whether an address is authorized to access a permissioned account
+- Verify the TEE's authenticity before sending sensitive transactions
+- Screen an address for AML/sanctions risk before interacting with it
+- Send permission-filtered JSON-RPC requests (`getAccountInfo`, `sendTransaction`, ...) to the Private Ephemeral Rollup

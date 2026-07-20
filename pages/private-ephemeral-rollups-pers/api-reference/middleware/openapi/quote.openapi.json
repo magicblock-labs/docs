@@ -1,0 +1,63 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PER Middleware API",
+    "version": "0.1.3",
+    "description": "Request a fresh TDX remote-attestation quote binding a caller-supplied challenge, for on-demand verification that the validator is running inside a genuine Intel TDX enclave."
+  },
+  "servers": [
+    { "url": "https://devnet-tee.magicblock.app", "description": "Devnet - PER TEE Validator" },
+    { "url": "https://mainnet-tee.magicblock.app", "description": "Mainnet - PER TEE Validator" }
+  ],
+  "paths": {
+    "/quote": {
+      "get": {
+        "summary": "Quote",
+        "description": "Generates a new TDX quote with `challenge` bound into the report data, by making a fresh call into the TDX guest device. This is slower than `/fast-quote` since it performs the attestation ioctl on every call, but it does not depend on any previously-cached key material. Fails with an internal error if the service is not running on genuine TDX guest hardware.",
+        "parameters": [
+          {
+            "name": "challenge",
+            "in": "query",
+            "required": true,
+            "description": "Base64-encoded, exactly 64 bytes, bound into the quote's report data.",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quote generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["quote"],
+                  "properties": {
+                    "quote": {
+                      "type": "string",
+                      "description": "Base64-encoded TDX quote, verifiable against Intel's DCAP verification service."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error, e.g. no TDX guest device present, or `challenge` does not decode to exactly 64 bytes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

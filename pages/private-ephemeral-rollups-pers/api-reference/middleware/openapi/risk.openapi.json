@@ -1,0 +1,81 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PER Middleware API",
+    "version": "0.1.3",
+    "description": "Unauthenticated AML/sanctions risk check for an address. Served on the middleware's dedicated risk-check port, separate from the main authenticated API and RPC ports, so it never requires a bearer token."
+  },
+  "paths": {
+    "/risk": {
+      "get": {
+        "summary": "Risk",
+        "description": "Looks up the Range AML risk assessment for `pubkey` without enforcing the configured risk threshold (unlike the check performed automatically during login/RPC use when Range screening is enabled). Returns a score-less assessment with `isRisky: false` when Range AML checks are not configured on the deployment.",
+        "parameters": [
+          {
+            "name": "pubkey",
+            "in": "query",
+            "required": true,
+            "description": "Base58-encoded Solana public key to check.",
+            "schema": {
+              "type": "string",
+              "example": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Address risk assessment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["pubkey", "riskThreshold", "isRisky"],
+                  "properties": {
+                    "pubkey": { "type": "string" },
+                    "riskScore": {
+                      "type": ["integer", "null"],
+                      "minimum": 0,
+                      "description": "Range risk score, absent when Range AML checks are not configured."
+                    },
+                    "riskThreshold": { "type": "integer", "minimum": 0 },
+                    "isRisky": { "type": "boolean" }
+                  }
+                },
+                "example": {
+                  "pubkey": "Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L",
+                  "riskScore": 2,
+                  "riskThreshold": 5,
+                  "isRisky": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing `pubkey` query param, or `pubkey` is not a valid base58-encoded Solana pubkey",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

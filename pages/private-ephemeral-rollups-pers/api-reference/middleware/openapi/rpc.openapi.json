@@ -1,0 +1,95 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PER Middleware API",
+    "version": "0.1.3",
+    "description": "Authenticated, permission-filtered Solana JSON-RPC 2.0 passthrough to the underlying MagicBlock validator."
+  },
+  "servers": [
+    { "url": "https://devnet-tee.magicblock.app", "description": "Devnet - PER TEE Validator" },
+    { "url": "https://mainnet-tee.magicblock.app", "description": "Mainnet - PER TEE Validator" }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "RPC",
+        "description": "Any authenticated POST request other than `/auth/login` is treated as a standard Solana JSON-RPC 2.0 request and forwarded to the underlying MagicBlock validator. Both the outgoing request and the incoming response are filtered according to the caller's on-chain `EphemeralPermission` access before the response is returned. See the [ER RPC reference](/pages/ephemeral-rollups-ers/api-reference/rpc/introduction) for the full list of supported methods.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "description": "JWT bearer token returned by `/auth/login`. Required unless supplied via the `Authorization: Bearer <token>` header instead.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["jsonrpc", "id", "method"],
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "id": {},
+                  "method": { "type": "string", "example": "getAccountInfo" },
+                  "params": { "type": "array", "items": {} }
+                }
+              },
+              "example": {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "getBalance",
+                "params": ["Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Filtered JSON-RPC 2.0 response from the underlying validator",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["jsonrpc", "id"],
+                  "properties": {
+                    "jsonrpc": { "type": "string" },
+                    "id": {},
+                    "result": {},
+                    "error": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied - missing/invalid bearer token, or the caller is not authorized to access the requested accounts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
