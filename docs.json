@@ -559,20 +559,20 @@
                     ]
                   },
                   {
-                    "group": "Magic Actions",
-                    "pages": [
-                      "pages/ephemeral-rollups-ers/magic-actions/overview",
-                      "pages/ephemeral-rollups-ers/magic-actions/implementation",
-                      "pages/ephemeral-rollups-ers/magic-actions/client",
-                      "pages/ephemeral-rollups-ers/magic-actions/troubleshooting"
-                    ]
-                  },
-                  {
                     "group": "Guides",
                     "pages": [
                       "pages/ephemeral-rollups-ers/how-to-guide/anchor",
                       "pages/ephemeral-rollups-ers/how-to-guide/rust-program",
                       "pages/ephemeral-rollups-ers/how-to-guide/rust-tests",
+                      {
+                        "group": "Magic Actions",
+                        "pages": [
+                          "pages/ephemeral-rollups-ers/magic-actions/overview",
+                          "pages/ephemeral-rollups-ers/magic-actions/implementation",
+                          "pages/ephemeral-rollups-ers/magic-actions/client",
+                          "pages/ephemeral-rollups-ers/magic-actions/troubleshooting"
+                        ]
+                      },
                       {
                         "group": "Cranks",
                         "pages": [
@@ -583,25 +583,25 @@
                     ]
                   },
                   {
-                    "group": "Router API",
+                    "group": "API Reference",
                     "pages": [
-                      "pages/ephemeral-rollups-ers/api-reference/er/introduction",
-                      "pages/ephemeral-rollups-ers/api-reference/er/getRoutes",
-                      "pages/ephemeral-rollups-ers/api-reference/er/getIdentity",
-                      "pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts",
-                      "pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses",
-                      "pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo",
-                      "pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus"
-                    ]
-                  },
-                  {
-                    "group": "RPC API",
-                    "pages": [
-                      "pages/ephemeral-rollups-ers/api-reference/rpc/introduction",
                       {
-                        "group": "Methods",
+                        "group": "Router API",
+                        "pages": [
+                          "pages/ephemeral-rollups-ers/api-reference/er/introduction",
+                          "pages/ephemeral-rollups-ers/api-reference/er/getRoutes",
+                          "pages/ephemeral-rollups-ers/api-reference/er/getIdentity",
+                          "pages/ephemeral-rollups-ers/api-reference/er/getBlockhashForAccounts",
+                          "pages/ephemeral-rollups-ers/api-reference/er/getSignatureStatuses",
+                          "pages/ephemeral-rollups-ers/api-reference/er/getAccountInfo",
+                          "pages/ephemeral-rollups-ers/api-reference/er/getDelegationStatus"
+                        ]
+                      },
+                      {
+                        "group": "RPC API",
                         "expanded": false,
                         "pages": [
+                          "pages/ephemeral-rollups-ers/api-reference/rpc/introduction",
                           "pages/ephemeral-rollups-ers/api-reference/rpc/getAccountInfo",
                           "pages/ephemeral-rollups-ers/api-reference/rpc/getBalance",
                           "pages/ephemeral-rollups-ers/api-reference/rpc/getBlock",
@@ -640,7 +640,7 @@
                     ]
                   },
                   {
-                    "group": "Support",
+                    "group": "Resources",
                     "pages": [
                       "pages/ephemeral-rollups-ers/introduction/faq"
                     ]
@@ -655,8 +655,7 @@
                   {
                     "group": "Get Started",
                     "pages": [
-                      "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
-                      "pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
+                      "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart"
                     ]
                   },
                   {
@@ -665,6 +664,12 @@
                       "pages/private-ephemeral-rollups-pers/introduction/onchain-privacy",
                       "pages/private-ephemeral-rollups-pers/introduction/authorization",
                       "pages/private-ephemeral-rollups-pers/introduction/compliance-framework"
+                    ]
+                  },
+                  {
+                    "group": "Guides",
+                    "pages": [
+                      "pages/private-ephemeral-rollups-pers/how-to-guide/access-control"
                     ]
                   },
                   {
@@ -743,8 +748,7 @@
                   {
                     "group": "Get Started",
                     "pages": [
-                      "pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart",
-                      "pages/verifiable-randomness-functions-vrfs/how-to-guide/best-practices"
+                      "pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart"
                     ]
                   },
                   {
@@ -753,6 +757,12 @@
                       "pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf",
                       "pages/verifiable-randomness-functions-vrfs/introduction/technical-details",
                       "pages/verifiable-randomness-functions-vrfs/introduction/security"
+                    ]
+                  },
+                  {
+                    "group": "Guides",
+                    "pages": [
+                      "pages/verifiable-randomness-functions-vrfs/how-to-guide/best-practices"
                     ]
                   },
                   {
@@ -772,7 +782,12 @@
                   {
                     "group": "Get Started",
                     "pages": [
-                      "pages/tools/oracle/introduction",
+                      "pages/tools/oracle/introduction"
+                    ]
+                  },
+                  {
+                    "group": "Guides",
+                    "pages": [
                       "pages/tools/oracle/implementation"
                     ]
                   }
@@ -785,19 +800,29 @@
             "icon": "book",
             "groups": [
               {
-                "group": "Templates",
+                "group": "Basic Examples",
+                "pages": [
+                  "pages/templates/oracle-priced-purchase",
+                  "pages/templates/onchain-dice",
+                  "pages/templates/counter"
+                ]
+              },
+              {
+                "group": "Feature Examples",
                 "pages": [
                   "pages/templates/binary-prediction",
-                  "pages/templates/oracle-priced-purchase",
-                  "pages/templates/sealed-bid-auction",
+                  "pages/templates/sealed-bid-auction"
+                ]
+              },
+              {
+                "group": "App Templates",
+                "pages": [
                   "pages/templates/private-payments",
                   "pages/templates/rock-paper-scissors",
                   "pages/templates/real-time-price-feed",
                   "pages/templates/vrf-rewards",
                   "pages/templates/gachapon",
-                  "pages/templates/random-character-generator",
-                  "pages/templates/onchain-dice",
-                  "pages/templates/counter"
+                  "pages/templates/random-character-generator"
                 ]
               }
             ]
