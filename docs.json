@@ -796,11 +796,11 @@
             ]
           },
           {
-            "tab": "Examples",
+            "tab": "Guides",
             "icon": "book",
             "groups": [
               {
-                "group": "Basic Examples",
+                "group": "Starter Guides",
                 "pages": [
                   "pages/templates/oracle-priced-purchase",
                   "pages/templates/onchain-dice",
@@ -808,7 +808,7 @@
                 ]
               },
               {
-                "group": "Feature Examples",
+                "group": "Advanced Guides",
                 "pages": [
                   "pages/templates/binary-prediction",
                   "pages/templates/sealed-bid-auction"
