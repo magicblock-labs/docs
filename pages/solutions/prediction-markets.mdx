@@ -1,0 +1,116 @@
+---
+title: "Prediction Markets and Trading"
+sidebarTitle: "Prediction Markets & Trading"
+description: "Architecture guide for prediction markets, leveraged trading, and settlement using Ephemeral Rollups, session keys, SPL token custody, pricing oracles, cranks, and Magic Actions."
+---
+
+Build the latency-sensitive trading loop on an Ephemeral Rollup (ER), then commit the state or settle
+funds on Solana when the result must become durable. This guide maps each protocol requirement to the
+MagicBlock feature that solves it.
+
+<Warning>
+  The linked examples demonstrate integration patterns, not a production risk engine. A leveraged
+  protocol still needs audited pricing, liquidity, solvency, liquidation, pause, and recovery rules.
+</Warning>
+
+## Choose the components
+
+| Protocol requirement | MagicBlock feature | Start here |
+| --- | --- | --- |
+| Frequent orders, bets, or position updates | Ephemeral Rollups | [ER quickstart](/pages/ephemeral-rollups-ers/how-to-guide/quickstart) |
+| Restricted position or strategy visibility | Private Ephemeral Rollups | [PER quickstart](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart) |
+| Repeated actions without wallet prompts | Session Keys | [Session Keys overview](/pages/tools/session-keys/introduction) |
+| Collateral, custody, pool liquidity, and payouts | Ephemeral SPL Token | [Token model](/pages/ephemeral-spl-token/overview) |
+| Prices and liquidation inputs | Pricing Oracle | [Oracle overview](/pages/tools/oracle/introduction) |
+| Expiry, liquidation, and settlement checks | Cranks | [Cranks overview](/pages/tools/crank/introduction) |
+| Base-layer payout after an ER commit | Magic Actions | [Magic Actions overview](/pages/ephemeral-rollups-ers/magic-actions/overview) |
+
+## Reference architecture
+
+<Steps>
+  <Step title="Initialize durable market state">
+    Create market configuration, authorities, collateral mint, and base-layer custody accounts. Keep
+    administrative controls and durable settlement records on Solana.
+  </Step>
+  <Step title="Delegate the latency-sensitive state">
+    Delegate position, order, or bet accounts to the ER. Use a PER when the contents or allowed
+    participants must be restricted inside a TEE-backed validator.
+  </Step>
+  <Step title="Authorize repeated user actions">
+    Scope a session key to the protocol instructions, duration, and limits the user needs. Do not
+    grant the session unrestricted control of the user's assets. SPL Token does not understand
+    session tokens, so token movement may also require a one-time approval to a constrained program
+    authority, as shown in the binary prediction example.
+  </Step>
+  <Step title="Fund custody and execute">
+    Deposit collateral into the Global Vault and use program-controlled eATAs when funds must move at
+    ER speed. Read the configured oracle account inside each price-sensitive instruction.
+  </Step>
+  <Step title="Automate time-sensitive checks">
+    Schedule cranks for expiry, liquidation, or periodic settlement logic. Make every scheduled
+    instruction safe to retry and validate the current market state before changing it.
+  </Step>
+  <Step title="Commit and settle">
+    Commit final state while remaining delegated for continued trading, or commit and undelegate when
+    the market closes. Use a Magic Action when the commit must trigger a base-layer payout or another
+    Solana instruction.
+  </Step>
+</Steps>
+
+## Choose a custody model
+
+| Model | Best for | Trade-off |
+| --- | --- | --- |
+| **Program-controlled eATA custody** | Stakes, collateral, and payouts that move repeatedly on the ER | Requires the Ephemeral SPL Token lifecycle and explicit withdrawal handling |
+| **Base-layer custody + post-commit payout** | Funds that should remain in normal ATAs until settlement | Token movement waits for commit, but base-layer custody stays authoritative |
+
+The [Smart Contract Integration guide](/pages/ephemeral-spl-token/smart-contract-integration)
+implements both patterns and links the binary-prediction reference.
+
+## Prepare for production
+
+Before moving from a reference example to a production protocol, define:
+
+- oracle freshness, confidence, and failure behavior;
+- collateral, exposure, and liquidation rules when the product requires them;
+- maximum position, market exposure, and utilization limits;
+- liquidity and payout reserves under worst-case moves;
+- fees, rounding, and integer overflow boundaries;
+- crank failure, retry, and manual recovery paths;
+- commit frequency and the authoritative state during settlement;
+- emergency pause, close-only, and controlled unwind behavior.
+
+Use PER only when restricted visibility is a protocol requirement. Privacy does not replace solvency,
+oracle validation, or authorization checks.
+
+## Start with working examples
+
+<CardGroup cols={2}>
+  <Card
+    title="Binary Prediction"
+    icon="chart-line"
+    href="/pages/templates/binary-prediction"
+    iconType="duotone"
+  >
+    Session-authorized bets, real-time prices, eATA pool custody, and expiry-based settlement.
+  </Card>
+  <Card
+    title="Oracle-Priced Purchase"
+    icon="cart-shopping"
+    href="/pages/templates/oracle-priced-purchase"
+    iconType="duotone"
+  >
+    A smaller example focused on freshness checks, feed validation, and slippage protection.
+  </Card>
+  <Card
+    title="Sealed-Bid Auction"
+    icon="gavel"
+    href="/pages/templates/sealed-bid-auction"
+    iconType="duotone"
+  >
+    Hidden bids on a Private Ephemeral Rollup with two-layer SPL escrow and on-chain winner selection.
+  </Card>
+</CardGroup>
+
+Build the binary prediction example first. Add crank-driven settlement next, then choose ER custody or
+a post-commit base-layer payout based on where your protocol needs funds to remain authoritative.

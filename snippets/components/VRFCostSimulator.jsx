@@ -125,12 +125,11 @@ export const VRFCostSimulator = () => {
 
       {/* SVG graph */}
       <div style={{ width: "100%", maxWidth: "600px", margin: "0 auto", paddingLeft: "40px", paddingRight: "10px" }}>
-        <svg width={width} height={height} 
+        <svg
           viewBox={`0 0 ${width} ${height}`}
           width="100%"
-          height="auto"
           preserveAspectRatio="xMidYMid meet"
-          style={{ overflow: "visible" }}
+          style={{ height: "auto", overflow: "visible" }}
         >
           {Array.from({ length: 5 }, (_, i) => {
             const y = padding + i * ((height - 2 * padding) / 4);

@@ -14,7 +14,7 @@ pub vrf_program_identity: Signer<'info>,
 
 MagicBlock Solana VRF は `InvalidProof` や `Unauthorized` のような条件を検査するため、不正な署名や未認可の呼び出し元はゲームロジックが動く前に拒否されます。VRF プログラムには公開済みの監査があるため、本番前にはそのレポートを安全性の根拠として確認してください。
 
-すべてがゲームロジックを実行するのと同じ決定論的な [ephemeral rollup](/jp/pages/get-started/introduction/ephemeral-rollup) 内で実行されるため、ランダム値を再利用したり遅延させたりすることはできません。
+すべてがゲームロジックを実行するのと同じ決定論的な [ephemeral rollup](/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) 内で実行されるため、ランダム値を再利用したり遅延させたりすることはできません。
 
 シード選択、コールバック検証、状態管理などの実践的な統合ガイダンスについては、[ベストプラクティス](/jp/pages/verifiable-randomness-functions-vrfs/how-to-guide/best-practices)を参照してください。
 

@@ -1,0 +1,43 @@
+---
+title: "Oracle-Priced Purchase"
+description: "Learn oracle account validation, freshness checks, price conversion, and slippage protection with a compact Anchor example."
+---
+
+The Oracle-Priced Purchase example sells a USD-priced item for SOL using the MagicBlock real-time
+pricing-oracle account format. It is a focused starting point for any protocol instruction whose
+amount depends on a live market price.
+
+<CardGroup cols={2}>
+  <Card
+    title="View Repository"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/oracle-priced-purchase/anchor"
+    iconType="duotone"
+  >
+    Build and test the Anchor example against local oracle fixtures.
+  </Card>
+  <Card
+    title="Prediction & Trading Architecture"
+    icon="diagram-project"
+    href="/pages/solutions/prediction-markets"
+    iconType="duotone"
+  >
+    Apply the pricing pattern to positions, collateral, liquidation, and settlement.
+  </Card>
+</CardGroup>
+
+## What the example demonstrates
+
+- binding program configuration to an expected oracle feed ID;
+- rejecting prices that are not fully verified or are older than 60 seconds;
+- converting a USD-denominated amount into lamports;
+- enforcing a buyer-provided maximum to protect against price movement.
+
+<CardGroup cols={2}>
+  <Card title="Oracle Overview" icon="waveform" href="/pages/tools/oracle/introduction" iconType="duotone">
+    Understand MagicBlock's low-latency pricing feeds.
+  </Card>
+  <Card title="Oracle Implementation" icon="code" href="/pages/tools/oracle/implementation" iconType="duotone">
+    Read and validate pricing accounts in your program.
+  </Card>
+</CardGroup>
