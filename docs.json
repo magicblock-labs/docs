@@ -655,7 +655,8 @@
                   {
                     "group": "Get Started",
                     "pages": [
-                      "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart"
+                      "pages/private-ephemeral-rollups-pers/how-to-guide/quickstart",
+                      "pages/private-ephemeral-rollups-pers/how-to-guide/local-development"
                     ]
                   },
                   {
