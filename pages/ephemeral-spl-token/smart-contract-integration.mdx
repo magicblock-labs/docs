@@ -68,7 +68,7 @@ back to Solana:
   <Step title={<a href="#4-pda-signed-transfer">Move tokens PDA-signed</a>}>
     Sign the transfer as the custody PDA inside the rollup.
   </Step>
-  <Step title={<a href="#5-commit-%26-undelegate">Commit & undelegate</a>}>
+  <Step title={<a href="#5-commit-undelegate">Commit & undelegate</a>}>
     Return the account to the base layer.
   </Step>
 </Steps>
@@ -124,7 +124,7 @@ authorizes the payout itself, with no user signature.
 
 [⬆️ Back to Top](#code-snippets)
 
-#### 5. Commit & undelegate
+#### 5. Commit & undelegate {#5-commit-undelegate}
 
 Commit the ER state and return the account to the base layer with `MagicIntentBundleBuilder`.
 

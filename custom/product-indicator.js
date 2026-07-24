@@ -18,7 +18,7 @@
   document.head.appendChild(style);
 
   function currentProduct() {
-    var path = window.location.pathname;
+    var path = window.location.pathname.replace(/^\/(?:cn|jp|ko)(?=\/)/, "");
     for (var i = 0; i < PRODUCT_BY_PREFIX.length; i++) {
       if (path.indexOf(PRODUCT_BY_PREFIX[i][0]) === 0) return PRODUCT_BY_PREFIX[i][1];
     }

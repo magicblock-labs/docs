@@ -69,7 +69,7 @@ Solana に決済します：
   <Step title={<a href="#4-pda-signed-transfer">PDA 署名で token を移動</a>}>
     rollup 内でカストディ PDA として送金に署名します。
   </Step>
-  <Step title={<a href="#5-commit-%26-undelegate">コミットして委任解除</a>}>
+  <Step title={<a href="#5-commit-undelegate">コミットして委任解除</a>}>
     アカウントを base layer に戻します。
   </Step>
 </Steps>
@@ -82,7 +82,7 @@ Solana に決済します：
 
 ### コードスニペット
 
-#### 1. ER 対応プログラム
+#### 1. ER 対応プログラム {#1-er-aware-program}
 
 `#[program]` を `#[ephemeral]` で囲み、必要な SDK helper を import します。
 
@@ -90,7 +90,7 @@ Solana に決済します：
 
 [⬆️ トップに戻る](#code-snippets)
 
-#### 2. eATA を作成
+#### 2. eATA を作成 {#2-create-eata}
 
 プログラムは資金の authority となる状態 PDA（例：`Pool`）を所有します。ER 上のカストディでは、
 その PDA が所有する **ephemeral ATA（eATA）**を使います。eATA は Ephemeral SPL Token
@@ -100,7 +100,7 @@ Solana に決済します：
 
 [⬆️ トップに戻る](#code-snippets)
 
-#### 3. eATA を委任
+#### 3. eATA を委任 {#3-delegate-eata}
 
 Ephemeral SPL Token プログラムへの CPI（`DelegateEphemeralAta`、discriminator `4`）で
 eATA を委任します。
@@ -115,7 +115,7 @@ eATA を委任します。
 
 [⬆️ トップに戻る](#code-snippets)
 
-#### 4. PDA 署名送金
+#### 4. PDA 署名送金 {#4-pda-signed-transfer}
 
 eATA を委任したら、`CpiContext::new_with_signer` を介してカストディ PDA が署名する
 SPL Token CPI で rollup 内の token を移動します。signer seed は `[POOL_SEED, bump]` です。
@@ -125,7 +125,7 @@ SPL Token CPI で rollup 内の token を移動します。signer seed は `[POO
 
 [⬆️ トップに戻る](#code-snippets)
 
-#### 5. コミットして委任解除
+#### 5. コミットして委任解除 {#5-commit-undelegate}
 
 `MagicIntentBundleBuilder` で ER 状態をコミットし、アカウントを base layer に戻します。
 

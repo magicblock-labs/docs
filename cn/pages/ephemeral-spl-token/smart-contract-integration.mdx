@@ -68,7 +68,7 @@ Solana：
   <Step title={<a href="#4-pda-signed-transfer">通过 PDA 签名转移 token</a>}>
     在 rollup 内以托管 PDA 身份签署转账。
   </Step>
-  <Step title={<a href="#5-commit-%26-undelegate">提交并取消委托</a>}>
+  <Step title={<a href="#5-commit-undelegate">提交并取消委托</a>}>
     将账户返回 base layer。
   </Step>
 </Steps>
@@ -81,7 +81,7 @@ Solana：
 
 ### 代码片段
 
-#### 1. 支持 ER 的程序
+#### 1. 支持 ER 的程序 {#1-er-aware-program}
 
 在 `#[program]` 外添加 `#[ephemeral]`，并导入所需的 SDK helper。
 
@@ -89,7 +89,7 @@ Solana：
 
 [⬆️ 返回顶部](#code-snippets)
 
-#### 2. 创建 eATA
+#### 2. 创建 eATA {#2-create-eata}
 
 你的程序拥有一个状态 PDA（例如 `Pool`），它是资金的 authority。ER 上的托管使用由该 PDA
 拥有的 **ephemeral ATA（eATA）**；它在 Ephemeral SPL Token 程序
@@ -99,7 +99,7 @@ Solana：
 
 [⬆️ 返回顶部](#code-snippets)
 
-#### 3. 委托 eATA
+#### 3. 委托 eATA {#3-delegate-eata}
 
 通过 CPI 调用 Ephemeral SPL Token 程序来委托 eATA（`DelegateEphemeralAta`，
 discriminator `4`）。
@@ -113,7 +113,7 @@ discriminator `4`）。
 
 [⬆️ 返回顶部](#code-snippets)
 
-#### 4. PDA 签名转账
+#### 4. PDA 签名转账 {#4-pda-signed-transfer}
 
 委托 eATA 后，通过 `CpiContext::new_with_signer` 使用由托管 PDA 签名的 SPL Token CPI
 在 rollup 内转移 token。signer seed 为 `[POOL_SEED, bump]`；程序自行授权付款，无需用户签名。
@@ -122,7 +122,7 @@ discriminator `4`）。
 
 [⬆️ 返回顶部](#code-snippets)
 
-#### 5. 提交并取消委托
+#### 5. 提交并取消委托 {#5-commit-undelegate}
 
 使用 `MagicIntentBundleBuilder` 提交 ER 状态，并将账户返回 base layer。
 

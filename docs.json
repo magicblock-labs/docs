@@ -433,6 +433,38 @@
     {
       "source": "/api-reference/rpc-api/simulateTransaction",
       "destination": "/pages/ephemeral-rollups-ers/api-reference/rpc/simulateTransaction"
+    },
+    {
+      "source": "/api-reference/spl-api",
+      "destination": "/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/api-reference/spl-api/:slug*",
+      "destination": "/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/cn/api-reference/spl-api",
+      "destination": "/cn/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/cn/api-reference/spl-api/:slug*",
+      "destination": "/cn/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/jp/api-reference/spl-api",
+      "destination": "/jp/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/jp/api-reference/spl-api/:slug*",
+      "destination": "/jp/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/ko/api-reference/spl-api",
+      "destination": "/ko/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/ko/api-reference/spl-api/:slug*",
+      "destination": "/ko/pages/ephemeral-spl-token/api-reference/introduction"
     }
   ],
   "staticPages": [
