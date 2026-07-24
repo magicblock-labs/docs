@@ -1,4 +1,13 @@
 ```rust
+use ephemeral_rollups_sdk::{
+    anchor::{vrf, vrf_callback},
+    vrf::{
+        self,
+        instructions::{create_request_scoped_randomness_ix, RequestRandomnessParams},
+        types::SerializableAccountMeta,
+    },
+};
+
 #[program]
 pub mod random_dice {
     use super::*;
@@ -8,7 +17,7 @@ pub mod random_dice {
     // Request Randomness
     pub fn roll_dice(ctx: Context<DoRollDiceCtx>, client_seed: u8) -> Result<()> {
         msg!("Requesting randomness...");
-        let ix = create_request_randomness_ix(RequestRandomnessParams {
+        let ix = create_request_scoped_randomness_ix(RequestRandomnessParams {
             payer: ctx.accounts.payer.key(),
             oracle_queue: ctx.accounts.oracle_queue.key(),
             callback_program_id: ID,
@@ -20,6 +29,7 @@ pub mod random_dice {
                 is_signer: false,
                 is_writable: true,
             }]),
+            callback_args: Some(vec![client_seed]),
             ..Default::default()
         });
         ctx.accounts
@@ -31,8 +41,10 @@ pub mod random_dice {
     pub fn callback_roll_dice(
         ctx: Context<CallbackRollDiceCtx>,
         randomness: [u8; 32],
+        client_seed: u8,
     ) -> Result<()> {
-        let rnd_u8 = ephemeral_vrf_sdk::rnd::random_u8_with_range(&randomness, 1, 6);
+        msg!("client_seed={}", client_seed);
+        let rnd_u8 = vrf::rnd::random_u8_with_range(&randomness, 1, 6);
         msg!("Consuming random number: {:?}", rnd_u8);
         let player = &mut ctx.accounts.player;
         player.last_result = rnd_u8; // Update the player's last result
@@ -48,16 +60,22 @@ pub struct DoRollDiceCtx<'info> {
     #[account(seeds = [PLAYER, payer.key().to_bytes().as_slice()], bump)]
     pub player: Account<'info, Player>,
     /// CHECK: The oracle queue
-    #[account(mut, address = ephemeral_vrf_sdk::consts::DEFAULT_QUEUE)]
-    pub oracle_queue: AccountInfo<'info>,
+    #[account(
+        mut,
+        constraint =
+            oracle_queue.key() == vrf::consts::DEFAULT_QUEUE ||                // Devnet
+            oracle_queue.key() == vrf::consts::DEFAULT_TEST_QUEUE ||           // Local
+            oracle_queue.key() == vrf::consts::DEFAULT_EPHEMERAL_QUEUE ||      // ER Devnet
+            oracle_queue.key() == vrf::consts::DEFAULT_EPHEMERAL_TEST_QUEUE    // ER Local
+    )]
+    pub oracle_queue: UncheckedAccount<'info>,
 }
 
+// `#[vrf_callback]` enforces that only the VRF program (via CPI) can invoke the
+// callback — omitting it leaves the callback spoofable by any caller.
+#[vrf_callback]
 #[derive(Accounts)]
 pub struct CallbackRollDiceCtx<'info> {
-    /// This check ensure that the vrf_program_identity (which is a PDA) is a singer
-    /// enforcing the callback is executed by the VRF program trough CPI
-    #[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
-    pub vrf_program_identity: Signer<'info>,
     #[account(mut)]
     pub player: Account<'info, Player>,
 }
