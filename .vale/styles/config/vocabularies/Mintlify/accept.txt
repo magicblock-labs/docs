@@ -485,6 +485,7 @@ bitwise
 blockchain
 blockchains
 blockhashes
+collateralized
 counterparties
 counterparty
 cpis
@@ -494,6 +495,7 @@ decompilation
 deserialization
 dexes
 ephemeral
+escrowed
 eATA
 eATAs
 custodied
