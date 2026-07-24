@@ -1,0 +1,196 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Create and look up stealth pools that map a human-readable handle to one or more destination keys for private transfers."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
+  "paths": {
+    "/v1/spl/stealth-pool": {
+      "post": {
+        "summary": "Create Stealth Pool",
+        "description": "Build unsigned stealth-pool setup and ER update transactions that map a handle to 1-10 destination owner keys. Requires an `Authorization: Bearer <token>` header from the `/v1/spl/login` flow. Once initialized, the handle can be used as the `to` value of a private `/v1/spl/transfer`.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "payer": {
+                    "type": "string",
+                    "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+                  },
+                  "authority": {
+                    "type": "string",
+                    "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                    "description": "Authority allowed to manage the pool."
+                  },
+                  "handle": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "example": "john.doe@magicblock.id",
+                    "description": "Human-readable handle, up to 255 UTF-8 bytes. Stored as its exact bytes — NOT trimmed, lowercased, or normalized, so `John.Doe@…` is a different handle than `john.doe@…`."
+                  },
+                  "destinations": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "description": "1-10 destination owner pubkeys (owners, not token accounts).",
+                    "example": ["Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"]
+                  },
+                  "splitAcrossKeys": {
+                    "type": "boolean",
+                    "description": "Optional. When `true`, split payments may resolve independently across the destination keys."
+                  },
+                  "validator": {
+                    "type": "string",
+                    "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
+                    "description": "Optional. Validator identity to receive the delegated pool."
+                  },
+                  "cluster": {
+                    "anyOf": [
+                      { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
+                      { "type": "string", "format": "uri" }
+                    ],
+                    "example": "mainnet",
+                    "description": "Optional. Cluster selector or custom http(s) RPC URL."
+                  }
+                },
+                "required": ["payer", "authority", "handle", "destinations"],
+                "example": {
+                  "payer": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                  "authority": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                  "handle": "john.doe@magicblock.id",
+                  "destinations": ["Bt9oNR5cCtnfuMmXgWELd6q5i974PdEMQDUE55nBC57L"],
+                  "splitAcrossKeys": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unsigned setup and ER update transactions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "kind": { "type": "string", "enum": ["stealthPool"] },
+                    "version": { "type": "string", "enum": ["legacy", "v0"] },
+                    "transactionBase64": { "type": "string", "description": "The ER update transaction." },
+                    "sendTo": { "type": "string", "enum": ["base", "ephemeral"] },
+                    "sendRpcEndpoint": { "type": "string", "format": "uri" },
+                    "recentBlockhash": { "type": "string" },
+                    "lastValidBlockHeight": { "type": "integer" },
+                    "instructionCount": { "type": "integer", "minimum": 0 },
+                    "requiredSigners": { "type": "array", "items": { "type": "string" } },
+                    "stealthPool": { "type": "string", "description": "Derived stealth-pool PDA." },
+                    "setupTransaction": {
+                      "type": "object",
+                      "description": "The base-chain setup transaction. It uses the same transaction response contract as the top-level transaction; `sendRpcEndpoint` is omitted when `sendTo` is `base`.",
+                      "properties": {
+                        "kind": { "type": "string", "enum": ["stealthPool"] },
+                        "version": { "type": "string", "enum": ["legacy", "v0"] },
+                        "transactionBase64": { "type": "string" },
+                        "sendTo": { "type": "string", "enum": ["base", "ephemeral"] },
+                        "sendRpcEndpoint": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Exact ephemeral RPC endpoint where the signed transaction should be submitted. Present when `sendTo` is `ephemeral`."
+                        },
+                        "from": { "type": "string", "enum": ["base", "ephemeral"] },
+                        "recentBlockhash": { "type": "string" },
+                        "lastValidBlockHeight": { "type": "integer" },
+                        "instructionCount": { "type": "integer", "minimum": 0 },
+                        "requiredSigners": { "type": "array", "items": { "type": "string" } },
+                        "validator": { "type": "string" },
+                        "fees": {
+                          "type": "object",
+                          "properties": {
+                            "lamports": { "type": "string" },
+                            "tokens": { "type": "string" }
+                          },
+                          "required": ["lamports", "tokens"]
+                        }
+                      },
+                      "required": ["kind", "version", "transactionBase64", "sendTo", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners"]
+                    }
+                  },
+                  "required": ["kind", "version", "transactionBase64", "sendTo", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners", "stealthPool", "setupTransaction"]
+                }
+              }
+            }
+          },
+          "400": { "description": "Build error" },
+          "422": { "description": "Validation error" }
+        }
+      },
+      "get": {
+        "summary": "Get Stealth Pool Status",
+        "description": "Derive a stealth-pool PDA from an exact handle and report whether the base account exists. Does not return the destination keys.",
+        "parameters": [
+          {
+            "name": "handle",
+            "in": "query",
+            "required": true,
+            "description": "The exact handle (up to 255 UTF-8 bytes). Must match the stored bytes exactly.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 255, "example": "john.doe@magicblock.id" }
+          },
+          {
+            "name": "cluster",
+            "in": "query",
+            "required": false,
+            "description": "Optional. Cluster selector or custom http(s) RPC URL.",
+            "schema": {
+              "anyOf": [
+                { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
+                { "type": "string", "format": "uri" }
+              ],
+              "example": "mainnet"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stealth pool status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stealthPool": { "type": "string", "description": "Derived stealth-pool PDA." },
+                    "exists": { "type": "boolean", "description": "Whether the base account exists." }
+                  },
+                  "required": ["stealthPool", "exists"]
+                },
+                "example": { "stealthPool": "9xQeWv...PDA", "exists": true }
+              }
+            }
+          },
+          "400": { "description": "Query error" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    }
+  }
+}

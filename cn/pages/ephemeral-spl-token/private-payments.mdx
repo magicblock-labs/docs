@@ -1,0 +1,166 @@
+---
+title: "使用 Ephemeral SPL Token 进行私密支付"
+sidebarTitle: "私密支付"
+description: "使用 Ephemeral SPL Token 实现私密存入、转账和提取，并通过托管 API 使用私密可见性、stealth handle 与队列式结算。"
+---
+
+import QuickAccessSpl from "/cn/snippets/quick-access-spl.mdx";
+
+---
+
+<QuickAccessSpl />
+
+---
+
+## 概述
+
+**私密支付**是构建在 [ER 上的 SPL token](/cn/pages/ephemeral-spl-token/overview)
+之上的隐私用例。同一套存入 / 转账 / 提取原语以**私密可见性**运行，因此支付金额、目标和时间
+不会被公开广播。
+
+<Note>
+  第一次接触该原语？请先阅读 [Ephemeral SPL Token
+  概述](/cn/pages/ephemeral-spl-token/overview)；本指南默认你已了解 eATA /
+  Global Vault / 委托模型。
+</Note>
+
+构建私密支付最简单的方式是使用托管的 **Ephemeral SPL Token API**。它会返回由你签名并提交的
+未签名交易。
+
+<CardGroup cols={2}>
+  <Card
+    title="API 参考"
+    icon="server"
+    href="/cn/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    提供存入、转账、提取、余额、stealth pool 和认证端点。
+  </Card>
+  <Card
+    title="参考程序"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    链上 Ephemeral SPL Token 程序。
+  </Card>
+</CardGroup>
+
+---
+
+## 隐私模型
+
+私密支付依赖以下机制：
+
+- **私密可见性**——转账使用 `visibility: "private"` 在 Ephemeral Rollup 内执行，因此不会公开广播。
+- **Stealth handle**——向易读名称（例如 `alice@magicblock.id`）而非原始 public key 发送。
+  handle 通过 **stealth pool** 解析为一个或多个目标 key，从而打破链上发送者 → 接收者的直接关联。
+- **队列式结算**——私密转账可以通过程序的 transfer queue 结算，而不是以可立即关联的方式直接转移。
+
+<Warning>
+  此处的隐私能力降低的是**可关联性**，而不是完全的可观察性。金额与时间仍可能在网络层被推断。
+  请针对你的假设进行威胁建模。
+</Warning>
+
+---
+
+## 认证
+
+读取私密数据和执行 stealth-pool 操作需要 bearer token。调用受保护端点前，请通过
+challenge/login 流程获取 token：
+
+<Steps>
+  <Step title="请求 challenge">
+    `GET /v1/spl/challenge` 返回一条供用户签名的消息。
+  </Step>
+  <Step title="登录">
+    `POST /v1/spl/login` 使用已签名的 challenge 换取 bearer token。
+  </Step>
+  <Step title="调用受保护端点">
+    调用 `GET /v1/spl/private-balance` 和 `POST /v1/spl/stealth-pool` 时发送
+    `Authorization: Bearer <token>`。
+  </Step>
+</Steps>
+
+---
+
+## 存入
+
+将 token 转入 mint 的 Global Vault，并增加存入者 ephemeral ATA 的余额。
+
+- `POST /v1/spl/deposit`——构建存入交易。设置 `private: true` 以保持存入余额私密。
+
+响应包含未签名交易和 `sendTo` 字段（`base` 或 `ephemeral`）。完成签名后，通过
+[`POST /v1/transaction/send`](/cn/pages/ephemeral-spl-token/api-reference/transaction-send)
+或你自己的 RPC 提交。
+
+---
+
+## 私密转账
+
+- `POST /v1/spl/transfer` with `visibility: "private"`.
+
+目标有两种模式：
+
+| 目标 | `to` 值 | 要求 |
+| --- | --- | --- |
+| 直接 | 接收者 public key | `visibility: "private"` |
+| Stealth handle | 已初始化的 handle 字符串 | `visibility: "private"`, `fromBalance: "base"`, `toBalance: "base"` |
+
+要使用 stealth handle，请先初始化：
+
+- `POST /v1/spl/stealth-pool`——将一个 handle（不超过 255 个 UTF-8 字节；**不会**规范化，因此
+  `Alice@…` ≠ `alice@…`）映射到 1–10 个目标 owner key，并可选择在其间拆分支付。
+- `GET /v1/spl/stealth-pool?handle=…`——检查 handle 对应的 pool 是否存在。
+
+<Note>
+  handle 会按其精确的 UTF-8 字节存储。`GET` 仅返回 pool 是否存在，绝不会返回目标 key。
+</Note>
+
+---
+
+## 提取
+
+将余额从 Global Vault 转回标准的 base-layer SPL token account。
+
+- `POST /v1/spl/withdraw`——构建提取交易。
+
+可随时查询余额：
+
+- `GET /v1/spl/balance`——公开余额。
+- `GET /v1/spl/private-balance`——私密余额（需要 bearer token）。
+
+---
+
+## 开发者须知
+
+- **隐私是一个连续谱。** Ephemeral SPL token 会降低可关联性，但不会隐藏金额、时间，也无法防止
+  网络层分析。
+- **handle 不会规范化。** 大小写和空白字符都会产生影响，请一致地显示和存储 handle。
+- **匹配流程。** Stealth-handle 转账要求 `visibility: "private"`、`fromBalance: "base"`、
+  `toBalance: "base"`（省略这些字段时也会使用这些默认值）。
+- **先签名，再发送。** Builder 端点返回未签名交易；请使用 `POST /v1/transaction/send` 提交，
+  并遵循返回的 `sendTo`。
+
+---
+
+## 后续步骤
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token — 概述"
+    icon="book"
+    href="/cn/pages/ephemeral-spl-token/overview"
+    iconType="duotone"
+  >
+    私密支付背后的原语。
+  </Card>
+  <Card
+    title="SDK 快速入门"
+    icon="rocket"
+    href="/cn/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    链上 / SDK 集成路径。
+  </Card>
+</CardGroup>

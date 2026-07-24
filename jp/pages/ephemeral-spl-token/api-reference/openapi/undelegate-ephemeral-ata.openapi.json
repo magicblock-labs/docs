@@ -1,0 +1,96 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Build an unsigned ephemeral-rollup transaction that undelegates a wallet's ephemeral ATA for a mint."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
+  "paths": {
+    "/v1/spl/undelegate-ephemeral-ata": {
+      "post": {
+        "summary": "Undelegate Ephemeral ATA",
+        "description": "Build an unsigned ephemeral-rollup transaction that undelegates a wallet's ephemeral ATA (eATA) for a mint, committing its balance back toward the base layer. Accepts an optional `Authorization: Bearer <token>` header.",
+        "security": [{ "bearerAuth": [] }, {}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "payer": {
+                    "type": "string",
+                    "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+                  },
+                  "mint": {
+                    "type": "string",
+                    "example": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                    "description": "SPL mint for the eATA to undelegate."
+                  },
+                  "cluster": {
+                    "anyOf": [
+                      { "type": "string", "enum": ["mainnet", "devnet"] },
+                      { "type": "string" }
+                    ],
+                    "example": "mainnet",
+                    "description": "Optional. Cluster selector or custom http(s) RPC URL."
+                  }
+                },
+                "required": ["payer", "mint"],
+                "example": {
+                  "payer": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unsigned serialized transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "kind": { "type": "string", "enum": ["undelegateEphemeralAta"] },
+                    "version": { "type": "string", "enum": ["legacy", "v0"] },
+                    "transactionBase64": { "type": "string" },
+                    "sendTo": { "type": "string", "enum": ["base", "ephemeral"] },
+                    "sendRpcEndpoint": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Exact ephemeral RPC endpoint where the signed undelegation transaction should be submitted."
+                    },
+                    "recentBlockhash": { "type": "string" },
+                    "lastValidBlockHeight": { "type": "integer" },
+                    "instructionCount": { "type": "integer", "minimum": 0 },
+                    "requiredSigners": { "type": "array", "items": { "type": "string" } }
+                  },
+                  "required": ["kind", "version", "transactionBase64", "sendTo", "sendRpcEndpoint", "recentBlockhash", "lastValidBlockHeight", "instructionCount", "requiredSigners"]
+                }
+              }
+            }
+          },
+          "400": { "description": "Build error" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    }
+  }
+}

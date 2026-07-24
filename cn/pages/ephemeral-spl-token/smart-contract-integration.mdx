@@ -1,0 +1,159 @@
+---
+title: "智能合约集成"
+description: "在 Ephemeral Rollup 上通过你自己的 Solana 程序托管并转移 SPL token，包括 PDA 签名转账、委托以及提交/取消委托。"
+---
+
+import Software from "/cn/snippets/software.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+
+import EphemeralCode from "/cn/snippets/spl-tokens-code/sc-ephemeral.mdx";
+import CreateEataCode from "/cn/snippets/spl-tokens-code/sc-create-eata.mdx";
+import DelegateEataCode from "/cn/snippets/spl-tokens-code/sc-delegate.mdx";
+import PdaTransferCode from "/cn/snippets/spl-tokens-code/sc-transfer.mdx";
+import CommitCode from "/cn/snippets/spl-tokens-code/sc-commit.mdx";
+import NonCustodyCode from "/cn/snippets/spl-tokens-code/sc-non-custody.mdx";
+import PostCommitCode from "/cn/snippets/spl-tokens-code/sc-post-commit.mdx";
+
+---
+
+### 快速访问
+
+<CardGroup cols={3}>
+  <Card title="binary-prediction" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/binary-prediction" iconType="duotone">
+    端到端 eATA 托管
+  </Card>
+  <Card title="rewards-delegated-vrf" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rewards-delegated-vrf" iconType="duotone">
+    Base-layer 提交后付款
+  </Card>
+  <Card title="spl-tokens" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/spl-tokens" iconType="duotone">
+    非托管转账
+  </Card>
+</CardGroup>
+
+本指南面向持有用户资金，并以 [Ephemeral Rollup](/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)
+速度转移资金的链上程序，例如 DEX、AMM、预测市场、托管合约或游戏。核心模式是：将一个归程序所有的
+账户委托给 ER，并由你的程序以 PDA 身份签署 token 转账。
+
+<Note>
+  需要从客户端而非链上转移 token？请参阅
+  [快速入门](/cn/pages/ephemeral-spl-token/quickstart)。
+</Note>
+
+### 两种托管模型
+
+| 模型 | 你委托的是…… | Token 转移位置…… | 适用场景 |
+| --- | --- | --- | --- |
+| **eATA 托管** | 归程序所有的 **ephemeral ATA（eATA）** | **在 ER 上**，由 PDA 签名 | 在 rollup 内结算或付款（例如市场成交） |
+| **状态 PDA + 提交后付款** | 仅委托**状态 PDA**；真实 ATA 留在 base layer | **在 base layer 上**，作为 post-commit action | 资金留在 L1，并在提交时结算 |
+
+下面的演练介绍 **eATA 托管**；post-commit 变体则位于高级代码片段中。
+
+---
+
+## 分步指南
+
+让你的程序获得 eATA 的 authority，将其委托，在 ER 上通过 PDA 签名转移资金，然后结算回
+Solana：
+
+<Steps>
+  <Step title={<a href="#1-er-aware-program">让程序支持 ER</a>}>
+    添加 `#[ephemeral]` 属性并导入 SDK helper。
+  </Step>
+  <Step title={<a href="#2-create-eata">创建托管 PDA 和 eATA</a>}>
+    通过你的托管 PDA 拥有 Ephemeral SPL Token 程序下的 eATA。
+  </Step>
+  <Step title={<a href="#3-delegate-eata">委托 eATA</a>}>
+    通过 CPI 调用 Ephemeral SPL Token 程序，将 eATA 委托给 ER。
+  </Step>
+  <Step title={<a href="#4-pda-signed-transfer">通过 PDA 签名转移 token</a>}>
+    在 rollup 内以托管 PDA 身份签署转账。
+  </Step>
+  <Step title={<a href="#5-commit-%26-undelegate">提交并取消委托</a>}>
+    将账户返回 base layer。
+  </Step>
+</Steps>
+
+---
+
+## 托管示例
+
+<Software />
+
+### 代码片段
+
+#### 1. 支持 ER 的程序
+
+在 `#[program]` 外添加 `#[ephemeral]`，并导入所需的 SDK helper。
+
+<EphemeralCode />
+
+[⬆️ 返回顶部](#code-snippets)
+
+#### 2. 创建 eATA
+
+你的程序拥有一个状态 PDA（例如 `Pool`），它是资金的 authority。ER 上的托管使用由该 PDA
+拥有的 **ephemeral ATA（eATA）**；它在 Ephemeral SPL Token 程序
+（`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`）下由 `[owner, mint]` 派生。
+
+<CreateEataCode />
+
+[⬆️ 返回顶部](#code-snippets)
+
+#### 3. 委托 eATA
+
+通过 CPI 调用 Ephemeral SPL Token 程序来委托 eATA（`DelegateEphemeralAta`，
+discriminator `4`）。
+
+<Warning>
+  不支持将归普通 PDA 所有的 ATA 直接委托给 ER；ER 上的 token 托管必须通过 eATA。
+  如需委托程序*状态*（而非 token account），请改用 SDK 的 `#[delegate]` 宏。
+</Warning>
+
+<DelegateEataCode />
+
+[⬆️ 返回顶部](#code-snippets)
+
+#### 4. PDA 签名转账
+
+委托 eATA 后，通过 `CpiContext::new_with_signer` 使用由托管 PDA 签名的 SPL Token CPI
+在 rollup 内转移 token。signer seed 为 `[POOL_SEED, bump]`；程序自行授权付款，无需用户签名。
+
+<PdaTransferCode />
+
+[⬆️ 返回顶部](#code-snippets)
+
+#### 5. 提交并取消委托
+
+使用 `MagicIntentBundleBuilder` 提交 ER 状态，并将账户返回 base layer。
+
+<CommitCode />
+
+[⬆️ 返回顶部](#code-snippets)
+
+---
+
+### 高级代码片段
+
+<Tabs>
+  <Tab title="非托管转账">
+    如果你的程序不托管资金，而只是代表用户在两个已委托账户之间转移 token，则无需 PDA signer。
+    authority 是用户的 `Signer`，并使用普通的 `CpiContext::new`。
+
+    <NonCustodyCode />
+    [⬆️ 返回顶部](#advanced-code-snippets)
+  </Tab>
+  <Tab title="Base-layer 提交后付款">
+    要将真实 token account 保留在 base layer 并仅委托程序状态，可将付款安排为
+    post-commit action，在提交后立即于 base layer 上通过 PDA 签名执行。请使用
+    `transfer_checked`（兼容 Token-2022），并在提交时附加该 action。
+
+    <PostCommitCode />
+    [⬆️ 返回顶部](#advanced-code-snippets)
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

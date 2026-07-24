@@ -1,0 +1,11 @@
+```typescript
+const withdrawIxs = await withdrawSpl(owner.publicKey, mint.publicKey, amount, {
+  idempotent: false,
+});
+
+await provider.sendAndConfirm(
+  new anchor.web3.Transaction().add(...withdrawIxs),
+  [owner],
+  { commitment: "confirmed" },
+);
+```

@@ -1070,6 +1070,65 @@
             ]
           },
           {
+            "tab": "Ephemeral SPL Token",
+            "icon": "coins",
+            "groups": [
+              {
+                "group": "开始使用",
+                "pages": [
+                  "cn/pages/ephemeral-spl-token/overview",
+                  "cn/pages/ephemeral-spl-token/quickstart"
+                ]
+              },
+              {
+                "group": "指南",
+                "pages": [
+                  "cn/pages/ephemeral-spl-token/smart-contract-integration",
+                  "cn/pages/ephemeral-spl-token/private-payments"
+                ]
+              },
+              {
+                "group": "API 参考",
+                "pages": [
+                  "cn/pages/ephemeral-spl-token/api-reference/introduction",
+                  {
+                    "group": "核心 Token API",
+                    "pages": [
+                      "cn/pages/ephemeral-spl-token/api-reference/deposit",
+                      "cn/pages/ephemeral-spl-token/api-reference/transfer",
+                      "cn/pages/ephemeral-spl-token/api-reference/withdraw",
+                      "cn/pages/ephemeral-spl-token/api-reference/balance",
+                      "cn/pages/ephemeral-spl-token/api-reference/initialize-mint",
+                      "cn/pages/ephemeral-spl-token/api-reference/is-mint-initialized",
+                      "cn/pages/ephemeral-spl-token/api-reference/undelegate-ephemeral-ata",
+                      "cn/pages/ephemeral-spl-token/api-reference/transaction-send"
+                    ]
+                  },
+                  {
+                    "group": "私密支付",
+                    "pages": [
+                      "cn/pages/ephemeral-spl-token/api-reference/challenge",
+                      "cn/pages/ephemeral-spl-token/api-reference/login",
+                      "cn/pages/ephemeral-spl-token/api-reference/private-balance",
+                      "cn/pages/ephemeral-spl-token/api-reference/stealth-pool",
+                      "cn/pages/ephemeral-spl-token/api-reference/stealth-pool-status",
+                      "cn/pages/ephemeral-spl-token/api-reference/transfer-queue-ensure-crank"
+                    ]
+                  },
+                  {
+                    "group": "Swap",
+                    "pages": [
+                      "cn/pages/ephemeral-spl-token/api-reference/quote",
+                      "cn/pages/ephemeral-spl-token/api-reference/swap"
+                    ]
+                  },
+                  "cn/pages/ephemeral-spl-token/api-reference/health",
+                  "cn/pages/ephemeral-spl-token/api-reference/mcp"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Solana VRF",
             "icon": "dice",
             "groups": [
@@ -1366,6 +1425,65 @@
             ]
           },
           {
+            "tab": "Ephemeral SPL Token",
+            "icon": "coins",
+            "groups": [
+              {
+                "group": "スタートガイド",
+                "pages": [
+                  "jp/pages/ephemeral-spl-token/overview",
+                  "jp/pages/ephemeral-spl-token/quickstart"
+                ]
+              },
+              {
+                "group": "ガイド",
+                "pages": [
+                  "jp/pages/ephemeral-spl-token/smart-contract-integration",
+                  "jp/pages/ephemeral-spl-token/private-payments"
+                ]
+              },
+              {
+                "group": "API リファレンス",
+                "pages": [
+                  "jp/pages/ephemeral-spl-token/api-reference/introduction",
+                  {
+                    "group": "コア Token API",
+                    "pages": [
+                      "jp/pages/ephemeral-spl-token/api-reference/deposit",
+                      "jp/pages/ephemeral-spl-token/api-reference/transfer",
+                      "jp/pages/ephemeral-spl-token/api-reference/withdraw",
+                      "jp/pages/ephemeral-spl-token/api-reference/balance",
+                      "jp/pages/ephemeral-spl-token/api-reference/initialize-mint",
+                      "jp/pages/ephemeral-spl-token/api-reference/is-mint-initialized",
+                      "jp/pages/ephemeral-spl-token/api-reference/undelegate-ephemeral-ata",
+                      "jp/pages/ephemeral-spl-token/api-reference/transaction-send"
+                    ]
+                  },
+                  {
+                    "group": "プライベート決済",
+                    "pages": [
+                      "jp/pages/ephemeral-spl-token/api-reference/challenge",
+                      "jp/pages/ephemeral-spl-token/api-reference/login",
+                      "jp/pages/ephemeral-spl-token/api-reference/private-balance",
+                      "jp/pages/ephemeral-spl-token/api-reference/stealth-pool",
+                      "jp/pages/ephemeral-spl-token/api-reference/stealth-pool-status",
+                      "jp/pages/ephemeral-spl-token/api-reference/transfer-queue-ensure-crank"
+                    ]
+                  },
+                  {
+                    "group": "Swap",
+                    "pages": [
+                      "jp/pages/ephemeral-spl-token/api-reference/quote",
+                      "jp/pages/ephemeral-spl-token/api-reference/swap"
+                    ]
+                  },
+                  "jp/pages/ephemeral-spl-token/api-reference/health",
+                  "jp/pages/ephemeral-spl-token/api-reference/mcp"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Solana VRF",
             "icon": "dice",
             "groups": [
@@ -1657,6 +1775,65 @@
                   "ko/pages/private-ephemeral-rollups-pers/api-reference/per/quote",
                   "ko/pages/private-ephemeral-rollups-pers/api-reference/per/swap",
                   "ko/pages/private-ephemeral-rollups-pers/api-reference/per/mcp"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Ephemeral SPL Token",
+            "icon": "coins",
+            "groups": [
+              {
+                "group": "시작하기",
+                "pages": [
+                  "ko/pages/ephemeral-spl-token/overview",
+                  "ko/pages/ephemeral-spl-token/quickstart"
+                ]
+              },
+              {
+                "group": "가이드",
+                "pages": [
+                  "ko/pages/ephemeral-spl-token/smart-contract-integration",
+                  "ko/pages/ephemeral-spl-token/private-payments"
+                ]
+              },
+              {
+                "group": "API 레퍼런스",
+                "pages": [
+                  "ko/pages/ephemeral-spl-token/api-reference/introduction",
+                  {
+                    "group": "핵심 Token API",
+                    "pages": [
+                      "ko/pages/ephemeral-spl-token/api-reference/deposit",
+                      "ko/pages/ephemeral-spl-token/api-reference/transfer",
+                      "ko/pages/ephemeral-spl-token/api-reference/withdraw",
+                      "ko/pages/ephemeral-spl-token/api-reference/balance",
+                      "ko/pages/ephemeral-spl-token/api-reference/initialize-mint",
+                      "ko/pages/ephemeral-spl-token/api-reference/is-mint-initialized",
+                      "ko/pages/ephemeral-spl-token/api-reference/undelegate-ephemeral-ata",
+                      "ko/pages/ephemeral-spl-token/api-reference/transaction-send"
+                    ]
+                  },
+                  {
+                    "group": "프라이빗 결제",
+                    "pages": [
+                      "ko/pages/ephemeral-spl-token/api-reference/challenge",
+                      "ko/pages/ephemeral-spl-token/api-reference/login",
+                      "ko/pages/ephemeral-spl-token/api-reference/private-balance",
+                      "ko/pages/ephemeral-spl-token/api-reference/stealth-pool",
+                      "ko/pages/ephemeral-spl-token/api-reference/stealth-pool-status",
+                      "ko/pages/ephemeral-spl-token/api-reference/transfer-queue-ensure-crank"
+                    ]
+                  },
+                  {
+                    "group": "Swap",
+                    "pages": [
+                      "ko/pages/ephemeral-spl-token/api-reference/quote",
+                      "ko/pages/ephemeral-spl-token/api-reference/swap"
+                    ]
+                  },
+                  "ko/pages/ephemeral-spl-token/api-reference/health",
+                  "ko/pages/ephemeral-spl-token/api-reference/mcp"
                 ]
               }
             ]

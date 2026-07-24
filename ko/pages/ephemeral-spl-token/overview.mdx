@@ -1,0 +1,129 @@
+---
+title: "Ephemeral SPL Token"
+description: "Ephemeral SPL Token 프로그램으로 Ephemeral Rollup 속도로 SPL token을 이동하고 eATA, Global Vault, 위임, 커스터디, 프라이빗 결제 모델을 알아봅니다."
+---
+
+---
+
+## 개요
+
+**Ephemeral SPL Token**을 사용하면 [MagicBlock 에페메럴 롤업(ER)](/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)
+내에서 다른 위임된 상태와 동일한 낮은 지연 시간으로 SPL token을 보유하고 이동한 뒤 Solana의
+base layer로 정산할 수 있습니다. MagicBlock의 **프라이빗 결제**를 뒷받침하는 token 프리미티브이지만,
+그 자체는 범용적이므로 전송을 **공개 또는 프라이빗**으로 처리할 수 있습니다.
+
+이 모든 기능은 [MIMD 0013](https://github.com/magicblock-labs/magicblock-validator/discussions/550)을
+구현한 온체인 **Ephemeral SPL Token 프로그램**
+(`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`)으로 구동됩니다.
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token 프로그램"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    온체인 프로그램 + 호스팅 API. `SPLxh1LV…`
+  </Card>
+  <Card
+    title="빠른 시작"
+    icon="rocket"
+    href="/ko/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    token account 위임부터 ER 전송과 출금까지 전체 흐름을 실행합니다.
+  </Card>
+</CardGroup>
+
+<Card
+  title="예측 시장이나 트레이딩 프로토콜을 구축하시나요?"
+  icon="chart-line"
+  href="/pages/solutions/prediction-markets"
+  iconType="duotone"
+>
+  token custody를 session key, 가격 오라클, crank, 정산과 결합하는 방법을 알아보세요.
+</Card>
+
+---
+
+## 모델
+
+일반 SPL token account는 Solana의 base layer에 존재합니다. token을 ER 속도로 이동하기 위해
+Ephemeral SPL Token 프로그램은 두 가지 계정 유형을 도입합니다.
+
+### Ephemeral ATA (eATA)
+
+**ephemeral ATA(eATA)**는 `[owner, mint]`에서 파생된 프로그램 소유 PDA로, 하나의 `u64`
+잔액을 보관합니다. 실제 SPL token account가 **아니라**, ER에 위임해 빠르게 변경할 수 있는
+경량 잔액 레코드입니다.
+
+### Global Vault
+
+실제 token은 mint별 **Global Vault**에 보관됩니다. `[mint]`에서 파생된 이 PDA는 해당 mint의
+**모든** eATA를 뒷받침하는 SPL token account를 소유합니다. 입금하면 실제 token이 vault로
+이동하고 eATA의 `u64` 잔액이 증가하며, 출금은 반대로 동작합니다.
+
+<Note>
+  eATA는 잔액을 추적하고 Global Vault는 실제 token을 보관합니다. 하나의 vault가 특정 mint의
+  모든 eATA를 뒷받침합니다.
+</Note>
+
+---
+
+## 위임 수명 주기
+
+eATA는 표준 Ephemeral Rollup 수명 주기를 따릅니다:
+
+<Steps>
+  <Step title="입금 및 위임">
+    실제 token이 mint의 Global Vault로 이동하고 eATA 잔액이 증가합니다. 그런 다음 ER 내부에서
+    변경할 수 있도록 eATA를 MagicBlock validator에 위임합니다.
+  </Step>
+  <Step title="ER에서 트랜잭션 실행">
+    rollup 내부의 eATA 간에 낮은 지연 시간으로 전송합니다. 전송은 **공개** 또는
+    **프라이빗**(`visibility`)으로 설정할 수 있습니다.
+  </Step>
+  <Step title="위임 해제 및 커밋">
+    eATA를 커밋하고 위임 해제하여 base layer로 되돌립니다.
+  </Step>
+  <Step title="출금">
+    token을 Global Vault에서 표준 base-layer SPL token account로 되돌립니다.
+  </Step>
+</Steps>
+
+---
+
+## 공개와 프라이빗
+
+이 프리미티브는 두 가지 모두 지원합니다:
+
+- **공개** — ER의 eATA 간에 이루어지는 일반적인 고속 전송입니다.
+- **프라이빗(프라이빗 결제)** — 프라이빗 `visibility`, 암호화/대기열 기반 정산,
+  **stealth handle**(`alice@magicblock.id`처럼 하나 이상의 목적지 key로 해석되는 읽기 쉬운 이름)을
+  사용해 목적지와 정산을 보호합니다. 자세한 내용은
+  [프라이빗 결제 가이드](/ko/pages/ephemeral-spl-token/private-payments)를 참조하세요.
+
+---
+
+## 두 가지 통합 방법
+
+<CardGroup cols={2}>
+  <Card
+    title="온체인 / SDK"
+    icon="code"
+    href="/ko/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    `@magicblock-labs/ephemeral-rollups-sdk`를 사용해 자체 Anchor 프로그램과 클라이언트에
+    직접 통합하여 token account 위임, ER 전송, 출금을 처리합니다.
+  </Card>
+  <Card
+    title="호스팅 REST / MCP API"
+    icon="server"
+    href="/ko/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    호스팅 API가 입금, 전송, 출금, 잔액 조회, swap, 프라이빗 결제를 위한 미서명 트랜잭션을
+    생성하도록 합니다.
+  </Card>
+</CardGroup>

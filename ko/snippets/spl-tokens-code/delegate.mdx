@@ -1,0 +1,16 @@
+```typescript
+// Legacy vault flow — keep the same idempotent setting across
+// delegateSpl / undelegateIx / withdrawSpl within one lifecycle.
+const delegateOpts = { validator, idempotent: false as const, payer: admin.publicKey };
+
+const ixs = await delegateSpl(owner.publicKey, mint.publicKey, amount, {
+  ...delegateOpts,
+  initVaultIfMissing, // true for the first owner of this mint, false after
+});
+
+await provider.sendAndConfirm(
+  new anchor.web3.Transaction().add(...ixs),
+  [owner, admin],
+  { commitment: "confirmed", skipPreflight: true },
+);
+```

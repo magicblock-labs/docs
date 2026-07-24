@@ -1,0 +1,246 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Build an unsigned swap transaction from a quote. Supports public swaps (transparent Jupiter/Metis pass-through) and private swaps (forces output into a program-owned stash ATA and appends a scheduled private transfer)."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/v1/swap/swap": {
+      "post": {
+        "summary": "Swap",
+        "description": "Build an unsigned swap transaction from a quote.\n\n**Visibility modes:**\n\n- **`visibility: \"public\"`** (default) — pure pass-through to the Jupiter/Metis upstream. The returned transaction is whatever the upstream produces.\n- **`visibility: \"private\"`** — the server forces Jupiter's output into a program-owned stash ATA (deterministically derived from `(userPublicKey, quoteResponse.outputMint)`), prepends an idempotent ATA-create, and appends a `schedule_private_transfer` instruction that registers a one-shot Hydra crank. When the crank fires, it self-CPIs into the on-chain private-transfer flow to deliver the swapped tokens to `destination` with the requested delay/split policy. The returned transaction is a v0 `VersionedTransaction` that is still unsigned — the client signs and submits.\n\nWhen `visibility = \"private\"`, the fields `destination`, `minDelayMs`, `maxDelayMs`, and `split` are **required**. `clientRefId` and `validator` are optional. Explicitly setting `destinationTokenAccount` to anything other than the server-derived stash ATA returns `400`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "properties": {
+                  "userPublicKey": {
+                    "type": "string",
+                    "description": "Public key of the wallet that will sign the swap transaction.",
+                    "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+                  },
+                  "quoteResponse": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Quote response from `GET /v1/swap/quote`."
+                  },
+                  "payer": {
+                    "type": "string",
+                    "description": "Optional fee payer for transaction fees and rent.",
+                    "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"
+                  },
+                  "wrapAndUnwrapSol": {
+                    "type": "boolean",
+                    "description": "Automatically wrap and unwrap native SOL when needed.",
+                    "example": true
+                  },
+                  "useSharedAccounts": {
+                    "type": "boolean",
+                    "description": "Allow shared accounts for intermediate routing state.",
+                    "example": true
+                  },
+                  "feeAccount": {
+                    "type": "string",
+                    "description": "Optional initialized token account used to collect platform fees."
+                  },
+                  "trackingAccount": {
+                    "type": "string",
+                    "description": "Optional public key used for downstream transaction tracking."
+                  },
+                  "prioritizationFeeLamports": {
+                    "anyOf": [
+                      { "type": "integer", "minimum": 0 },
+                      { "type": "object", "additionalProperties": true }
+                    ],
+                    "description": "Optional priority fee configuration or fixed lamport amount."
+                  },
+                  "asLegacyTransaction": {
+                    "type": "boolean",
+                    "description": "Build a legacy transaction instead of a versioned one. Not allowed when `visibility = \"private\"`."
+                  },
+                  "destinationTokenAccount": {
+                    "type": "string",
+                    "description": "Optional destination token account for the output mint. When `visibility = \"private\"`, this is server-controlled and must match the derived stash ATA."
+                  },
+                  "nativeDestinationAccount": {
+                    "type": "string",
+                    "description": "Optional destination account for native SOL output. Not supported when `visibility = \"private\"`."
+                  },
+                  "dynamicComputeUnitLimit": {
+                    "type": "boolean",
+                    "description": "Estimate compute usage and set the compute unit limit automatically."
+                  },
+                  "skipUserAccountsRpcCalls": {
+                    "type": "boolean",
+                    "description": "Skip extra RPC checks for required user accounts."
+                  },
+                  "dynamicSlippage": {
+                    "type": "boolean",
+                    "description": "Let the upstream swap builder overwrite slippage on the transaction."
+                  },
+                  "computeUnitPriceMicroLamports": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Optional exact compute unit price in micro-lamports."
+                  },
+                  "blockhashSlotsToExpiry": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Optional transaction expiry window in slots."
+                  },
+                  "positiveSlippage": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Optional positive slippage collection settings."
+                  },
+                  "visibility": {
+                    "type": "string",
+                    "enum": ["public", "private"],
+                    "description": "`public` (default) proxies Jupiter/Metis as-is. `private` routes the output through a scheduled private transfer.",
+                    "example": "public"
+                  },
+                  "destination": {
+                    "type": "string",
+                    "description": "Final private-transfer recipient (wallet pubkey). Required when `visibility = \"private\"`."
+                  },
+                  "minDelayMs": {
+                    "type": "string",
+                    "pattern": "^\\d+$",
+                    "description": "Earliest (ms) the queued transfer may settle. Required when `visibility = \"private\"`.",
+                    "example": "0"
+                  },
+                  "maxDelayMs": {
+                    "type": "string",
+                    "pattern": "^\\d+$",
+                    "description": "Latest (ms) the queued transfer may settle. Required when `visibility = \"private\"`. Must be `>= minDelayMs` and `<= 600000` (10 minutes).",
+                    "example": "60000"
+                  },
+                  "split": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 14,
+                    "description": "Number of queue entries to split the transfer across. Required when `visibility = \"private\"`. Must be between 1 and 14."
+                  },
+                  "clientRefId": {
+                    "type": "string",
+                    "pattern": "^\\d+$",
+                    "description": "Optional u64 client correlation id attached to each queued split."
+                  },
+                  "validator": {
+                    "type": "string",
+                    "description": "Optional validator pubkey for the transfer-queue PDA. Defaults to the well-known MagicBlock validator (`MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57`)."
+                  }
+                },
+                "required": ["userPublicKey", "quoteResponse"]
+              },
+              "examples": {
+                "public": {
+                  "summary": "Public swap (default behaviour, upstream proxy)",
+                  "value": {
+                    "userPublicKey": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                    "quoteResponse": {
+                      "inputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                      "inAmount": "1000000",
+                      "outputMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                      "outAmount": "999519",
+                      "otherAmountThreshold": "994522",
+                      "swapMode": "ExactIn",
+                      "slippageBps": 50,
+                      "priceImpactPct": "0",
+                      "routePlan": []
+                    }
+                  }
+                },
+                "private": {
+                  "summary": "Private swap with scheduled transfer",
+                  "value": {
+                    "userPublicKey": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE",
+                    "quoteResponse": {
+                      "inputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                      "inAmount": "1000000",
+                      "outputMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                      "outAmount": "999519",
+                      "otherAmountThreshold": "994522",
+                      "swapMode": "ExactIn",
+                      "slippageBps": 50,
+                      "priceImpactPct": "0",
+                      "routePlan": []
+                    },
+                    "visibility": "private",
+                    "destination": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                    "minDelayMs": "0",
+                    "maxDelayMs": "60000",
+                    "split": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Swap transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "properties": {
+                    "swapTransaction": { "type": "string", "description": "Base64-encoded unsigned transaction." },
+                    "lastValidBlockHeight": { "type": "integer", "minimum": 0 },
+                    "prioritizationFeeLamports": { "type": "integer", "minimum": 0 },
+                    "privateTransfer": {
+                      "type": "object",
+                      "description": "Present only when `visibility = \"private\"`. Diagnostic metadata about the appended `schedule_private_transfer` instruction.",
+                      "properties": {
+                        "stashAta": { "type": "string" },
+                        "hydraCrankPda": { "type": "string" },
+                        "shuttleId": { "type": "integer", "minimum": 0 }
+                      },
+                      "required": ["stashAta", "hydraCrankPda", "shuttleId"]
+                    }
+                  },
+                  "required": ["swapTransaction"]
+                },
+                "examples": {
+                  "public": {
+                    "summary": "Response for visibility=public",
+                    "value": {
+                      "swapTransaction": "AQABA...base64...",
+                      "lastValidBlockHeight": 318120000
+                    }
+                  },
+                  "private": {
+                    "summary": "Response for visibility=private (with diagnostic block)",
+                    "value": {
+                      "swapTransaction": "AQABA...base64 with appended ATA-create + schedule_private_transfer...",
+                      "lastValidBlockHeight": 318120000,
+                      "privateTransfer": {
+                        "stashAta": "9mZP3xKHvVqXd3xtk72nSeEwJjmsgqmXvUDfwNA9BM4K",
+                        "hydraCrankPda": "HyDraCrNkPdA11111111111111111111111111111111",
+                        "shuttleId": 2147483647
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request (missing or conflicting private-transfer fields)" },
+          "500": { "description": "Configuration error (e.g. missing `METIS_SWAP_API_URL`)" },
+          "502": { "description": "Upstream error" }
+        }
+      }
+    }
+  }
+}

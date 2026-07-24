@@ -1,0 +1,19 @@
+```typescript
+// Delegation confirms on base before the ER clones the account —
+// poll the ER view before transferring.
+await waitForErTokenAccount(ata, expectedAmount);
+
+const transferIxs = await transferSpl(
+  recipientA.publicKey,
+  recipientB.publicKey,
+  mint.publicKey,
+  2n,
+  { visibility: "public", fromBalance: "ephemeral", toBalance: "ephemeral" },
+);
+
+await providerEphemeralRollup.sendAndConfirm(
+  new anchor.web3.Transaction().add(...transferIxs),
+  [recipientA],
+  { commitment: "confirmed", skipPreflight: true },
+);
+```

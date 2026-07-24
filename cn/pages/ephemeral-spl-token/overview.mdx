@@ -1,0 +1,127 @@
+---
+title: "Ephemeral SPL Token"
+description: "使用 Ephemeral SPL Token 程序，以 Ephemeral Rollup 的速度转移 SPL token，并了解 eATA、Global Vault、委托、托管与私密支付模型。"
+---
+
+---
+
+## 概述
+
+**Ephemeral SPL Token** 让你在 [MagicBlock Ephemeral Rollup（ER）](/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)
+中持有和转移 SPL token，享受与其他委托状态相同的低延迟，随后再结算回 Solana base layer。
+它是 MagicBlock **私密支付**背后的 token 原语，但这个原语本身具有通用性：转账既可以是
+**公开的，也可以是私密的**。
+
+这一切都由链上 **Ephemeral SPL Token 程序**
+（`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`）提供支持，该程序实现了
+[MIMD 0013](https://github.com/magicblock-labs/magicblock-validator/discussions/550).
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token 程序"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    链上程序 + 托管 API。`SPLxh1LV…`
+  </Card>
+  <Card
+    title="快速入门"
+    icon="rocket"
+    href="/cn/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    端到端完成 token account 委托、ER 内转账和提取。
+  </Card>
+</CardGroup>
+
+<Card
+  title="正在构建预测市场或交易协议？"
+  icon="chart-line"
+  href="/pages/solutions/prediction-markets"
+  iconType="duotone"
+>
+  了解 token 托管如何与 session key、价格预言机、crank 和结算协同工作。
+</Card>
+
+---
+
+## 模型
+
+普通的 SPL token account 位于 Solana base layer。为了以 ER 的速度转移 token，Ephemeral SPL
+Token 程序引入了两种账户类型。
+
+### Ephemeral ATA (eATA)
+
+**ephemeral ATA（eATA）** 是由 `[owner, mint]` 派生、归程序所有的 PDA，其中保存单个 `u64`
+余额。它**不是真正的 SPL token account**，而是一条轻量级余额记录，可以委托给 ER 并在其中
+高速更新。
+
+### Global Vault
+
+真实 token 托管在每个 mint 对应的 **Global Vault** 中。它是由 `[mint]` 派生的 PDA，拥有为该
+mint 的**所有** eATA 提供支持的 SPL token account。存入会把真实 token 转入 vault，并增加
+eATA 的 `u64` 余额；提取则执行相反过程。
+
+<Note>
+  eATA 负责记录余额，Global Vault 则持有真实 token。一个 vault 为给定 mint 的所有 eATA
+  提供支持。
+</Note>
+
+---
+
+## 委托生命周期
+
+eATA 遵循标准的 Ephemeral Rollup 生命周期：
+
+<Steps>
+  <Step title="存入并委托">
+    真实 token 转入 mint 的 Global Vault，你的 eATA 余额随之增加，然后 eATA 被委托给
+    MagicBlock validator，以便在 ER 内更新。
+  </Step>
+  <Step title="在 ER 上交易">
+    在 rollup 内以低延迟在 eATA 之间转账。转账可以是**公开**或**私密**
+    （`visibility`）。
+  </Step>
+  <Step title="取消委托并提交">
+    提交 eATA 状态并取消委托，使其返回 base layer。
+  </Step>
+  <Step title="提取">
+    token 从 Global Vault 转回标准的 base-layer SPL token account。
+  </Step>
+</Steps>
+
+---
+
+## 公开与私密
+
+该原语同时支持：
+
+- **公开**——在 ER 上的 eATA 之间进行普通的快速转账。
+- **私密（私密支付）**——隐藏目标与结算信息：使用私密 `visibility`、加密/队列式结算，以及
+  **stealth handle**（例如 `alice@magicblock.id` 这样可解析为一个或多个目标 key 的易读名称）。
+  这正是[私密支付指南](/cn/pages/ephemeral-spl-token/private-payments)所介绍的用例。
+
+---
+
+## 两种集成方式
+
+<CardGroup cols={2}>
+  <Card
+    title="链上 / SDK"
+    icon="code"
+    href="/cn/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    使用 `@magicblock-labs/ephemeral-rollups-sdk` 直接集成到你自己的 Anchor 程序和客户端中：
+    委托 token account、在 ER 上转账并提取。
+  </Card>
+  <Card
+    title="托管 REST / MCP API"
+    icon="server"
+    href="/cn/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    由托管 API 为存入、转账、提取、余额查询、swap 和私密支付构建未签名交易。
+  </Card>
+</CardGroup>

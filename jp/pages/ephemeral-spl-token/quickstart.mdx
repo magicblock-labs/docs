@@ -1,0 +1,122 @@
+---
+title: "Ephemeral SPL Token クイックスタート"
+description: "ephemeral-rollups-sdk を使って SPL token account を Ephemeral Rollup に委任し、ER 上で送金して base layer に出金します。"
+---
+
+import Software from "/jp/snippets/software.mdx";
+import SolanaResources from "/jp/snippets/solana-resources.mdx";
+import ProductCards from "/jp/snippets/product-cards.mdx";
+import QuickAccessSpl from "/jp/snippets/quick-access-spl.mdx";
+import AIDevSkillCallout from "/jp/snippets/ai-dev-skill-callout.mdx";
+
+import DelegateCode from "/jp/snippets/spl-tokens-code/delegate.mdx";
+import TransferCode from "/jp/snippets/spl-tokens-code/transfer.mdx";
+import UndelegateCode from "/jp/snippets/spl-tokens-code/undelegate.mdx";
+import WithdrawCode from "/jp/snippets/spl-tokens-code/withdraw.mdx";
+import ProgramCode from "/jp/snippets/spl-tokens-code/program.mdx";
+
+---
+
+<AIDevSkillCallout />
+
+<QuickAccessSpl />
+
+<Note>
+  これらのスニペットは、legacy-vault パスを使う `@magicblock-labs/ephemeral-rollups-sdk`
+  **v0.14.3** 向けです。idempotent-shuttle パスは v0.15.3 向けです。1 つのライフサイクルでは
+  `delegateSpl` / `undelegateIx` / `withdrawSpl` に同じパスを使用してください。
+</Note>
+
+---
+
+## ステップ別ガイド
+
+Ephemeral SPL Token プログラム `SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2` で
+SPL token のライフサイクル全体を実行します。[委任](/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-accounts)し、
+[ER](/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) 上で取引してから Solana に決済します：
+
+<Steps>
+  <Step title={<a href="#1-delegate">token account を委任</a>}>
+    base layer 上で所有者の残高を validator に委任します。mint の初回委任時に共有
+    Global Vault が作成されます。
+  </Step>
+  <Step title={<a href="#2-transfer">ER 上で送金</a>}>
+    rollup 内の eATA 間で token を公開またはプライベートに移動します。
+  </Step>
+  <Step title={<a href="#3-undelegate">委任解除してコミット</a>}>
+    ER 上で委任を解除し、base layer へのコミットを待ちます。
+  </Step>
+  <Step title={<a href="#4-withdraw">base layer に出金</a>}>
+    残高を Global Vault から base-layer token account に移動します。
+  </Step>
+</Steps>
+
+---
+
+## Ephemeral SPL Token の例
+
+<Software />
+
+SDK をインストールします：
+
+```bash
+yarn add @magicblock-labs/ephemeral-rollups-sdk@0.14.3
+```
+
+### コードスニペット
+
+<Tabs>
+  <Tab title="1. 委任">
+    `delegateSpl` は所有者の残高を validator に委任します。mint の初回委任時に共有 Global Vault
+    を作成し（`initVaultIfMissing: true`）、以降は再利用します。**base layer** 上で送信し、
+    委任前に rent sponsor（`deriveRentPda()`）へ資金を入れてください。
+
+    <DelegateCode />
+    [⬆️ トップに戻る](#code-snippets)
+  </Tab>
+  <Tab title="2. 送金">
+    `transferSpl` は rollup 内の eATA 間で token を移動します。**ephemeral** provider で送信します。
+    プライベート決済には `visibility: "private"`、通常の高速送金には `"public"` を設定します。
+
+    <TransferCode />
+    [⬆️ トップに戻る](#code-snippets)
+  </Tab>
+  <Tab title="3. 委任解除">
+    ER 上で所有者ごとに委任を解除し（1 トランザクションにつき 1 件）、出金前に
+    `GetCommitmentSignature` で base layer へのコミットを待ちます。
+
+    <UndelegateCode />
+    [⬆️ トップに戻る](#code-snippets)
+  </Tab>
+  <Tab title="4. 出金">
+    `withdrawSpl` は残高を Global Vault から所有者の base-layer ATA に戻します。
+
+    <WithdrawCode />
+    [⬆️ トップに戻る](#code-snippets)
+  </Tab>
+  <Tab title="ER 対応プログラム">
+    SDK helper ではなく独自プログラム経由で ER 側の送金を処理するには、`#[ephemeral]`
+    属性を追加します。この命令は通常の SPL Token CPI です。カストディと PDA 署名送金については
+    [スマートコントラクト統合](/jp/pages/ephemeral-spl-token/smart-contract-integration)を参照してください。
+
+    <ProgramCode />
+    [⬆️ トップに戻る](#code-snippets)
+  </Tab>
+</Tabs>
+
+<Note>
+  **ローカルで実行：** `yarn` → `yarn build` → `yarn setup`（ローカルの base + ER
+  クラスターを起動し、そのまま実行）→ 2 つ目のターミナルで `yarn test:local`。
+</Note>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock 製品
+
+<ProductCards />
+
+---

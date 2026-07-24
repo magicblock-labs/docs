@@ -1,0 +1,24 @@
+```rust
+use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Token, TokenAccount, Transfer as SplTransfer};
+use ephemeral_rollups_sdk::anchor::ephemeral;
+
+#[ephemeral]
+#[program]
+pub mod spl_tokens {
+    use super::*;
+
+    /// Transfer `amount` of SPL tokens from `from` to `to`.
+    pub fn transfer(ctx: Context<TransferTokens>, amount: u64) -> Result<()> {
+        require!(amount > 0, ErrorCode::InvalidAmount);
+        let cpi_accounts = SplTransfer {
+            from: ctx.accounts.from.to_account_info(),
+            to: ctx.accounts.to.to_account_info(),
+            authority: ctx.accounts.payer.to_account_info(),
+        };
+        let cpi_ctx = CpiContext::new(ctx.accounts.token_program.to_account_info(), cpi_accounts);
+        token::transfer(cpi_ctx, amount)?;
+        Ok(())
+    }
+}
+```

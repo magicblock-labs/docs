@@ -1,0 +1,173 @@
+---
+title: "Ephemeral SPL Token を使ったプライベート決済"
+sidebarTitle: "プライベート決済"
+description: "Ephemeral SPL Token で入金、送金、出金をプライベートにし、ホステッド API を通じてプライベート可視性、stealth handle、キュー型決済を利用します。"
+---
+
+import QuickAccessSpl from "/jp/snippets/quick-access-spl.mdx";
+
+---
+
+<QuickAccessSpl />
+
+---
+
+## 概要
+
+**プライベート決済**は、[ER 上の SPL token](/jp/pages/ephemeral-spl-token/overview)
+を基盤とするプライバシー用途です。同じ入金 / 送金 / 出金プリミティブを**プライベート可視性**
+で実行するため、支払額、送信先、タイミングは公開されず保護されます。
+
+<Note>
+  このプリミティブを初めて使う場合は、先に [Ephemeral SPL Token の
+  概要](/jp/pages/ephemeral-spl-token/overview)をお読みください。このガイドでは
+  eATA / Global Vault / 委任モデルを理解している前提で説明します。
+</Note>
+
+プライベート決済を構築する最も簡単な方法は、ホステッド **Ephemeral SPL Token API** です。
+署名して送信できる未署名トランザクションを返します。
+
+<CardGroup cols={2}>
+  <Card
+    title="API リファレンス"
+    icon="server"
+    href="/jp/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    入金、送金、出金、残高、stealth pool、認証用の endpoint。
+  </Card>
+  <Card
+    title="リファレンスプログラム"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    オンチェーンの Ephemeral SPL Token プログラム。
+  </Card>
+</CardGroup>
+
+---
+
+## プライバシーモデル
+
+プライベート決済は次の仕組みに依存します：
+
+- **プライベート可視性** — `visibility: "private"` で Ephemeral Rollup 内の送金を実行するため、
+  公開されません。
+- **Stealth handle** — raw public key の代わりに `alice@magicblock.id` のような読みやすい名前へ
+  送金します。handle は **stealth pool** を介して 1 つ以上の送信先 key に解決され、オンチェーンの
+  送信者 → 受信者という直接のつながりを断ちます。
+- **キュー型決済** — プライベート送金は、直接かつ即座に関連付けられる移動ではなく、
+  プログラムの transfer queue を通じて決済できます。
+
+<Warning>
+  ここでのプライバシーは**関連付け可能性**を下げるもので、観測可能性を完全になくすものでは
+  ありません。金額やタイミングはネットワークレベルで推測される可能性があります。前提に基づいて
+  脅威モデルを作成してください。
+</Warning>
+
+---
+
+## 認証
+
+プライベートデータの読み取りと stealth-pool 操作には bearer token が必要です。保護された
+endpoint を呼び出す前に challenge/login フローで取得します：
+
+<Steps>
+  <Step title="challenge をリクエスト">
+    `GET /v1/spl/challenge` はユーザーが署名するメッセージを返します。
+  </Step>
+  <Step title="ログイン">
+    `POST /v1/spl/login` は署名済み challenge を bearer token と交換します。
+  </Step>
+  <Step title="保護された endpoint を呼び出す">
+    `GET /v1/spl/private-balance` と `POST /v1/spl/stealth-pool` では
+    `Authorization: Bearer <token>` を送信します。
+  </Step>
+</Steps>
+
+---
+
+## 入金
+
+token を mint の Global Vault に移動し、入金者の ephemeral ATA 残高を加算します。
+
+- `POST /v1/spl/deposit` — 入金トランザクションを構築します。入金残高をプライベートに
+  保つには `private: true` を設定します。
+
+レスポンスは未署名トランザクションと `sendTo` フィールド（`base` または `ephemeral`）です。
+署名後、[`POST /v1/transaction/send`](/jp/pages/ephemeral-spl-token/api-reference/transaction-send)
+または独自 RPC で送信します。
+
+---
+
+## プライベート送金
+
+- `POST /v1/spl/transfer` with `visibility: "private"`.
+
+送信先には 2 つのモードがあります：
+
+| 送信先 | `to` の値 | 要件 |
+| --- | --- | --- |
+| 直接 | 受信者の public key | `visibility: "private"` |
+| Stealth handle | 初期化済み handle 文字列 | `visibility: "private"`, `fromBalance: "base"`, `toBalance: "base"` |
+
+stealth handle を使用するには、最初に初期化します：
+
+- `POST /v1/spl/stealth-pool` — handle（255 UTF-8 byte 以下。正規化**されない**ため
+  `Alice@…` ≠ `alice@…`）を 1〜10 個の送信先 owner key にマッピングし、必要に応じて
+  支払いを分割します。
+- `GET /v1/spl/stealth-pool?handle=…` — handle の pool が存在するか確認します。
+
+<Note>
+  handle は正確な UTF-8 byte のまま保存されます。`GET` が返すのは pool の存在有無だけで、
+  送信先 key は返しません。
+</Note>
+
+---
+
+## 出金
+
+残高を Global Vault から標準の base-layer SPL token account に戻します。
+
+- `POST /v1/spl/withdraw` — 出金トランザクションを構築します。
+
+残高はいつでも確認できます：
+
+- `GET /v1/spl/balance` — 公開残高。
+- `GET /v1/spl/private-balance` — プライベート残高（bearer token が必要）。
+
+---
+
+## 開発者向け注意事項
+
+- **プライバシーは段階的です。** Ephemeral SPL token は関連付け可能性を下げますが、金額や
+  タイミングを隠したり、ネットワークレベルの分析を防いだりはしません。
+- **handle は正規化されません。** 大文字/小文字と空白が区別されるため、一貫して表示・保存してください。
+- **フローを一致させます。** Stealth-handle 送金には `visibility: "private"`、
+  `fromBalance: "base"`、`toBalance: "base"` が必要です（フィールド省略時のデフォルトでもあります）。
+- **署名してから送信します。** Builder endpoint は未署名トランザクションを返します。
+  `POST /v1/transaction/send` で送信し、返された `sendTo` に従ってください。
+
+---
+
+## 次のステップ
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token — 概要"
+    icon="book"
+    href="/jp/pages/ephemeral-spl-token/overview"
+    iconType="duotone"
+  >
+    プライベート決済を支えるプリミティブ。
+  </Card>
+  <Card
+    title="SDK クイックスタート"
+    icon="rocket"
+    href="/jp/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    オンチェーン / SDK の統合パス。
+  </Card>
+</CardGroup>

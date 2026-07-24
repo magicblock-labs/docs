@@ -1,0 +1,162 @@
+---
+title: "스마트 컨트랙트 통합"
+description: "Ephemeral Rollup에서 자체 Solana 프로그램으로 SPL token을 커스터디하고 이동합니다. PDA 서명 전송, 위임, 커밋/위임 해제를 다룹니다."
+---
+
+import Software from "/ko/snippets/software.mdx";
+import SolanaResources from "/ko/snippets/solana-resources.mdx";
+
+import EphemeralCode from "/ko/snippets/spl-tokens-code/sc-ephemeral.mdx";
+import CreateEataCode from "/ko/snippets/spl-tokens-code/sc-create-eata.mdx";
+import DelegateEataCode from "/ko/snippets/spl-tokens-code/sc-delegate.mdx";
+import PdaTransferCode from "/ko/snippets/spl-tokens-code/sc-transfer.mdx";
+import CommitCode from "/ko/snippets/spl-tokens-code/sc-commit.mdx";
+import NonCustodyCode from "/ko/snippets/spl-tokens-code/sc-non-custody.mdx";
+import PostCommitCode from "/ko/snippets/spl-tokens-code/sc-post-commit.mdx";
+
+---
+
+### 빠른 접근
+
+<CardGroup cols={3}>
+  <Card title="binary-prediction" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/binary-prediction" iconType="duotone">
+    eATA 커스터디 전체 흐름
+  </Card>
+  <Card title="rewards-delegated-vrf" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rewards-delegated-vrf" iconType="duotone">
+    Base-layer 커밋 후 지급
+  </Card>
+  <Card title="spl-tokens" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/spl-tokens" iconType="duotone">
+    비수탁 전송
+  </Card>
+</CardGroup>
+
+이 가이드는 사용자 자금을 보유하고 [Ephemeral Rollup](/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)
+속도로 이동하는 DEX, AMM, 예측 시장, escrow, 게임 같은 온체인 프로그램을 위한 것입니다.
+핵심 패턴은 프로그램 소유 계정을 ER에 위임하고 프로그램이 PDA로 token 전송에 서명하는 것입니다.
+
+<Note>
+  온체인이 아니라 클라이언트에서 token을 이동하려면
+  [빠른 시작](/ko/pages/ephemeral-spl-token/quickstart)을 참조하세요.
+</Note>
+
+### 두 가지 커스터디 모델
+
+| 모델 | 위임 대상 | Token 이동 | 사용 시점 |
+| --- | --- | --- | --- |
+| **eATA 커스터디** | 프로그램 소유 **ephemeral ATA(eATA)** | **ER에서**, PDA 서명 | rollup 내부에서 정산하거나 지급할 때(예: 시장 체결) |
+| **상태 PDA + 커밋 후 지급** | **상태 PDA**만 위임하며 실제 ATA는 base layer에 유지 | **base layer에서**, post-commit action으로 실행 | 자금을 L1에 두고 커밋 시 정산할 때 |
+
+아래 절차는 **eATA 커스터디**를 다루며 post-commit 방식은 고급 스니펫에서 설명합니다.
+
+---
+
+## 단계별 가이드
+
+프로그램에 eATA authority를 부여하고 위임한 뒤 ER에서 PDA 서명으로 자금을 이동하고
+Solana로 정산합니다:
+
+<Steps>
+  <Step title={<a href="#1-er-aware-program">프로그램이 ER을 지원하도록 설정</a>}>
+    `#[ephemeral]` 속성을 추가하고 필요한 SDK helper를 import합니다.
+  </Step>
+  <Step title={<a href="#2-create-eata">custody PDA와 eATA 생성</a>}>
+    custody PDA가 Ephemeral SPL Token 프로그램 아래의 eATA를 소유하도록 합니다.
+  </Step>
+  <Step title={<a href="#3-delegate-eata">eATA 위임</a>}>
+    Ephemeral SPL Token 프로그램에 CPI하여 ER로 위임합니다.
+  </Step>
+  <Step title={<a href="#4-pda-signed-transfer">PDA 서명으로 token 이동</a>}>
+    rollup 내부에서 custody PDA로 전송에 서명합니다.
+  </Step>
+  <Step title={<a href="#5-commit-%26-undelegate">커밋 및 위임 해제</a>}>
+    계정을 base layer로 되돌립니다.
+  </Step>
+</Steps>
+
+---
+
+## 커스터디 예제
+
+<Software />
+
+### 코드 스니펫
+
+#### 1. ER 지원 프로그램
+
+`#[program]`을 `#[ephemeral]`로 감싸고 필요한 SDK helper를 import합니다.
+
+<EphemeralCode />
+
+[⬆️ 맨 위로](#code-snippets)
+
+#### 2. eATA 생성
+
+프로그램은 자금의 authority인 상태 PDA(예: `Pool`)를 소유합니다. ER의 커스터디는 해당 PDA가
+소유하는 **ephemeral ATA(eATA)**를 사용합니다. eATA는 Ephemeral SPL Token 프로그램
+(`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`) 아래에서 `[owner, mint]`로 파생됩니다.
+
+<CreateEataCode />
+
+[⬆️ 맨 위로](#code-snippets)
+
+#### 3. eATA 위임
+
+Ephemeral SPL Token 프로그램에 대한 CPI(`DelegateEphemeralAta`, discriminator `4`)로
+eATA를 위임합니다.
+
+<Warning>
+  일반 PDA 소유 ATA를 ER에 직접 위임하는 것은 지원되지 않습니다. ER의 token 커스터디는
+  eATA를 통해 처리됩니다. token account가 아닌 프로그램 *상태*를 위임하려면 SDK의
+  `#[delegate]` 매크로를 사용하세요.
+</Warning>
+
+<DelegateEataCode />
+
+[⬆️ 맨 위로](#code-snippets)
+
+#### 4. PDA 서명 전송
+
+eATA를 위임한 뒤 `CpiContext::new_with_signer`를 통해 커스터디 PDA가 서명하는 SPL Token CPI로
+rollup 내부의 token을 이동합니다. signer seed는 `[POOL_SEED, bump]`입니다. 프로그램이 직접
+지급을 승인하므로 사용자 서명은 필요하지 않습니다.
+
+<PdaTransferCode />
+
+[⬆️ 맨 위로](#code-snippets)
+
+#### 5. 커밋 및 위임 해제
+
+`MagicIntentBundleBuilder`로 ER 상태를 커밋하고 계정을 base layer로 되돌립니다.
+
+<CommitCode />
+
+[⬆️ 맨 위로](#code-snippets)
+
+---
+
+### 고급 코드 스니펫
+
+<Tabs>
+  <Tab title="비수탁 전송">
+    프로그램이 자금을 커스터디하지 않고 사용자를 대신해 이미 위임된 두 계정 사이에서 token을
+    이동한다면 PDA signer가 필요하지 않습니다. authority는 사용자의 `Signer`이며 일반
+    `CpiContext::new`를 사용합니다.
+
+    <NonCustodyCode />
+    [⬆️ 맨 위로](#advanced-code-snippets)
+  </Tab>
+  <Tab title="Base-layer 커밋 후 지급">
+    실제 token account를 base layer에 유지하고 프로그램 상태만 위임하려면 지급을 post-commit
+    action으로 예약하세요. 커밋 직후 base layer에서 PDA 서명으로 실행됩니다.
+    `transfer_checked`(Token-2022 호환)를 사용하고 action을 첨부해 커밋합니다.
+
+    <PostCommitCode />
+    [⬆️ 맨 위로](#advanced-code-snippets)
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

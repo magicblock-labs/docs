@@ -1,0 +1,122 @@
+---
+title: "Ephemeral SPL Token 빠른 시작"
+description: "ephemeral-rollups-sdk를 사용해 SPL token account를 Ephemeral Rollup에 위임하고 ER에서 전송한 뒤 base layer로 출금합니다."
+---
+
+import Software from "/ko/snippets/software.mdx";
+import SolanaResources from "/ko/snippets/solana-resources.mdx";
+import ProductCards from "/ko/snippets/product-cards.mdx";
+import QuickAccessSpl from "/ko/snippets/quick-access-spl.mdx";
+import AIDevSkillCallout from "/ko/snippets/ai-dev-skill-callout.mdx";
+
+import DelegateCode from "/ko/snippets/spl-tokens-code/delegate.mdx";
+import TransferCode from "/ko/snippets/spl-tokens-code/transfer.mdx";
+import UndelegateCode from "/ko/snippets/spl-tokens-code/undelegate.mdx";
+import WithdrawCode from "/ko/snippets/spl-tokens-code/withdraw.mdx";
+import ProgramCode from "/ko/snippets/spl-tokens-code/program.mdx";
+
+---
+
+<AIDevSkillCallout />
+
+<QuickAccessSpl />
+
+<Note>
+  이 스니펫은 legacy-vault 경로를 사용하는 `@magicblock-labs/ephemeral-rollups-sdk`
+  **v0.14.3**을 대상으로 합니다. idempotent-shuttle 경로는 v0.15.3을 대상으로 하므로 하나의
+  수명 주기에서는 `delegateSpl` / `undelegateIx` / `withdrawSpl`에 동일한 경로를 사용하세요.
+</Note>
+
+---
+
+## 단계별 가이드
+
+Ephemeral SPL Token 프로그램 `SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`을 통해
+SPL token의 전체 수명 주기를 실행합니다. [위임](/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-accounts)하고,
+[ER](/ko/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)에서 트랜잭션을 실행한 뒤 Solana로 정산합니다:
+
+<Steps>
+  <Step title={<a href="#1-delegate">token account 위임</a>}>
+    base layer에서 소유자의 잔액을 validator에 위임합니다. mint를 처음 위임할 때 공유
+    Global Vault가 생성됩니다.
+  </Step>
+  <Step title={<a href="#2-transfer">ER에서 전송</a>}>
+    rollup 내부의 eATA 간에 token을 공개 또는 프라이빗으로 이동합니다.
+  </Step>
+  <Step title={<a href="#3-undelegate">위임 해제 및 커밋</a>}>
+    ER에서 위임을 해제하고 base layer로 커밋될 때까지 기다립니다.
+  </Step>
+  <Step title={<a href="#4-withdraw">base layer로 출금</a>}>
+    잔액을 Global Vault에서 base-layer token account로 이동합니다.
+  </Step>
+</Steps>
+
+---
+
+## Ephemeral SPL Token 예제
+
+<Software />
+
+SDK 설치:
+
+```bash
+yarn add @magicblock-labs/ephemeral-rollups-sdk@0.14.3
+```
+
+### 코드 스니펫
+
+<Tabs>
+  <Tab title="1. 위임">
+    `delegateSpl`은 소유자의 잔액을 validator에 위임합니다. mint의 첫 위임에서 공유 Global Vault를
+    생성하고(`initVaultIfMissing: true`), 이후에는 재사용합니다. **base layer**에서 전송하고
+    위임 전에 rent sponsor(`deriveRentPda()`)에 자금을 넣으세요.
+
+    <DelegateCode />
+    [⬆️ 맨 위로](#code-snippets)
+  </Tab>
+  <Tab title="2. 전송">
+    `transferSpl`은 rollup 내부의 eATA 간에 token을 이동합니다. **ephemeral** provider로 전송하세요.
+    프라이빗 결제에는 `visibility: "private"`, 일반 고속 전송에는 `"public"`을 설정합니다.
+
+    <TransferCode />
+    [⬆️ 맨 위로](#code-snippets)
+  </Tab>
+  <Tab title="3. 위임 해제">
+    ER에서 각 소유자의 위임을 해제하고(트랜잭션당 한 명), 출금 전에
+    `GetCommitmentSignature`로 base layer 커밋을 기다립니다.
+
+    <UndelegateCode />
+    [⬆️ 맨 위로](#code-snippets)
+  </Tab>
+  <Tab title="4. 출금">
+    `withdrawSpl`은 Global Vault의 잔액을 소유자의 base-layer ATA로 되돌립니다.
+
+    <WithdrawCode />
+    [⬆️ 맨 위로](#code-snippets)
+  </Tab>
+  <Tab title="ER 지원 프로그램">
+    SDK helper 대신 자체 프로그램을 통해 ER 측 전송을 라우팅하려면 `#[ephemeral]` 속성을
+    추가하세요. 이 instruction은 일반 SPL Token CPI입니다. custody와 PDA 서명 전송은
+    [스마트 컨트랙트 통합](/ko/pages/ephemeral-spl-token/smart-contract-integration)을 참조하세요.
+
+    <ProgramCode />
+    [⬆️ 맨 위로](#code-snippets)
+  </Tab>
+</Tabs>
+
+<Note>
+  **로컬 실행:** `yarn` → `yarn build` → `yarn setup`(로컬 base + ER 클러스터를 시작하고
+  계속 실행) → 두 번째 터미널에서 `yarn test:local`.
+</Note>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock 제품
+
+<ProductCards />
+
+---

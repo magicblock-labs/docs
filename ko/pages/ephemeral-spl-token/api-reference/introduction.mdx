@@ -1,0 +1,117 @@
+---
+title: "소개"
+description: "Ephemeral SPL Token API 문서"
+---
+
+import PrivatePaymentApiCard from "/ko/snippets/private-payment-api-card.mdx";
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token Program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    온체인 Ephemeral SPL Token 프로그램
+  </Card>
+
+  <PrivatePaymentApiCard />
+</CardGroup>
+
+## 개요
+
+Ephemeral SPL Token API는 Solana와 MagicBlock ephemeral rollups 전반에서 입금, 전송, 출금, swap, mint 초기화를 위한 미서명 SPL token 트랜잭션을 생성합니다. 잔액 조회, mint 초기화 상태, stealth pool, 프라이빗 데이터를 읽기 위한 bearer token을 발급하는 지갑 challenge/login 흐름도 제공합니다. 공식 공개 레퍼런스는 [payments.magicblock.app/reference](https://payments.magicblock.app/reference)에서 확인할 수 있습니다.
+
+### 메타
+
+- [**상태 확인**](/ko/pages/ephemeral-spl-token/api-reference/health) - API 상태와 가용성을 확인합니다
+- [**트랜잭션 전송**](/ko/pages/ephemeral-spl-token/api-reference/transaction-send) - 서명된 트랜잭션을 base layer 또는 ephemeral RPC에 제출합니다
+
+### 인증
+
+- [**챌린지**](/ko/pages/ephemeral-spl-token/api-reference/challenge) - 지갑이 서명할 challenge 문자열을 생성합니다
+- [**로그인**](/ko/pages/ephemeral-spl-token/api-reference/login) - 서명된 challenge를 bearer token으로 교환합니다
+
+### SPL
+
+- [**SPL Token 입금**](/ko/pages/ephemeral-spl-token/api-reference/deposit) - Solana에서 ephemeral rollup으로 들어가는 미서명 입금 트랜잭션을 생성합니다
+- [**SPL Token 전송**](/ko/pages/ephemeral-spl-token/api-reference/transfer) - 미서명 공개 또는 프라이빗 SPL 전송을 생성합니다
+- [**SPL Token 출금**](/ko/pages/ephemeral-spl-token/api-reference/withdraw) - Solana로 되돌리는 미서명 출금 트랜잭션을 생성합니다
+- [**Ephemeral ATA 위임 해제**](/ko/pages/ephemeral-spl-token/api-reference/undelegate-ephemeral-ata) - mint에 대한 지갑의 eATA 위임을 해제하는 미서명 트랜잭션을 생성합니다
+- [**Mint 초기화**](/ko/pages/ephemeral-spl-token/api-reference/initialize-mint) - mint용 validator-scoped transfer queue를 초기화하는 미서명 트랜잭션을 생성합니다
+- [**Transfer Queue Crank 실행 보장**](/ko/pages/ephemeral-spl-token/api-reference/transfer-queue-ensure-crank) - mint의 transfer queue를 검증하고 crank를 한 번 강제로 시도합니다
+- [**잔액**](/ko/pages/ephemeral-spl-token/api-reference/balance) - 주소의 base-chain SPL token 잔액을 가져옵니다
+- [**프라이빗 잔액**](/ko/pages/ephemeral-spl-token/api-reference/private-balance) - 주소의 ephemeral-rollup SPL token 잔액을 가져옵니다(인증 필요)
+- [**Mint 초기화 여부**](/ko/pages/ephemeral-spl-token/api-reference/is-mint-initialized) - mint가 ephemeral RPC에 validator-scoped transfer queue를 가지고 있는지 확인합니다
+
+### Stealth Pool
+
+- [**Stealth Pool 생성**](/ko/pages/ephemeral-spl-token/api-reference/stealth-pool) - 프라이빗 전송을 위해 handle을 목적지 key에 매핑합니다(인증 필요)
+- [**Stealth Pool 상태 조회**](/ko/pages/ephemeral-spl-token/api-reference/stealth-pool-status) - handle의 stealth pool이 존재하는지 확인합니다
+
+### Swap
+
+- [**Swap 견적**](/ko/pages/ephemeral-spl-token/api-reference/quote) - 두 SPL mint 사이의 swap 견적을 가져옵니다
+- [**Swap**](/ko/pages/ephemeral-spl-token/api-reference/swap) - 미서명 swap 트랜잭션을 생성합니다(공개 패스스루 또는 예약 전송이 포함된 프라이빗 모드)
+
+### MCP
+
+- [**MCP**](/ko/pages/ephemeral-spl-token/api-reference/mcp) - stateless Streamable HTTP MCP endpoint에 접근합니다
+
+```
+┌────────────────────────────────────────────┐
+│ 1. Deposit                                │
+├────────────────────────────────────────────┤
+│ • Build an unsigned deposit transaction   │
+│ • Solana base balance → ephemeral rollup  │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 2. Transfer / Swap                        │
+├────────────────────────────────────────────┤
+│ • Build SPL transfer or swap              │
+│ • base/ephemeral → base/ephemeral         │
+│ • public or private (delayed + split)     │
+└────────────────────────────────────────────┘
+                     ↓
+┌────────────────────────────────────────────┐
+│ 3. Withdraw                               │
+├────────────────────────────────────────────┤
+│ • Build an unsigned withdrawal            │
+│ • ephemeral rollup → Solana base balance  │
+└────────────────────────────────────────────┘
+```
+
+## 인증 흐름
+
+Private Ephemeral Rollup 내부의 프라이빗 데이터를 읽는 엔드포인트는 bearer 토큰이 필요합니다:
+
+1. `GET /v1/spl/challenge?pubkey=<wallet>`이 `challenge` 문자열을 반환합니다
+2. 지갑이 challenge에 서명합니다
+3. `POST /v1/spl/login`에 `{ pubkey, challenge, signature }`를 보내면 `token`이 반환됩니다
+4. `/v1/spl/private-balance` (필수)와 Private Ephemeral Rollup 연결이 필요한 `/v1/spl/transfer` 요청 (선택)에 `Authorization: Bearer <token>`을 전달합니다
+
+## 응답 형식
+
+트랜잭션 생성 엔드포인트가 성공하면 미서명 트랜잭션 페이로드를 반환합니다:
+
+```json
+{
+  "kind": "deposit",
+  "version": "legacy",
+  "transactionBase64": "base64-encoded-transaction",
+  "sendTo": "base",
+  "recentBlockhash": "blockhash",
+  "lastValidBlockHeight": 284512337,
+  "instructionCount": 3,
+  "requiredSigners": ["3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE"]
+}
+```
+
+클라이언트 흐름:
+
+1. API를 호출합니다
+2. `transactionBase64`를 디코딩합니다
+3. 필요하면 클라이언트가 트랜잭션을 조정합니다
+4. 필요한 지갑으로 서명합니다
+5. `sendTo`가 가리키는 RPC (`"base"` 또는 `"ephemeral"`)로 전송합니다

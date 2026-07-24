@@ -1,0 +1,163 @@
+---
+title: "スマートコントラクト統合"
+description: "Ephemeral Rollup 上で独自の Solana プログラムから SPL token をカストディ・移動します。PDA 署名送金、委任、コミット/委任解除に対応します。"
+---
+
+import Software from "/jp/snippets/software.mdx";
+import SolanaResources from "/jp/snippets/solana-resources.mdx";
+
+import EphemeralCode from "/jp/snippets/spl-tokens-code/sc-ephemeral.mdx";
+import CreateEataCode from "/jp/snippets/spl-tokens-code/sc-create-eata.mdx";
+import DelegateEataCode from "/jp/snippets/spl-tokens-code/sc-delegate.mdx";
+import PdaTransferCode from "/jp/snippets/spl-tokens-code/sc-transfer.mdx";
+import CommitCode from "/jp/snippets/spl-tokens-code/sc-commit.mdx";
+import NonCustodyCode from "/jp/snippets/spl-tokens-code/sc-non-custody.mdx";
+import PostCommitCode from "/jp/snippets/spl-tokens-code/sc-post-commit.mdx";
+
+---
+
+### クイックアクセス
+
+<CardGroup cols={3}>
+  <Card title="binary-prediction" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/binary-prediction" iconType="duotone">
+    eATA カストディをエンドツーエンドで実装
+  </Card>
+  <Card title="rewards-delegated-vrf" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rewards-delegated-vrf" iconType="duotone">
+    Base-layer のコミット後支払い
+  </Card>
+  <Card title="spl-tokens" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/spl-tokens" iconType="duotone">
+    ノンカストディ送金
+  </Card>
+</CardGroup>
+
+このガイドは、ユーザー資金を保持し、[Ephemeral Rollup](/jp/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)
+の速度で移動する DEX、AMM、予測市場、エスクロー、ゲームなどのオンチェーンプログラム向けです。
+基本パターンは、プログラム所有アカウントを ER に委任し、プログラムが PDA として token
+送金に署名することです。
+
+<Note>
+  オンチェーンではなくクライアントから token を移動する場合は、
+  [クイックスタート](/jp/pages/ephemeral-spl-token/quickstart)を参照してください。
+</Note>
+
+### 2 つのカストディモデル
+
+| モデル | 委任対象 | Token の移動 | 用途 |
+| --- | --- | --- | --- |
+| **eATA カストディ** | プログラム所有の **ephemeral ATA（eATA）** | **ER 上**、PDA 署名 | rollup 内で決済または支払いを行う場合（例：市場約定） |
+| **状態 PDA + コミット後支払い** | **状態 PDA** のみ。実際の ATA は base layer に残す | **base layer 上**、post-commit action として実行 | 資金を L1 に残し、コミット時に決済する場合 |
+
+以下の手順では **eATA カストディ**を扱い、post-commit のバリエーションは高度なスニペットで説明します。
+
+---
+
+## ステップ別ガイド
+
+プログラムに eATA の authority を付与して委任し、ER 上で PDA 署名により資金を移動してから
+Solana に決済します：
+
+<Steps>
+  <Step title={<a href="#1-er-aware-program">プログラムを ER 対応にする</a>}>
+    `#[ephemeral]` 属性を追加し、SDK helper を import します。
+  </Step>
+  <Step title={<a href="#2-create-eata">カストディ PDA と eATA を作成</a>}>
+    カストディ PDA から Ephemeral SPL Token プログラム配下の eATA を所有します。
+  </Step>
+  <Step title={<a href="#3-delegate-eata">eATA を委任</a>}>
+    Ephemeral SPL Token プログラムに CPI して ER へ委任します。
+  </Step>
+  <Step title={<a href="#4-pda-signed-transfer">PDA 署名で token を移動</a>}>
+    rollup 内でカストディ PDA として送金に署名します。
+  </Step>
+  <Step title={<a href="#5-commit-%26-undelegate">コミットして委任解除</a>}>
+    アカウントを base layer に戻します。
+  </Step>
+</Steps>
+
+---
+
+## カストディの例
+
+<Software />
+
+### コードスニペット
+
+#### 1. ER 対応プログラム
+
+`#[program]` を `#[ephemeral]` で囲み、必要な SDK helper を import します。
+
+<EphemeralCode />
+
+[⬆️ トップに戻る](#code-snippets)
+
+#### 2. eATA を作成
+
+プログラムは資金の authority となる状態 PDA（例：`Pool`）を所有します。ER 上のカストディでは、
+その PDA が所有する **ephemeral ATA（eATA）**を使います。eATA は Ephemeral SPL Token
+プログラム（`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`）配下で `[owner, mint]` から導出されます。
+
+<CreateEataCode />
+
+[⬆️ トップに戻る](#code-snippets)
+
+#### 3. eATA を委任
+
+Ephemeral SPL Token プログラムへの CPI（`DelegateEphemeralAta`、discriminator `4`）で
+eATA を委任します。
+
+<Warning>
+  通常の PDA 所有 ATA を ER に直接委任することはできません。ER 上の token custody は
+  eATA を介します。token account ではなくプログラムの*状態*を委任する場合は、SDK の
+  `#[delegate]` マクロを使用してください。
+</Warning>
+
+<DelegateEataCode />
+
+[⬆️ トップに戻る](#code-snippets)
+
+#### 4. PDA 署名送金
+
+eATA を委任したら、`CpiContext::new_with_signer` を介してカストディ PDA が署名する
+SPL Token CPI で rollup 内の token を移動します。signer seed は `[POOL_SEED, bump]` です。
+プログラム自体が支払いを承認するため、ユーザー署名は不要です。
+
+<PdaTransferCode />
+
+[⬆️ トップに戻る](#code-snippets)
+
+#### 5. コミットして委任解除
+
+`MagicIntentBundleBuilder` で ER 状態をコミットし、アカウントを base layer に戻します。
+
+<CommitCode />
+
+[⬆️ トップに戻る](#code-snippets)
+
+---
+
+### 高度なコードスニペット
+
+<Tabs>
+  <Tab title="ノンカストディ送金">
+    プログラムが資金をカストディせず、ユーザーに代わって 2 つの委任済みアカウント間で
+    token を移動する場合、PDA signer は不要です。authority はユーザーの `Signer` で、
+    通常の `CpiContext::new` を使用します。
+
+    <NonCustodyCode />
+    [⬆️ トップに戻る](#advanced-code-snippets)
+  </Tab>
+  <Tab title="Base-layer のコミット後支払い">
+    実際の token account を base layer に残してプログラム状態だけを委任するには、支払いを
+    post-commit action としてスケジュールします。コミット直後に base layer 上で PDA 署名により
+    実行されます。`transfer_checked`（Token-2022 対応）を使用し、action を添付してコミットします。
+
+    <PostCommitCode />
+    [⬆️ トップに戻る](#advanced-code-snippets)
+  </Tab>
+</Tabs>
+
+---
+
+<SolanaResources />
+
+---

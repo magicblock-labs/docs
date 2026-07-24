@@ -1,0 +1,171 @@
+---
+title: "Ephemeral SPL Token을 활용한 프라이빗 결제"
+sidebarTitle: "프라이빗 결제"
+description: "Ephemeral SPL Token으로 입금, 전송, 출금을 프라이빗하게 처리하고 호스팅 API를 통해 프라이빗 가시성, stealth handle, 대기열 기반 정산을 사용합니다."
+---
+
+import QuickAccessSpl from "/ko/snippets/quick-access-spl.mdx";
+
+---
+
+<QuickAccessSpl />
+
+---
+
+## 개요
+
+**프라이빗 결제**는 [ER의 SPL token](/ko/pages/ephemeral-spl-token/overview)을
+기반으로 하는 프라이버시 사용 사례입니다. 동일한 입금 / 전송 / 출금 프리미티브가
+**프라이빗 가시성**으로 실행되므로 결제 금액, 목적지, 시점이 공개되지 않고 보호됩니다.
+
+<Note>
+  이 프리미티브를 처음 접한다면 먼저 [Ephemeral SPL Token
+  개요](/ko/pages/ephemeral-spl-token/overview)를 읽어보세요. 이 가이드는
+  eATA / Global Vault / 위임 모델을 이해하고 있다고 가정합니다.
+</Note>
+
+프라이빗 결제를 구축하는 가장 쉬운 방법은 호스팅 **Ephemeral SPL Token API**를 사용하는 것입니다.
+사용자가 서명하고 제출할 수 있는 미서명 트랜잭션을 반환합니다.
+
+<CardGroup cols={2}>
+  <Card
+    title="API 레퍼런스"
+    icon="server"
+    href="/ko/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    입금, 전송, 출금, 잔액, stealth pool, 인증을 위한 endpoint.
+  </Card>
+  <Card
+    title="레퍼런스 프로그램"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    온체인 Ephemeral SPL Token 프로그램.
+  </Card>
+</CardGroup>
+
+---
+
+## 프라이버시 모델
+
+프라이빗 결제는 다음 요소를 사용합니다:
+
+- **프라이빗 가시성** — `visibility: "private"`로 Ephemeral Rollup 내부에서 전송을 실행하므로
+  공개적으로 브로드캐스트되지 않습니다.
+- **Stealth handle** — raw public key 대신 `alice@magicblock.id` 같은 읽기 쉬운 이름으로 전송합니다.
+  handle은 **stealth pool**을 통해 하나 이상의 목적지 key로 해석되어 온체인에서 발신자 → 수신자의
+  직접 연결을 끊습니다.
+- **대기열 기반 정산** — 프라이빗 전송은 즉시 연결할 수 있는 직접 이동 대신 프로그램의
+  transfer queue를 통해 정산할 수 있습니다.
+
+<Warning>
+  여기서 프라이버시는 전체 관찰 가능성을 없애는 것이 아니라 **연결 가능성**을 낮춥니다.
+  금액과 시점은 네트워크 수준에서 추론될 수 있습니다. 가정을 바탕으로 위협 모델을 수립하세요.
+</Warning>
+
+---
+
+## 인증
+
+프라이빗 데이터 조회와 stealth-pool 작업에는 bearer token이 필요합니다. 보호된 endpoint를
+호출하기 전에 challenge/login 흐름으로 token을 발급받으세요:
+
+<Steps>
+  <Step title="challenge 요청">
+    `GET /v1/spl/challenge`는 사용자가 서명할 메시지를 반환합니다.
+  </Step>
+  <Step title="로그인">
+    `POST /v1/spl/login`은 서명된 challenge를 bearer token으로 교환합니다.
+  </Step>
+  <Step title="보호된 endpoint 호출">
+    `GET /v1/spl/private-balance`와 `POST /v1/spl/stealth-pool`에서
+    `Authorization: Bearer <token>`을 전송합니다.
+  </Step>
+</Steps>
+
+---
+
+## 입금
+
+token을 mint의 Global Vault로 이동하고 입금자의 ephemeral ATA 잔액을 증가시킵니다.
+
+- `POST /v1/spl/deposit` — 입금 트랜잭션을 생성합니다. 입금 잔액을 프라이빗하게 유지하려면
+  `private: true`를 설정하세요.
+
+응답에는 미서명 트랜잭션과 `sendTo` 필드(`base` 또는 `ephemeral`)가 포함됩니다. 서명한 뒤
+[`POST /v1/transaction/send`](/ko/pages/ephemeral-spl-token/api-reference/transaction-send)
+또는 자체 RPC로 제출하세요.
+
+---
+
+## 프라이빗 전송
+
+- `POST /v1/spl/transfer` with `visibility: "private"`.
+
+목적지 모드는 두 가지입니다:
+
+| 목적지 | `to` 값 | 요구 사항 |
+| --- | --- | --- |
+| 직접 | 수신자 public key | `visibility: "private"` |
+| Stealth handle | 초기화된 handle 문자열 | `visibility: "private"`, `fromBalance: "base"`, `toBalance: "base"` |
+
+stealth handle을 사용하려면 먼저 초기화하세요:
+
+- `POST /v1/spl/stealth-pool` — handle(UTF-8 255 byte 이하, 정규화되지 **않으므로**
+  `Alice@…` ≠ `alice@…`)을 1~10개의 목적지 owner key에 매핑하고 필요하면 결제를 분할합니다.
+- `GET /v1/spl/stealth-pool?handle=…` — handle의 pool이 존재하는지 확인합니다.
+
+<Note>
+  handle은 정확한 UTF-8 byte 그대로 저장됩니다. `GET`은 pool의 존재 여부만 반환하며
+  목적지 key는 반환하지 않습니다.
+</Note>
+
+---
+
+## 출금
+
+잔액을 Global Vault에서 표준 base-layer SPL token account로 되돌립니다.
+
+- `POST /v1/spl/withdraw` — 출금 트랜잭션을 생성합니다.
+
+언제든 잔액을 확인할 수 있습니다:
+
+- `GET /v1/spl/balance` — 공개 잔액.
+- `GET /v1/spl/private-balance` — 프라이빗 잔액(bearer token 필요).
+
+---
+
+## 개발자 참고 사항
+
+- **프라이버시는 스펙트럼입니다.** Ephemeral SPL token은 연결 가능성을 낮추지만 금액이나 시점을
+  숨기거나 네트워크 수준의 분석을 막지는 않습니다.
+- **handle은 정규화되지 않습니다.** 대소문자와 공백이 중요하므로 일관되게 표시하고 저장하세요.
+- **흐름을 맞추세요.** Stealth-handle 전송에는 `visibility: "private"`, `fromBalance: "base"`,
+  `toBalance: "base"`가 필요합니다(필드 생략 시에도 이 값이 기본값입니다).
+- **서명한 뒤 전송하세요.** Builder endpoint는 미서명 트랜잭션을 반환합니다.
+  `POST /v1/transaction/send`로 제출하고 반환된 `sendTo`를 따르세요.
+
+---
+
+## 다음 단계
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token — 개요"
+    icon="book"
+    href="/ko/pages/ephemeral-spl-token/overview"
+    iconType="duotone"
+  >
+    프라이빗 결제를 뒷받침하는 프리미티브.
+  </Card>
+  <Card
+    title="SDK 빠른 시작"
+    icon="rocket"
+    href="/ko/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    온체인 / SDK 통합 경로.
+  </Card>
+</CardGroup>
