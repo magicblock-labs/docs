@@ -1,0 +1,62 @@
+---
+title: "Sealed-Bid Auction"
+description: "Run a private first-price sealed-bid auction with hidden bids on a Private Ephemeral Rollup, SPL token escrow on both layers, and on-chain winner selection."
+---
+
+The Sealed-Bid Auction example sells a fixed SPL token lot to the highest of a set of hidden,
+fully collateralized bids. The seller's lot stays escrowed in a base-layer token account owned by the
+auction PDA, bidders place private bids on a Private Ephemeral Rollup (PER), and after the deadline
+the program scans the bid accounts on-chain, pays the seller, refunds the losers, and releases the
+lot to the winner on the base layer.
+
+<Warning>
+  This is an integration example, not a production auction house. It implements a single first-price
+  auction per lot with deliberately simple deadline and refund handling.
+</Warning>
+
+<CardGroup cols={2}>
+  <Card
+    title="View Repository"
+    icon="github"
+    href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/sealed-auction/anchor"
+    iconType="duotone"
+  >
+    Build, test, and run the Anchor program and client.
+  </Card>
+  <Card
+    title="On-chain Privacy"
+    icon="shield-check"
+    href="/pages/private-ephemeral-rollups-pers/introduction/onchain-privacy"
+    iconType="duotone"
+  >
+    Understand the PER privacy model behind the hidden bid state.
+  </Card>
+</CardGroup>
+
+## What the example demonstrates
+
+- **Hidden bid state on a PER:** each bid lives in a private, auction-sponsored PDA that only gains
+  PER access at creation, so amounts and bidders stay hidden until settlement.
+- **Two-layer SPL escrow:** the seller's lot is parked in a base-layer auction ATA while bid
+  collateral moves through a delegated auction-owned escrow on the ER.
+- **On-chain winner selection:** `end_auction` count-checks and scans exactly the accepted bid PDAs
+  on the ER — no off-chain matching or reveal phase.
+- **Cleanup-gated undelegation:** the auction PDA can only undelegate after every bid account is
+  settled and closed, and the base-layer `finalize` then transfers the lot to the winner.
+
+## Recommended next steps
+
+<CardGroup cols={2}>
+  <Card title="PER Quickstart" icon="rocket" href="/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart" iconType="duotone">
+    Set up a Private Ephemeral Rollup and its access control.
+  </Card>
+  <Card title="SPL Token Custody" icon="coins" href="/pages/ephemeral-spl-token/smart-contract-integration" iconType="duotone">
+    Custody and move SPL tokens from your own program on the ER.
+  </Card>
+  <Card title="Access Control" icon="key" href="/pages/private-ephemeral-rollups-pers/how-to-guide/access-control" iconType="duotone">
+    Grant and revoke PER permissions on program accounts.
+  </Card>
+  <Card title="Prediction Markets & Trading" icon="chart-line" href="/pages/solutions/prediction-markets" iconType="duotone">
+    Compose custody, privacy, and settlement into a full protocol.
+  </Card>
+</CardGroup>

@@ -1,0 +1,123 @@
+---
+title: "Ephemeral SPL Token Quickstart"
+description: "Delegate an SPL token account to an Ephemeral Rollup, transfer on the ER, and withdraw back to the base layer — with the ephemeral-rollups-sdk."
+---
+
+import Software from "/snippets/software.mdx";
+import SolanaResources from "/snippets/solana-resources.mdx";
+import ProductCards from "/snippets/product-cards.mdx";
+import QuickAccessSpl from "/snippets/quick-access-spl.mdx";
+import AIDevSkillCallout from "/snippets/ai-dev-skill-callout.mdx";
+
+import DelegateCode from "/snippets/spl-tokens-code/delegate.mdx";
+import TransferCode from "/snippets/spl-tokens-code/transfer.mdx";
+import UndelegateCode from "/snippets/spl-tokens-code/undelegate.mdx";
+import WithdrawCode from "/snippets/spl-tokens-code/withdraw.mdx";
+import ProgramCode from "/snippets/spl-tokens-code/program.mdx";
+
+---
+
+<AIDevSkillCallout />
+
+<QuickAccessSpl />
+
+<Note>
+  Snippets target `@magicblock-labs/ephemeral-rollups-sdk` **v0.14.3** with the legacy-vault path. The
+  idempotent-shuttle path targets v0.15.3 — keep the same path across `delegateSpl` / `undelegateIx` /
+  `withdrawSpl` within one lifecycle.
+</Note>
+
+---
+
+## Step-By-Step Guide
+
+Move SPL tokens through the full lifecycle against the Ephemeral SPL Token program
+`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2` — [delegate](/pages/ephemeral-rollups-ers/introduction/ephemeral-accounts), transact on the [ER](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup), then settle back to
+Solana:
+
+<Steps>
+  <Step title={<a href="#1-delegate">Delegate the token account</a>}>
+    Delegate an owner's balance to a validator on the base layer. The first delegation for a mint
+    creates the shared Global Vault.
+  </Step>
+  <Step title={<a href="#2-transfer">Transfer on the ER</a>}>
+    Move tokens between eATAs inside the rollup — public or private.
+  </Step>
+  <Step title={<a href="#3-undelegate">Undelegate & commit</a>}>
+    Undelegate on the ER and wait for the commit back to base.
+  </Step>
+  <Step title={<a href="#4-withdraw">Withdraw to base</a>}>
+    Move the balance out of the Global Vault to a base-layer token account.
+  </Step>
+</Steps>
+
+---
+
+## Ephemeral SPL Token Example
+
+<Software />
+
+Install the SDK:
+
+```bash
+yarn add @magicblock-labs/ephemeral-rollups-sdk@0.14.3
+```
+
+### Code Snippets
+
+<Tabs>
+  <Tab title="1. Delegate">
+    `delegateSpl` delegates an owner's balance to a validator. The first delegation for a mint creates
+    the shared Global Vault (`initVaultIfMissing: true`); later ones reuse it. Send on the **base
+    layer**, and fund the rent sponsor (`deriveRentPda()`) before delegating.
+
+    <DelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="2. Transfer">
+    `transferSpl` moves tokens between eATAs inside the rollup. Send on the **ephemeral** provider. Set
+    `visibility: "private"` for a private payment or `"public"` for a normal fast transfer.
+
+    <TransferCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="3. Undelegate">
+    Undelegate each owner on the ER (one per transaction), then wait for the commit back to base with
+    `GetCommitmentSignature` before withdrawing.
+
+    <UndelegateCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="4. Withdraw">
+    `withdrawSpl` moves the balance out of the Global Vault back to the owner's base-layer ATA.
+
+    <WithdrawCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+  <Tab title="ER-aware program">
+    To route the ER-side transfer through your own program instead of the SDK helper, add the
+    `#[ephemeral]` attribute — the instruction is a plain SPL Token CPI. See
+    [Smart Contract Integration](/pages/ephemeral-spl-token/smart-contract-integration) for custody
+    and PDA-signed transfers.
+
+    <ProgramCode />
+    [⬆️ Back to Top](#code-snippets)
+  </Tab>
+</Tabs>
+
+<Note>
+  **Run it locally:** `yarn` → `yarn build` → `yarn setup` (boots the local base + ER cluster; leave
+  running) → `yarn test:local` in a second terminal.
+</Note>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock Products
+
+<ProductCards />
+
+---

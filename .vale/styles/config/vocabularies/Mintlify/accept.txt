@@ -485,6 +485,7 @@ bitwise
 blockchain
 blockchains
 blockhashes
+collateralized
 counterparties
 counterparty
 cpis
@@ -495,6 +496,10 @@ deployer
 deserialization
 dexes
 ephemeral
+escrowed
+eATA
+eATAs
+custodied
 gacha
 gameplay
 geofencing

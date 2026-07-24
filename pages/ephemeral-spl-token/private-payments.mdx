@@ -1,0 +1,172 @@
+---
+title: "Private Payments with Ephemeral SPL Tokens"
+sidebarTitle: "Private Payments"
+description: "Use Ephemeral SPL Tokens for private deposits, transfers, and withdrawals — private visibility, stealth handles, and queued settlement over the hosted API."
+---
+
+import QuickAccessSpl from "/snippets/quick-access-spl.mdx";
+
+---
+
+<QuickAccessSpl />
+
+---
+
+## Overview
+
+**Private Payments** are the privacy use case built on top of [SPL tokens on
+ER](/pages/ephemeral-spl-token/overview). The same
+deposit / transfer / withdraw primitive runs with **private visibility**, so the amount, destination,
+and timing of a payment are shielded rather than broadcast publicly.
+
+<Note>
+  New to the primitive? Read the [Ephemeral SPL Tokens
+  overview](/pages/ephemeral-spl-token/overview) first — this guide
+  assumes the eATA / Global Vault / delegation model.
+</Note>
+
+The easiest way to build private payments is the hosted **Ephemeral SPL Token API**, which returns
+unsigned transactions you sign and submit.
+
+<CardGroup cols={2}>
+  <Card
+    title="API reference"
+    icon="server"
+    href="/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    Endpoints for deposit, transfer, withdraw, balances, stealth pools, and auth.
+  </Card>
+  <Card
+    title="Reference program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    The on-chain Ephemeral SPL Token program.
+  </Card>
+</CardGroup>
+
+---
+
+## Privacy model
+
+Private payments rely on:
+
+- **Private visibility** — transfers execute inside the Ephemeral Rollup with `visibility: "private"`,
+  so the transfer is not broadcast publicly.
+- **Stealth handles** — send to a human-readable name (e.g. `alice@magicblock.id`) instead of a raw
+  public key. The handle resolves to one or more destination keys via a **stealth pool**, breaking the
+  direct sender → recipient link on-chain.
+- **Queued settlement** — private transfers can settle through the program's transfer queue rather than
+  a direct, immediately-linkable movement.
+
+<Warning>
+  Privacy here reduces **linkability**, not total observability. Amounts and timing may still be
+  inferable at the network level. Threat-model your assumptions.
+</Warning>
+
+---
+
+## Authentication
+
+Private reads and stealth-pool operations require a bearer token. Obtain one with the challenge/login
+flow before calling protected endpoints:
+
+<Steps>
+  <Step title="Request a challenge">
+    `GET /v1/spl/challenge` returns a message for the user to sign.
+  </Step>
+  <Step title="Log in">
+    `POST /v1/spl/login` exchanges the signed challenge for a bearer token.
+  </Step>
+  <Step title="Call protected endpoints">
+    Send `Authorization: Bearer <token>` on `GET /v1/spl/private-balance` and
+    `POST /v1/spl/stealth-pool`.
+  </Step>
+</Steps>
+
+---
+
+## Deposits
+
+Move tokens into the mint's Global Vault and credit the depositor's ephemeral ATA.
+
+- `POST /v1/spl/deposit` — builds the deposit transaction. Set `private: true` to keep the deposited
+  balance private.
+
+The response is an unsigned transaction plus a `sendTo` field (`base` or `ephemeral`). Sign it and
+submit via [`POST /v1/transaction/send`](/pages/ephemeral-spl-token/api-reference/transaction-send)
+or your own RPC.
+
+---
+
+## Private transfers
+
+- `POST /v1/spl/transfer` with `visibility: "private"`.
+
+Two destination modes:
+
+| Destination | `to` value | Requirements |
+| --- | --- | --- |
+| Direct | recipient public key | `visibility: "private"` |
+| Stealth handle | an initialized handle string | `visibility: "private"`, `fromBalance: "base"`, `toBalance: "base"` |
+
+To use a stealth handle, initialize it first:
+
+- `POST /v1/spl/stealth-pool` — map a handle (≤255 UTF-8 bytes; **not** normalized, so
+  `Alice@…` ≠ `alice@…`) to 1–10 destination owner keys, optionally splitting payments across them.
+- `GET /v1/spl/stealth-pool?handle=…` — check whether a handle's pool exists.
+
+<Note>
+  Handles are stored as their exact UTF-8 bytes. `GET` returns only whether the pool exists — never the
+  destination keys.
+</Note>
+
+---
+
+## Withdrawals
+
+Move a balance back out of the Global Vault to a standard base-layer SPL token account.
+
+- `POST /v1/spl/withdraw` — builds the withdrawal transaction.
+
+Check balances any time:
+
+- `GET /v1/spl/balance` — public balance.
+- `GET /v1/spl/private-balance` — private balance (requires the bearer token).
+
+---
+
+## Developer notes
+
+- **Privacy is a spectrum.** Ephemeral SPL tokens reduce linkability; they do not hide amounts, timing,
+  or protect against network-level analysis.
+- **Handles aren't normalized.** Casing/whitespace matter — display and store handles consistently.
+- **Match the flow.** Stealth-handle transfers require `visibility: "private"`, `fromBalance: "base"`,
+  `toBalance: "base"` (these are also the omitted-field defaults).
+- **Sign then send.** Builder endpoints return unsigned transactions; submit them with
+  `POST /v1/transaction/send` and honor the returned `sendTo`.
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Tokens — Overview"
+    icon="book"
+    href="/pages/ephemeral-spl-token/overview"
+    iconType="duotone"
+  >
+    The primitive behind private payments.
+  </Card>
+  <Card
+    title="SDK Quickstart"
+    icon="rocket"
+    href="/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    The on-chain/SDK integration path.
+  </Card>
+</CardGroup>

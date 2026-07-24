@@ -1,0 +1,122 @@
+---
+title: "Ephemeral SPL Token 快速入门"
+description: "使用 ephemeral-rollups-sdk 将 SPL token account 委托给 Ephemeral Rollup，在 ER 上转账，并提取回 base layer。"
+---
+
+import Software from "/cn/snippets/software.mdx";
+import SolanaResources from "/cn/snippets/solana-resources.mdx";
+import ProductCards from "/cn/snippets/product-cards.mdx";
+import QuickAccessSpl from "/cn/snippets/quick-access-spl.mdx";
+import AIDevSkillCallout from "/cn/snippets/ai-dev-skill-callout.mdx";
+
+import DelegateCode from "/cn/snippets/spl-tokens-code/delegate.mdx";
+import TransferCode from "/cn/snippets/spl-tokens-code/transfer.mdx";
+import UndelegateCode from "/cn/snippets/spl-tokens-code/undelegate.mdx";
+import WithdrawCode from "/cn/snippets/spl-tokens-code/withdraw.mdx";
+import ProgramCode from "/cn/snippets/spl-tokens-code/program.mdx";
+
+---
+
+<AIDevSkillCallout />
+
+<QuickAccessSpl />
+
+<Note>
+  这些代码片段面向使用 legacy-vault 路径的 `@magicblock-labs/ephemeral-rollups-sdk`
+  **v0.14.3**。idempotent-shuttle 路径面向 v0.15.3；在同一个生命周期内，请为
+  `delegateSpl` / `undelegateIx` / `withdrawSpl` 使用同一路径。
+</Note>
+
+---
+
+## 分步指南
+
+通过 Ephemeral SPL Token 程序 `SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`
+完成 SPL token 的完整生命周期：[委托](/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-accounts)、
+在 [ER](/cn/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) 上交易，然后结算回 Solana：
+
+<Steps>
+  <Step title={<a href="#1-delegate">委托 token account</a>}>
+    在 base layer 上将所有者的余额委托给 validator。首次委托某个 mint 时会创建共享的
+    Global Vault。
+  </Step>
+  <Step title={<a href="#2-transfer">在 ER 上转账</a>}>
+    在 rollup 内的 eATA 之间转移 token，可以公开也可以私密。
+  </Step>
+  <Step title={<a href="#3-undelegate">取消委托并提交</a>}>
+    在 ER 上取消委托，并等待状态提交回 base layer。
+  </Step>
+  <Step title={<a href="#4-withdraw">提取到 base layer</a>}>
+    将余额从 Global Vault 转入 base-layer token account。
+  </Step>
+</Steps>
+
+---
+
+## Ephemeral SPL Token 示例
+
+<Software />
+
+安装 SDK：
+
+```bash
+yarn add @magicblock-labs/ephemeral-rollups-sdk@0.14.3
+```
+
+### 代码片段
+
+<Tabs>
+  <Tab title="1. 委托">
+    `delegateSpl` 将所有者的余额委托给 validator。首次委托某个 mint 时会创建共享的
+    Global Vault（`initVaultIfMissing: true`），后续委托则复用它。请在 **base layer**
+    上发送，并在委托前为 rent sponsor（`deriveRentPda()`）提供资金。
+
+    <DelegateCode />
+    [⬆️ 返回顶部](#code-snippets)
+  </Tab>
+  <Tab title="2. 转账">
+    `transferSpl` 在 rollup 内的 eATA 之间转移 token。请通过 **ephemeral** provider 发送。
+    私密支付应设置 `visibility: "private"`，普通快速转账则设置 `"public"`。
+
+    <TransferCode />
+    [⬆️ 返回顶部](#code-snippets)
+  </Tab>
+  <Tab title="3. 取消委托">
+    在 ER 上逐个取消每位所有者的委托（每笔交易一个），然后使用
+    `GetCommitmentSignature` 等待提交回 base layer，再执行提取。
+
+    <UndelegateCode />
+    [⬆️ 返回顶部](#code-snippets)
+  </Tab>
+  <Tab title="4. 提取">
+    `withdrawSpl` 将余额从 Global Vault 转回所有者的 base-layer ATA。
+
+    <WithdrawCode />
+    [⬆️ 返回顶部](#code-snippets)
+  </Tab>
+  <Tab title="支持 ER 的程序">
+    如果要通过自己的程序而不是 SDK helper 来处理 ER 端转账，请添加 `#[ephemeral]`
+    属性；该指令就是普通的 SPL Token CPI。有关托管与 PDA 签名转账，请参阅
+    [智能合约集成](/cn/pages/ephemeral-spl-token/smart-contract-integration)。
+
+    <ProgramCode />
+    [⬆️ 返回顶部](#code-snippets)
+  </Tab>
+</Tabs>
+
+<Note>
+  **本地运行：** `yarn` → `yarn build` → `yarn setup`（启动本地 base + ER 集群并保持运行）
+  → 在第二个终端中执行 `yarn test:local`。
+</Note>
+
+---
+
+<SolanaResources />
+
+---
+
+## MagicBlock 产品
+
+<ProductCards />
+
+---

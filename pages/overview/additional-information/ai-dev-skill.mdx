@@ -1,6 +1,6 @@
 ---
 title: AI Dev Skill
-description: MagicBlock Ephemeral Rollups development skill for AI coding agents, with MagicBlock-specific patterns for delegation, Magic Actions, cranks, VRF, lamports top-up, commit sponsorship, private payments with swaps, and dual-connection architecture.
+description: MagicBlock Ephemeral Rollups development skill for AI coding agents, with MagicBlock-specific patterns for delegation, Magic Actions, cranks, VRF, lamports top-up, commit sponsorship, the Ephemeral SPL Token lifecycle, private payments with swaps, and dual-connection architecture.
 ---
 
 <CardGroup cols={1}>
@@ -35,6 +35,7 @@ It is designed for teams working on:
 - Magic Actions — base-layer instructions chained atomically to an ER commit
 - Topping up a delegated account's lamports via `lamportsDelegatedTransferIx`
 - Commit sponsorship and lifting the default 10-commit cap with `magic_fee_vault`
+- Ephemeral SPL Token lifecycle — delegate, transfer, undelegate, and withdraw eATAs across the eATA + Global Vault model, via the SDK or the direct [Ephemeral SPL Token API](/pages/ephemeral-spl-token/api-reference/introduction)
 - Private payments — deposits, transfers, withdrawals, and swaps via the Payments API, including the challenge/login bearer-token flow for private reads
 - Gaming and real-time app development on Solana
 - Anchor and TypeScript-based integrations
@@ -133,6 +134,7 @@ The skill goes beyond a simple prompt template. Its main entrypoint and supporti
 - Magic Actions: scheduling base-layer instructions inside an ER transaction via `MagicIntentBundleBuilder.add_post_commit_actions(...)` so they execute atomically once the commit is sealed back
 - Topping up delegated accounts with `lamportsDelegatedTransferIx` (single-use lamports PDA, submitted on base layer, credited on the ER)
 - Lifting the default 10-commit sponsorship cap by attaching a `magic_fee_vault` PDA and delegated fee payer to the intent bundle
+- Ephemeral SPL Token integration — the delegate → transfer → undelegate → withdraw lifecycle, the two integration models (SDK helpers vs. the lower-level `ephemeral-spl-api` program surface), and lifecycle gotchas like `initVaultIfMissing`, one undelegate per transaction, and waiting for commits before withdrawal
 - Private Ephemeral Rollups (PER) patterns — delegating the permission account alongside the permissioned account so member updates execute on the ER
 - Private Payments API workflows including the challenge → login → bearer-token flow for reading private balances and the public/private swap modes
 - VRF and crank setup for real-time apps and games

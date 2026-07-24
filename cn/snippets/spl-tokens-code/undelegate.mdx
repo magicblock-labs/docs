@@ -1,0 +1,12 @@
+```typescript
+const sgn = await providerEphemeralRollup.sendAndConfirm(
+  new anchor.web3.Transaction().add(undelegateIx(owner.publicKey, mint.publicKey)),
+  [owner],
+  { commitment: "confirmed", skipPreflight: true },
+);
+
+// Wait for the commit back to base before withdrawing, or the withdraw
+// races the commit and fails with InvalidAccountOwner.
+const commit = await GetCommitmentSignature(sgn, providerEphemeralRollup.connection);
+await connection.confirmTransaction(commit, "confirmed");
+```

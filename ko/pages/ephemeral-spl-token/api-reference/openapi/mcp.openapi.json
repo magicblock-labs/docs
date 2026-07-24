@@ -1,0 +1,46 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Stateless Streamable HTTP MCP endpoint for the Private Payments API."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "paths": {
+    "/mcp": {
+      "post": {
+        "summary": "MCP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "JSON-RPC request body for the MCP endpoint."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "MCP JSON-RPC response"
+          },
+          "202": {
+            "description": "Notification accepted; no response body is returned."
+          },
+          "400": {
+            "description": "Invalid JSON or invalid JSON-RPC request"
+          },
+          "415": {
+            "description": "Content-Type must be application/json"
+          }
+        }
+      }
+    }
+  }
+}

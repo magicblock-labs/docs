@@ -1,0 +1,129 @@
+---
+title: "Ephemeral SPL Tokens"
+description: "Move SPL tokens at Ephemeral Rollup speed with the Ephemeral SPL Token program — learn the eATA, Global Vault, delegation, custody, and private-payment models."
+---
+
+---
+
+## Overview
+
+**Ephemeral SPL Tokens** let you hold and move SPL tokens inside a [MagicBlock Ephemeral Rollup (ER)](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup)
+with the same low latency as any other delegated state, then settle back to Solana's base layer. They
+are the token primitive behind MagicBlock's **private payments** — but the primitive itself is general:
+a transfer can be **public or private**.
+
+Everything is powered by the on-chain **Ephemeral SPL Token program**
+(`SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2`), which implements
+[MIMD 0013](https://github.com/magicblock-labs/magicblock-validator/discussions/550).
+
+<CardGroup cols={2}>
+  <Card
+    title="Ephemeral SPL Token program"
+    icon="github"
+    href="https://github.com/magicblock-labs/ephemeral-spl-token"
+    iconType="duotone"
+  >
+    On-chain program + hosted API. `SPLxh1LV…`
+  </Card>
+  <Card
+    title="Quickstart"
+    icon="rocket"
+    href="/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    Delegate a token account, transfer on the ER, withdraw — end to end.
+  </Card>
+</CardGroup>
+
+<Card
+  title="Building a prediction market or trading protocol?"
+  icon="chart-line"
+  href="/pages/solutions/prediction-markets"
+  iconType="duotone"
+>
+  See how token custody fits with session keys, price oracles, cranks, and settlement.
+</Card>
+
+---
+
+## The model
+
+A normal SPL token account lives on Solana's base layer. To move tokens at ER speed, the Ephemeral SPL
+Token program introduces two account types.
+
+### Ephemeral ATA (eATA)
+
+An **ephemeral ATA** is a program-owned PDA derived from `[owner, mint]` that holds a single `u64`
+balance. It is **not** a real SPL token account — it is a lightweight balance record that can be
+delegated to the ER and mutated there at high speed.
+
+### Global Vault
+
+The real tokens are custodied in a per-mint **Global Vault** — a PDA derived from `[mint]` that owns
+the SPL token account backing **every** eATA of that mint. Depositing moves real tokens into the vault
+and credits your eATA's `u64`; withdrawing does the reverse.
+
+<Note>
+  An eATA tracks a balance; the Global Vault holds the actual tokens. One vault backs all eATAs for a
+  given mint.
+</Note>
+
+---
+
+## Delegation lifecycle
+
+eATAs follow the standard Ephemeral Rollup lifecycle:
+
+<Steps>
+  <Step title="Deposit & delegate">
+    Real tokens move into the mint's Global Vault, your eATA is credited, and the eATA is delegated to
+    a MagicBlock validator so it can be mutated inside the ER.
+  </Step>
+  <Step title="Transact on the ER">
+    Transfer between eATAs inside the rollup at low latency. Transfers can be **public** or
+    **private** (`visibility`).
+  </Step>
+  <Step title="Undelegate & commit">
+    The eATA is committed and undelegated back to the base layer.
+  </Step>
+  <Step title="Withdraw">
+    Tokens move out of the Global Vault back to a standard base-layer SPL token account.
+  </Step>
+</Steps>
+
+---
+
+## Public vs. private
+
+The primitive supports both:
+
+- **Public** — a normal fast transfer between eATAs on the ER.
+- **Private (Private Payments)** — the destination and settlement are shielded: private `visibility`,
+  encrypted/queued settlement, and **stealth handles** (a human-readable name such as
+  `alice@magicblock.id` that resolves to one or more destination keys). This is the use case behind
+  the [Private Payments guide](/pages/ephemeral-spl-token/private-payments).
+
+---
+
+## Two ways to integrate
+
+<CardGroup cols={2}>
+  <Card
+    title="On-chain / SDK"
+    icon="code"
+    href="/pages/ephemeral-spl-token/quickstart"
+    iconType="duotone"
+  >
+    Integrate directly in your own Anchor program and client with
+    `@magicblock-labs/ephemeral-rollups-sdk` — delegate a token account, transfer on the ER, withdraw.
+  </Card>
+  <Card
+    title="Hosted REST / MCP API"
+    icon="server"
+    href="/pages/ephemeral-spl-token/api-reference/introduction"
+    iconType="duotone"
+  >
+    Let the hosted API build unsigned transactions for deposit, transfer, withdraw, balances, swap, and
+    private payments.
+  </Card>
+</CardGroup>

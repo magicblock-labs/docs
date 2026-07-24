@@ -1,0 +1,11 @@
+```rust
+// The eATA is owned by your custody PDA (e.g. a Pool), derived under the
+// Ephemeral SPL Token program from [owner, mint].
+let (eata, _bump) = Pubkey::find_program_address(
+    &[owner.as_ref(), mint.as_ref()],
+    &EPHEMERAL_SPL_TOKEN_PROGRAM_ID,
+);
+
+// At initialize, create the eATA (InitializeEphemeralAta) and the per-mint
+// global vault that backs every eATA (InitializeGlobalVault), then fund it.
+```

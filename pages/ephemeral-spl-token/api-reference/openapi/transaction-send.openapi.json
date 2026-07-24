@@ -1,0 +1,131 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Private Payments API",
+    "version": "0.1.0",
+    "description": "Submit a signed transaction produced by the build endpoints to the correct base-layer or ephemeral RPC."
+  },
+  "servers": [
+    {
+      "url": "https://payments.magicblock.app",
+      "description": "Mainnet - Private Payments API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token obtained from the `/v1/spl/login` flow."
+      }
+    }
+  },
+  "paths": {
+    "/v1/transaction/send": {
+      "post": {
+        "summary": "Send Transaction",
+        "description": "Submit a signed, serialized transaction. Use the `sendTo` value returned by a build endpoint (deposit / transfer / withdraw / stealth-pool) to route the transaction to the base layer or the ephemeral RPC. Accepts an optional `Authorization: Bearer <token>` header for ephemeral submissions that require it.",
+        "security": [{ "bearerAuth": [] }, {}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transactionBase64": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The signed, serialized transaction encoded as base64."
+                  },
+                  "sendTo": {
+                    "type": "string",
+                    "enum": ["base", "ephemeral"],
+                    "description": "Where to submit. Use the `sendTo` value returned by the build endpoint."
+                  },
+                  "sendRpcEndpoint": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Optional. Explicit ephemeral RPC endpoint. Only valid when `sendTo` is `ephemeral`."
+                  },
+                  "cluster": {
+                    "anyOf": [
+                      { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
+                      { "type": "string" }
+                    ],
+                    "example": "mainnet",
+                    "description": "Optional. Cluster selector or custom http(s) RPC URL."
+                  },
+                  "confirm": {
+                    "type": "boolean",
+                    "description": "Optional. Defaults to `false`. When `true`, the API confirms the transaction and requires `recentBlockhash` and `lastValidBlockHeight`."
+                  },
+                  "recentBlockhash": {
+                    "type": "string",
+                    "description": "Required when `confirm` is `true`."
+                  },
+                  "lastValidBlockHeight": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Required when `confirm` is `true`."
+                  },
+                  "skipPreflight": {
+                    "type": "boolean",
+                    "description": "Optional. Skip preflight checks on submission."
+                  },
+                  "maxRetries": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Optional. Maximum number of send retries."
+                  }
+                },
+                "required": ["transactionBase64", "sendTo"],
+                "if": {
+                  "properties": { "confirm": { "const": true } },
+                  "required": ["confirm"]
+                },
+                "then": {
+                  "required": ["recentBlockhash", "lastValidBlockHeight"]
+                },
+                "example": {
+                  "transactionBase64": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                  "sendTo": "base",
+                  "confirm": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "signature": { "type": "string" },
+                    "sendTo": { "type": "string", "enum": ["base", "ephemeral"] },
+                    "confirmed": { "type": "boolean" },
+                    "confirmationRpcEndpoint": { "type": "string", "format": "uri" },
+                    "confirmationRequiresAuthToken": { "type": "boolean" }
+                  },
+                  "required": ["signature", "sendTo", "confirmed", "confirmationRpcEndpoint", "confirmationRequiresAuthToken"]
+                },
+                "example": {
+                  "signature": "5x8...abc",
+                  "sendTo": "base",
+                  "confirmed": true,
+                  "confirmationRpcEndpoint": "https://api.mainnet-beta.solana.com",
+                  "confirmationRequiresAuthToken": false
+                }
+              }
+            }
+          },
+          "400": { "description": "Send error" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    }
+  }
+}
