@@ -6,7 +6,7 @@ description: "How Solana VRF randomness proofs are verified"
 Solana VRF proofs are cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
 
 ```rust
-#[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
+#[account(address = ephemeral_rollups_sdk::vrf::consts::VRF_PROGRAM_IDENTITY)]
 pub vrf_program_identity: Signer<'info>,
 ```
 

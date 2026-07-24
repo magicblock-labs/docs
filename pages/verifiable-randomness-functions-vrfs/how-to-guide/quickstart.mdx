@@ -90,18 +90,18 @@ Any Solana program can request and consume verifiable randomness onchain within 
   </Tab>
   <Tab title="2. Request & Consume Randomness">
 
-    1. Add `ephemeral_vrf_sdk` with Anchor features to your program
+    1. Add `ephemeral-rollups-sdk` with the `anchor` and `vrf` features to your program
 
     ```bash
-    cargo add ephemeral_vrf_sdk --features anchor
+    cargo add ephemeral-rollups-sdk --features anchor,vrf
     ```
 
-    Import `vrf` , `create_request_randomness_ix`, `RequestRandomnessParams`, and `SerializableAccountMeta`:
+    Import the `vrf` and `vrf_callback` macros, `create_request_scoped_randomness_ix`, `RequestRandomnessParams`, and `SerializableAccountMeta`:
 
     ```rust
-    use ephemeral_vrf_sdk::anchor::vrf;
-    use ephemeral_vrf_sdk::instructions::{create_request_randomness_ix, RequestRandomnessParams};
-    use ephemeral_vrf_sdk::types::SerializableAccountMeta;
+    use ephemeral_rollups_sdk::anchor::{vrf, vrf_callback};
+    use ephemeral_rollups_sdk::vrf::instructions::{create_request_scoped_randomness_ix, RequestRandomnessParams};
+    use ephemeral_rollups_sdk::vrf::types::SerializableAccountMeta;
     ```
 
     2. Add instructions `roll_dice` to request randomness and `callback_roll_dice` to consume randomness, along with its context:
@@ -109,7 +109,7 @@ Any Solana program can request and consume verifiable randomness onchain within 
     <RequestConsumeRandomnessCode />
 
     <Note>
-      **VRF SDK constants** (`ephemeral_vrf_sdk::consts`) — reference these instead of hardcoding addresses, both in your program and in client/test code:
+      **VRF SDK constants** (`ephemeral_rollups_sdk::vrf::consts`) — reference these instead of hardcoding addresses, both in your program and in client/test code:
 
       | Constant | Purpose | Address |
       | --- | --- | --- |
@@ -145,7 +145,7 @@ Any Solana program can request and consume verifiable randomness onchain within 
     anchor test --skip-build --skip-deploy --skip-local-validator
     ```
     <Note>
-      **VRF SDK constants** (`ephemeral_vrf_sdk::consts`) — reference these instead of hardcoding addresses, in both your program and client/test code:
+      **VRF SDK constants** (`ephemeral_rollups_sdk::vrf::consts`) — reference these instead of hardcoding addresses, in both your program and client/test code:
 
       | Constant | Purpose | Address |
       | --- | --- | --- |

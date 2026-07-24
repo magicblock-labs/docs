@@ -172,10 +172,13 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
   </Tab>
 
   <Tab title="3. Deploy">
-    Now you’re program is upgraded and ready! Build and deploy to the desired
-    cluster:
+    Now you’re program is upgraded and ready! Fund your deployer wallet, then build and deploy to the
+    desired cluster:
 
     ```bash
+    # Devnet: airdrop SOL to your configured keypair before deploying
+    solana airdrop 2 --url https://api.devnet.solana.com
+
     anchor build && anchor deploy
     ```
 
