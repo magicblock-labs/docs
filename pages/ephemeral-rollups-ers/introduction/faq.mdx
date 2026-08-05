@@ -13,8 +13,14 @@ description: "Execute Transactions, Synchronize States, all in real-time."
     <Accordion title="Can delegated accounts compose with all programs on Solana?">
         **Yes.** Delegated accounts can benefit from all Solana programs and accounts. Every account on Solana is readable on ER, while only delegated account can be changed on ER within an atomic transaction. 
     </Accordion>
+    <Accordion title="Are compute unit limits and account size caps the same on ER as on Solana?">
+        **Mostly yes.** The ER runs the SVM, so the default **200k CU per instruction**, the **1.4M CU per transaction** cap (via `SetComputeUnitLimit`), and the **10 MiB max account size** all match Solana. The exception is transaction size: the ER accepts serialized transactions up to **64 KB**, versus 1,232 bytes on the base layer. See [Runtime Limits](/pages/ephemeral-rollups-ers/introduction/runtime-limits).
+    </Accordion>
+    <Accordion title="Is transaction ordering on ER cryptographically guaranteed?">
+        The ER validator executes transactions **FIFO**, and block hashes commit to the *executed* order, which anyone can observe and verify. However, there is currently no cryptographic commitment to *arrival* order, and fraud proofs cover state transitions rather than ordering. See [Ordering & Security Guarantees](/pages/ephemeral-rollups-ers/introduction/ordering-and-security).
+    </Accordion>
     <Accordion title="Should developers use slot time as a reliable timing mechanism?">
-        **No.** As of 2025-11-20, Solana uses a **400 ms slot time**, while MagicBlock’s Execution Runtime (ER) operates with a **50 ms slot time**. Developers may be tempted to rely on slot time as a fixed-duration measure; however, **slot times are not guaranteed and may change over time**. Code or logic that depends on a specific slot duration should therefore be written with caution.
+        **No.** As of 2026-08-05, Solana uses a **400 ms slot time**, while MagicBlock’s Execution Runtime (ER) operates with a **10 ms slot time**. Developers may be tempted to rely on slot time as a fixed-duration measure; however, **slot times are not guaranteed and may change over time**. Code or logic that depends on a specific slot duration should therefore be written with caution.
     </Accordion>
 
 </AccordionGroup>

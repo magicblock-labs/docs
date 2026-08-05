@@ -1,0 +1,44 @@
+---
+title: "Runtime Limits"
+description: "Compute, transaction size, and account size limits on the Ephemeral Rollup compared to Solana"
+---
+
+The Ephemeral Rollup (ER) runs the **Solana Virtual Machine (SVM)**, so programs execute under the same runtime rules as on the base layer. The key difference is the transaction size limit, which the ER raises significantly.
+
+| Limit | Solana Base Layer | Ephemeral Rollup |
+| :--- | :--- | :--- |
+| Compute units per instruction (default) | 200,000 CU | 200,000 CU |
+| Compute units per transaction (max, via `SetComputeUnitLimit`) | 1,400,000 CU | 1,400,000 CU |
+| Serialized transaction size (max) | 1,232 bytes | **64 KB** |
+| Account size (max) | 10 MiB | 10 MiB |
+| Slot time | ~400 ms | ~10 ms |
+
+<Note>
+  Slot times are not guaranteed and may change over time. Avoid writing logic
+  that depends on a specific slot duration — see the
+  [FAQ](/pages/ephemeral-rollups-ers/introduction/faq).
+</Note>
+
+## Requesting more compute
+
+As on Solana, the default compute budget is 200,000 CU per instruction. Request a higher limit (up to 1.4M CU per transaction) by prepending a `SetComputeUnitLimit` instruction:
+
+```typescript
+import { ComputeBudgetProgram, Transaction } from "@solana/web3.js";
+
+const tx = new Transaction().add(
+  ComputeBudgetProgram.setComputeUnitLimit({ units: 1_400_000 }),
+  yourProgramInstruction
+);
+```
+
+## Larger transactions
+
+The ER accepts serialized transactions up to **64 KB**, compared to the 1,232-byte packet limit on the base layer. This removes the need for address lookup tables or transaction splitting in most cases, and allows instructions with many accounts or large instruction data to execute in a single transaction.
+
+<Warning>
+  The 64 KB limit only applies to transactions executed on the ER (i.e. all
+  writable accounts are delegated). Transactions routed to the base layer —
+  including delegation and undelegation transactions — remain subject to the
+  1,232-byte Solana limit.
+</Warning>

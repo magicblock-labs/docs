@@ -1,0 +1,40 @@
+---
+title: "Ordering & Security Guarantees"
+description: "How transactions are ordered on the Ephemeral Rollup, what is verifiable today, and what fraud proofs cover"
+---
+
+This page explains how the Ephemeral Rollup (ER) orders transactions, which parts of that behavior are cryptographically verifiable today, and which parts are operational behavior of the validator. Read the [fraud proof whitepaper](/public/Ephemeral_Rollups_Fraud_Proof.pdf) for the full protocol design.
+
+## Transaction ordering
+
+The ER validator executes transactions on a **first-in, first-out (FIFO)** basis: transactions are processed in the order they arrive at the validator. There is no fee-based priority auction on the ER — transactions are zero-fee and are not reordered by tip.
+
+## What is verifiable today
+
+- **Executed order is committed.** The ER produces blocks, and each block hash is unique to the set and order of transactions it contains. Anyone can observe account states, transactions, and blocks on the ER and reconstruct exactly what was executed, in what order.
+- **State commits are challengeable.** The validator periodically commits account state diffs to the base layer optimistically. Anyone with stake can submit a challenge with a fraud proof against an invalid state transition. While a challenge is open, the ER validator halts until the challenge is resolved.
+
+## What is operational behavior (not yet cryptographically enforced)
+
+- **Arrival order is not committed.** Block hashes bind the *executed* order, but there is currently no signed commitment (e.g. per-transaction ingress receipts) to the order in which transactions *arrived* at the validator. FIFO is therefore how the validator operates, not a property an external observer can verify against a commitment.
+- **Ordering is not covered by fraud proofs.** Fraud proofs cover state transitions (account diffs). A challenger can prove *what* order the validator executed, but cannot currently prove that this order violated arrival order.
+
+Every transaction includes a recent blockhash (distinct from the block hash of the block it executes in), which could serve as the basis for future accountability mechanisms — for example, defining slashable behavior if a validator withholds or delays a transaction beyond a set number of slots. **No such mechanism is in place today.**
+
+<Note>
+  If your use case requires verifiable ordering guarantees (e.g. institutional
+  audit trails), reach out via the [builders
+  community](https://build.magicblock.app/builders?utm_source=docs.magicblock.app)
+  — we are actively researching ingress commitments and ordering
+  accountability.
+</Note>
+
+## Summary
+
+| Property | Status |
+| :--- | :--- |
+| Executed transaction order | Committed via block hashes, publicly observable |
+| State transitions | Committed to base layer, challengeable via fraud proofs |
+| Validator halts during open challenge | Enforced by protocol |
+| Arrival-order (FIFO) compliance | Operational behavior, not cryptographically enforced |
+| Ordering violations slashable | Not yet — under research |

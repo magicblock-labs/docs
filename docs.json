@@ -509,8 +509,8 @@
         },
         {
           "anchor": "Community",
-          "href": "https://t.me/+78KHQkUsy0ViMzQ6",
-          "icon": "telegram"
+          "href": "https://build.magicblock.app/builders?utm_source=docs.magicblock.app",
+          "icon": "users"
         },
         {
           "anchor": "Hackathons & Events",
@@ -587,7 +587,9 @@
                       "pages/ephemeral-rollups-ers/introduction/why",
                       "pages/ephemeral-rollups-ers/introduction/ephemeral-rollup",
                       "pages/ephemeral-rollups-ers/introduction/ephemeral-accounts",
-                      "pages/ephemeral-rollups-ers/introduction/magic-router"
+                      "pages/ephemeral-rollups-ers/introduction/magic-router",
+                      "pages/ephemeral-rollups-ers/introduction/runtime-limits",
+                      "pages/ephemeral-rollups-ers/introduction/ordering-and-security"
                     ]
                   },
                   {
