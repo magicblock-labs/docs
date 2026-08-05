@@ -125,6 +125,49 @@ To use a stealth handle, initialize it first:
 
 ---
 
+## Fees and gasless transfers
+
+Two independent choices determine what a private transfer costs: the **privacy fee** (always applies)
+and **how gas is paid** (self-paid vs. gasless).
+
+Every private base → base transfer pays a **0.1% (10 bps) privacy fee**, charged in the token being
+transferred — not in SOL. On top of that, gas can be paid two ways:
+
+|  | Self-paid | Gasless (`gasless: true`) |
+| --- | --- | --- |
+| SOL transaction fee | sender pays (needs SOL) | sponsor pays (sender needs no SOL) |
+| Relay fee | none | flat 0.2 USDC/USDT to the sponsor |
+| 0.1% privacy fee | yes, in tokens | yes, in tokens |
+| Minimum amount | none | 0.5 USDC/USDT |
+| Supported mints | any | mainnet USDC/USDT, devnet USDC |
+
+With `gasless: true`, the configured sponsor becomes the transaction fee payer and co-signs, and the
+API prepends a token-transfer instruction that reimburses the sponsor with a flat **0.2 USDC/USDT
+relay fee** from the sender's balance. Because the relay fee is flat, gasless transfers require a
+minimum of **0.5 USDC/USDT** — below that the fee would swallow the transfer.
+
+A first private transfer may also include a one-time **~0.00204 SOL** of rent to set up the ephemeral
+token account. All token-denominated fees are reported in the transfer response as `fees.tokens`, and
+SOL-denominated costs as `fees.lamports`.
+
+<Note>
+  The 0.5 minimum gates only the gasless option — it is **not** a privacy limit. For smaller amounts,
+  keep `visibility: "private"` and omit `gasless`: the transfer still routes privately, and the sender
+  pays their own SOL fees plus the 0.1% privacy fee.
+</Note>
+
+<Warning>
+  Below the 0.5 minimum, a `gasless: true` request fails with a `400 INVALID_GASLESS_TRANSFER_AMOUNT`
+  error — the API never silently downgrades a private transfer to public. If your client retries a
+  failed gasless request, make sure it retries with `visibility: "private"` intact, or small transfers
+  will leak publicly.
+</Warning>
+
+`gasless: true` is ignored when `from` is an off-curve PDA owner (gasless requires a wallet sender);
+the transfer still executes privately with the sender as fee payer.
+
+---
+
 ## Withdrawals
 
 Move a balance back out of the Global Vault to a standard base-layer SPL token account.

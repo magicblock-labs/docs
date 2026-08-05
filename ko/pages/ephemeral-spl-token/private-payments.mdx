@@ -124,6 +124,41 @@ stealth handle을 사용하려면 먼저 초기화하세요:
 
 ---
 
+## 수수료와 gasless 전송
+
+프라이빗 전송의 비용은 서로 독립적인 두 가지 요소로 결정됩니다. **프라이버시 수수료**(항상 부과)와 **gas 지불 방식**(직접 지불 vs. gasless)입니다.
+
+모든 프라이빗 base → base 전송에는 **0.1%(10 bps)의 프라이버시 수수료**가 부과되며, SOL이 아니라 전송되는 token으로 청구됩니다. 그 위에서 gas는 두 가지 방식으로 지불할 수 있습니다:
+
+|  | 직접 지불 | Gasless(`gasless: true`) |
+| --- | --- | --- |
+| SOL 트랜잭션 수수료 | 발신자가 지불(SOL 필요) | sponsor가 지불(발신자는 SOL 불필요) |
+| Relay 수수료 | 없음 | sponsor에게 고정 0.2 USDC/USDT |
+| 0.1% 프라이버시 수수료 | 부과, token으로 청구 | 부과, token으로 청구 |
+| 최소 금액 | 없음 | 0.5 USDC/USDT |
+| 지원 mint | 모든 mint | mainnet USDC/USDT, devnet USDC |
+
+`gasless: true`인 경우 설정된 sponsor가 트랜잭션의 fee payer가 되어 공동 서명하고, API는 발신자 잔액에서 sponsor에게 고정 **0.2 USDC/USDT relay 수수료**를 지불하는 token 전송 instruction을 트랜잭션 앞에 추가합니다. relay 수수료가 고정액이기 때문에 gasless 전송에는 **0.5 USDC/USDT**의 최소 금액이 적용됩니다 — 그 미만에서는 수수료가 전송 금액을 잠식하기 때문입니다.
+
+첫 프라이빗 전송에는 ephemeral token account 생성을 위한 일회성 **약 0.00204 SOL**의 rent가 포함될 수 있습니다. token으로 부과되는 모든 수수료는 전송 응답의 `fees.tokens`에, SOL 비용은 `fees.lamports`에 반환됩니다.
+
+<Note>
+  0.5 최소 금액은 gasless 옵션에만 적용되며, 프라이버시 제한이 **아닙니다**. 더 작은 금액은
+  `visibility: "private"`를 유지한 채 `gasless`를 생략하면 됩니다. 전송은 여전히 프라이빗하게
+  라우팅되며, 발신자가 자신의 SOL 수수료와 0.1% 프라이버시 수수료를 지불합니다.
+</Note>
+
+<Warning>
+  0.5 최소 금액 미만에서 `gasless: true` 요청은 `400 INVALID_GASLESS_TRANSFER_AMOUNT` 오류로
+  실패합니다 — API는 프라이빗 전송을 조용히 public으로 강등하지 않습니다. 클라이언트가 실패한
+  gasless 요청을 재시도한다면, 반드시 `visibility: "private"`를 유지한 채 재시도하도록 하세요.
+  그렇지 않으면 소액 전송이 공개적으로 노출됩니다.
+</Warning>
+
+`from`이 off-curve PDA owner인 경우 `gasless: true`는 무시됩니다(gasless는 지갑 발신자가 필요합니다). 이 경우에도 전송은 프라이빗하게 실행되며 발신자가 fee payer가 됩니다.
+
+---
+
 ## 출금
 
 잔액을 Global Vault에서 표준 base-layer SPL token account로 되돌립니다.
