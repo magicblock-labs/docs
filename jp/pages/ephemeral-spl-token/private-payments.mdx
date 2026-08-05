@@ -128,9 +128,9 @@ stealth handle を使用するには、最初に初期化します：
 
 ## 手数料と gasless 送金
 
-プライベート送金のコストは、互いに独立した 2 つの要素で決まります。**プライバシー手数料**（常に発生）と **gas の支払い方法**（自己負担 vs. gasless）です。
+`visibility` と `gasless` は互いに独立したリクエストフィールドです。`visibility` は送金のルーティング方法を、`gasless` は gas の支払い者を決めます。プライベート送金のコストは、常に発生する**プライバシー手数料**と、選択した **gas の支払い方法**の合計です。
 
-すべてのプライベート base → base 送金には **0.1%（10 bps）のプライバシー手数料**がかかり、送金対象の token で徴収されます — SOL ではありません。その上で、gas の支払い方法は 2 通りあります:
+すべてのプライベート base → base 送金には **0.1%（10 bps）のプライバシー手数料**がかかり、送金対象の token で徴収されます — SOL ではありません。gas の支払い方法は 2 通りあります:
 
 |  | 自己負担 | Gasless（`gasless: true`） |
 | --- | --- | --- |
@@ -140,25 +140,19 @@ stealth handle を使用するには、最初に初期化します：
 | 最低金額 | なし | 0.5 USDC/USDT |
 | 対応 mint | 任意 | mainnet USDC/USDT、devnet USDC |
 
-`gasless: true` の場合、設定済みの sponsor がトランザクションの fee payer となって共同署名し、API は送信者の残高から sponsor に固定 **0.2 USDC/USDT の relay 手数料**を支払う token 送金 instruction をトランザクションの先頭に追加します。relay 手数料は固定額のため、gasless 送金には **0.5 USDC/USDT** の最低金額が設定されています — それ未満では手数料が送金額を食いつぶしてしまうためです。
+`gasless: true` の場合、設定済みの sponsor がトランザクションの fee payer となって共同署名し、API は送信者の残高から sponsor に固定 **0.2 USDC/USDT の relay 手数料**を支払う token 送金 instruction をトランザクションの先頭に追加します。relay 手数料は固定額のため、gasless 送金には **0.5 USDC/USDT** の最低金額が設定されています。この最低金額は gasless モードにのみ適用され、プライベート送金全般には適用されません。それ未満の金額も、`gasless` を省略すれば `visibility: "private"` のまま送金できます。
 
 初回のプライベート送金では、ephemeral token account の作成に一度だけ **約 0.00204 SOL** の rent がかかる場合があります。token 建ての手数料はすべて送金レスポンスの `fees.tokens` に、SOL 建てのコストは `fees.lamports` に返されます。
 
 <Note>
-  0.5 の最低金額が制限するのは gasless オプションだけで、プライバシーの制限では**ありません**。
-  それより小さい金額では `visibility: "private"` を維持したまま `gasless` を省略してください。
-  送金は引き続きプライベートにルーティングされ、送信者は自分の SOL 手数料と 0.1% の
-  プライバシー手数料を支払います。
+  最低金額未満、または未対応の mint による `gasless: true` リクエストは `400`
+  エラー（`INVALID_GASLESS_TRANSFER_AMOUNT` / `INVALID_GASLESS_TRANSFER_MINT`）で拒否されます。
+  API がリクエストの `visibility` を変更することはありません。送金が public になるのは
+  リクエストがそう指定した場合だけです。gasless のエラー処理でリクエストを再構築する
+  クライアントは、プライバシーを意図する場合 `visibility: "private"` を維持してください。
 </Note>
 
-<Warning>
-  0.5 の最低金額未満では、`gasless: true` のリクエストは `400 INVALID_GASLESS_TRANSFER_AMOUNT`
-  エラーで失敗します — API がプライベート送金を黙って public に降格することはありません。
-  クライアントが失敗した gasless リクエストをリトライする場合は、`visibility: "private"` を
-  維持したままリトライするようにしてください。そうしないと少額送金が公開されてしまいます。
-</Warning>
-
-`from` が off-curve の PDA owner の場合、`gasless: true` は無視されます（gasless にはウォレット送信者が必要です）。その場合も送金はプライベートに実行され、送信者が fee payer になります。
+`from` が off-curve の PDA owner の場合、`gasless: true` は無視されます（gasless にはウォレット送信者が必要です）。その場合もリクエストで指定された visibility のまま送金が実行され、送信者が fee payer になります。
 
 ---
 

@@ -121,9 +121,9 @@ challenge/login 流程获取 token：
 
 ## 费用与 gasless 转账
 
-私密转账的成本由两个相互独立的因素决定：**隐私费用**（始终收取）和 **gas 的支付方式**（自付 vs. gasless）。
+`visibility` 和 `gasless` 是两个相互独立的请求字段：`visibility` 决定转账如何路由，`gasless` 决定由谁支付 gas。私密转账的成本由始终收取的**隐私费用**加上所选的 **gas 支付方式**构成。
 
-每笔私密 base → base 转账都会收取 **0.1%（10 bps）的隐私费用**，以被转账的 token 计价收取——而不是 SOL。在此基础上，gas 有两种支付方式：
+每笔私密 base → base 转账都会收取 **0.1%（10 bps）的隐私费用**，以被转账的 token 计价收取——而不是 SOL。gas 有两种支付方式：
 
 |  | 自付 | Gasless（`gasless: true`） |
 | --- | --- | --- |
@@ -133,23 +133,18 @@ challenge/login 流程获取 token：
 | 最低金额 | 无 | 0.5 USDC/USDT |
 | 支持的 mint | 任意 | mainnet USDC/USDT、devnet USDC |
 
-当 `gasless: true` 时，配置的 sponsor 会成为交易的 fee payer 并共同签名，同时 API 会在交易前置一条 token 转账指令，从发送方余额中向 sponsor 支付固定 **0.2 USDC/USDT 的 relay 费用**作为补偿。由于 relay 费用是固定的，gasless 转账要求最低金额为 **0.5 USDC/USDT**——低于该金额时费用将吞噬转账本身。
+当 `gasless: true` 时，配置的 sponsor 会成为交易的 fee payer 并共同签名，同时 API 会在交易前置一条 token 转账指令，从发送方余额中向 sponsor 支付固定 **0.2 USDC/USDT 的 relay 费用**作为补偿。由于 relay 费用是固定的，gasless 转账要求最低金额为 **0.5 USDC/USDT**；该最低金额仅适用于 gasless 模式，而不适用于私密转账本身。低于该金额的转账仍可通过省略 `gasless` 并保持 `visibility: "private"` 来发送。
 
 首次私密转账还可能包含一次性 **约 0.00204 SOL** 的租金，用于创建 ephemeral token account。所有以 token 计价的费用会在转账响应的 `fees.tokens` 字段中返回，以 SOL 计价的成本则在 `fees.lamports` 中返回。
 
 <Note>
-  0.5 的最低金额只限制 gasless 选项——它**不是**隐私限制。对于更小的金额，保持
-  `visibility: "private"` 并省略 `gasless` 即可：转账仍然走私密路由，发送方自付 SOL
-  费用外加 0.1% 的隐私费用。
+  低于最低金额或使用不受支持 mint 的 `gasless: true` 请求会被拒绝并返回 `400`
+  错误（`INVALID_GASLESS_TRANSFER_AMOUNT` / `INVALID_GASLESS_TRANSFER_MINT`）。API
+  绝不会更改请求中的 `visibility`：只有请求明确指定时转账才会是公开的。如果客户端在处理
+  gasless 错误时会重新构建请求，且意图保持私密，应保留 `visibility: "private"`。
 </Note>
 
-<Warning>
-  低于 0.5 最低金额时，`gasless: true` 的请求会返回 `400 INVALID_GASLESS_TRANSFER_AMOUNT`
-  错误——API 绝不会静默地将私密转账降级为公开转账。如果你的客户端会重试失败的 gasless
-  请求，请确保重试时保持 `visibility: "private"` 不变，否则小额转账会公开泄露。
-</Warning>
-
-当 `from` 是 off-curve 的 PDA owner 时，`gasless: true` 会被忽略（gasless 需要钱包作为发送方）；转账仍会以私密方式执行，由发送方支付费用。
+当 `from` 是 off-curve 的 PDA owner 时，`gasless: true` 会被忽略（gasless 需要钱包作为发送方）；转账仍会按请求指定的 visibility 执行，由发送方支付费用。
 
 ---
 
