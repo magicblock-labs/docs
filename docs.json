@@ -588,8 +588,7 @@
                       "pages/ephemeral-rollups-ers/introduction/ephemeral-rollup",
                       "pages/ephemeral-rollups-ers/introduction/ephemeral-accounts",
                       "pages/ephemeral-rollups-ers/introduction/magic-router",
-                      "pages/ephemeral-rollups-ers/introduction/runtime-limits",
-                      "pages/ephemeral-rollups-ers/introduction/ordering-and-security"
+                      "pages/ephemeral-rollups-ers/introduction/runtime-limits"
                     ]
                   },
                   {
