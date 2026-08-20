@@ -29,7 +29,7 @@ One SOL contains 1 billion lamports.
 
 | What you pay for | Price | When you pay |
 | :--- | ---: | :--- |
-| Normal ER transaction | `0` by default on the current public-node release | When you send the transaction |
+| Normal ER transaction | `0` in the current release | No charge |
 | One delegation session | `300,000` lamports (`0.0003 SOL`) | Taken from the Solana deposit when you undelegate |
 | Commits after the first | `100,000` lamports (`0.0001 SOL`) each | Taken from the Solana deposit when you undelegate |
 | Live commits starting with commit 26 | `100,000` lamports per account | Taken immediately from the delegated fee payer |
@@ -37,8 +37,8 @@ One SOL contains 1 billion lamports.
 | Adding a callback | `5,000` lamports | Taken immediately from the delegated fee payer |
 | Temporary Ephemeral Account storage | Based on account size; refundable | Reserved when the account is created or grows |
 
-Solana transaction fees are separate from the prices above. A validator can also configure its own
-base ER transaction fee, even though the current public-node release defaults to zero.
+Normal ER transactions cost `0` in the current release. Solana transaction fees are separate from
+the prices above.
 
 ## 1. The deposit you fund on Solana
 
