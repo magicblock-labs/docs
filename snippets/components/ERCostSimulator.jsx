@@ -1,6 +1,6 @@
 export const ERCostSimulator = () => {
   const [tps, setTps] = useState(10000);
-  const [cpm, setCpm] = useState(30); // commits/sec
+  const [cpm, setCpm] = useState(30); // billable commits/min
   const [dpm, setDpm] = useState(1); // delegations/sec
   const [isDedicated, setIsDedicated] = useState(false);
 
@@ -135,7 +135,7 @@ export const ERCostSimulator = () => {
         {/* Commits and Delegations in one row */}
         <div style={{ display: "flex", gap: "1rem" }}>
           <label style={{ flex: 1, fontSize: "14px" }}>
-            Commit(s) per minute: {cpm}
+            Paid commits per minute: {cpm}
             <input
               type="range"
               min="1"

@@ -9,13 +9,13 @@ MagicBlock pricing is similar to a decentralized cloud-infrastructure. The proto
 
 ### Public Nodes
 
-Public nodes enable everyone to start building on MagicBlock with free transactions and without friction. Session fees are charged per ER session and are enforced at undelegation. Commit fees are enforced every time you commit an account to Solana.
+Public nodes let anyone start building with no default ER transaction fee. When an account is undelegated, MagicBlock takes the session charge and commit charges from the deposit funded during delegation. Longer sessions can also use a delegated fee payer.
 
 | **Fee type**    | **Amount (SOL)** | **Description** |
 | :-------------- | :--------------- | :-------------- |
 | **Base fee**    | 0                | per Tx          |
-| **Session fee** | 0.0003           | per ER Session  |
-| **Commit fee**  | 0.0001           | per Commit      |
+| **Session fee** | 0.0003           | taken from the delegation deposit when the account is undelegated |
+| **Commit fee**  | 0.0001           | for each commit after the first; see the detailed guide for limits and refunds |
 
 ### Dedicated Nodes
 
@@ -24,7 +24,9 @@ Dedicated nodes provide maximum reliability and quality of service for enterpris
 | **Fee type**    | **Amount (SOL)** | **Description** |
 | :-------------- | :--------------- | :-------------- |
 | **Base fee**    | 0.0000005        | per Tx          |
-| **Session fee** | 0.0003           | per ER Session  |
-| **Commit fee**  | 0.0001           | per Commit      |
+| **Session fee** | 0.0003           | taken from the delegation deposit when the account is undelegated |
+| **Commit fee**  | 0.0001           | for each commit after the first; see the detailed guide for limits and refunds |
 
 For volume-based discounts or to run your own nodes, reach out at [development@magicblock.xyz](mailto:development@magicblock.xyz)
+
+[Learn how deposits, commit limits, fees, and refunds work](/pages/ephemeral-rollups-ers/introduction/fees-and-commit-economics).

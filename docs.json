@@ -572,7 +572,7 @@
               {
                 "item": "Ephemeral Rollup",
                 "icon": "bolt",
-                "description": "Real-time, zero-fee transactions secured by Solana",
+                "description": "Real-time, low-cost transactions secured by Solana",
                 "groups": [
                   {
                     "group": "Get Started",
@@ -588,7 +588,8 @@
                       "pages/ephemeral-rollups-ers/introduction/ephemeral-rollup",
                       "pages/ephemeral-rollups-ers/introduction/ephemeral-accounts",
                       "pages/ephemeral-rollups-ers/introduction/magic-router",
-                      "pages/ephemeral-rollups-ers/introduction/runtime-limits"
+                      "pages/ephemeral-rollups-ers/introduction/runtime-limits",
+                      "pages/ephemeral-rollups-ers/introduction/fees-and-commit-economics"
                     ]
                   },
                   {

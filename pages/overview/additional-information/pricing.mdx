@@ -14,7 +14,7 @@ import ProductCards from "/snippets/product-cards.mdx";
 <Tabs>
   <Tab title="Ephemeral Rollup">
 
-**Public nodes** make it simple to start building on MagicBlock with free transactions and zero friction. Fees are only charged when you close a session or commit data back to Solana.
+**Public nodes** make it simple to start building with no default ER transaction fee. When an account is undelegated, MagicBlock takes the session and commit charges from the deposit funded during delegation. Longer sessions can also use a delegated fee payer.
 
 <table style={{ width: "100%", tableLayout: "fixed" }}>
   <thead>
@@ -28,17 +28,17 @@ import ProductCards from "/snippets/product-cards.mdx";
     <tr>
       <td>Base fee</td>
       <td>0</td>
-      <td>Per transaction (Tx)</td>
+      <td>Per ER transaction by default; a validator can change this price</td>
     </tr>
     <tr>
       <td>Session fee</td>
       <td>0.0003</td>
-      <td>Per ER session (at undelegation)</td>
+      <td>Taken from the delegation deposit when the account is undelegated</td>
     </tr>
     <tr>
       <td>Commit fee</td>
       <td>0.0001</td>
-      <td>Per commit to Solana</td>
+      <td>For each commit after the first; see the detailed guide for limits and refunds</td>
     </tr>
   </tbody>
 </table>
@@ -47,9 +47,17 @@ import ProductCards from "/snippets/product-cards.mdx";
 
 [Learn more about ER →](/pages/ephemeral-rollups-ers/how-to-guide/quickstart)
 
+[Learn how deposits, commit limits, fees, and refunds work →](/pages/ephemeral-rollups-ers/introduction/fees-and-commit-economics)
+
 ### ER Cost Simulator: 30-Days
 
 <ERCostSimulator />
+
+<Note>
+  This is a simple estimate. It treats every commit you enter as a paid commit. It does not include
+  free thresholds, deposit limits, Base Actions, callbacks, or refundable Ephemeral Account storage.
+  Use the detailed guide when budgeting for a real account.
+</Note>
   </Tab>
 
   <Tab title="Private Ephemeral Rollup">

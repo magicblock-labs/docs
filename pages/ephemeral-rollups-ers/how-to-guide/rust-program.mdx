@@ -242,7 +242,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock’s Dele
   <Tab title="Top-up delegated account">
     Top up a delegated account's lamports on the ER side. The transaction is submitted on the **base layer** and uses the Ephemeral SPL Token program to shuttle lamports to the destination's delegated balance via a single-use lamports PDA.
 
-    Common use case: keeping a delegated fee payer funded so it can keep paying its own commits past the default 10-commit sponsorship cap.
+    Common use case: keeping a delegated fee payer funded for a long session. Without a fee payer, an account stops after 10 commits. With a fee payer and `magic_fee_vault`, it can keep committing, and the payer starts paying live commit fees on commit 26.
 
     Notes:
     - Generate a fresh 32-byte salt per top-up via `crypto.getRandomValues` — re-using a salt collides with an existing PDA.
