@@ -22,15 +22,17 @@ description: Diagnose common issues with Magic Actions
 
 ### Security: authenticate the caller
 
-Every post-commit action runs as its own base-layer transaction, so it needs an
-account to pay that transaction's fee and any rent it creates. The delegation
-program uses an **ephemeral balance escrow** — a SOL-holding PDA derived from
-`[b"balance", escrow_auth, escrow_index]` — and injects two accounts into your
-`#[action]` context: `escrow_auth` (the payer identity that owns the balance — a
-user wallet or a program PDA) and `escrow` (the SOL PDA itself, which the
-delegation program **signs via `invoke_signed`** to pay for the action).
+An action is a delegation-program instruction the committor runs on the base layer
+after a commit; the validator pays its transaction fee. The handler may still need
+an on-chain payer for any **rent** it creates (e.g. initializing an ATA). For that
+the delegation program uses an **ephemeral balance escrow** — a SOL-holding PDA
+derived from `[b"balance", escrow_auth, escrow_index]`
+— and injects two accounts into your `#[action]` context: `escrow_auth` (the payer
+identity that owns the balance — a user wallet or a program PDA) and `escrow` (the
+SOL PDA itself, which the delegation program **signs via `invoke_signed`** when it
+runs the action, so the handler can spend it for rent).
 
-That fee-payer signature is also the authentication anchor. A `#[action]` handler
+That escrow signature is also the authentication anchor. A `#[action]` handler
 is otherwise a normal base-layer instruction — for **any** work it performs
 (writing a PDA it owns, leaderboard updates, mints, settlements, token
 transfers; no action type is special). The attribute
