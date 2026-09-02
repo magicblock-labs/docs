@@ -7,6 +7,16 @@ import OtherActionsCode from "/snippets/magic-action-code/other-actions-code.mdx
 
 The instruction `update_leaderboard` runs on the base layer immediately after the commit lands. The `#[action]` attribute on its accounts context marks it as callable from a post-commit action.
 
+<Warning>
+  `#[action]` makes the instruction **callable from** a post-commit action — it
+  does not make it callable **only** that way. The handler is an ordinary
+  base-layer instruction, so anyone can invoke it directly with a wallet.
+  Address, `seeds`, and `owner` constraints only pin *which* accounts are passed;
+  they do not authenticate *who* called it. Any handler that moves value or
+  changes authoritative state must verify the injected `escrow` signer — see
+  [Authenticate the caller](/pages/ephemeral-rollups-ers/magic-actions/troubleshooting#security-authenticate-the-caller).
+</Warning>
+
 <ActionCode />
 
 ### 2) Build the commit instruction with the action

@@ -151,6 +151,16 @@ Commit the ER state and return the account to the base layer with `MagicIntentBu
     `transfer_checked` (Token-2022 compatible) and committing with the action attached.
 
     <PostCommitCode />
+
+    <Warning>
+      The post-commit handler is a normal base-layer instruction — anyone can
+      call it directly, not only the delegation program. Because it signs the
+      transfer with your PDA, it **must authenticate the caller** or it becomes an
+      open drain on your token accounts. Require the injected `escrow` account as
+      a `signer` and pin it to `ephemeral_balance_pda_from_payer(escrow_auth, 255)`,
+      and bind `escrow_auth` to your paying PDA. See
+      [Authenticate the caller](/pages/ephemeral-rollups-ers/magic-actions/troubleshooting#security-authenticate-the-caller).
+    </Warning>
     [⬆️ Back to Top](#advanced-code-snippets)
   </Tab>
 </Tabs>

@@ -20,6 +20,69 @@ description: Diagnose common issues with Magic Actions
 - Match `is_writable` flags to actual usage
 - Increase compute budget for all actions in the commit
 
+### Security: authenticate the caller
+
+Every post-commit action runs as its own base-layer transaction, so it needs an
+account to pay that transaction's fee and any rent it creates. The delegation
+program uses an **ephemeral balance escrow** — a SOL-holding PDA derived from
+`[b"balance", escrow_auth, escrow_index]` — and injects two accounts into your
+`#[action]` context: `escrow_auth` (the payer identity that owns the balance — a
+user wallet or a program PDA) and `escrow` (the SOL PDA itself, which the
+delegation program **signs via `invoke_signed`** to pay for the action).
+
+That fee-payer signature is also the authentication anchor. A `#[action]` handler
+is otherwise a normal base-layer instruction — for **any** work it performs
+(writing a PDA it owns, leaderboard updates, mints, settlements, token
+transfers; no action type is special). The attribute
+makes it dispatchable from a post-commit action, **not** exclusively so — anyone
+can invoke it directly. `#[account(address = ...)]`, `seeds`, and `owner`
+constraints only pin *which* accounts are passed; only the injected `escrow`
+signer proves the delegation program dispatched the call (no wallet or other
+program can sign for that PDA). `ActionArgs::new` defaults `escrow_index` to `255`.
+
+On every handler, require `escrow` as `signer` pinned to its derivation. When the
+handler acts with a program-owned PDA, also bind `escrow_auth` to that PDA:
+
+```rust
+pub const ACTION_ESCROW_INDEX: u8 = 255; // ActionArgs::new default
+
+// In the #[action] accounts context:
+
+/// CHECK: payer identity the action was scheduled with. When the handler acts
+/// with a program-owned PDA, bind this to that PDA so only actions *your*
+/// program scheduled — not a foreign program's — can drive the handler.
+#[account(address = vault_authority.key())]
+pub escrow_auth: UncheckedAccount<'info>,
+
+/// CHECK: only the delegation program can sign for this PDA, so `signer`
+/// proves the call arrived through the real post-commit path.
+#[account(
+    signer,
+    address = ephemeral_rollups_sdk::pda::ephemeral_balance_pda_from_payer(
+        &escrow_auth.key(),
+        ACTION_ESCROW_INDEX,
+    ),
+)]
+pub escrow: UncheckedAccount<'info>,
+```
+
+`signer` alone is not enough — a different program could still schedule an action
+into your handler with its own escrow authority; binding `escrow_auth` to your
+program's PDA closes that. For user-paid actions (escrow authority = the user's
+wallet) the signer + derivation check is the guarantee, and there is no fixed PDA
+to bind against.
+
+**Need the same logic callable outside an action too** (an admin settlement, the
+user directly)? The escrow constraints above make the instruction action-only.
+The default fix is **two thin instructions over one shared function**: keep the
+`#[action]` entrypoint with its escrow checks, add a normal `Signer`-authorized
+entrypoint, and have both call the same internal function. A single dual-mode
+instruction is possible — declare `escrow`/`escrow_auth` as `Option<...>`, add an
+optional authority, and branch in the handler requiring exactly one path
+(`via_action ^ via_direct`) — but injected/optional accounts are positional (the
+delegation program appends its accounts last), so two instructions is the cleaner
+default.
+
 ### Limitations & considerations
 
 - Handlers execute on base layer and consume base-layer fees
