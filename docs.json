@@ -3,6 +3,27 @@
   "theme": "mint",
   "name": "MagicBlock Documentation",
   "description": "With MagicBlock, anything you imagine is possible. Build unstoppable games, high-speed DeFi, and Web3 apps that run like Web2.",
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      {
+        "title": "Debug with the MagicBlock skill",
+        "description": "Install the skill so your coding agent can debug your code with MagicBlock context",
+        "icon": "wand-magic-sparkles",
+        "href": "/pages/overview/additional-information/ai-dev-skill"
+      }
+    ]
+  },
+  "search": {
+    "prompt": "Search docs or ask a general question..."
+  },
+  "banner": {
+    "content": "Debugging an error? [Install the MagicBlock AI skill](/pages/overview/additional-information/ai-dev-skill) and ask your coding agent instead.",
+    "dismissible": true
+  },
   "errors": {
     "404": {
       "redirect": true
@@ -480,7 +501,12 @@
         "label": "Github",
         "href": "https://github.com/magicblock-labs"
       }
-    ]
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Install AI Skill",
+      "href": "https://docs.magicblock.gg/pages/overview/additional-information/ai-dev-skill"
+    }
   },
   "footer": {
     "socials": {
