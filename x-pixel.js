@@ -30,15 +30,30 @@ twq('config','p9ilu');
     .then((result) => result.ok ? result.json() : null)
     .catch(() => null);
 
+  // The "Install AI Skill" button in the main navigation (desktop and mobile).
+  function isNavigationCta(target) {
+    const link = target.closest("a");
+    if (!link || !link.closest('nav[aria-label="Main"]')) return false;
+    const destination = new URL(link.href, window.location.href);
+    return docsOrigins.includes(destination.origin) &&
+      destination.pathname.replace(/\/$/, "") === "/pages/overview/additional-information/ai-dev-skill" &&
+      link.textContent.trim() === "Install AI Skill";
+  }
+
+  // The copy button of the skill install command shown in the AI Dev Skill callout.
+  const installCommand = "npx skills add https://github.com/magicblock-labs/magicblock-dev-skill";
+  function isInstallCommandCopy(target) {
+    if (!target.closest('button[data-testid="copy-code-button"]')) return false;
+    const block = target.closest(".code-block");
+    const code = block ? block.querySelector("pre code") : null;
+    return Boolean(code) && code.textContent.replace(/\s+/g, " ").trim() === installCommand;
+  }
+
   function trackClick(event) {
     if (event.type === "auxclick" && event.button !== 1) return;
     if (event.type === "click" && event.button !== 0) return;
-    const link = event.target instanceof Element ? event.target.closest("a") : null;
-    if (!link || !link.closest('nav[aria-label="Main"]')) return;
-    const destination = new URL(link.href, window.location.href);
-    if (!docsOrigins.includes(destination.origin) ||
-        destination.pathname.replace(/\/$/, "") !== "/pages/overview/additional-information/ai-dev-skill" ||
-        link.textContent.trim() !== "Install AI Skill") return;
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target || !(isNavigationCta(target) || isInstallCommandCopy(target))) return;
 
     captureClickId();
     const conversionId = crypto.randomUUID();

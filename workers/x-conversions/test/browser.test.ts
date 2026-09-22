@@ -9,7 +9,15 @@ const markup = `<script></script><nav aria-label="Main"><ul>
   <li class="block lg:hidden"><a id="mobile" href="${destination}"><span>Install AI Skill</span></a></li>
   <li id="topbar-cta-button"><a id="desktop" href="${destination}" target="_blank"><span>Install AI Skill</span></a></li>
   <li><a id="github" href="https://github.com/magicblock-labs">Github</a></li>
-</ul></nav><main><a id="content" href="${destination}">Install AI Skill</a></main>`;
+</ul></nav><main><a id="content" href="${destination}">Install AI Skill</a>
+  <div class="code-block" id="skill-block"><div data-floating-buttons="true"><div class="code-block-copy-button">
+    <button id="skill-copy" data-testid="copy-code-button" aria-label="Copy the contents from the code block"><svg><path/></svg></button>
+  </div></div><pre><code><span class="line"><span>npx</span><span> skills</span><span> add</span><span> https://github.com/magicblock-labs/magicblock-dev-skill</span></span>
+</code></pre></div>
+  <div class="code-block" id="other-block"><div data-floating-buttons="true"><div class="code-block-copy-button">
+    <button id="other-copy" data-testid="copy-code-button" aria-label="Copy the contents from the code block"><svg><path/></svg></button>
+  </div></div><pre><code><span class="line"><span>cargo</span><span> build</span></span>
+</code></pre></div></main>`;
 
 async function browser(options: { blockedConfig?: boolean; blockedStorage?: boolean; url?: string } = {}) {
   const dom = new JSDOM(markup, {
@@ -91,5 +99,22 @@ test("does not send CTA events from local development or preview origins", async
   try {
     await click("#desktop");
     assert.equal(requests.length, 0);
+  } finally { close(); }
+});
+
+test("install command copy button sends the event, other code blocks do not", async () => {
+  const { window, requests, click, close } = await browser();
+  try {
+    await click("#skill-copy path");
+    await click("#other-copy path");
+    const sent = requests.filter((r) => r.url.endsWith("/events"));
+    const pixel = window.twq.queue.filter((args) => args[0] === "event");
+    assert.equal(sent.length, 1);
+    assert.equal(pixel.length, 1);
+    const body = JSON.parse(sent[0].options.body as string);
+    assert.equal(body.event, "ai_skill_cta_clicked");
+    assert.equal(body.conversion_id, pixel[0][2].conversion_id);
+    assert.equal(body.twclid, "ad-click-123");
+    assert.equal(body.event_source_url, "https://docs.magicblock.xyz/guide");
   } finally { close(); }
 });

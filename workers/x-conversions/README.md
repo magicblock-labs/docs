@@ -1,8 +1,10 @@
 # X conversions for the docs
 
-Tracks activation of the **Install AI Skill** button in the main navigation,
-including its mobile variant. This is a click on the installation guide, not a
-confirmed skill installation. Other links to that guide are excluded.
+Tracks two clicks as one X event: the **Install AI Skill** button in the main
+navigation (including its mobile variant), and the copy button of the
+`npx skills add .../magicblock-dev-skill` command in the AI Dev Skill callout
+(`snippets/ai-dev-skill-callout.mdx`). Both are intent signals, not a confirmed
+skill installation. Other links to the guide and other code blocks are excluded.
 
 - Worker: `magicblock-docs-conversions`
 - Endpoint: `https://tracking.magicblock.app`
@@ -12,7 +14,7 @@ confirmed skill installation. Other links to that guide are excluded.
 
 ## Flow
 
-The root `x-pixel.js` installs the base pixel and a delegated CTA listener. It
+The root `x-pixel.js` installs the base pixel and a delegated click listener. It
 reads the public event ID from `GET /config`, then reports each click through
 the pixel and `POST /events` with the same generated `conversion_id`.
 The browser sends its request with `keepalive`, without delaying navigation.
