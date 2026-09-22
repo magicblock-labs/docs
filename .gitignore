@@ -4,3 +4,5 @@
 node_modules
 .translation-cache
 .env
+.dev.vars*
+.wrangler

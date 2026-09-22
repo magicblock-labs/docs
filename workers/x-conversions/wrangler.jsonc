@@ -1,0 +1,41 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "magicblock-docs-conversions",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "tracking.magicblock.app", "custom_domain": true }
+  ],
+  "vars": {
+    "X_EVENT_ID": "tw-p9ilu-rfmj4",
+    "ALLOWED_ORIGINS": "https://docs.magicblock.xyz,https://docs.magicblock.gg,https://docs.magicblock.app"
+  },
+  "ratelimits": [
+    {
+      "name": "EVENT_RATE_LIMITER",
+      "namespace_id": "2026092201",
+      "simple": { "limit": 120, "period": 60 }
+    }
+  ],
+  "queues": {
+    "producers": [
+      { "binding": "CONVERSIONS", "queue": "magicblock-docs-conversions" },
+      { "binding": "FAILED_CONVERSIONS", "queue": "magicblock-docs-conversions-failed" }
+    ],
+    "consumers": [
+      {
+        "queue": "magicblock-docs-conversions",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "dead_letter_queue": "magicblock-docs-conversions-failed"
+      }
+    ]
+  },
+  "observability": {
+    "enabled": true,
+    "logs": { "invocation_logs": false }
+  }
+}
