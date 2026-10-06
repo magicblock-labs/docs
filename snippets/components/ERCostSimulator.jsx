@@ -6,8 +6,8 @@ export const ERCostSimulator = () => {
 
   // Fees in SOL
   const solanaFeePerTx = 0.000005; // SOL per transaction
-  const erFeePerCommit = 0.0001;   // SOL per commit
-  const erFeePerSession = 0.0003;  // SOL per session
+  const erFeePerCommit = 0.001;    // SOL per commit
+  const erFeePerSession = 0.003;   // SOL per session
   const dedicatedBaseFee = 0.00000005; // extra ER per transaction if dedicated
   
   const solPriceUSD = 200        // USD per SOL
