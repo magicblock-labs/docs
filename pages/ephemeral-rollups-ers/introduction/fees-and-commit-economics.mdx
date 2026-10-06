@@ -30,8 +30,8 @@ One SOL contains 1 billion lamports.
 | What you pay for | Price | When you pay |
 | :--- | ---: | :--- |
 | Normal ER transaction | `0` in the current release | No charge |
-| One delegation session | `300,000` lamports (`0.0003 SOL`) | Taken from the Solana deposit when you undelegate |
-| Commits after the first | `100,000` lamports (`0.0001 SOL`) each | Taken from the Solana deposit when you undelegate |
+| One delegation session | `3,000,000` lamports (`0.003 SOL`) | Taken from the Solana deposit when you undelegate |
+| Commits after the first | `1,000,000` lamports (`0.001 SOL`) each | Taken from the Solana deposit when you undelegate |
 | Live commits starting with commit 26 | `100,000` lamports per account | Taken immediately from the delegated fee payer |
 | Base Actions | Based on the requested compute units | Taken immediately from the delegated fee payer |
 | Adding a callback | `5,000` lamports | Taken immediately from the delegated fee payer |
@@ -50,8 +50,8 @@ Think of that money as a refundable balance, not a one-time fee that buys unlimi
 When you undelegate, MagicBlock calculates the charge:
 
 ```text
-session charge = 300,000 lamports
-commit charge = 100,000 lamports for each commit after commit 1
+session charge = 3,000,000 lamports
+commit charge = 1,000,000 lamports for each commit after commit 1
 total charge = session charge + commit charge
 ```
 
@@ -60,9 +60,9 @@ back to the wallet recorded as the `rent_payer` when the account was delegated.
 
 In practical terms:
 
-- even a session with no commit can use up to `300,000` lamports from the deposit;
+- even a session with no commit can use up to `3,000,000` lamports from the deposit;
 - commit 1 adds no commit charge;
-- commits 2, 3, 4, and so on add `100,000` lamports each;
+- commits 2, 3, 4, and so on add `1,000,000` lamports each;
 - if the calculated charge is larger than the deposit, MagicBlock takes the deposit but does not
   create a debt or fail undelegation;
 - any money left in the deposit is refunded.
@@ -114,8 +114,8 @@ before undelegation.
 ### One commit, then undelegate
 
 ```text
-calculated deposit charge = 300,000 lamports
-amount taken = the smaller of D and 300,000
+calculated deposit charge = 3,000,000 lamports
+amount taken = the smaller of D and 3,000,000
 refund = D - amount taken
 live commit fee = 0
 ```
@@ -123,10 +123,10 @@ live commit fee = 0
 ### Ten simple commits, then undelegate
 
 ```text
-session charge = 300,000
-commit charge = 9 * 100,000
-calculated deposit charge = 1,200,000 lamports
-amount taken = the smaller of D and 1,200,000
+session charge = 3,000,000
+commit charge = 9 * 1,000,000
+calculated deposit charge = 12,000,000 lamports
+amount taken = the smaller of D and 12,000,000
 refund = D - amount taken
 live commit fee = 0
 ```
@@ -136,9 +136,9 @@ An 11th simple commit fails before it is scheduled.
 ### Twenty-six commits with a delegated fee payer
 
 ```text
-calculated deposit charge at undelegation = 300,000 + (25 * 100,000)
-                                            = 2,800,000 lamports
-amount taken from deposit = the smaller of D and 2,800,000
+calculated deposit charge at undelegation = 3,000,000 + (25 * 1,000,000)
+                                            = 28,000,000 lamports
+amount taken from deposit = the smaller of D and 28,000,000
 live fee taken on commit 26 = 100,000 lamports
 refund = D - amount taken from deposit
 ```
@@ -156,8 +156,7 @@ Include these costs in your budget:
 - the top-up helper's current `300,000`-lamport setup charge;
 - the normal Solana transaction fee.
 
-The top-up setup charge and the `300,000`-lamport delegation session charge are different charges.
-They currently happen to have the same value.
+The top-up setup charge and the `3,000,000`-lamport delegation session charge are different charges.
 
 ## Base Actions and callbacks
 
