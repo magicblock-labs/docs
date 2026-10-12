@@ -368,6 +368,7 @@ export const ERCostSimulator = () => {
           role="img"
           aria-label={`Annual savings versus transactions per day on a logarithmic scale. Break-even: ${breakEvenTxPerDay?.toLocaleString(undefined, { maximumFractionDigits: 1 }) ?? "unavailable"} transactions per day.`}
         >
+          <line x1={breakEvenPlot.left} y1={breakEvenPlot.bottom} x2={breakEvenPlot.right} y2={breakEvenPlot.bottom} stroke="#888" />
           <text x={breakEvenPlot.right} y="39" textAnchor="end" fontSize="11" fill="#2545F6">━ Annual savings with {isDedicated ? "Dedicated ER" : "Public ER"}</text>
           <path d={breakEvenSavingsPath} fill="none" stroke="#2545F6" strokeWidth="2.5" />
           {breakEvenXTicks.map((tick) => {
@@ -423,7 +424,6 @@ export const ERCostSimulator = () => {
             </text>
           )}
 
-          <line x1={breakEvenPlot.left} y1={breakEvenPlot.bottom} x2={breakEvenPlot.right} y2={breakEvenPlot.bottom} stroke="#888" />
           <text x={(breakEvenPlot.left + breakEvenPlot.right) / 2} y={breakEvenPlot.bottom + 42} textAnchor="middle" fontSize="12" fill="#555">Transactions per day</text>
         </svg>
         </div>
