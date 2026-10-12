@@ -424,7 +424,7 @@ export const ERCostSimulator = () => {
           )}
 
           <line x1={breakEvenPlot.left} y1={breakEvenPlot.bottom} x2={breakEvenPlot.right} y2={breakEvenPlot.bottom} stroke="#888" />
-          <text x={(breakEvenPlot.left + breakEvenPlot.right) / 2} y={breakEvenChartHeight - 6} textAnchor="middle" fontSize="12" fill="#555">Transactions per day (log scale)</text>
+          <text x={(breakEvenPlot.left + breakEvenPlot.right) / 2} y={breakEvenPlot.bottom + 42} textAnchor="middle" fontSize="12" fill="#555">Transactions per day (log scale)</text>
         </svg>
         </div>
         <p style={{ margin: "0.25rem 0 0", textAlign: "right", fontSize: "12px", color: "#666" }}>
