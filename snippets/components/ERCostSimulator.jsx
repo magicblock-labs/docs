@@ -408,13 +408,13 @@ export const ERCostSimulator = () => {
           })}
 
           {breakEvenTxPerDay != null && (
-            <circle cx={xForTransactions(breakEvenTxPerDay)} cy={yForSavings(0)} r="5" fill="#2545F6" stroke="#2545F6" strokeWidth="2" />
+            <circle cx={xForTransactions(breakEvenTxPerDay)} cy={yForSavings(0)} r="4" fill="#2545F6" stroke="#2545F6" strokeWidth="1.5" />
           )}
           {breakEvenTxPerDay != null && (
             <text
-              x={xForTransactions(breakEvenTxPerDay) + (xForTransactions(breakEvenTxPerDay) > breakEvenPlot.right - 90 ? -9 : 9)}
-              y={yForSavings(0) - 13}
-              textAnchor={xForTransactions(breakEvenTxPerDay) > breakEvenPlot.right - 90 ? "end" : "start"}
+              x={xForTransactions(breakEvenTxPerDay)}
+              y={yForSavings(0) - 16}
+              textAnchor="middle"
               fontSize="13"
               fontWeight="700"
               fill="#2545F6"
@@ -424,7 +424,7 @@ export const ERCostSimulator = () => {
           )}
 
           <line x1={breakEvenPlot.left} y1={breakEvenPlot.bottom} x2={breakEvenPlot.right} y2={breakEvenPlot.bottom} stroke="#888" />
-          <text x={(breakEvenPlot.left + breakEvenPlot.right) / 2} y={breakEvenPlot.bottom + 42} textAnchor="middle" fontSize="12" fill="#555">Transactions per day (log scale)</text>
+          <text x={(breakEvenPlot.left + breakEvenPlot.right) / 2} y={breakEvenPlot.bottom + 42} textAnchor="middle" fontSize="12" fill="#555">Transactions per day</text>
         </svg>
         </div>
         <p style={{ margin: "0.25rem 0 0", textAlign: "right", fontSize: "12px", color: "#666" }}>
