@@ -30,9 +30,9 @@
     }
   },
   "colors": {
-    "primary": "#aa00ff",
-    "light": "#aa00ff",
-    "dark": "#aa00ff"
+    "primary": "#2545F6",
+    "light": "#2545F6",
+    "dark": "#2545F6"
   },
   "thumbnails": {
     "background": "/images/thumbmail-bg.jpg"
