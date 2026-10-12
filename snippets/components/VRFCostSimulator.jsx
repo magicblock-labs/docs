@@ -174,10 +174,14 @@ export const VRFCostSimulator = () => {
             </p>
 
           <p style={{ marginTop: "0.5rem" }}>
-            {" "}You <span style={{ fontWeight: "bold", color: "#2545F6" }}>save</span>{" "}
-            <span style={{ fontWeight: "bold", color: "#2545F6" }}>
-              {formatCost(alternativeVrfCost - magicblockVrfCost)}{magicblockVrfCost > 0 ? `, or ${(alternativeVrfCost / magicblockVrfCost).toLocaleString(undefined, { maximumFractionDigits: 2 })}× cheaper` : " because MagicBlock VRF with ER has no request fee"}
-            </span>
+            {" "}You <span style={{ fontWeight: "bold", color: "#fff" }}>save</span>{" "}
+            <span style={{ fontWeight: "bold", color: "#fff" }}>{formatCost(alternativeVrfCost - magicblockVrfCost)}</span>{" "}
+            <span style={{ color: "#666" }}>per year{magicblockVrfCost > 0 ? ", or" : ""}</span>
+            {magicblockVrfCost > 0 ? (
+              <> <span style={{ fontWeight: "bold", color: "#fff" }}>{(alternativeVrfCost / magicblockVrfCost).toLocaleString(undefined, { maximumFractionDigits: 2 })}× cheaper</span></>
+            ) : (
+              <span> because MagicBlock VRF with ER has no request fee</span>
+            )}
             .
           </p>
       </div>
