@@ -13,8 +13,8 @@
 
   var style = document.createElement("style");
   style.textContent =
-    ".mb-active-product{margin-left:0.125rem;font-weight:600;white-space:nowrap;color:#aa00ff}" +
-    "html.dark .mb-active-product{color:#c266ff}";
+    ".mb-active-product{margin-left:0.125rem;font-weight:600;white-space:nowrap;color:#2545F6}" +
+    "html.dark .mb-active-product{color:#2545F6}";
   document.head.appendChild(style);
 
   function currentProduct() {

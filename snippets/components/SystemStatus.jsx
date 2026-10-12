@@ -193,14 +193,14 @@ export const SystemStatus = () => {
         }
 
         .mb-status-tab[aria-pressed="true"] {
-          background: #aa00ff;
+          background: #2545F6;
           color: #ffffff;
-          box-shadow: 0 1px 3px rgba(170, 0, 255, 0.3);
+          box-shadow: 0 1px 3px rgba(37, 69, 246, 0.3);
         }
 
         .mb-status-tab:focus-visible,
         .mb-status-retry:focus-visible {
-          outline: 2px solid #aa00ff;
+          outline: 2px solid #2545F6;
           outline-offset: 2px;
         }
 
@@ -210,7 +210,7 @@ export const SystemStatus = () => {
 
         .mb-status-region h2 {
           margin: 0 0 4px;
-          color: #aa00ff;
+          color: #2545F6;
           font-size: 16px;
           font-weight: 700;
           letter-spacing: 0.05em;
@@ -218,7 +218,7 @@ export const SystemStatus = () => {
         }
 
         .dark .mb-status-region h2 {
-          color: #c084fc;
+          color: #2545F6;
         }
 
         .mb-status-server + .mb-status-server {
