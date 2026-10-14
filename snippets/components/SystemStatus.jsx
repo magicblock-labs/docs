@@ -403,7 +403,7 @@ export const SystemStatus = () => {
                       {server?.serverFqdn || fqdn}
                     </p>
 
-                    {services.map((service) =>
+                    {services.filter((service) => !(regionKey === "tee" && service.id === "rpc_router")).map((service) =>
                       renderStatusCard({
                         days,
                         liveStatus: server?.live_status?.[service.id],
