@@ -8,35 +8,43 @@
   "servers": [
     {
       "url": "https://devnet-as.magicblock.app/",
-      "description": "Devnet AS - RPC"
+      "description": "Devnet Asia (Singapore) - RPC"
     },
     {
       "url": "https://devnet-us.magicblock.app/",
-      "description": "Devnet US - RPC"
+      "description": "Devnet North America (United States) - RPC"
     },
     {
       "url": "https://devnet-eu.magicblock.app/",
-      "description": "Devnet EU - RPC"
+      "description": "Devnet Europe (Germany) - RPC"
     },
     {
       "url": "https://devnet-tee.magicblock.app/",
-      "description": "Devnet TEE - RPC"
+      "description": "Devnet TEE (Singapore) - RPC"
     },
     {
       "url": "https://as.magicblock.app/",
-      "description": "Mainnet AS - RPC"
+      "description": "Mainnet Asia (Singapore) - RPC"
     },
     {
       "url": "https://us.magicblock.app/",
-      "description": "Mainnet US - RPC"
+      "description": "Mainnet North America (United States) - RPC"
     },
     {
       "url": "https://eu.magicblock.app/",
-      "description": "Mainnet EU - RPC"
+      "description": "Mainnet Europe (Netherlands) - RPC"
+    },
+    {
+      "url": "https://as-tyo.magicblock.app/",
+      "description": "Mainnet Asia (Tokyo, Japan) - RPC"
+    },
+    {
+      "url": "https://sa.magicblock.app/",
+      "description": "Mainnet South America (Argentina) - RPC"
     },
     {
       "url": "https://mainnet-tee.magicblock.app/",
-      "description": "Mainnet TEE - RPC"
+      "description": "Mainnet TEE (Singapore) - RPC"
     }
   ],
   "paths": {
