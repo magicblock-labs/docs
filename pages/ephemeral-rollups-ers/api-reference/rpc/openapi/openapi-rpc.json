@@ -8,15 +8,15 @@
   "servers": [
     {
       "url": "https://devnet-as.magicblock.app/",
-      "description": "Devnet AS - RPC"
+      "description": "Devnet Asia (Singapore) - RPC"
     },
     {
       "url": "https://devnet-us.magicblock.app/",
-      "description": "Devnet US - RPC"
+      "description": "Devnet North America (United States) - RPC"
     },
     {
       "url": "https://devnet-eu.magicblock.app/",
-      "description": "Devnet EU - RPC"
+      "description": "Devnet Europe (Germany) - RPC"
     }
   ],
   "paths": {
