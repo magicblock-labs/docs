@@ -35,6 +35,14 @@
       "description": "Mainnet EU - RPC"
     },
     {
+      "url": "https://as-tyo.magicblock.app/",
+      "description": "Mainnet Tokyo, Japan - RPC"
+    },
+    {
+      "url": "https://sa.magicblock.app/",
+      "description": "Mainnet South America, Argentina - RPC"
+    },
+    {
       "url": "https://mainnet-tee.magicblock.app/",
       "description": "Mainnet TEE - RPC"
     }
