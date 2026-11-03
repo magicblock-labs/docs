@@ -2,11 +2,13 @@ export const SystemStatus = () => {
   const statusApiUrl = "https://status.magicblock.app/api/services";
   const regionLabels = {
     asia: "Asia",
+    "asia-tyo": "Asia (Tokyo)",
     europe: "Europe",
     usa: "USA",
+    southamerica: "South America",
     tee: "TEE",
   };
-  const regionOrder = ["asia", "europe", "usa", "tee"];
+  const regionOrder = ["asia", "asia-tyo", "europe", "usa", "southamerica", "tee"];
 
   const getStatus = (liveStatus) => {
     if (liveStatus === true) {
