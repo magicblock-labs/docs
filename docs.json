@@ -44,6 +44,10 @@
       "destination": "/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart?utm_source=X&utm_campaign=vrf_x"
     },
     {
+      "source": "/ai",
+      "destination": "/pages/overview/additional-information/ai-dev-skill?utm_source=X&utm_campaign=AI_x"
+    },
+    {
       "source": "/pages/verifiable-randomness-functions-vrfs/introduction/why-verifiable-randomness-onchain",
       "destination": "/pages/verifiable-randomness-functions-vrfs/introduction/solana-vrf"
     },
