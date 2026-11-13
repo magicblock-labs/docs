@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "MagicBlock Documentation",
-  "description": "With MagicBlock, anything you imagine is possible. Build unstoppable games, high-speed DeFi, and Web3 apps that run like Web2.",
+  "description": "MagicBlock runs Ephemeral Rollups on Solana for gasless, real-time, high-frequency transactions, with private execution in a TEE, verifiable randomness (VRF), price oracles, cranks, and session keys.",
   "contextual": {
     "options": [
       "copy",
