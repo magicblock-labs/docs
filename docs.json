@@ -494,6 +494,22 @@
     {
       "source": "/ko/api-reference/spl-api/:slug*",
       "destination": "/ko/pages/ephemeral-spl-token/api-reference/introduction"
+    },
+    {
+      "source": "/pages/tools/solana-unity-sdk/:slug*",
+      "destination": "/pages/tools/introduction"
+    },
+    {
+      "source": "/cn/pages/tools/solana-unity-sdk/:slug*",
+      "destination": "/cn/pages/tools/introduction"
+    },
+    {
+      "source": "/jp/pages/tools/solana-unity-sdk/:slug*",
+      "destination": "/jp/pages/tools/introduction"
+    },
+    {
+      "source": "/ko/pages/tools/solana-unity-sdk/:slug*",
+      "destination": "/ko/pages/tools/introduction"
     }
   ],
   "staticPages": [
@@ -931,42 +947,6 @@
                 ]
               },
               {
-                "group": "Solana Unity SDK",
-                "pages": [
-                  "pages/tools/solana-unity-sdk/overview",
-                  "pages/tools/solana-unity-sdk/contribution-guide",
-                  {
-                    "group": "Getting Started",
-                    "pages": [
-                      "pages/tools/solana-unity-sdk/getting-started/installation",
-                      "pages/tools/solana-unity-sdk/getting-started/configuration",
-                      "pages/tools/solana-unity-sdk/getting-started/sample-scene"
-                    ]
-                  },
-                  {
-                    "group": "Core Concepts",
-                    "pages": [
-                      "pages/tools/solana-unity-sdk/core-concepts/associated-token-account",
-                      "pages/tools/solana-unity-sdk/core-concepts/transfer-token",
-                      "pages/tools/solana-unity-sdk/core-concepts/transaction-builder",
-                      "pages/tools/solana-unity-sdk/core-concepts/staking",
-                      "pages/tools/solana-unity-sdk/core-concepts/add-signature"
-                    ]
-                  },
-                  {
-                    "group": "Guides",
-                    "pages": [
-                      "pages/tools/solana-unity-sdk/guides/mint-an-nft",
-                      "pages/tools/solana-unity-sdk/guides/host-your-game",
-                      "pages/tools/solana-unity-sdk/guides/publishing-a-game",
-                      "pages/tools/solana-unity-sdk/guides/dex-integration",
-                      "pages/tools/solana-unity-sdk/guides/jupiter",
-                      "pages/tools/solana-unity-sdk/guides/additional-examples"
-                    ]
-                  }
-                ]
-              },
-              {
                 "group": "On-chain Identity",
                 "pages": [
                   "pages/tools/open-source-programs/SOAR"
@@ -1283,42 +1263,6 @@
                 "pages": [
                   "cn/pages/tools/crank/introduction",
                   "cn/pages/tools/crank/implementation"
-                ]
-              },
-              {
-                "group": "Solana Unity SDK",
-                "pages": [
-                  "cn/pages/tools/solana-unity-sdk/overview",
-                  "cn/pages/tools/solana-unity-sdk/contribution-guide",
-                  {
-                    "group": "开始使用",
-                    "pages": [
-                      "cn/pages/tools/solana-unity-sdk/getting-started/installation",
-                      "cn/pages/tools/solana-unity-sdk/getting-started/configuration",
-                      "cn/pages/tools/solana-unity-sdk/getting-started/sample-scene"
-                    ]
-                  },
-                  {
-                    "group": "核心概念",
-                    "pages": [
-                      "cn/pages/tools/solana-unity-sdk/core-concepts/associated-token-account",
-                      "cn/pages/tools/solana-unity-sdk/core-concepts/transfer-token",
-                      "cn/pages/tools/solana-unity-sdk/core-concepts/transaction-builder",
-                      "cn/pages/tools/solana-unity-sdk/core-concepts/staking",
-                      "cn/pages/tools/solana-unity-sdk/core-concepts/add-signature"
-                    ]
-                  },
-                  {
-                    "group": "指南",
-                    "pages": [
-                      "cn/pages/tools/solana-unity-sdk/guides/mint-an-nft",
-                      "cn/pages/tools/solana-unity-sdk/guides/host-your-game",
-                      "cn/pages/tools/solana-unity-sdk/guides/publishing-a-game",
-                      "cn/pages/tools/solana-unity-sdk/guides/dex-integration",
-                      "cn/pages/tools/solana-unity-sdk/guides/jupiter",
-                      "cn/pages/tools/solana-unity-sdk/guides/additional-examples"
-                    ]
-                  }
                 ]
               },
               {
@@ -1641,42 +1585,6 @@
                 ]
               },
               {
-                "group": "Solana Unity SDK",
-                "pages": [
-                  "jp/pages/tools/solana-unity-sdk/overview",
-                  "jp/pages/tools/solana-unity-sdk/contribution-guide",
-                  {
-                    "group": "スタートガイド",
-                    "pages": [
-                      "jp/pages/tools/solana-unity-sdk/getting-started/installation",
-                      "jp/pages/tools/solana-unity-sdk/getting-started/configuration",
-                      "jp/pages/tools/solana-unity-sdk/getting-started/sample-scene"
-                    ]
-                  },
-                  {
-                    "group": "コアコンセプト",
-                    "pages": [
-                      "jp/pages/tools/solana-unity-sdk/core-concepts/associated-token-account",
-                      "jp/pages/tools/solana-unity-sdk/core-concepts/transfer-token",
-                      "jp/pages/tools/solana-unity-sdk/core-concepts/transaction-builder",
-                      "jp/pages/tools/solana-unity-sdk/core-concepts/staking",
-                      "jp/pages/tools/solana-unity-sdk/core-concepts/add-signature"
-                    ]
-                  },
-                  {
-                    "group": "ガイド",
-                    "pages": [
-                      "jp/pages/tools/solana-unity-sdk/guides/mint-an-nft",
-                      "jp/pages/tools/solana-unity-sdk/guides/host-your-game",
-                      "jp/pages/tools/solana-unity-sdk/guides/publishing-a-game",
-                      "jp/pages/tools/solana-unity-sdk/guides/dex-integration",
-                      "jp/pages/tools/solana-unity-sdk/guides/jupiter",
-                      "jp/pages/tools/solana-unity-sdk/guides/additional-examples"
-                    ]
-                  }
-                ]
-              },
-              {
                 "group": "On-chain identity",
                 "pages": [
                   "jp/pages/tools/open-source-programs/SOAR"
@@ -1993,42 +1901,6 @@
                 "pages": [
                   "ko/pages/tools/crank/introduction",
                   "ko/pages/tools/crank/implementation"
-                ]
-              },
-              {
-                "group": "Solana Unity SDK",
-                "pages": [
-                  "ko/pages/tools/solana-unity-sdk/overview",
-                  "ko/pages/tools/solana-unity-sdk/contribution-guide",
-                  {
-                    "group": "시작하기",
-                    "pages": [
-                      "ko/pages/tools/solana-unity-sdk/getting-started/installation",
-                      "ko/pages/tools/solana-unity-sdk/getting-started/configuration",
-                      "ko/pages/tools/solana-unity-sdk/getting-started/sample-scene"
-                    ]
-                  },
-                  {
-                    "group": "핵심 개념",
-                    "pages": [
-                      "ko/pages/tools/solana-unity-sdk/core-concepts/associated-token-account",
-                      "ko/pages/tools/solana-unity-sdk/core-concepts/transfer-token",
-                      "ko/pages/tools/solana-unity-sdk/core-concepts/transaction-builder",
-                      "ko/pages/tools/solana-unity-sdk/core-concepts/staking",
-                      "ko/pages/tools/solana-unity-sdk/core-concepts/add-signature"
-                    ]
-                  },
-                  {
-                    "group": "가이드",
-                    "pages": [
-                      "ko/pages/tools/solana-unity-sdk/guides/mint-an-nft",
-                      "ko/pages/tools/solana-unity-sdk/guides/host-your-game",
-                      "ko/pages/tools/solana-unity-sdk/guides/publishing-a-game",
-                      "ko/pages/tools/solana-unity-sdk/guides/dex-integration",
-                      "ko/pages/tools/solana-unity-sdk/guides/jupiter",
-                      "ko/pages/tools/solana-unity-sdk/guides/additional-examples"
-                    ]
-                  }
                 ]
               },
               {
