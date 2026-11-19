@@ -44,15 +44,16 @@ Once transactions are submitted via specialized RPCs, the provisioner detects de
 <Steps>
   <Step title="Delegation">
     State accounts are delegated to the Ephemeral Rollup via the Delegation
-    Program, specifying parameters like lifetime and update frequency.
+    Program, specifying the ER validator.
   </Step>
   <Step title="Transaction Execution">
     Transactions are routed to the appropriate execution layer (base or
     Ephemeral) via an RPC router.
   </Step>
   <Step title="State Commitment">
-    The operator periodically commits the ephemeral state to the base layer,
-    including new state and relevant pointers. The state is finalized using a
+    The operator commits the ephemeral state to the base layer when your
+    program schedules a commit, including new state and relevant pointers.
+    Validators do not commit delegated accounts automatically. The state is finalized using a
     fraud-proof mechanism as detailed in the paper.
   </Step>
   <Step title="Continued Transaction Execution">

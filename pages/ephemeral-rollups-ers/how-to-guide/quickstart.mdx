@@ -146,8 +146,10 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
     1. Add `ephemeral-rollups-sdk` with Anchor features to your program
 
     ```bash
-    cargo add ephemeral-rollups-sdk --features anchor
+    cargo add ephemeral-rollups-sdk@0.18 --features anchor
     ```
+
+    Use `0.18.x` with the public ERs, which run validator 1.1.1. A plain `cargo add` without a version installs `0.20.x`, the validator 2.0 line (currently only `devnet-us`), which needs `anchor-lang` 1.2.2 or later.
 
     Import `delegate`, `commit`, `ephemeral`, `DelegateConfig`, and `MagicIntentBundleBuilder` (which replaces the deprecated `commit_accounts` and `commit_and_undelegate_accounts` helpers):
 
@@ -161,7 +163,7 @@ Build your program and upgrade it with delegation hooks with MagicBlock's Delega
     use ephemeral_rollups_sdk::ephem::MagicIntentBundleBuilder;
     ```
 
-    2.  Add `delegate` macro and instruction, `ephemeral` macro, and `undelegate` instruction to your program. Specify your preferred delegation config such as auto commits and specific ER validator:
+    2.  Add `delegate` macro and instruction, `ephemeral` macro, and `undelegate` instruction to your program. Specify your preferred delegation config, such as the ER validator. State reaches the base layer only when your program commits; the ER does not commit on a timer:
     <DelegateCode />
     <CommitCode />
     <UndelegateCode />

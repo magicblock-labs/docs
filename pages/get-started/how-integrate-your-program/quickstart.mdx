@@ -64,24 +64,36 @@ In Rust programs, you can use the `ephemeral_rollups_sdk` crate to delegate acco
 Install it with:
 
 ```bash
-cargo add ephemeral_rollups_sdk
+cargo add ephemeral-rollups-sdk@0.18
 ```
+
+Use `0.18.x` with the public ERs, which run validator 1.1.1. A plain `cargo add` without a version installs `0.20.x`, the validator 2.0 line (currently only `devnet-us`).
 
 Then use the `delegate_account` function to delegate an account to the delegation program.
 
 ```rust Delegation
-use ephemeral_rollups_sdk::cpi::delegate_account;
+use ephemeral_rollups_sdk::cpi::{delegate_account, DelegateAccounts, DelegateConfig};
 
 delegate_account(
-    &ctx.accounts.payer, // The account that will pay for opening the session
-    &ctx.accounts.pda, // The PDA to delegate
-    &ctx.accounts.owner_program, // Owner program of the PDA
-    ...
+    DelegateAccounts {
+        payer,               // The account that will pay for opening the session
+        pda,                 // The PDA to delegate
+        owner_program,       // Owner program of the PDA
+        buffer,              // Delegation buffer PDA
+        delegation_record,   // Delegation record PDA
+        delegation_metadata, // Delegation metadata PDA
+        delegation_program,  // Delegation Program
+        system_program,
+    },
     pda_seeds, // Seeds to make the PDA signer
-    0, // 0 means no time limit for the delegation
-    3_000, // Update frequency on the base layer in milliseconds
+    DelegateConfig {
+        validator: None, // Set Some(validator_pubkey) to pick a specific ER validator
+        ..Default::default()
+    },
 )?;
 ```
+
+State is written back to the base layer only when your program commits. The ER does not commit delegated accounts on a timer.
 
 <Note>
   Both delegation and undelegation are CPIs that can be integrated in existing
@@ -125,31 +137,24 @@ Additionally, custom CPI can instruct the ephemeral validators to `commit` and `
 To make it easier to integrate via the frontend, we created the [Magic Router](/pages/get-started/how-integrate-your-program/magic-router). You send  transactions directly to the magic router, and we can determine for you whether it should be routed to the [Ephemeral Rollup](/pages/get-started/introduction/ephemeral-rollup) or base layer. 
 
 ```typescript Frontend
-import { sendMagicTransaction } from "magic-router-sdk";
+import { sendAndConfirmTransaction, Transaction } from "@solana/web3.js";
+import { ConnectionMagicRouter } from "@magicblock-labs/ephemeral-rollups-sdk";
 
-const routerConnection = new Connection("https://devnet-router.magicblock.app", "confirmed");
+const connection = new ConnectionMagicRouter(
+  "https://devnet-router.magicblock.app/",
+  { wsEndpoint: "wss://devnet-router.magicblock.app/" }
+);
 
-// Construct a standard Solana transaction
-const tx = await exampleClient.current?.methods
-  .exampleMethod(0)
-  .accounts({
-      user: userPda,
-      user: userKeypair.current.publicKey,
-  }).transaction() as Transaction;
+// Construct a standard Solana transaction with your program's instruction
+const tx = new Transaction().add(exampleInstruction);
 
-const noopInstruction = new TransactionInstruction({
-      programId: new PublicKey('11111111111111111111111'),
-      keys: [],
-      data: Buffer.from(crypto.getRandomValues(new Uint8Array(5))),
-  });
-transaction.add(noopInstruction);
-
-// Send the transaction
-const signature = await sendMagicTransaction(
-  routerConnection,
-  tx,
-  [userKeypair]
-)
+// Send the transaction through the router
+const signature = await sendAndConfirmTransaction(connection, tx, [userKeypair], {
+  skipPreflight: true,
+  commitment: "confirmed",
+});
 ```
+
+Install the SDK with `yarn add @magicblock-labs/ephemeral-rollups-sdk@0.18` for the public ERs.
 
 <Endpoints/>
