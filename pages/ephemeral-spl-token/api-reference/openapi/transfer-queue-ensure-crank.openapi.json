@@ -29,11 +29,11 @@
                   },
                   "cluster": {
                     "anyOf": [
-                      { "type": "string", "enum": ["mainnet", "devnet"] },
-                      { "type": "string" }
+                      { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
+                      { "type": "string", "format": "uri" }
                     ],
                     "example": "mainnet",
-                    "description": "Optional. Cluster selector or custom http(s) RPC URL."
+                    "description": "Optional, defaults to `mainnet`. `mainnet` and `devnet` route to the public ephemeral RPC for that network; `mainnet-private` and `devnet-private` route to the TEE-backed Private Ephemeral Rollup and are required for auth and bearer-token-gated reads. A custom http(s) RPC URL overrides only the base RPC while keeping the configured ephemeral RPC."
                   },
                   "validator": {
                     "type": "string",

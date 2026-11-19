@@ -22,12 +22,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "owner": { "type": "string" },
+                  "payer": { "type": "string", "example": "3rXKwQ1kpjBd5tdcco32qsvqUh1BnZjcYnS5kYrP7AYE" },
                   "cluster": { "type": "string" },
                   "mint": { "type": "string" },
                   "validator": { "type": "string" }
                 },
-                "required": ["owner", "mint"]
+                "required": ["payer", "mint"]
               }
             }
           }

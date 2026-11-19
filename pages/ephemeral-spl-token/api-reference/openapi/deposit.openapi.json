@@ -29,11 +29,11 @@
                   },
                   "cluster": {
                     "anyOf": [
-                      { "type": "string", "enum": ["mainnet", "devnet"] },
-                      { "type": "string" }
+                      { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
+                      { "type": "string", "format": "uri" }
                     ],
                     "example": "mainnet",
-                    "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+                    "description": "Optional, defaults to `mainnet`. `mainnet` and `devnet` route to the public ephemeral RPC for that network; `mainnet-private` and `devnet-private` route to the TEE-backed Private Ephemeral Rollup and are required for auth and bearer-token-gated reads. A custom http(s) RPC URL overrides only the base RPC while keeping the configured ephemeral RPC."
                   },
                   "mint": {
                     "type": "string",
@@ -51,11 +51,16 @@
                     "example": "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57",
                     "description": "Optional. Defaults to the selected ephemeral RPC identity resolved via `getIdentity`."
                   },
-                  "initIfMissing": { "type": "boolean", "description": "Optional. Initialize the transfer queue if missing." },
+                  "initIfMissing": { "type": "boolean", "description": "Optional. Defaults to `true`. Adds the instruction that initializes the owner's ephemeral ATA (eATA) if it does not exist. The transfer queue is initialized by `/v1/spl/initialize-mint`." },
                   "initVaultIfMissing": { "type": "boolean", "description": "Optional. Initialize the vault if missing." },
                   "initAtasIfMissing": { "type": "boolean", "description": "Optional. Initialize associated token accounts if missing." },
-                  "idempotent": { "type": "boolean", "description": "Optional. When `true`, the API uses idempotent variants for any preparatory init instructions." },
-                  "private": { "type": "boolean", "default": true, "description": "Optional. When `true`, the deposited balance is kept private." }
+                  "idempotent": { "type": "boolean", "description": "Optional. Defaults to `true`. Selects the deposit builder: `true` uses the shuttle flow, `false` the legacy direct deposit. Both leave the eATA delegated." },
+                  "private": { "type": "boolean", "default": true, "description": "Optional. When `true`, the deposited balance is kept private." },
+                  "gasless": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Optional. Defaults to false. Uses the configured sponsor as payer and charges 0.2 USDC/USDT from the owner's existing base-chain ATA, in addition to amount. Requires an existing sponsor ATA, an on-curve owner, mainnet USDC/USDT or devnet USDC (including private clusters), and amount of at least 0.5 tokens. Custom clusters are unsupported. The returned transaction includes the sponsor signature; the owner must still sign."
+                  }
                 },
                 "required": ["owner", "amount"],
                 "example": {
