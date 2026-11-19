@@ -28,10 +28,12 @@ after a commit; the validator pays its transaction fee. The handler may still ne
 an on-chain payer for any **rent** it creates (e.g. initializing an ATA). For that
 the delegation program uses an **ephemeral balance escrow** — a SOL-holding PDA
 derived from `[b"balance", escrow_auth, escrow_index]`
-— and injects two accounts into your `#[action]` context: `escrow_auth` (the payer
+— and appends three accounts after the ones you list in `ShortAccountMeta`:
+`source_program` (the program that scheduled the action), `escrow_auth` (the payer
 identity that owns the balance — a user wallet or a program PDA) and `escrow` (the
 SOL PDA itself, which the delegation program **signs via `invoke_signed`** when it
-runs the action, so the handler can spend it for rent).
+runs the action, so the handler can spend it for rent). This is the order for
+actions scheduled with `MagicIntentBundleBuilder`.
 
 That escrow signature is also the authentication anchor. A `#[action]` handler
 is otherwise a normal base-layer instruction — for **any** work it performs
@@ -43,13 +45,21 @@ constraints only pin *which* accounts are passed; only the injected `escrow`
 signer proves the delegation program dispatched the call (no wallet or other
 program can sign for that PDA). `ActionArgs::new` defaults `escrow_index` to `255`.
 
-On every handler, require `escrow` as `signer` pinned to its derivation. When the
-handler acts with a program-owned PDA, also bind `escrow_auth` to that PDA:
+On every handler, declare `source_program`, `escrow_auth` and `escrow` after your
+own accounts, in that order, and require `escrow` as `signer` pinned to its
+derivation. If you leave out `source_program`, Anchor binds `escrow_auth` to the
+source program and `escrow` to the escrow authority, and the `signer` check fails
+on every real action. When the handler acts with a program-owned PDA, also bind
+`escrow_auth` to that PDA:
 
 ```rust
 pub const ACTION_ESCROW_INDEX: u8 = 255; // ActionArgs::new default
 
-// In the #[action] accounts context:
+// In the #[action] accounts context, after your own accounts:
+
+/// CHECK: the program that scheduled the action.
+#[account(address = crate::ID)]
+pub source_program: UncheckedAccount<'info>,
 
 /// CHECK: payer identity the action was scheduled with. When the handler acts
 /// with a program-owned PDA, bind this to that PDA so only actions *your*
@@ -90,8 +100,12 @@ default.
 
 - Handlers execute on base layer and consume base-layer fees
 - Standard Solana limits apply (compute, account locks)
-- Atomicity: any action failure reverts the commit
-- First two action accounts are injected (`escrow`, `escrow_auth`)
+- Actions are not atomic with the commit. If an action fails on the base layer,
+  the validator drops the actions and retries the commit without them. A landed
+  commit or undelegation does not prove the action ran, so don't rely on a
+  failing action to block settlement.
+- The delegation program appends `source_program`, `escrow_auth` and `escrow`
+  after your action accounts (see [Authenticate the caller](#security-authenticate-the-caller))
 
 ### Helpful links
 

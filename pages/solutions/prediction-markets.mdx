@@ -53,7 +53,9 @@ MagicBlock feature that solves it.
   <Step title="Commit and settle">
     Commit final state while remaining delegated for continued trading, or commit and undelegate when
     the market closes. Use a Magic Action when the commit must trigger a base-layer payout or another
-    Solana instruction.
+    Solana instruction. Actions are not atomic with the commit: if the payout action fails, the
+    validator retries the commit without it, so a landed commit or undelegation does not prove the
+    payout ran. Check the payout on the base layer before treating the market as settled.
   </Step>
 </Steps>
 

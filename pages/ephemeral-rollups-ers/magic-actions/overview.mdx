@@ -37,8 +37,9 @@ import AIDevSkillCallout from "/snippets/ai-dev-skill-callout.mdx";
 ### What are Magic Actions?
 
 Magic Actions let you attach one or more call instructions that run automatically on the Solana base layer immediately after an Ephemeral Rollup
-(ER) commit. Use committed state as inputs to orchestrate multi-step workflows in
-a single transaction.
+(ER) commit. Use committed state as inputs to orchestrate multi-step workflows.
+Actions are not atomic with the commit: if an action fails, the validator retries
+the commit without the actions (see [Troubleshooting](/pages/ephemeral-rollups-ers/magic-actions/troubleshooting)).
 
 - **State sync**: propagate ER changes to base-layer accounts
 - **Cross-program composition**: invoke other programs after commit

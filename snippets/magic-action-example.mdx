@@ -33,6 +33,6 @@ You can commit multiple accounts and chain several actions in one call. Actions 
 
 ### Undelegate with actions
 
-Actions can also be chained onto an undelegation — the counter commits, undelegates, and the actions run, all atomically in one ER transaction.
+Actions can also be chained onto an undelegation: the counter commits and undelegates, then the actions run on the base layer. Actions are not atomic with the commit. If an action fails, the validator drops the actions and retries the commit and undelegation without them.
 
 <OtherActionsCode />

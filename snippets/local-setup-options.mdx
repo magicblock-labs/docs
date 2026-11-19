@@ -16,12 +16,16 @@ When using a local ER validator, connect it to the base layer where the accounts
 
 <Validators />
 
+<Note>
+  The commands below are for `ephemeral-validator` 1.1.1, the version the public ERs run. `@latest` installs 2.0.x, whose CLI only accepts `--remotes`, `-l` and `-m`, so the `--lifecycle` commands below fail on it.
+</Note>
+
 <Tabs>
   <Tab title="Fully local">
     <Steps>
       <Step title="Install the Ephemeral Validator CLI">
         ```bash
-        npm install -g @magicblock-labs/ephemeral-validator@latest
+        npm install -g @magicblock-labs/ephemeral-validator@1.1.1
         ```
       </Step>
 
@@ -100,7 +104,7 @@ When using a local ER validator, connect it to the base layer where the accounts
 
       <Step title="Install the Ephemeral Validator CLI">
         ```bash
-        npm install -g @magicblock-labs/ephemeral-validator@latest
+        npm install -g @magicblock-labs/ephemeral-validator@1.1.1
         ```
       </Step>
 
@@ -160,14 +164,14 @@ When using a local ER validator, connect it to the base layer where the accounts
 
       <Step title="Install and run the local ephemeral validator">
         ```bash
-        npm install -g @magicblock-labs/ephemeral-validator@latest
+        npm install -g @magicblock-labs/ephemeral-validator@1.1.1
         ```
 
         ```bash
         RUST_LOG=info ephemeral-validator \
           --lifecycle ephemeral \
-          --remote-url "https://rpc.magicblock.app/devnet" \
-          --rpc-port 7799
+          --remotes "https://rpc.magicblock.app/devnet" \
+          -l "7799"
         ```
       </Step>
 
@@ -202,9 +206,9 @@ When using a local ER validator, connect it to the base layer where the accounts
 If you also need to test VRF end to end, run a local `vrf-oracle` against a local test queue.
 
 <Steps>
-  <Step title="Install the latest Ephemeral Validator CLI">
+  <Step title="Install the Ephemeral Validator CLI">
     ```bash
-    npm install -g @magicblock-labs/ephemeral-validator@latest
+    npm install -g @magicblock-labs/ephemeral-validator@1.1.1
     ```
   </Step>
 
@@ -216,7 +220,7 @@ If you also need to test VRF end to end, run a local `vrf-oracle` against a loca
 
   <Step title="Start the ephemeral validator">
     ```bash
-    ephemeral-validator --remote-url "http://localhost:8899" --rpc-port 7799 --lifecycle ephemeral
+    ephemeral-validator --remotes "http://localhost:8899" --remotes "ws://localhost:8900" -l "7799" --lifecycle ephemeral
     ```
   </Step>
 
@@ -224,7 +228,7 @@ If you also need to test VRF end to end, run a local `vrf-oracle` against a loca
     This oracle adds requests to the local test queue:
 
     ```bash
-    VRF_ORACLE_SKIP_PREFLIGHT="true" RPC_URL="http://localhost:8899" WEBSOCKET_URL="ws://localhost:8999" RUST_LOG=info vrf-oracle
+    VRF_ORACLE_SKIP_PREFLIGHT="true" RPC_URL="http://localhost:8899" WEBSOCKET_URL="ws://localhost:8900" RUST_LOG=info vrf-oracle
     ```
 
     If your local validator exposes a different WebSocket port, update `WEBSOCKET_URL` accordingly.
