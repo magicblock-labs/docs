@@ -39,7 +39,36 @@ This guide demonstrates how to implement cranks using **MagicBlock's Ephemeral R
 5. User calls undelegate() on Ephemeral Rollup
    └─> Commits changes and moves Counter back to Solana base layer
 ```
+<Note>
+  This guide describes the scheduler in validator 1.1.1, which the mainnet ERs and devnet-eu/devnet-as run. devnet-us runs validator 2.0.0, where cranks run through Hydra and `ScheduleTask` rejects any signer account in the scheduled instruction.
+</Note>
+
+<Warning>
+  On validator 1.1.1, task IDs are shared by every program on the validator. If another program already holds your `task_id`, your `ScheduleTask` transaction still succeeds, but the scheduler rejects the task afterwards and it never runs. Don't hardcode `task_id: 1`; derive an ID that is unique to your program and account. On validator 2.0, IDs are scoped to the scheduling authority.
+</Warning>
+
 ## Core Components
+
+### Dependencies
+
+Besides `anchor-lang`, the snippets below use these crates and imports:
+
+```toml
+[dependencies]
+magicblock-magic-program-api = "0.10.1"
+bincode = "1.3.3"
+```
+
+```rust
+use anchor_lang::prelude::*;
+use anchor_lang::solana_program::{
+    instruction::{AccountMeta, Instruction},
+    program::invoke_signed,
+};
+use magicblock_magic_program_api::{
+    args::ScheduleTaskArgs, instruction::MagicBlockInstruction, ID as MAGIC_PROGRAM_ID,
+};
+```
 
 ### Scheduled Function
 Let's take for example that you wanted to schedule the following simple increment instruction for a counter. 
@@ -56,6 +85,9 @@ pub fn increment(ctx: Context<Increment>) -> Result<()> {
 }
 ```
 
+<Warning>
+  A scheduled instruction is an ordinary instruction: anyone can also call `increment` directly. That is fine for this counter, but don't schedule an instruction that moves funds or changes privileged state unless the instruction itself checks who is allowed to call it.
+</Warning>
 
 ### Schedule Increment Function
 
@@ -116,9 +148,9 @@ pub fn schedule_increment(ctx: Context<ScheduleIncrement>, args: ScheduleIncreme
 ```rust
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ScheduleIncrementArgs {
-    pub task_id: u64,                      // Unique identifier for the task
-    pub execution_interval_millis: u64,    // Time between executions in milliseconds
-    pub iterations: u64,                   // Number of times to execute
+    pub task_id: i64,                      // Unique identifier for the task
+    pub execution_interval_millis: i64,    // Time between executions in milliseconds
+    pub iterations: i64,                   // Number of times to execute
 }
 ```
 ### ScheduleIncrement Context
