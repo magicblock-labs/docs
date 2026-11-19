@@ -10,7 +10,7 @@ This section documents the Solana JSON-RPC HTTP method catalog on MagicBlock end
 **Devnet:**
 
 - `https://devnet-as.magicblock.app/`
-- `https://devnet-us.magicblock.app/`
+- `https://devnet-us.magicblock.app/` (runs validator 2.0; the other public ERs run 1.1.1)
 - `https://devnet-eu.magicblock.app/`
 - `https://devnet-tee.magicblock.app/`
 
@@ -22,6 +22,8 @@ This section documents the Solana JSON-RPC HTTP method catalog on MagicBlock end
 - `https://as-tyo.magicblock.app/`
 - `https://sa.magicblock.app/`
 - `https://mainnet-tee.magicblock.app/`
+
+`devnet-us` runs validator 2.0, which reports commits through settlement outbox logs instead of the `ScheduledCommitSent` logs of 1.1.1. SDK `0.18.x` reads both log formats. SDK `0.20.x` reads only the 2.0 format, so use it only against 2.0 endpoints such as `devnet-us`.
 
 The method catalog is aligned with Solana RPC HTTP methods:
 

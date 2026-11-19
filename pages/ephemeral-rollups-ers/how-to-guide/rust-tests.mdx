@@ -93,12 +93,14 @@ The complete test for this project can be found in the [Typescript Test Script](
 
     <CodeGroup>
       ```bash kit
-      yarn add @magicblock-labs/ephemeral-rollups-kit@latest
+      yarn add @magicblock-labs/ephemeral-rollups-kit@0.18
       ```
       ```bash web3.js
-      yarn add @magicblock-labs/ephemeral-rollups-sdk@latest
+      yarn add @magicblock-labs/ephemeral-rollups-sdk@0.18
       ```
     </CodeGroup>
+
+    Use `0.18.x` (npm tag `legacy`) with the public ERs, which run validator 1.1.1. `@latest` installs `0.20.x`, the validator 2.0 line (currently only `devnet-us`). In `0.20.x`, `GetCommitmentSignature` reads only validator 2.0 logs and throws `Settlement outbox address not found in scheduling logs` on a 1.1.1 ER. `0.18.x` reads both.
 
     <Endpoints />
     <CodeGroup>

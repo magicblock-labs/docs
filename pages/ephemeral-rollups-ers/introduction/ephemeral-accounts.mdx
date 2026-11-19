@@ -3,7 +3,7 @@ title: "Ephemeral Accounts"
 description: "Create, resize, and close accounts that live entirely on the Ephemeral Rollup."
 ---
 
-Ephemeral accounts are accounts that exist only within the Ephemeral Rollup. A **sponsor** account (which is delegated to the ER) pays rent on behalf of ephemeral accounts at **32 lamports/byte** — 109x cheaper than Solana's base rent.
+Ephemeral accounts are accounts that exist only within the Ephemeral Rollup. A **sponsor** account (which is delegated to the ER) pays rent on behalf of ephemeral accounts at **32 lamports per byte**, counting 60 bytes of overhead: `(data bytes + 60) * 32`. For comparison, Solana's rent-exempt minimum is 5,080 lamports per byte, counting 128 bytes of overhead (`(data bytes + 128) * 5,080`), as of November 2026. Solana's rate can change; check it with `getMinimumBalanceForRentExemption`.
 
 **Key properties:**
 
