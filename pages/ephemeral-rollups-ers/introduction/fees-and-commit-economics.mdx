@@ -46,7 +46,9 @@ the prices above.
 ## 1. The deposit you fund on Solana
 
 Delegating an account creates two small Solana accounts: a **delegation record** and **delegation
-metadata**. The delegation payer funds both accounts so they are rent-exempt.
+metadata**. The delegation payer funds both accounts. The Delegation Program funds them at
+`(account bytes + 128) * 6,960` lamports, a fixed legacy rate that is higher than Solana's current
+rent-exempt minimum (`(account bytes + 128) * 5,080` lamports as of November 2026).
 
 The deposit is about the same size as the session charge, so expect to get little or none of it
 back. It is not a one-time fee that buys unlimited commits.

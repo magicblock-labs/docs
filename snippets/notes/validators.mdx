@@ -45,7 +45,7 @@
     <code>MEUGGrYPxKk17hCr7wpT6s8dtNokZj5U2L57vjYMS8e</code>
   </li>
   <li>
-    US (devnet-us.magicblock.app):{" "}
+    US (devnet-us.magicblock.app, validator 2.0):{" "}
     <code>MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd</code>
   </li>
   <li>
@@ -53,6 +53,10 @@
     <code>MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo</code>
   </li>
 </ul>
+
+devnet-us runs validator 2.0. Every other validator above runs 1.1.1. SDK
+`0.18.x` reads the commit logs of both; SDK `0.20.x` reads only 2.0 commit
+logs, so use it only with devnet-us.
 
 **Localnet**
 
