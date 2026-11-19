@@ -15,7 +15,10 @@ description: "Common questions about Ephemeral Rollups: delegating accounts and 
         **Yes.** Delegated accounts can benefit from all Solana programs and accounts. Every account on Solana is readable on ER, while only delegated account can be changed on ER within an atomic transaction. 
     </Accordion>
     <Accordion title="Are compute unit limits and account size caps the same on ER as on Solana?">
-        **Mostly yes.** The ER runs the SVM, so the default **200k CU per instruction**, the **1.4M CU per transaction** cap (via `SetComputeUnitLimit`), and the **10 MiB max account size** all match Solana. The exception is transaction size: the ER accepts serialized transactions up to **64 KB**, versus 1,232 bytes on the base layer. See [Runtime Limits](/pages/ephemeral-rollups-ers/introduction/runtime-limits).
+        **Mostly yes.** The ER runs the SVM, so the default **200k CU per instruction**, the **1.4M CU per transaction** cap (via `SetComputeUnitLimit`), and the **10 MiB max account size** all match Solana. The exceptions are transaction size (the ER accepts serialized transactions up to **64 KB**, versus 1,232 bytes on the base layer) and commits: the validator only commits accounts of up to **10,240 bytes** back to Solana. See [Runtime Limits](/pages/ephemeral-rollups-ers/introduction/runtime-limits).
+    </Accordion>
+    <Accordion title="What does skipPreflight do on the ER?">
+        On the ER, `sendTransaction` does not simulate first. Without `skipPreflight`, the ER executes the transaction and returns its error to the caller. With `skipPreflight: true`, the ER queues the transaction and returns the signature right away, so an execution error only shows up when you check the signature status. In both cases a failed transaction is executed and recorded as failed.
     </Accordion>
     <Accordion title="Should developers use slot time as a reliable timing mechanism?">
         **No.** As of 2026-08-05, Solana uses a **400 ms slot time**, while MagicBlock’s Execution Runtime (ER) operates with a **10 ms slot time**. Developers may be tempted to rely on slot time as a fixed-duration measure; however, **slot times are not guaranteed and may change over time**. Code or logic that depends on a specific slot duration should therefore be written with caution.

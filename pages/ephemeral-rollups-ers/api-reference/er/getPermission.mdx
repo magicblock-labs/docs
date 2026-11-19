@@ -1,7 +1,15 @@
 ---
-title: "getPermission"
-openapi: "POST /getPermission"
-servers:
-  - url: "https://devnet-tee.magicblock.app/permission"
-    description: "Devnet - TEE ER Validator"
+title: "getPermission (deprecated)"
+description: "The /permission endpoint has been removed from the TEE validators."
 ---
+
+<Warning>
+  This endpoint is deprecated and no longer available. Requests to `https://devnet-tee.magicblock.app/permission` and
+  `https://mainnet-tee.magicblock.app/permission` return `404 Not Found`, so
+  the SDK helpers that call it fail: `getPermissionStatus` throws and
+  `waitUntilPermissionActive` returns `false`.
+</Warning>
+
+To create, update, and close permissions for accounts in a Private Ephemeral
+Rollup, use the Permission Program instead. See
+[Access Control](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control).

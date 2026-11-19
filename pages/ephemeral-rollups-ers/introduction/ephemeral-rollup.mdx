@@ -24,8 +24,8 @@ import Validators from "/snippets/notes/validators.mdx";
     State accounts must be delegated to an specific ER validator first by
     changing the account owner to the [Delegation
     Program](https://github.com/magicblock-labs/delegation-program)
-    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` and specifying parameters
-    like ER validator, account lifetime and synchronization frequency.
+    `DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh` and specifying the ER
+    validator.
     <Validators />
 
   </Step>
@@ -37,8 +37,9 @@ import Validators from "/snippets/notes/validators.mdx";
     to the ephemeral rollup.
   </Step>
   <Step title="Commit State">
-    The operator commits the ephemeral state to the base layer **periodically or
-    on-demand**, including new state and relevant pointers. The account state is
+    The operator commits the ephemeral state to the base layer **on demand**,
+    when your program schedules a commit, including new state and relevant
+    pointers. Validators do not commit delegated accounts automatically. The account state is
     finalized using a fraud-proof mechanism as detailed in the paper.
   </Step>
   <Step title="Execute Transaction in real-time continuously">

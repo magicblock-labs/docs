@@ -115,10 +115,11 @@
                         },
                         "fqdn": {
                           "type": "string",
-                          "description": "Fully qualified domain name"
+                          "description": "ER endpoint that holds the account. Present only when isDelegated is true."
                         },
                         "delegationRecord": {
                           "type": "object",
+                          "description": "Delegation record of the account. Present only when isDelegated is true.",
                           "properties": {
                             "authority": {
                               "type": "string",
@@ -146,8 +147,7 @@
                         }
                       },
                       "required": [
-                        "isDelegated",
-                        "delegationRecord"
+                        "isDelegated"
                       ]
                     },
                     "error": {
