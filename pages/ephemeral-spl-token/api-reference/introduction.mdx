@@ -86,10 +86,12 @@ The Ephemeral SPL Token API builds unsigned SPL token transactions for deposits,
 
 Endpoints that read private data inside the Private Ephemeral Rollup require a bearer token:
 
-1. `GET /v1/spl/challenge?pubkey=<wallet>` returns a `challenge` string
+1. `GET /v1/spl/challenge?pubkey=<wallet>&cluster=mainnet-private` returns a `challenge` string
 2. The wallet signs the challenge
-3. `POST /v1/spl/login` with `{ pubkey, challenge, signature }` returns a `token`
-4. Pass `Authorization: Bearer <token>` on `/v1/spl/private-balance` (required) and on `/v1/spl/transfer` requests that need to connect to the Private Ephemeral Rollup (optional)
+3. `POST /v1/spl/login` with `{ pubkey, challenge, signature, cluster: "mainnet-private" }` returns a `token`
+4. Pass `Authorization: Bearer <token>` on `/v1/spl/private-balance` (required) and on `/v1/spl/transfer` requests that need to connect to the Private Ephemeral Rollup (optional), with the same `cluster`
+
+Use `devnet-private` on devnet. Only `mainnet-private` and `devnet-private` route to the TEE-backed Private Ephemeral Rollup. Without one of them the challenge is a mock (it starts with `MOCK:`), and private transfers run on the public Ephemeral Rollup.
 
 ## Response Format
 

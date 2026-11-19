@@ -16,8 +16,9 @@ import QuickAccessSpl from "/snippets/quick-access-spl.mdx";
 
 **Private Payments** are the privacy use case built on top of [SPL tokens on
 ER](/pages/ephemeral-spl-token/overview). The same
-deposit / transfer / withdraw primitive runs with **private visibility**, so the amount, destination,
-and timing of a payment are shielded rather than broadcast publicly.
+deposit / transfer / withdraw primitive runs with **private visibility**: the destination is encrypted
+and settlement is delayed and can be split, which weakens the link between sender and recipient. The
+amount is still visible on the base layer.
 
 <Note>
   New to the primitive? Read the [Ephemeral SPL Tokens
@@ -53,8 +54,10 @@ unsigned transactions you sign and submit.
 
 Private payments rely on:
 
-- **Private visibility** — transfers execute inside the Ephemeral Rollup with `visibility: "private"`,
-  so the transfer is not broadcast publicly.
+- **Private visibility** — transfers run with `visibility: "private"`. Set `cluster` to
+  `mainnet-private` or `devnet-private` on every request so they run on the TEE-backed Private
+  Ephemeral Rollup. With `mainnet` or `devnet`, the same request runs on the public Ephemeral Rollup,
+  whose state anyone can read.
 - **Stealth handles** — send to a human-readable name (e.g. `alice@magicblock.id`) instead of a raw
   public key. The handle resolves to one or more destination keys via a **stealth pool**, breaking the
   direct sender → recipient link on-chain.
@@ -62,8 +65,9 @@ Private payments rely on:
   a direct, immediately-linkable movement.
 
 <Warning>
-  Privacy here reduces **linkability**, not total observability. Amounts and timing may still be
-  inferable at the network level. Threat-model your assumptions.
+  Privacy here reduces **linkability**, not total observability. The amount is visible on the base
+  layer, in the transfer instruction and in the token transfer out of the sender's account. Timing
+  may still be inferable at the network level. Threat-model your assumptions.
 </Warning>
 
 ---
@@ -71,11 +75,14 @@ Private payments rely on:
 ## Authentication
 
 Private reads and stealth-pool operations require a bearer token. Obtain one with the challenge/login
-flow before calling protected endpoints:
+flow before calling protected endpoints. Pass `cluster=mainnet-private` or `cluster=devnet-private`
+on the challenge, the login, and every protected call. Without a `-private` cluster the challenge is
+a mock (it starts with `MOCK:`).
 
 <Steps>
   <Step title="Request a challenge">
-    `GET /v1/spl/challenge` returns a message for the user to sign.
+    `GET /v1/spl/challenge?pubkey=<wallet>&cluster=mainnet-private` returns a message for the user to
+    sign.
   </Step>
   <Step title="Log in">
     `POST /v1/spl/login` exchanges the signed challenge for a bearer token.
@@ -148,9 +155,11 @@ relay fee** from the sender's balance. Because the relay fee is flat, gasless tr
 minimum of **0.5 USDC/USDT**; the minimum applies only to the gasless mode, not to private transfers
 in general. Amounts below it can still be sent with `visibility: "private"` by omitting `gasless`.
 
-A first private transfer may also include a one-time **~0.00204 SOL** of rent to set up the ephemeral
-token account. All token-denominated fees are reported in the transfer response as `fees.tokens`, and
-SOL-denominated costs as `fees.lamports`.
+Every private base → base transfer also pays a **setup charge in SOL**, on each transfer, not only the
+first: **2,039,280 lamports (~0.00204 SOL)** on mainnet and **4,539,280 lamports (~0.00454 SOL)** on
+devnet. All token-denominated fees are reported in the transfer response as `fees.tokens`, and
+SOL-denominated costs as `fees.lamports`. On devnet, `fees.lamports` currently reports 2,039,280,
+below what the program charges.
 
 <Note>
   A `gasless: true` request below the minimum, or with an unsupported mint, is rejected with a `400`

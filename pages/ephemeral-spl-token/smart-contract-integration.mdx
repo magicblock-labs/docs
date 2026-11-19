@@ -24,7 +24,7 @@ import AIDevSkillCallout from "/snippets/ai-dev-skill-callout.mdx";
 
 <CardGroup cols={3}>
   <Card title="binary-prediction" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/binary-prediction" iconType="duotone">
-    eATA custody end to end
+    eATA custody on the ER
   </Card>
   <Card title="rewards-delegated-vrf" icon="github" href="https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/rewards-delegated-vrf" iconType="duotone">
     Base-layer post-commit payouts
@@ -72,8 +72,8 @@ back to Solana:
   <Step title={<a href="#4-pda-signed-transfer">Move tokens PDA-signed</a>}>
     Sign the transfer as the custody PDA inside the rollup.
   </Step>
-  <Step title={<a href="#5-commit-undelegate">Commit & undelegate</a>}>
-    Return the account to the base layer.
+  <Step title={<a href="#5-commit-undelegate">Undelegate the eATA</a>}>
+    CPI into the Ephemeral SPL Token program to return the eATA to the base layer.
   </Step>
 </Steps>
 
@@ -128,9 +128,13 @@ authorizes the payout itself, with no user signature.
 
 [⬆️ Back to Top](#code-snippets)
 
-#### 5. Commit & undelegate {#5-commit-undelegate}
+#### 5. Undelegate the eATA {#5-commit-undelegate}
 
-Commit the ER state and return the account to the base layer with `MagicIntentBundleBuilder`.
+Return the eATA to the base layer with a CPI to the Ephemeral SPL Token program
+(`UndelegateEphemeralAta`, discriminator `5`), signed by the custody PDA that owns the eATA. Run it
+on the ER. `MagicIntentBundleBuilder::commit_and_undelegate(&[pool])` does not do this: it commits
+only the accounts you list, so the eATA stays delegated. If the `Pool` account was never delegated,
+that call fails with `InvalidWritableAccount`.
 
 <CommitCode />
 

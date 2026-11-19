@@ -22,10 +22,18 @@ import ProgramCode from "/snippets/spl-tokens-code/program.mdx";
 <QuickAccessSpl />
 
 <Note>
-  Snippets target `@magicblock-labs/ephemeral-rollups-sdk` **v0.14.3** with the legacy-vault path. The
-  idempotent-shuttle path targets v0.15.3 — keep the same path across `delegateSpl` / `undelegateIx` /
-  `withdrawSpl` within one lifecycle.
+  Snippets target `@magicblock-labs/ephemeral-rollups-sdk` **v0.18.0** (npm dist-tag `legacy`) and use
+  the legacy vault path (`idempotent: false`): deposit, undelegate, then withdraw. Without
+  `idempotent: false`, `delegateSpl` and `withdrawSpl` use the shuttle path, which is already the
+  default in v0.14.3. A shuttle withdrawal works on a delegated eATA without `undelegateIx`. Both
+  deposit paths leave the eATA delegated, and `undelegateIx` takes no path option.
 </Note>
+
+<Warning>
+  Pin v0.18.x. Its `GetCommitmentSignature` reads the commit logs of both validator 1.1.1 (the public
+  ERs) and validator 2.0 (devnet-us today). v0.17.x and earlier fail on 2.0 endpoints, and v0.20.x
+  fails on 1.1.1 endpoints. An unpinned `yarn add` installs v0.20.x.
+</Warning>
 
 ---
 
@@ -41,7 +49,7 @@ Solana:
     creates the shared Global Vault.
   </Step>
   <Step title={<a href="#2-transfer">Transfer on the ER</a>}>
-    Move tokens between eATAs inside the rollup — public or private.
+    Move tokens between token accounts inside the rollup, public or private.
   </Step>
   <Step title={<a href="#3-undelegate">Undelegate & commit</a>}>
     Undelegate on the ER and wait for the commit back to base.
@@ -60,7 +68,7 @@ Solana:
 Install the SDK:
 
 ```bash
-yarn add @magicblock-labs/ephemeral-rollups-sdk@0.14.3
+yarn add @magicblock-labs/ephemeral-rollups-sdk@0.18.0
 ```
 
 ### Code Snippets
@@ -75,7 +83,9 @@ yarn add @magicblock-labs/ephemeral-rollups-sdk@0.14.3
     [⬆️ Back to Top](#code-snippets)
   </Tab>
   <Tab title="2. Transfer">
-    `transferSpl` moves tokens between eATAs inside the rollup. Send on the **ephemeral** provider. Set
+    `transferSpl` moves tokens inside the rollup. On the ER, each owner's delegated eATA balance shows up
+    as a normal SPL token account at the owner's associated token address (ATA), and the transfer is
+    an SPL transfer between those ATAs. Send on the **ephemeral** provider. Set
     `visibility: "private"` for a private payment or `"public"` for a normal fast transfer.
 
     <TransferCode />
@@ -90,6 +100,8 @@ yarn add @magicblock-labs/ephemeral-rollups-sdk@0.14.3
   </Tab>
   <Tab title="4. Withdraw">
     `withdrawSpl` moves the balance out of the Global Vault back to the owner's base-layer ATA.
+    A balance received in a Magic ATA cannot take the undelegate path. Withdraw it with
+    `withdrawSpl(owner, mint, amount, { magicAtaSource: true })`, available from v0.17.1.
 
     <WithdrawCode />
     [⬆️ Back to Top](#code-snippets)
