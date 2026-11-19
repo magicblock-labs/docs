@@ -55,7 +55,8 @@ Token program introduces two account types.
 
 An **ephemeral ATA** is a program-owned PDA derived from `[owner, mint]` that holds a single `u64`
 balance. It is **not** a real SPL token account — it is a lightweight balance record that can be
-delegated to the ER and mutated there at high speed.
+delegated to the ER. While it is delegated, the ER shows that balance as a normal SPL token account
+at the owner's associated token address (ATA), so ER transfers are plain SPL transfers between ATAs.
 
 ### Global Vault
 
@@ -80,11 +81,12 @@ eATAs follow the standard Ephemeral Rollup lifecycle:
     a MagicBlock validator so it can be mutated inside the ER.
   </Step>
   <Step title="Transact on the ER">
-    Transfer between eATAs inside the rollup at low latency. Transfers can be **public** or
+    Transfer between the owners' ATAs inside the rollup at low latency. Transfers can be **public** or
     **private** (`visibility`).
   </Step>
   <Step title="Undelegate & commit">
-    The eATA is committed and undelegated back to the base layer.
+    The eATA is committed and undelegated back to the base layer. The SDK's default (shuttle)
+    withdrawal does not need this step: it withdraws from the delegated eATA.
   </Step>
   <Step title="Withdraw">
     Tokens move out of the Global Vault back to a standard base-layer SPL token account.
@@ -97,11 +99,13 @@ eATAs follow the standard Ephemeral Rollup lifecycle:
 
 The primitive supports both:
 
-- **Public** — a normal fast transfer between eATAs on the ER.
-- **Private (Private Payments)** — the destination and settlement are shielded: private `visibility`,
-  encrypted/queued settlement, and **stealth handles** (a human-readable name such as
+- **Public** — a normal fast SPL transfer between ATAs on the ER.
+- **Private (Private Payments)** — the destination is encrypted and settlement is queued: private
+  `visibility`, delayed and split settlement, and **stealth handles** (a human-readable name such as
   `alice@magicblock.id` that resolves to one or more destination keys). This is the use case behind
-  the [Private Payments guide](/pages/ephemeral-spl-token/private-payments).
+  the [Private Payments guide](/pages/ephemeral-spl-token/private-payments). Amounts stay visible on
+  the base layer, and only the `mainnet-private` / `devnet-private` clusters run on the TEE-backed
+  Private Ephemeral Rollup.
 
 ---
 

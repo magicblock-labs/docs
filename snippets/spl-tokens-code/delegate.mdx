@@ -1,6 +1,6 @@
 ```typescript
-// Legacy vault flow — keep the same idempotent setting across
-// delegateSpl / undelegateIx / withdrawSpl within one lifecycle.
+// Legacy vault flow (idempotent: false). The eATA ends up delegated either way;
+// this flow withdraws after undelegateIx with withdrawSpl({ idempotent: false }).
 const delegateOpts = { validator, idempotent: false as const, payer: admin.publicKey };
 
 const ixs = await delegateSpl(owner.publicKey, mint.publicKey, amount, {

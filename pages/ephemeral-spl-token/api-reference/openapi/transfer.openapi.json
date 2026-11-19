@@ -45,11 +45,11 @@
                   },
                   "cluster": {
                     "anyOf": [
-                      { "type": "string", "enum": ["mainnet", "devnet"] },
-                      { "type": "string" }
+                      { "type": "string", "enum": ["mainnet", "devnet", "mainnet-private", "devnet-private"] },
+                      { "type": "string", "format": "uri" }
                     ],
                     "example": "mainnet",
-                    "description": "Optional. Use `mainnet` for BASE_RPC_URL and EPHEMERAL_RPC_URL, `devnet` for BASE_DEVNET_RPC_URL and EPHEMERAL_DEVNET_RPC_URL, or provide a custom http(s) RPC URL to override the base RPC while keeping the configured ephemeral RPC."
+                    "description": "Optional, defaults to `mainnet`. `mainnet` and `devnet` route to the public ephemeral RPC for that network; `mainnet-private` and `devnet-private` route to the TEE-backed Private Ephemeral Rollup and are required for auth and bearer-token-gated reads. A custom http(s) RPC URL overrides only the base RPC while keeping the configured ephemeral RPC."
                   },
                   "mint": {
                     "type": "string",
@@ -58,14 +58,14 @@
                   },
                   "amount": {
                     "type": "integer",
-                    "minimum": 1,
+                    "minimum": 0,
                     "example": 1000000,
-                    "description": "Base-unit amount as an integer JSON value with minimum 1."
+                    "description": "Base-unit amount as a non-negative integer JSON value."
                   },
                   "visibility": {
                     "type": "string",
                     "enum": ["public", "private"],
-                    "description": "Optional. Defaults to `private`. Use `public` for a transparent SPL transfer or `private` to route through the Private Ephemeral Rollup."
+                    "description": "Optional. Defaults to `private`. Use `public` for a transparent SPL transfer or `private` for a private transfer. A private transfer runs on the TEE-backed Private Ephemeral Rollup only with `cluster: mainnet-private` or `devnet-private`; with `mainnet` or `devnet` it runs on the public ephemeral rollup."
                   },
                   "fromBalance": {
                     "type": "string",
@@ -89,6 +89,18 @@
                   "initIfMissing": { "type": "boolean", "description": "Optional. Initialize the transfer queue if missing." },
                   "initAtasIfMissing": { "type": "boolean", "description": "Optional. Initialize associated token accounts if missing." },
                   "initVaultIfMissing": { "type": "boolean", "description": "Optional. Initialize the vault if missing. Defaults to `false`." },
+                  "platformFeeBps": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000,
+                    "example": 100,
+                    "description": "Optional platform fee in basis points, charged in the transferred token."
+                  },
+                  "platformFeeAccount": {
+                    "type": "string",
+                    "example": "6QxLzE2KfM1NAB7sTzUPk4cNsA6V9fB3eYq9s6d9r9hP",
+                    "description": "Required when platformFeeBps is greater than 0. Token account (not a wallet address) that collects the platform fee, for the transferred mint, e.g. the fee collector's USDC ATA for a USDC transfer, or their WSOL ATA for native SOL transfers. Expected to already exist on-chain; the API does not verify it, so a wallet address, uninitialized ATA, or wrong-mint token account still returns 200 and the built transaction fails at simulation with an SPL Token error."
+                  },
                   "memo": {
                     "type": "string",
                     "example": "Order #1042",

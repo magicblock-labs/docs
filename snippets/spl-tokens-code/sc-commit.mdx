@@ -1,11 +1,18 @@
 ```rust
-// The #[commit] attribute on the accounts context supplies
-// magic_context and magic_program.
-MagicIntentBundleBuilder::new(
-    ctx.accounts.payer.to_account_info(),
-    ctx.accounts.magic_context.to_account_info(),
-    ctx.accounts.magic_program.to_account_info(),
-)
-.commit_and_undelegate(&[ctx.accounts.pool.to_account_info()])
-.build_and_invoke()?;
+// Undelegate the eATA with a CPI to the Ephemeral SPL Token program, on the ER.
+// The eATA owner (the Pool PDA) must sign, so use invoke_signed with its seeds.
+let instruction = Instruction {
+    program_id: EPHEMERAL_SPL_TOKEN_PROGRAM_ID,
+    accounts: vec![
+        AccountMeta::new_readonly(pool.key(), true), // eATA owner
+        AccountMeta::new(pool_ata.key(), false),     // owner's ATA for the mint
+        AccountMeta::new_readonly(ephemeral_ata.key(), false),
+        AccountMeta::new(magic_context.key(), false),
+        AccountMeta::new_readonly(magic_program.key(), false),
+        // If the Pool PDA is itself delegated, also pass the validator's
+        // magic fee vault: AccountMeta::new(magic_fee_vault.key(), false)
+    ],
+    data: vec![5], // UndelegateEphemeralAta
+};
+invoke_signed(&instruction, &account_infos, &[&[POOL_SEED, &[pool_bump]]])?;
 ```
