@@ -150,7 +150,7 @@ transferred — not in SOL. Gas can be paid in either of two modes:
 | Supported mints | any | mainnet USDC/USDT, devnet USDC |
 
 With `gasless: true`, the configured sponsor becomes the transaction fee payer and co-signs, and the
-API prepends a token-transfer instruction that reimburses the sponsor with a flat **0.2 USDC/USDT
+API adds a token-transfer instruction at the start of the transaction that reimburses the sponsor with a flat **0.2 USDC/USDT
 relay fee** from the sender's balance. Because the relay fee is flat, gasless transfers require a
 minimum of **0.5 USDC/USDT**; the minimum applies only to the gasless mode, not to private transfers
 in general. Amounts below it can still be sent with `visibility: "private"` by omitting `gasless`.
