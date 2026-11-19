@@ -6,40 +6,100 @@ description: "Derive the Pyth Lazer price feed account and decode its bytes"
 
 ## Deriving the Price Feed Account
 
-We derive the PDA of the price account using the following seeds:
+Each feed is a PDA of the pricing oracle program `PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd`, derived from these seeds:
 
-- **"price feed"** (buffer)
+- **"price_feed"** (buffer)
 - **"pyth-lazer"** (buffer)
-- **feedID** (buffer) — the asset you want. Find the supported feeds [here](https://github.com/magicblock-labs/real-time-pricing-oracle/blob/main/pyth_lazer_list.json).
-- **price program id** — `PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd`
+- **feed ID** (buffer): the asset's `pyth_lazer_id` as a decimal string, for example `"6"` for SOL/USD. Find the supported feeds [here](https://github.com/magicblock-labs/real-time-pricing-oracle/blob/main/pyth_lazer_list.json).
 
 ```ts
-// seeds: ["price_feed", "pyth-lazer", feed_id_as_string]
-function deriveFeedAddress (feedId: string) {
+const PROGRAM_ID = new web3.PublicKey("PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd");
+
+// seeds: ["price_feed", "pyth-lazer", pyth_lazer_id as a decimal string]
+function deriveFeedAddress(feedId: string) {
   const [addr] = web3.PublicKey.findProgramAddressSync(
-  [Buffer.from('price_feed'), Buffer.from('pyth-lazer'), Buffer.from(feedId)],
-  PROGRAM ID
+    [Buffer.from("price_feed"), Buffer.from("pyth-lazer"), Buffer.from(feedId)],
+    PROGRAM_ID
   );
-  return addr
+  return addr;
 }
+
+// deriveFeedAddress("6") -> ENYwebBThHzmzwPLAQvCucUTsjyfBSZdD9ViXksS4jPu (SOL/USD)
 ```
+
+<Warning>
+  Read feeds from an Ephemeral Rollup endpoint. The feed accounts are delegated, and the oracle updates them only inside the ER. Their base-layer copies are not updated: on mainnet they were last written in August 2025.
+</Warning>
 
 ## Parsing the Account
 
-The on‑chain account stores a header and fields for price data. We read raw bytes and decode.
+The account uses the same field layout as Pyth's `PriceUpdateV2`, but it is not a Pyth receiver account. It is owned by the pricing oracle program and has its own discriminator.
 
 - **Price offset**: 73 bytes from start
-- **Type**: signed 64‑bit integer (`i64`)
-- **Apply exponent**: scale the raw price using the account's exponent
+- **Type**: signed 64‑bit integer (`i64`), so read it with `getBigInt64`
+- **Exponent**: use the `exponent` from the feed list, for example `-8` for SOL/USD and `-10` for BONK. The account's own exponent field reads `+8` on every feed and is not the scale of the price.
+- **Feed ID**: the `feed_id` stored in the account is the feed account's own address, not the Pyth Lazer ID.
 
 ```ts
-const addr = deriveFeedAddress(feed.id);
-const PRICE_OFFSET = 73;
+// `feeds` is the parsed pyth_lazer_list.json; `connection` points at an ER endpoint.
+const feed = feeds.find((f) => f.name === "SOLUSD");
+const addr = deriveFeedAddress(String(feed.pyth_lazer_id));
+const ai = await connection.getAccountInfo(addr);
+if (!ai) throw new Error("price feed not found");
 
+const PRICE_OFFSET = 73;
 const dv = new DataView(ai.data.buffer, ai.data.byteOffset, ai.data.byteLength);
-const raw = dv.getBigUint64(PRICE_OFFSET, true);
+const raw = dv.getBigInt64(PRICE_OFFSET, true);
 const price = Number(raw) * Math.pow(10, feed.exponent);
 ```
+
+## Reading a Feed in a Program
+
+In an Anchor program, decode the account with `PriceUpdateV2::try_deserialize_unchecked` from `pyth-solana-receiver-sdk`. Don't declare it as `Account<'info, PriceUpdateV2>`: Anchor then requires the Pyth receiver as owner and the `PriceUpdateV2` discriminator, and rejects every MagicBlock feed (error 3007, `AccountOwnedByWrongProgram`). Check the account key and owner yourself, and pass the feed account's address as the feed ID.
+
+```rust
+use anchor_lang::prelude::*;
+use pyth_solana_receiver_sdk::price_update::PriceUpdateV2;
+
+/// MagicBlock pricing oracle program (owner of the feed accounts on the ER).
+pub const PRICE_ORACLE_PROGRAM_ID: Pubkey = pubkey!("PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd");
+/// SOL/USD feed: deriveFeedAddress("6").
+pub const SOL_USD_FEED: Pubkey = pubkey!("ENYwebBThHzmzwPLAQvCucUTsjyfBSZdD9ViXksS4jPu");
+/// SOL/USD exponent from pyth_lazer_list.json. Don't use the account's exponent field.
+pub const SOL_USD_EXPONENT: i32 = -8;
+pub const MAX_PRICE_AGE_SECONDS: u64 = 60;
+
+/// Returns the SOL/USD price as (price, exponent), meaning price * 10^exponent USD.
+pub fn read_sol_usd(price_feed: &AccountInfo) -> Result<(i64, i32)> {
+    require_keys_eq!(*price_feed.key, SOL_USD_FEED, OracleError::WrongFeed);
+    require_keys_eq!(*price_feed.owner, PRICE_ORACLE_PROGRAM_ID, OracleError::WrongFeed);
+
+    // Not a Pyth receiver account: skip Anchor's owner and discriminator checks.
+    let data = price_feed.try_borrow_data()?;
+    let update = PriceUpdateV2::try_deserialize_unchecked(&mut data.as_ref())?;
+
+    // The stored feed_id is the feed account's own address.
+    let price = update.get_price_no_older_than(
+        &Clock::get()?,
+        MAX_PRICE_AGE_SECONDS,
+        &SOL_USD_FEED.to_bytes(),
+    )?;
+    require!(price.price > 0, OracleError::InvalidPrice);
+    Ok((price.price, SOL_USD_EXPONENT))
+}
+
+#[error_code]
+pub enum OracleError {
+    #[msg("unexpected price feed account")]
+    WrongFeed,
+    #[msg("oracle price must be greater than zero")]
+    InvalidPrice,
+}
+```
+
+<Note>
+  Don't rely on `VerificationLevel::Full` alone. Anyone can create a feed account that doesn't exist yet, and a new feed starts as `Full` with a price of 0 and a feed ID and exponent chosen by its creator. Pin the feed account address, check the owner, require a positive price, and check freshness with `publish_time`.
+</Note>
 
 <CardGroup cols={3}>
   <Card title="Live Demo" icon="waveform" href="https://pyth-template.magicblock.app/" iconType="duotone">
