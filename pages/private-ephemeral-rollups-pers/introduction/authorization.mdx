@@ -1,7 +1,7 @@
 ---
 title: "Private Ephemeral Rollup Authorization"
 sidebarTitle: "Authorization"
-description: "Customize authorized access through onchain restrictions on account level for user groups."
+description: "Control who can read each delegated account through per-account permissions on the Ephemeral Rollup."
 ---
 
 import PerCards from "/snippets/per-cards.mdx";
@@ -10,19 +10,18 @@ import PerCards from "/snippets/per-cards.mdx";
 
 ### Authorization Model
 
-<img class="w-full h-auto max-w-5xl" src="/images/TEE_permission.png" />
+Private Ephemeral Rollups use MagicBlock's Permission Program (`ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1`) to control who can read each delegated account. Permissions are set per account. There are no groups.
 
-Private Ephemeral Rollups use a Permission Program to manage fine-grained privacy controls for accounts and account groups. This runs on Solana L1 and can be updated on the fly.
-
-- **Permission Groups**: Define groups with arbitrary membership and IDs via CPI. A group aggregates users and the accounts governed by its permissions.
-- **Permissions**: Add permissions to groups. Today a permission implies read access for the delegated account; read/write splits may be added in the future.
-- **Access**: Client access to permissioned ER state requires authenticating ownership of a specified public key. Successful authentication yields a token used to query the ER.
+- **Ephemeral Permission**: Each delegated account can have one `EphemeralPermission` PDA. Your program creates, updates and closes it on the Ephemeral Rollup with `CreateEphemeralPermissionCpi`, `UpdateEphemeralPermissionCpi` and `CloseEphemeralPermissionCpi`, signed by the delegated account. There is no base-layer permission account to create or delegate.
+- **Privacy Flag**: `is_private` decides visibility. With `is_private: false` the account is public, whatever the member list holds. With `is_private: true` only members can read it.
+- **Members**: Each member is a public key with flags (`AUTHORITY`, `TX_LOGS`, `TX_BALANCES`, `TX_MESSAGE`, `ACCOUNT_SIGNATURES`). Each update replaces the whole member list and takes effect immediately on the Ephemeral Rollup.
+- **Access**: Client access to permissioned ER state requires authenticating ownership of a public key. Successful authentication yields a token used to query the ER.
 
 import PerEndpoint from "/snippets/per-endpoint.mdx";
 
 <PerEndpoint />
 
-This abstraction into groups lets you modify the permissions for many users/accounts atomically in a single transaction.
+See [Access Control](/pages/private-ephemeral-rollups-pers/how-to-guide/access-control) for the member flags and the create, update and close code.
 
 ---
 

@@ -4,11 +4,13 @@ import {
   getAuthToken,
 } from "@magicblock-labs/ephemeral-rollups-sdk";
 
-// Verify the integrity of the TEE RPC
-const isVerified = await verifyTeeRpcIntegrity(EPHEMERAL_RPC_URL);
+// Verify the integrity of the TEE RPC.
+// Resolves with no value; throws if the attestation check fails.
+await verifyTeeRpcIntegrity(EPHEMERAL_RPC_URL);
 
-// Get an auth token before making requests to the TEE
-const token = await getAuthToken(
+// Get an auth token before making requests to the TEE.
+// Returns an object: { token, expiresAt }.
+const { token, expiresAt } = await getAuthToken(
   EPHEMERAL_RPC_URL,
   wallet.publicKey,
   (message: Uint8Array) =>

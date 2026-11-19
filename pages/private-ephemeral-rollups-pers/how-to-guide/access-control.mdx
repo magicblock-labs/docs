@@ -51,7 +51,7 @@ Private Ephemeral Rollups are [Ephemeral Rollups](/pages/ephemeral-rollups-ers/i
 - **Permission Account**: A PDA that stores access control rules for a specific account
 - **Members**: Addresses granted specific permissions via flags
 - **Flags**: Bitmasks that define what a member can do (authority, view logs, view balances, etc.)
-- **Public Permissions**: When members are set to `None`, the permissioned account becomes temporarily visible
+- **Privacy Flag**: `is_private` decides visibility. With `is_private: false` the permissioned account is public, whatever the member list holds. With `is_private: true` only members can read it
 
 ---
 
@@ -61,7 +61,7 @@ Member flags define fine-grained permissions for each member. Flags can be combi
 
 **Flag Descriptions:**
 
-- **AUTHORITY**: Allows a member to update and delegate permission settings, add/remove other members, and update member flags.
+- **AUTHORITY**: Allows a member to update permission settings, add/remove other members, and update member flags.
 - **TX_LOGS**: Allows a member to view transaction execution logs.
 - **TX_BALANCES**: Allows a member to view account balance changes.
 - **TX_MESSAGE**: Allows a member to view transaction message data.
@@ -84,6 +84,17 @@ Member flags define fine-grained permissions for each member. Flags can be combi
 ---
 
 ## Ephemeral Permission
+
+<Note>
+  The access-control CPIs are behind the `access-control` feature of
+  `ephemeral-rollups-sdk`. Without it, `ephemeral_rollups_sdk::access_control`
+  does not exist and the snippets below fail to compile. Pin the 0.18.x line
+  for the public TEE endpoints:
+
+```toml
+ephemeral-rollups-sdk = { version = "0.18", features = ["anchor", "access-control"] }
+```
+</Note>
 
 <Note>
   `EphemeralPermission` accounts live entirely on the Ephemeral Rollup and are
@@ -150,7 +161,7 @@ for the end-to-end flow.
     **Use Cases:**
 
     - Bootstrap access control for a newly delegated PDA on the ER
-    - Start public (`is_private: false`, empty members) and tighten later via Update
+    - Start public (`is_private: false`) and make it private later via Update with `is_private: true`
 
     [⬆️ Back to Top](#ephemeral-permission)
 
@@ -238,16 +249,17 @@ for the end-to-end flow.
 1. **Authority Management**: Always assign AUTHORITY_FLAG to at least one trusted member
 2. **Least Privilege**: Grant only necessary flags to each member
 3. **Real-time Updates**: Permissions can be updated in real-time on Private Ephemeral Rollup without undelegating, allowing dynamic access control adjustments
-4. **Cleanup**: Undelegate and close unused permission accounts to free SOL
+4. **Cleanup**: Close unused ephemeral permission accounts to refund their rent to the data PDA
 
 ---
 
 ## Security Considerations
 
-- **Signer Validation**: Only members with AUTHORITY_FLAG or program with permissioned account can authorize changes
-- **Public Accounts**: Setting members to `None` makes the account publicly visible
-- **Default Authority**: By default, the owner of the permissioned account is added as permission authority to members of permission account.
-- **Empty Member List**: If members field is set to empty list, the permissioned account is fully restricted and private. Only the owner of permissioned account can modify the permission.
+- **Signer Validation**: Only a member with AUTHORITY_FLAG, or the permissioned account itself (a PDA signing through its program), can authorize changes
+- **Privacy Flag**: `is_private: false` makes the account publicly visible, even when the member list is not empty. Listing members does not restrict anything until `is_private` is `true`
+- **Owner Entry**: The program records the permissioned account's owner program as the first member, with no flags. It is not an AUTHORITY member
+- **Private With No Members**: `is_private: true` with an empty member list hides the account from every wallet. The data PDA can still update the permission by signing with its seeds
+- **Full List on Update**: Each update replaces the member list. A member left out of the next update loses access
 - **Access Auditing**: Use member flags to audit and control access
 
 ---

@@ -20,6 +20,17 @@ Or use the cargo command:
 cargo add session-keys --features no-entrypoint
 ```
 
+<Note>
+  This page uses the V1 `SessionToken`. The React hooks in
+  `@magicblock-labs/gum-react-sdk` (`useSessionKeyManager().createSession` and
+  `revokeSession`) create and revoke V1 tokens. The session program also has a
+  V2 `SessionTokenV2` (created with `create_session_v2`), which records the fee
+  payer and can only be revoked by its authority while active. The two types
+  are not interchangeable: an instruction that expects one rejects the other
+  with `AccountDiscriminatorMismatch` (error 3002). Use the token type that your
+  client creates. Any wallet can revoke an active V1 token.
+</Note>
+
 ## Usage 
 
 1. Importing session-keys:
