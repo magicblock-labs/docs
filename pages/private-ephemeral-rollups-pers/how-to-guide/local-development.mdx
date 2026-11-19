@@ -88,8 +88,12 @@ you, in a single command. It ships in the same package as `ephemeral-validator`.
 <Steps>
   <Step title="Install">
     ```bash
-    npm install -g @magicblock-labs/ephemeral-validator@latest
+    npm install -g @magicblock-labs/ephemeral-validator@1.1.1
     ```
+
+    Version 1.1.1 matches the public TEE endpoints (`devnet-tee`, `mainnet-tee`).
+    `@latest` now installs 2.0.1, the validator 2.0 line, which rejects the
+    `--lifecycle` flag used in [Per-Service Setup](#per-service-setup).
   </Step>
 
   <Step title="Bring up the full stack">
@@ -130,7 +134,7 @@ you, in a single command. It ships in the same package as `ephemeral-validator`.
     `mb-stack`, `ephemeral-validator`, `query-filtering-service`, and `mb-test-validator` ship together:
 
     ```bash
-    npm install -g @magicblock-labs/ephemeral-validator@latest
+    npm install -g @magicblock-labs/ephemeral-validator@1.1.1
     ```
   </Step>
 

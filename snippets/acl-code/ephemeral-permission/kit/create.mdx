@@ -1,32 +1,43 @@
 ```typescript
 import {
+  EPHEMERAL_VAULT_ID,
   MAGIC_PROGRAM_ID,
   PERMISSION_PROGRAM_ID,
-  EPHEMERAL_VAULT_ID,
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { pipe, createTransactionMessage, appendTransactionMessageInstructions } from "@solana/kit";
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import {
+  AccountRole,
+  appendTransactionMessageInstructions,
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageFeePayer,
+  type Instruction,
+} from "@solana/kit";
 
 // EphemeralPermissions are created on the ER by the delegated PDA (via the
 // user-program's wrapper instruction). Submit to the ER connection, not base.
-const initIx = await counterProgram.methods
-  .initPermission()
-  .accountsPartial({
-    authority: tempKeypair.address,
-    counter: counterPda,
-    permission: permissionPda,
-    permissionProgram: PERMISSION_PROGRAM_ID,
-    ephemeralVault: EPHEMERAL_VAULT_ID,
-    magicProgram: MAGIC_PROGRAM_ID,
-  })
-  .instruction();
+// `ephemeralConnection` is a `Connection` from `@magicblock-labs/ephemeral-rollups-kit`.
+const initIx: Instruction = {
+  programAddress: COUNTER_PROGRAM_ID,
+  accounts: [
+    { address: tempKeypair.address, role: AccountRole.WRITABLE_SIGNER }, // authority
+    { address: counterPda, role: AccountRole.WRITABLE },
+    { address: permissionPda, role: AccountRole.WRITABLE },
+    { address: PERMISSION_PROGRAM_ID, role: AccountRole.READONLY },
+    { address: EPHEMERAL_VAULT_ID, role: AccountRole.WRITABLE },
+    { address: MAGIC_PROGRAM_ID, role: AccountRole.READONLY },
+  ],
+  // Anchor discriminator of `init_permission` (from the program IDL)
+  data: new Uint8Array([66, 14, 153, 250, 187, 36, 179, 236]),
+};
 
 const transactionMessage = pipe(
   createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(tempKeypair.address, tx),
   (tx) => appendTransactionMessageInstructions([initIx], tx),
 );
 const sig = await ephemeralConnection.sendAndConfirmTransaction(
   transactionMessage,
-  [tempKeypair],
+  [tempKeypair.keyPair],
   { commitment: "confirmed" },
 );
 console.log("init_permission tx:", sig);

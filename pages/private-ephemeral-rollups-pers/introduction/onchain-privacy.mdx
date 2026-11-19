@@ -29,7 +29,7 @@ A trusted execution environment acts as a vault inside a CPU. Generally, when yo
 
 We use a TEE to protect the state of an Ephemeral Rollup. Normally, when you execute a smart contract onchain, every step of the process is visible: the program being called, the accounts, and the resulting state changes. Using the TEE, programs can selectively shield ER state.
 
-- Every account is public by default, like in Solana
+- Accounts without a permission are public, like in Solana, with one exception: SPL Token and Token-2022 token accounts are readable only by their owner. Mints stay public. A token-program account the TEE cannot decode is hidden from everyone
 - Programs can explicitly define access rules for their accounts
 
 This means transfers, program calls, and interactions can avoid being broadcast publicly when desired.

@@ -2,8 +2,13 @@
 import {
   createDelegatePermissionInstruction,
   PERMISSION_PROGRAM_ID,
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import {
+  appendTransactionMessageInstructions,
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageFeePayer,
+} from "@solana/kit";
 
 // Delegate the permission to enable low-latency Ephemeral Rollup execution
 // Either authority (with AUTHORITY_FLAG) or permissioned_account can authorize
@@ -17,11 +22,16 @@ const delegatePermissionIx = await createDelegatePermissionInstruction(
   }
 );
 
-const tx = transaction([delegatePermissionIx]);
-const signature = await sendAndConfirmTransaction(
-  client,
-  tx,
-  [payer]
+// `connection` is a base-layer `Connection` from `@magicblock-labs/ephemeral-rollups-kit`
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(payer.address, tx),
+  (tx) => appendTransactionMessageInstructions([delegatePermissionIx], tx),
+);
+const signature = await connection.sendAndConfirmTransaction(
+  transactionMessage,
+  [payer.keyPair],
+  { commitment: "confirmed" },
 );
 console.log("TX:", signature);
 ```

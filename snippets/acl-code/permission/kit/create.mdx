@@ -5,8 +5,13 @@ import {
   AUTHORITY_FLAG,        // Member can directly modify the permission
   TX_LOGS_FLAG,          // Member can view transaction logs
   TX_BALANCES_FLAG,      // Member can view account balances
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import {
+  appendTransactionMessageInstructions,
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageFeePayer,
+} from "@solana/kit";
 
 const members: Member[] = [
   {
@@ -29,11 +34,16 @@ const createPermissionIx = await createCreatePermissionInstruction(
   }
 );
 
-const tx = transaction([createPermissionIx]);
-const signature = await sendAndConfirmTransaction(
-  client,
-  tx,
-  [payer]
+// `connection` is a base-layer `Connection` from `@magicblock-labs/ephemeral-rollups-kit`
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(payer.address, tx),
+  (tx) => appendTransactionMessageInstructions([createPermissionIx], tx),
+);
+const signature = await connection.sendAndConfirmTransaction(
+  transactionMessage,
+  [payer.keyPair],
+  { commitment: "confirmed" },
 );
 console.log("TX:", signature);
 ```

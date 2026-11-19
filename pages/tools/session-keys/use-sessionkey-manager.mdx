@@ -8,6 +8,12 @@ description:
 
 `useSessionKeyManager` is a custom hook that takes an `AnchorWallet`, `Connection`, and `Cluster` as arguments and returns a `SessionWalletInterface`. This hook manages the session keys, tokens, and provides methods for signing and sending transactions.
 
+<Note>
+  `createSession` and `revokeSession` use the V1 `SessionToken`. A program that
+  expects `SessionTokenV2` rejects these tokens. See
+  [Integrating Sessions in your Program](/pages/tools/session-keys/integrating-sessions-in-your-program).
+</Note>
+
 The `SessionWalletInterface` consists of the following properties and methods:
 
 ```typescript

@@ -1,3 +1,13 @@
+<Warning>
+  This page is no longer maintained and its client code is outdated.
+  `verifyTeeRpcIntegrity` resolves with no value and throws if verification
+  fails, so do not test its result as a boolean. `getAuthToken` returns an
+  object `{ token, expiresAt }`; put its `token` field, not the whole object,
+  in the connection URL. The SDK sends a 64-byte attestation challenge. See the
+  [Quickstart](/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart)
+  for the current flow.
+</Warning>
+
 ### Client Implementation
 
 Frontends interface with the Private Ephemeral Rollup (PER) using three concepts: attestation, client challenges, and access tokens.

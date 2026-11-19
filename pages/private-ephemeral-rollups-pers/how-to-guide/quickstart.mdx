@@ -83,10 +83,18 @@ Build your program, delegate state to the TEE validator, and create an `Ephemera
 <Software />
 <Note>
   The EphemeralPermission flow shown below requires `ephemeral-rollups-sdk`
-  v0.14+ (introduces `CreateEphemeralPermissionCpi` /
-  `UpdateEphemeralPermissionCpi` / `CloseEphemeralPermissionCpi`). For older
-  SDK and Anchor versions, see
+  v0.14.2 or later (introduces `CreateEphemeralPermissionCpi` /
+  `UpdateEphemeralPermissionCpi` / `CloseEphemeralPermissionCpi`) with the
+  `access-control` feature enabled. Without the feature,
+  `ephemeral_rollups_sdk::access_control` does not exist and the program does
+  not compile. Pin the 0.18.x line for the public TEE endpoints, which run
+  validator 1.1.1. An unpinned `cargo add` resolves to 0.20, the validator 2.0
+  line. For older SDK and Anchor versions, see
   [legacy examples](https://github.com/magicblock-labs/magicblock-engine-examples/tree/main/00-LEGACY_EXAMPLES).
+
+```toml
+ephemeral-rollups-sdk = { version = "0.18", features = ["anchor", "access-control"] }
+```
 </Note>
 
 ### Code Snippets
@@ -131,6 +139,8 @@ Build your program, delegate state to the TEE validator, and create an `Ephemera
         Test your program with the Private Ephemeral Rollup connection:
 
         `https://devnet-tee.magicblock.app?token=${token}`
+
+        `token` is the string field of the object `getAuthToken` returns (see step 4). Passing the whole object produces `?token=[object Object]`, which the TEE rejects with `401 InvalidToken`.
 
         <Validators />
         <QuickAccessPER />
