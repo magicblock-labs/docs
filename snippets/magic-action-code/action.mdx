@@ -25,5 +25,9 @@ pub struct UpdateLeaderboard<'info> {
     pub leaderboard: Account<'info, Leaderboard>,
     /// CHECK: PDA owner depends on: 1) Delegated: Delegation Program; 2) Undelegated: Your program ID
     pub counter: UncheckedAccount<'info>,
+    /// CHECK: the program that scheduled the action. The delegation program passes it
+    /// before the `escrow_auth` and `escrow` accounts that `#[action]` adds.
+    #[account(address = crate::ID)]
+    pub source_program: UncheckedAccount<'info>,
 }
 ```

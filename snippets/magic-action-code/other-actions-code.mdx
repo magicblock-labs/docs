@@ -1,5 +1,6 @@
 ```rust
-// Commit, undelegate, AND execute actions — all atomically on base layer after the ER transaction seals.
+// Commit, undelegate, then run the actions on base layer. If an action fails, the commit and
+// undelegation are retried without the actions.
 MagicIntentBundleBuilder::new(
     ctx.accounts.payer.to_account_info(),
     ctx.accounts.magic_context.to_account_info(),
