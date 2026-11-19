@@ -12,6 +12,7 @@ The Ephemeral Rollup (ER) runs the **Solana Virtual Machine (SVM)**, so programs
 | Compute units per transaction (max, via `SetComputeUnitLimit`) | 1,400,000 CU | 1,400,000 CU |
 | Serialized transaction size (max) | 1,232 bytes | **64 KB** |
 | Account size (max) | 10 MiB | 10 MiB |
+| Account size that can be committed back to Solana | n/a | **10,240 bytes** |
 | Slot time | ~400 ms | ~10 ms |
 
 <Note>
@@ -39,7 +40,22 @@ The ER accepts serialized transactions up to **64 KB**, compared to the 1,232-by
 
 <Warning>
   The 64 KB limit only applies to transactions executed on the ER (i.e. all
-  writable accounts are delegated). Transactions routed to the base layer —
-  including delegation and undelegation transactions — remain subject to the
-  1,232-byte Solana limit.
+  writable accounts are delegated). Transactions routed to the base layer,
+  including delegation transactions, remain subject to the 1,232-byte Solana
+  limit. Commit and undelegation requests are ER transactions: your program
+  schedules them on the ER, and the validator sends the base-layer settlement.
+</Warning>
+
+## Committing large accounts
+
+The validator refuses to commit an account whose data is larger than
+**10,240 bytes**. The commit fails with `InvalidAccountData` and the log line
+`ScheduleCommit ERR: account ... is too large to be committed`. The same check
+applies to commit-and-undelegate, so a larger account cannot be undelegated
+the normal way either.
+
+<Warning>
+  Do not delegate an account that is, or will grow, larger than 10,240 bytes if
+  you need its state back on Solana. Split large state across several
+  accounts of 10,240 bytes or less.
 </Warning>

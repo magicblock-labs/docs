@@ -21,7 +21,9 @@ These systems work together. A commit with no immediate fee can still be charged
 deposit when the account is undelegated.
 
 <Note>
-  The values on this page were checked against the source on August 20, 2026.
+  The values on this page were checked on November 19, 2026 by running the deployed mainnet and
+  devnet Delegation Program builds and the validator build that the public ERs run (see
+  [Verify the current numbers](#verify-the-current-numbers)).
 </Note>
 
 ## Current prices
@@ -33,7 +35,7 @@ One SOL contains 1 billion lamports.
 | Normal ER transaction | `0` in the current release | No charge |
 | One delegation session | `3,000,000` lamports (`0.003 SOL`) | Taken from the Solana deposit when you undelegate |
 | Commits after the first | `1,000,000` lamports (`0.001 SOL`) each | Taken from the Solana deposit when you undelegate |
-| Live commits starting with commit 26 | `100,000` lamports per account | Taken immediately from the delegated fee payer |
+| Live commits starting with commit 26 | `1,000,000` lamports (`0.001 SOL`) per account | Taken immediately from the delegated fee payer |
 | Base Actions | Based on the requested compute units | Taken immediately from the delegated fee payer |
 | Adding a callback | `5,000` lamports | Taken immediately from the delegated fee payer |
 | Temporary Ephemeral Account storage | Based on account size; refundable | Reserved when the account is created or grows |
@@ -46,7 +48,8 @@ the prices above.
 Delegating an account creates two small Solana accounts: a **delegation record** and **delegation
 metadata**. The delegation payer funds both accounts so they are rent-exempt.
 
-Think of that money as a refundable balance, not a one-time fee that buys unlimited commits.
+The deposit is about the same size as the session charge, so expect to get little or none of it
+back. It is not a one-time fee that buys unlimited commits.
 
 When you undelegate, MagicBlock calculates the charge:
 
@@ -57,7 +60,9 @@ total charge = session charge + commit charge
 ```
 
 MagicBlock takes no more than the amount held in the two deposit accounts. It sends the unused amount
-back to the wallet recorded as the `rent_payer` when the account was delegated.
+back to the wallet recorded as the `rent_payer` when the account was delegated, with one exception:
+if that wallet would still be below Solana's rent-exempt minimum after the refund (for example, an
+empty wallet), the refund goes to the validator fee vault instead.
 
 In practical terms:
 
@@ -66,19 +71,36 @@ In practical terms:
 - commits 2, 3, 4, and so on add `1,000,000` lamports each;
 - if the calculated charge is larger than the deposit, MagicBlock takes the deposit but does not
   create a debt or fail undelegation;
-- any money left in the deposit is refunded.
+- any money left in the deposit is refunded, subject to the `rent_payer` exception above.
 
-The exact deposit size varies because it depends on Solana rent, the account's stored seeds, and any
-actions included with the delegation.
+### How big the deposit is
+
+The delegation record is 96 bytes and holds `1,559,040` lamports. The metadata account stores the
+PDA's seeds, so its size, and the deposit, depend on those seeds. Actions included with the
+delegation make the deposit larger.
+
+| Seeds of the delegated PDA | Metadata size | Deposit | Refund, commit number 0 or 1 at undelegation | Refund, commit number 2 or more |
+| :--- | ---: | ---: | ---: | ---: |
+| none | 53 bytes | `2,818,800` | `0` | `0` |
+| `b"counter"` | 64 bytes | `2,895,360` | `0` | `0` |
+| `b"counter"` + a 32-byte pubkey | 100 bytes | `3,145,920` | `145,920` | `0` |
+| a 15-byte seed + a 32-byte pubkey | 108 bytes | `3,201,600` | `201,600` | `0` |
+| two 32-byte pubkeys | 125 bytes | `3,319,920` | `319,920` | `0` |
+
+Amounts are in lamports. The deposit is `2.82M` to `3.32M` lamports for these seeds. Once the
+account reaches commit 2, the charge (`4,000,000` or more) is larger than any of these deposits,
+so the whole deposit is taken and further commits add nothing to what you pay from it. When the
+deposit is below `3,000,000` lamports, nothing is refunded even with no commits.
 
 ## 2. Committing without a fee payer
 
 - Commits 1 through 10 are accepted.
 - Commit 11 fails with custom error `0xA0000000`.
+- The limit applies to commit and commit-finalize intents.
 - The accepted commits are still included in the deposit charge when you undelegate.
 
-A final **commit-and-undelegate** can still run after the limit so the account is not trapped inside
-the ER. It does not allow more normal commits.
+A final **commit-and-undelegate** (or commit-finalize-and-undelegate) can still run after the limit
+so the account is not trapped inside the ER. It does not allow more normal commits.
 
 ## 3. Committing with a fee payer
 
@@ -91,13 +113,13 @@ This path does not stop after 10 commits. Instead:
 
 - commits 1 through 25 have no **extra live commit fee**;
 - commit 26 is the first live commit fee;
-- commit 26 and every later commit cost `100,000` lamports per committed account.
+- commit 26 and every later commit cost `1,000,000` lamports per committed account.
 
 Live fees are taken from the delegated fee payer when the bundle is scheduled. Deposit charges are
 calculated separately when the account is undelegated, so your app may pay both.
 
 If one bundle commits several accounts, MagicBlock checks each account separately. For example, a
-bundle that contains two accounts on commit 26 costs `200,000` lamports in live commit fees.
+bundle that contains two accounts on commit 26 costs `2,000,000` lamports in live commit fees.
 
 If the fee payer cannot cover the full charge, the instruction fails with `InsufficientFunds`. No
 partial payment is taken.
@@ -110,7 +132,8 @@ partial payment is taken.
 ## Worked examples
 
 The examples below do not include normal Solana transaction fees. `D` means the deposit balance just
-before undelegation.
+before undelegation. With the deposits in the table above, `D` is smaller than every charge from
+commit 2 on, so the amount taken is all of `D` and the refund is `0`.
 
 ### One commit, then undelegate
 
@@ -140,7 +163,7 @@ An 11th simple commit fails before it is scheduled.
 calculated deposit charge at undelegation = 3,000,000 + (25 * 1,000,000)
                                             = 28,000,000 lamports
 amount taken from deposit = the smaller of D and 28,000,000
-live fee taken on commit 26 = 100,000 lamports
+live fee taken on commit 26 = 1,000,000 lamports
 refund = D - amount taken from deposit
 ```
 
@@ -154,7 +177,7 @@ See the [top-up example](/pages/ephemeral-rollups-ers/how-to-guide/quickstart#to
 Include these costs in your budget:
 
 - the lamports you are transferring;
-- the top-up helper's current `300,000`-lamport setup charge;
+- the top-up helper's setup charge: `300,000` lamports on mainnet and `3,000,000` lamports on devnet;
 - the normal Solana transaction fee.
 
 The top-up setup charge and the `3,000,000`-lamport delegation session charge are different charges.
@@ -240,5 +263,9 @@ The fee rules are split between two repositories. Check both when verifying prod
 
 | Repository | What to check |
 | :--- | :--- |
-| [Delegation Program](https://github.com/magicblock-labs/delegation-program/tree/6898ef4b82ba1f2b6fbb5d91eca578729edbbeb8) | Fee constants, deposit settlement, refunds, and validator fee withdrawals |
-| [MagicBlock validator](https://github.com/magicblock-labs/magicblock-validator/tree/cec4cf574ace267029e9487b61780d5218256b42) | Commit limits, live fees, Base Action charges, callback charges, and Ephemeral Account storage |
+| [Delegation Program](https://github.com/magicblock-labs/delegation-program/tree/0c551fa64cd13d6dabc51dbf6d1575bde2d38067) | Fee constants, deposit settlement, refunds, and validator fee withdrawals |
+| [MagicBlock validator](https://github.com/magicblock-labs/magicblock-validator/tree/8886db2e0ab93a722783c98f1667954f74787288) | Commit limits, live fees, Base Action charges, callback charges, and Ephemeral Account storage |
+
+The public ERs report `magicblock-core` `1.1.1` but run commit `8886db2` on the `V1` branch, not the
+`v1.1.1` tag. The tag charges `100,000` lamports per account from commit 26; `8886db2` charges
+`1,000,000`. `devnet-us` runs validator 2.0.
