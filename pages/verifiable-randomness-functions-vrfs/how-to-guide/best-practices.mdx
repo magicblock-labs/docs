@@ -19,7 +19,7 @@ Pass the oracle queue that matches where your transaction runs: `DEFAULT_QUEUE` 
 
 ### State Management
 
-- Store any pending request identifiers so that retries or unexpected callbacks can be handled safely. A callback can arrive late: the VRF program applies no age limit when it fulfills, and an unfulfilled request stays fulfillable until someone purges it, which is allowed about two minutes after the request.
+- Store any pending request identifiers so that retries or unexpected callbacks can be handled safely. A callback can arrive late: the VRF program applies no age limit when it fulfills, and an unfulfilled request can still be fulfilled until someone purges it, which is allowed about two minutes after the request.
 - Track the oracle queue your requests were delegated to so results can be matched back correctly.
 - Keep random outputs ephemeral—consume them immediately within your [rollup logic](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) and avoid reusing them.
 

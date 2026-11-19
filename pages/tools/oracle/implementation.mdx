@@ -8,8 +8,8 @@ description: "Derive the Pyth Lazer price feed account and decode its bytes"
 
 Each feed is a PDA of the pricing oracle program `PriCems5tHihc6UDXDjzjeawomAwBduWMGAi8ZUjppd`, derived from these seeds:
 
-- **"price_feed"** (buffer)
-- **"pyth-lazer"** (buffer)
+- **`"price_feed"`** (buffer)
+- **`"pyth-lazer"`** (buffer)
 - **feed ID** (buffer): the asset's `pyth_lazer_id` as a decimal string, for example `"6"` for SOL/USD. Find the supported feeds [here](https://github.com/magicblock-labs/real-time-pricing-oracle/blob/main/pyth_lazer_list.json).
 
 ```ts
