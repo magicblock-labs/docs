@@ -9,8 +9,9 @@ import * as nacl from "tweetnacl";
 const teeUrl = "https://devnet-tee.magicblock.app";
 const teeWsUrl = "wss://tee.magicblock.app";
 
-// 1. Verify the integrity of TEE RPC
-const isVerified = await verifyTeeRpcIntegrity(teeUrl);
+// 1. Verify the integrity of TEE RPC.
+// Resolves with no value; throws if the attestation check fails.
+await verifyTeeRpcIntegrity(teeUrl);
 
 // 2. Get AuthToken before making request to TEE
 const authToken = await getAuthToken(

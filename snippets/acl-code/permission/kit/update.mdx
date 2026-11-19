@@ -2,8 +2,13 @@
 import {
   createUpdatePermissionInstruction,
   type Member,
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import {
+  appendTransactionMessageInstructions,
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageFeePayer,
+} from "@solana/kit";
 
 // Update permission and modify members
 // Either authority or permissioned_account must sign based on AUTHORITY_FLAG
@@ -13,17 +18,23 @@ const updatePermissionIx = await createUpdatePermissionInstruction(
     permissionedAccount: [permissionedAccount.address, false],  // or permissioned_account can sign
   },
   {
-    // Setting members to empty array or None makes the permission public (temporarily visible)
-    // This is useful for transitional states during delegation/undeligation
-    members: [],
+    // `null` (None) makes the permission public.
+    // An empty array (Some([])) keeps it private: only the owner program is
+    // listed, so no wallet can read the account.
+    members: null,
   }
 );
 
-const tx = transaction([updatePermissionIx]);
-const signature = await sendAndConfirmTransaction(
-  client,
-  tx,
-  [payer]
+// `connection` is a base-layer `Connection` from `@magicblock-labs/ephemeral-rollups-kit`
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(payer.address, tx),
+  (tx) => appendTransactionMessageInstructions([updatePermissionIx], tx),
+);
+const signature = await connection.sendAndConfirmTransaction(
+  transactionMessage,
+  [payer.keyPair],
+  { commitment: "confirmed" },
 );
 console.log("TX:", signature);
 ```

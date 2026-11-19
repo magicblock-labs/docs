@@ -10,9 +10,10 @@ const updatePermissionIx = createUpdatePermissionInstruction(
     permissionedAccount: [permissionedAccount.publicKey, false],  // or permissioned_account can sign
   },
   {
-    // Setting members to empty array or None makes the permission public (temporarily visible)
-    // This is useful for transitional states during delegation/undeligation
-    members: [],
+    // `null` (None) makes the permission public.
+    // An empty array (Some([])) keeps it private: only the owner program is
+    // listed, so no wallet can read the account.
+    members: null,
   }
 );
 

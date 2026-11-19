@@ -1,23 +1,24 @@
 ```typescript
 import {
-  verifyTeeRpcIntegrity,
+  Connection,
   getAuthToken,
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { Connection } from "@magicblock-labs/ephemeral-rollups-kit";
-import * as nacl from "tweetnacl";
+  verifyTeeIntegrity,
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import { signBytes } from "@solana/kit";
 
 const teeUrl = "https://devnet-tee.magicblock.app";
 const teeWsUrl = "wss://tee.magicblock.app";
 
-// 1. Verify the integrity of TEE RPC
-const isVerified = await verifyTeeRpcIntegrity(teeUrl);
+// 1. Verify the integrity of TEE RPC.
+// Resolves with no value; throws if the attestation check fails.
+await verifyTeeIntegrity(teeUrl);
 
-// 2. Get AuthToken before making request to TEE
+// 2. Get AuthToken before making request to TEE.
+// `user` is a KeyPairSigner from `@solana/kit`.
 const authToken = await getAuthToken(
   teeUrl,
-  userPubkey,
-  (message: Uint8Array) =>
-    Promise.resolve(nacl.sign.detached(message, userSecretKey)),
+  user.address,
+  (message: Uint8Array) => signBytes(user.keyPair.privateKey, message),
 );
 
 // 3. Create connection with TEE using authorization token

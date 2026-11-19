@@ -1,19 +1,29 @@
 ```typescript
 import {
   createCommitPermissionInstruction,
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import {
+  appendTransactionMessageInstructions,
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageFeePayer,
+} from "@solana/kit";
 
 const commitPermissionIx = await createCommitPermissionInstruction({
   authority: [payer.address, true],
   permissionedAccount: [permissionedAccount.address, false],
 });
 
-const tx = transaction([commitPermissionIx]);
-const signature = await sendAndConfirmTransaction(
-  client,
-  tx,
-  [payer]
+// `connection` is a base-layer `Connection` from `@magicblock-labs/ephemeral-rollups-kit`
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(payer.address, tx),
+  (tx) => appendTransactionMessageInstructions([commitPermissionIx], tx),
+);
+const signature = await connection.sendAndConfirmTransaction(
+  transactionMessage,
+  [payer.keyPair],
+  { commitment: "confirmed" },
 );
 console.log("TX:", signature);
 ```

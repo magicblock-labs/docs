@@ -1,8 +1,13 @@
 ```typescript
 import {
   createCommitAndUndelegatePermissionInstruction,
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { transaction, sendAndConfirmTransaction } from "@solana/kit";
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import {
+  appendTransactionMessageInstructions,
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageFeePayer,
+} from "@solana/kit";
 
 const commitAndUndelegatePermissionIx =
   await createCommitAndUndelegatePermissionInstruction({
@@ -10,11 +15,16 @@ const commitAndUndelegatePermissionIx =
     permissionedAccount: [permissionedAccount.address, false],
   });
 
-const tx = transaction([commitAndUndelegatePermissionIx]);
-const signature = await sendAndConfirmTransaction(
-  client,
-  tx,
-  [payer]
+// `connection` is a base-layer `Connection` from `@magicblock-labs/ephemeral-rollups-kit`
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(payer.address, tx),
+  (tx) => appendTransactionMessageInstructions([commitAndUndelegatePermissionIx], tx),
+);
+const signature = await connection.sendAndConfirmTransaction(
+  transactionMessage,
+  [payer.keyPair],
+  { commitment: "confirmed" },
 );
 console.log("TX:", signature);
 ```

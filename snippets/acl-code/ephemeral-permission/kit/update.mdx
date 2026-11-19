@@ -1,32 +1,42 @@
 ```typescript
 import {
+  EPHEMERAL_VAULT_ID,
   MAGIC_PROGRAM_ID,
   PERMISSION_PROGRAM_ID,
-  EPHEMERAL_VAULT_ID,
-} from "@magicblock-labs/ephemeral-rollups-sdk";
-import { pipe, createTransactionMessage, appendTransactionMessageInstructions } from "@solana/kit";
+} from "@magicblock-labs/ephemeral-rollups-kit";
+import {
+  AccountRole,
+  appendTransactionMessageInstructions,
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageFeePayer,
+  type Instruction,
+} from "@solana/kit";
 
-// Toggle the `is_private` flag. Idempotent — the program rebuilds the member
-// list every call so the authority never locks itself out.
-const updateIx = await counterProgram.methods
-  .setPrivacy(isPrivate)
-  .accountsPartial({
-    authority: tempKeypair.address,
-    counter: counterPda,
-    permission: permissionPda,
-    permissionProgram: PERMISSION_PROGRAM_ID,
-    ephemeralVault: EPHEMERAL_VAULT_ID,
-    magicProgram: MAGIC_PROGRAM_ID,
-  })
-  .instruction();
+// Toggle the `is_private` flag. The program rebuilds the full member list
+// on every call.
+const updateIx: Instruction = {
+  programAddress: COUNTER_PROGRAM_ID,
+  accounts: [
+    { address: tempKeypair.address, role: AccountRole.WRITABLE_SIGNER }, // authority
+    { address: counterPda, role: AccountRole.WRITABLE },
+    { address: permissionPda, role: AccountRole.WRITABLE },
+    { address: PERMISSION_PROGRAM_ID, role: AccountRole.READONLY },
+    { address: EPHEMERAL_VAULT_ID, role: AccountRole.WRITABLE },
+    { address: MAGIC_PROGRAM_ID, role: AccountRole.READONLY },
+  ],
+  // Anchor discriminator of `set_privacy` (from the program IDL), then the `is_private` bool
+  data: new Uint8Array([120, 77, 9, 207, 149, 140, 138, 129, isPrivate ? 1 : 0]),
+};
 
 const transactionMessage = pipe(
   createTransactionMessage({ version: 0 }),
+  (tx) => setTransactionMessageFeePayer(tempKeypair.address, tx),
   (tx) => appendTransactionMessageInstructions([updateIx], tx),
 );
 const sig = await ephemeralConnection.sendAndConfirmTransaction(
   transactionMessage,
-  [tempKeypair],
+  [tempKeypair.keyPair],
   { commitment: "confirmed" },
 );
 console.log("set_privacy tx:", sig);
