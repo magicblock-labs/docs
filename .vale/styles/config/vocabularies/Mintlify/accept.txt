@@ -441,6 +441,7 @@ homomorphic
 idex
 keypair
 keypairs
+lamport
 lamports
 lazer
 linkability

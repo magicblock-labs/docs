@@ -4,18 +4,26 @@ sidebarTitle: "Security"
 description: "How Solana VRF randomness proofs are verified"
 ---
 
-Solana VRF proofs are cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
+Solana VRF proofs are cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Requests made through `#[vrf]` are scoped to your program: the VRF program signs the callback with `PDA(["identity", your_program_id], VRF_PROGRAM_ID)`. Your callback enforces this with `#[vrf_callback]`, which adds that signer check to the accounts struct:
 
 ```rust
-#[account(address = ephemeral_rollups_sdk::vrf::consts::VRF_PROGRAM_IDENTITY)]
-pub vrf_program_identity: Signer<'info>,
+#[vrf_callback]
+#[derive(Accounts)]
+pub struct CallbackRollDiceCtx<'info> {
+    #[account(mut)]
+    pub player: Account<'info, Player>,
+}
 ```
+
+<Warning>
+  Don't add your own `#[account(address = VRF_PROGRAM_IDENTITY)] pub vrf_program_identity: Signer` field. `VRF_PROGRAM_IDENTITY` is the deprecated global signer used only by legacy requests. When the struct already has a `vrf_program_identity` field, `#[vrf_callback]` skips its scoped check, and the callback then rejects every request made through `#[vrf]` (Anchor error 2012, `ConstraintAddress`).
+</Warning>
 
 Only the official MagicBlock oracle can trigger the callback, preventing spoofed or manipulated results. Invalid proofs automatically fail, and other programs cannot front-run the request.
 
 MagicBlock Solana VRF checks for conditions like `InvalidProof` and `Unauthorized` so incorrect signatures or unauthorized callers are rejected before your game logic runs. The VRF program has a published audit, so treat that report as the source of truth before going live.
 
-Because everything executes inside the same deterministic [ephemeral rollup](/pages/ephemeral-rollups-ers/introduction/ephemeral-rollup) that runs your game logic, the random value cannot be reused or delayed.
+The request and the callback are separate transactions. The oracle must fulfill in a later slot than the request, and the VRF program applies no age limit when it delivers a result. A request that is not fulfilled can be purged by anyone after about two minutes (the TTL is 120 s, counted in 4-second units), and until it is purged it can still be fulfilled. Make your callback reject results for requests your program no longer expects, such as a round that has already closed.
 
 For actionable integration guidance — seed selection, callback validation, and state management — see [Best Practices](/pages/verifiable-randomness-functions-vrfs/how-to-guide/best-practices).
 

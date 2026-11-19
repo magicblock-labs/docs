@@ -91,17 +91,23 @@ Any Solana program can request and consume verifiable randomness onchain within 
   </Tab>
   <Tab title="2. Request & Consume Randomness">
 
-    1. Add `ephemeral-rollups-sdk` with the `anchor` and `vrf` features to your program
+    1. Add `ephemeral-rollups-sdk` 0.18 with the `anchor` and `vrf` features to your program, and enable Anchor's `init-if-needed` feature (the `initialize` instruction uses `init_if_needed`):
 
     ```bash
-    cargo add ephemeral-rollups-sdk --features anchor,vrf
+    cargo add ephemeral-rollups-sdk@0.18 --features anchor,vrf
+    cargo add anchor-lang --features init-if-needed
     ```
 
-    Import the `vrf` and `vrf_callback` macros, `create_request_scoped_randomness_ix`, `RequestRandomnessParams`, and `SerializableAccountMeta`:
+    <Warning>
+      Pin the version. Without `@0.18`, `cargo add` installs 0.20, the Validator v2 line, which needs anchor-lang 1.2.2 or later and only works against v2 endpoints (devnet-us today). Its `#[vrf]` macro also fails to compile on 0.20.0 (`cannot find slot_hashes in sysvar`). The public Ephemeral Rollups run validator 1.1.1, so use 0.18.x. `create_request_scoped_randomness_ix` from SDK 0.16 was removed in 0.17.
+    </Warning>
+
+    Import the `vrf` and `vrf_callback` macros, `program_identity_pubkey`, `create_request_randomness_ix_const`, `RequestRandomnessParams`, and `SerializableAccountMeta`:
 
     ```rust
     use ephemeral_rollups_sdk::anchor::{vrf, vrf_callback};
-    use ephemeral_rollups_sdk::vrf::instructions::{create_request_scoped_randomness_ix, RequestRandomnessParams};
+    use ephemeral_rollups_sdk::vrf::consts::program_identity_pubkey;
+    use ephemeral_rollups_sdk::vrf::instructions::{create_request_randomness_ix_const, RequestRandomnessParams};
     use ephemeral_rollups_sdk::vrf::types::SerializableAccountMeta;
     ```
 
@@ -115,13 +121,15 @@ Any Solana program can request and consume verifiable randomness onchain within 
       | Constant | Purpose | Address |
       | --- | --- | --- |
       | `VRF_PROGRAM_ID` | VRF program | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
-      | `VRF_PROGRAM_IDENTITY` | Callback signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `VRF_PROGRAM_IDENTITY` | Legacy global callback signer (deprecated; don't check it in new callbacks) | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
       | `DEFAULT_QUEUE` | Base-layer queue (mainnet/devnet) | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
       | `DEFAULT_EPHEMERAL_QUEUE` | ER queue (mainnet/devnet) | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
       | `DEFAULT_TEST_QUEUE` | Base-layer queue (localnet) | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |
       | `DEFAULT_EPHEMERAL_TEST_QUEUE` | ER queue (localnet) | `Sc9MJUngNbQXSXGP3F67KvKwVnhaYn6kcioxXNVowYT` |
 
       Pass the queue that matches where your transaction runs as `oracle_queue`. Mainnet and Devnet share the same queue addresses; localnet uses the test queues.
+
+      Requests made through `#[vrf]` are scoped: the VRF program signs your callback with `PDA(["identity", your_program_id], VRF_PROGRAM_ID)`, not with `VRF_PROGRAM_IDENTITY`. `#[vrf_callback]` checks that scoped signer for you.
     </Note>
 
     > `Request Randomness` is the process of generating a random `hashId` with the relevant callback instruction for the verified oracles to be triggered.
@@ -151,7 +159,7 @@ Any Solana program can request and consume verifiable randomness onchain within 
       | Constant | Purpose | Address |
       | --- | --- | --- |
       | `VRF_PROGRAM_ID` | VRF program | `Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz` |
-      | `VRF_PROGRAM_IDENTITY` | Callback signer PDA | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
+      | `VRF_PROGRAM_IDENTITY` | Legacy global callback signer (deprecated; don't check it in new callbacks) | `9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw` |
       | `DEFAULT_QUEUE` | Base-layer queue (mainnet/devnet) | `Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh` |
       | `DEFAULT_EPHEMERAL_QUEUE` | ER queue (mainnet/devnet) | `5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc` |
       | `DEFAULT_TEST_QUEUE` | Base-layer queue (localnet) | `GKE6d7iv8kCBrsxr78W3xVdjGLLLJnxsGiuzrsZCGEvb` |

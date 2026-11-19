@@ -3,9 +3,19 @@ title: "Oracle-Priced Purchase"
 description: "Learn oracle account validation, freshness checks, price conversion, and slippage protection with a compact Anchor example."
 ---
 
-The Oracle-Priced Purchase example sells a USD-priced item for SOL using the MagicBlock real-time
-pricing-oracle account format. It is a focused starting point for any protocol instruction whose
-amount depends on a live market price.
+The Oracle-Priced Purchase example sells a USD-priced item for SOL using a Pyth `PriceUpdateV2`
+price account. It is a focused starting point for any protocol instruction whose amount depends on
+a live market price.
+
+<Warning>
+  The example reads the price as `Account<'info, PriceUpdateV2>`, and its tests use Pyth receiver
+  fixtures. MagicBlock real-time feeds are owned by the pricing oracle program and have a different
+  discriminator, so this account type rejects them (Anchor error 3007). To use a MagicBlock feed,
+  decode it with `try_deserialize_unchecked`, check the account key and owner, and take the exponent
+  from the feed list, as shown in [Oracle Implementation](/pages/tools/oracle/implementation). If you
+  only change the decoding, the example uses the feed's `+8` exponent field and charges 1 lamport
+  for a $1.00 item.
+</Warning>
 
 <CardGroup cols={2}>
   <Card
@@ -29,7 +39,8 @@ amount depends on a live market price.
 ## What the example demonstrates
 
 - binding program configuration to an expected oracle feed ID;
-- rejecting prices that are not fully verified or are older than 60 seconds;
+- rejecting prices that are not fully verified, not positive, or older than 60 seconds. The
+  positive-price check matters: a new MagicBlock feed starts as fully verified with a price of 0;
 - converting a USD-denominated amount into lamports;
 - enforcing a buyer-provided maximum to protect against price movement.
 

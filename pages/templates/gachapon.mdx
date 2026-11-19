@@ -29,6 +29,10 @@ title: Gachapon
 
 Mint Metaplex NFTs through a gachapon-style machine powered by MagicBlock VRF. This template requests verifiable randomness to select the prize outcome, then mints the matching NFT so each pull is unpredictable, auditable, and suitable for games or collectible drops.
 
+<Note>
+  This example builds a legacy randomness request by hand and checks its callback against `VRF_PROGRAM_IDENTITY`, the global signer. That pattern is deprecated. For new programs, request randomness through `#[vrf]` and validate the callback with `#[vrf_callback]`, as shown in the [VRF Quickstart](/pages/verifiable-randomness-functions-vrfs/how-to-guide/quickstart).
+</Note>
+
 ---
 
 ## Related Products

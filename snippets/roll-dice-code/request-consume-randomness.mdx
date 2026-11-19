@@ -3,10 +3,14 @@ use ephemeral_rollups_sdk::{
     anchor::{vrf, vrf_callback},
     vrf::{
         self,
-        instructions::{create_request_scoped_randomness_ix, RequestRandomnessParams},
+        consts::program_identity_pubkey,
+        instructions::{create_request_randomness_ix_const, RequestRandomnessParams},
         types::SerializableAccountMeta,
     },
 };
+
+/// The identity PDA this program signs randomness requests with, derived at compile time.
+const PROGRAM_IDENTITY: Pubkey = program_identity_pubkey(&crate::ID);
 
 #[program]
 pub mod random_dice {
@@ -17,7 +21,7 @@ pub mod random_dice {
     // Request Randomness
     pub fn roll_dice(ctx: Context<DoRollDiceCtx>, client_seed: u8) -> Result<()> {
         msg!("Requesting randomness...");
-        let ix = create_request_scoped_randomness_ix(RequestRandomnessParams {
+        let params = RequestRandomnessParams {
             payer: ctx.accounts.payer.key(),
             oracle_queue: ctx.accounts.oracle_queue.key(),
             callback_program_id: ID,
@@ -31,7 +35,8 @@ pub mod random_dice {
             }]),
             callback_args: Some(vec![client_seed]),
             ..Default::default()
-        });
+        };
+        let ix = create_request_randomness_ix_const(params, PROGRAM_IDENTITY);
         ctx.accounts
             .invoke_signed_vrf(&ctx.accounts.payer.to_account_info(), &ix)?;
         Ok(())
@@ -71,8 +76,10 @@ pub struct DoRollDiceCtx<'info> {
     pub oracle_queue: UncheckedAccount<'info>,
 }
 
-// `#[vrf_callback]` enforces that only the VRF program (via CPI) can invoke the
-// callback — omitting it leaves the callback spoofable by any caller.
+// `#[vrf_callback]` adds a `vrf_program_identity` signer that must be this program's
+// scoped VRF identity, so only the VRF program can invoke the callback. Without it,
+// any caller can spoof the callback. Don't declare your own `vrf_program_identity`
+// field: the macro then skips its check.
 #[vrf_callback]
 #[derive(Accounts)]
 pub struct CallbackRollDiceCtx<'info> {

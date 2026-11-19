@@ -6,7 +6,7 @@ description: "Pricing for provably fair randomness requests with MagicBlock Sola
 
 import { VRFCostSimulator } from "/snippets/components/VRFCostSimulator.jsx";
 
-MagicBlock Solana VRF pricing is charged per fulfilled randomness request. Fees cover proof generation and posting the verified result on-chain.
+MagicBlock Solana VRF is charged per randomness request. The fee is taken from the payer when the request is made. It is not refunded if the request expires unfulfilled and is purged. Fees cover proof generation and posting the verified result on-chain. Requests to the ephemeral rollup queue (`DEFAULT_EPHEMERAL_QUEUE`) are free.
 
 <table style={{ width: "100%", tableLayout: "fixed" }}>
   <thead>

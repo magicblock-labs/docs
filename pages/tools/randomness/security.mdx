@@ -3,19 +3,13 @@ title: "Security"
 description: "How Solana VRF randomness proofs are verified"
 ---
 
-Solana VRF proofs are cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Your callback enforces this with:
-
-```rust
-#[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
-pub vrf_program_identity: Signer<'info>,
-```
+Solana VRF proofs are cryptographically bound to the input `caller_seed` and to MagicBlock's VRF signer identity. Requests made through `#[vrf]` are scoped to your program: the VRF program signs the callback with `PDA(["identity", your_program_id], VRF_PROGRAM_ID)`. Your callback enforces this with `#[vrf_callback]` on its accounts struct. Don't add your own `vrf_program_identity` field checked against `VRF_PROGRAM_IDENTITY`: that is the deprecated global signer, the macro skips its scoped check when the field exists, and the callback then rejects every request made through `#[vrf]`.
 
 Only the official MagicBlock oracle can trigger the callback, preventing spoofed or manipulated results. Invalid proofs automatically fail, and other programs cannot front-run the request.
 
 MagicBlock Solana VRF checks for conditions like `InvalidProof` and `Unauthorized` so incorrect signatures or unauthorized callers are rejected before your game logic runs. The VRF program has a published audit, so treat that report as the source of truth before going live.
 
-Avoid letting users provide the entire `caller_seed` directly—combine it with game state or timestamps to prevent seed grinding. Because everything executes inside the deterministic rollup, the random value cannot be reused or delayed.
-This enforcement happens within the same [ephemeral rollup](/pages/get-started/introduction/ephemeral-rollup) that executes your game logic.
+Avoid letting users provide the entire `caller_seed` directly—combine it with game state or timestamps to prevent seed grinding. The request and the callback are separate transactions: the oracle fulfills in a later slot, with no age limit, and an unfulfilled request can be purged after about two minutes. Reject callbacks for requests your program no longer expects.
 
 <CardGroup cols={2}>
   <Card
